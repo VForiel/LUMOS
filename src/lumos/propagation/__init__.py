@@ -7,6 +7,7 @@
 """
 
 from lumos.propagation import asm, fraunhofer, fresnel, rs
+from lumos.propagation._common import cache_info, clear_cache
 from lumos.propagation.api import focus, methods, plan, propagate, register_method
 
 register_method(rs.METHOD)
@@ -16,4 +17,4 @@ register_method(fresnel.FRESNEL_IR)
 register_method(fresnel.FRESNEL_MFT)
 register_method(asm.METHOD)
 
-__all__ = ["focus", "methods", "plan", "propagate", "register_method"]
+__all__ = ["cache_info", "clear_cache", "focus", "methods", "plan", "propagate", "register_method"]

@@ -12,6 +12,7 @@ import math
 from collections.abc import Callable
 from typing import Any
 
+import numpy as np
 from astropy import units as u
 
 from lumos.backend._core import get
@@ -70,8 +71,15 @@ def _rebuild(template: Wavefront | Wavecube, grid: Grid, field: Any) -> Wavefron
     return cube
 
 
-def _map_channels(signal: Signal, grid_out: Grid, apply: Callable[[Any, float], Any]) -> Signal:
-    """Apply ``apply(field, wavelength)`` to every wavelength of ``signal`` and rebuild it on ``grid_out``."""
+def _map_channels(
+    signal: Signal, grid_out: Grid, apply: Callable[[Any, float], Any], *, max_memory: int | None = None
+) -> Signal:
+    """Apply ``apply(field, wavelength)`` to every wavelength of ``signal`` and rebuild it on ``grid_out``.
+
+    Polarisation components and modes are leading axes processed in one call; wavelengths are processed one
+    after the other with cached kernels. With ``max_memory`` (bytes), the modes of a bundle are processed in
+    chunks whose padded working arrays fit in the budget.
+    """
     if isinstance(signal, Wavefront):
         return _rebuild(signal, grid_out, apply(signal.field, signal.wavelength_si))
     if isinstance(signal, Wavecube):
@@ -81,12 +89,21 @@ def _map_channels(signal: Signal, grid_out: Grid, apply: Callable[[Any, float], 
     if isinstance(signal, IncoherentBundle):
         template = signal[0]
         xp = namespace(signal.field)
-        if isinstance(template, Wavefront):
-            field = apply(signal.field, template.wavelength_si)  # modes are a leading axis
-        else:
-            field = xp.stack(
-                [apply(signal.field[:, k], lam) for k, lam in enumerate(template.wavelengths_si)], axis=1
+
+        def modes(block: Any) -> Any:
+            if isinstance(template, Wavefront):
+                return apply(block, template.wavelength_si)  # modes are a leading axis
+            return xp.stack(
+                [apply(block[:, k], lam) for k, lam in enumerate(template.wavelengths_si)], axis=1
             )
+
+        if max_memory is None:
+            field = modes(signal.field)
+        else:
+            per_mode = 4 * int(np.prod(signal.shape[1:])) * signal.field.dtype.itemsize  # padded by 2 x 2
+            chunk = max(1, int(max_memory) // max(per_mode, 1))
+            blocks = [modes(signal.field[i : i + chunk]) for i in range(0, signal.n_modes, chunk)]
+            field = xp.concat(blocks, axis=0)
         return IncoherentBundle(
             field, _rebuild(template, grid_out, field[0]), mode_weights=signal.mode_weights
         )
@@ -113,6 +130,7 @@ def propagate(
     *,
     output_grid: Grid | None = None,
     method: str = "auto",
+    max_memory: int | None = None,
 ) -> Signal:
     r"""Propagate a field from the plane ``z = 0`` to the plane ``z = distance`` in free space (vacuum).
 
@@ -129,6 +147,8 @@ def propagate(
         Sampling of the output plane; defaults to the input grid (required for the far field).
     method
         ``"auto"`` (the planner chooses and logs the method) or one of :func:`methods`.
+    max_memory
+        Optional memory budget in bytes: the modes of an incoherent bundle are then propagated in chunks.
 
     Returns
     -------
@@ -157,7 +177,7 @@ def propagate(
     def apply(field: Any, wavelength: float) -> Any:
         return chosen.kernel(field, grid_in, grid_out, wavelength, z, xp)
 
-    return _map_channels(signal, output_grid, apply)
+    return _map_channels(signal, output_grid, apply, max_memory=max_memory)
 
 
 def plan(signal: Signal, distance: u.Quantity | None, *, output_grid: Grid | None = None) -> Any:

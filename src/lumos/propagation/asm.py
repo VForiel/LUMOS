@@ -37,7 +37,7 @@ import numpy as np
 
 from lumos.backend import fft
 from lumos.fields.grid import Grid
-from lumos.propagation._common import Method, axis_coordinates, crop, frequencies, mft_axes, pad
+from lumos.propagation._common import KERNEL_CACHE, Method, axis_coordinates, crop, frequencies, mft_axes, pad
 
 __all__ = ["METHOD", "angular_spectrum", "band_limit"]
 
@@ -75,8 +75,12 @@ def angular_spectrum(
     ny, nx = padded.shape[-2:]
     fx = frequencies(nx, grid_in.dx_si)
     fy = frequencies(ny, grid_in.dy_si)
-    h = transfer_function(fx, fy, wavelength, z, grid_in.nx, grid_in.ny, grid_in.dx_si, grid_in.dy_si)
-    spectrum = fft.fft2c(padded) * xp.asarray(h, dtype=padded.dtype)
+    key = ("asm", nx, ny, grid_in.dx_si, grid_in.dy_si, wavelength, z)
+
+    def build() -> np.ndarray:
+        return transfer_function(fx, fy, wavelength, z, grid_in.nx, grid_in.ny, grid_in.dx_si, grid_in.dy_si)
+
+    spectrum = fft.fft2c(padded) * KERNEL_CACHE.get(key, build, xp, padded.dtype)
     if grid_out == grid_in:
         return crop(fft.ifft2c(spectrum), offsets, grid_in.shape)
     # Phase of the input origin: the centred FFT measures coordinates from x0, the MFT from 0.

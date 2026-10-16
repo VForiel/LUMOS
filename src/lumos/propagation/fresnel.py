@@ -39,7 +39,7 @@ import numpy as np
 from lumos.backend import fft
 from lumos.backend._core import backend_of
 from lumos.fields.grid import Grid
-from lumos.propagation._common import Method, axis_coordinates, crop, frequencies, pad
+from lumos.propagation._common import KERNEL_CACHE, Method, axis_coordinates, crop, frequencies, pad
 from lumos.propagation.fraunhofer import fraunhofer
 
 __all__ = ["FRESNEL_IR", "FRESNEL_MFT", "FRESNEL_TF", "fresnel_ir", "fresnel_mft", "fresnel_tf"]
@@ -60,9 +60,14 @@ def fresnel_tf(field: Any, grid_in: Grid, grid_out: Grid, wavelength: float, z: 
     ny, nx = padded.shape[-2:]
     fx = frequencies(nx, grid_in.dx_si)
     fy = frequencies(ny, grid_in.dy_si)
-    f2 = fx[None, :] ** 2 + fy[:, None] ** 2
     k = 2 * math.pi / wavelength
-    transfer = xp.asarray(np.exp(1j * (k * z - math.pi * wavelength * z * f2)), dtype=padded.dtype)
+
+    def build() -> np.ndarray:
+        f2 = fx[None, :] ** 2 + fy[:, None] ** 2
+        return np.exp(1j * (k * z - math.pi * wavelength * z * f2))
+
+    key = ("fresnel_tf", nx, ny, grid_in.dx_si, grid_in.dy_si, wavelength, z)
+    transfer = KERNEL_CACHE.get(key, build, xp, padded.dtype)
     out = fft.ifft2c(fft.fft2c(padded) * transfer)
     return crop(out, offsets, grid_in.shape)
 
@@ -72,12 +77,17 @@ def fresnel_ir(field: Any, grid_in: Grid, grid_out: Grid, wavelength: float, z: 
     z = _finite(z)
     padded, offsets = pad(field, _PAD, xp)
     ny, nx = padded.shape[-2:]
-    x = axis_coordinates(nx, grid_in.dx_si, 0.0)
-    y = axis_coordinates(ny, grid_in.dy_si, 0.0)
-    r2 = x[None, :] ** 2 + y[:, None] ** 2
     k = 2 * math.pi / wavelength
-    h = np.exp(1j * (k * z + k * r2 / (2 * z))) / (1j * wavelength * z) * (grid_in.dx_si * grid_in.dy_si)
-    response = fft.fft2c(xp.asarray(h, dtype=padded.dtype))
+
+    def build() -> np.ndarray:
+        x = axis_coordinates(nx, grid_in.dx_si, 0.0)
+        y = axis_coordinates(ny, grid_in.dy_si, 0.0)
+        r2 = x[None, :] ** 2 + y[:, None] ** 2
+        h = np.exp(1j * (k * z + k * r2 / (2 * z))) / (1j * wavelength * z) * (grid_in.dx_si * grid_in.dy_si)
+        return np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(h)))
+
+    key = ("fresnel_ir", nx, ny, grid_in.dx_si, grid_in.dy_si, wavelength, z)
+    response = KERNEL_CACHE.get(key, build, xp, padded.dtype)
     out = fft.ifft2c(fft.fft2c(padded) * response)
     return crop(out, offsets, grid_in.shape)
 

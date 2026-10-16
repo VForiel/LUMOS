@@ -8,6 +8,8 @@ SI floats, and ``xp`` is the Array API namespace of the field. They return the f
 from __future__ import annotations
 
 import math
+from collections import OrderedDict, namedtuple
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -17,7 +19,18 @@ from lumos.backend._core import backend_of, get
 from lumos.backend.memory import dtypes
 from lumos.fields.grid import Grid
 
-__all__ = ["Kernel", "Method", "crop", "frequencies", "mft_matrix", "pad", "same_sampling"]
+__all__ = [
+    "KERNEL_CACHE",
+    "Kernel",
+    "Method",
+    "cache_info",
+    "clear_cache",
+    "crop",
+    "frequencies",
+    "mft_matrix",
+    "pad",
+    "same_sampling",
+]
 
 
 class Kernel(Protocol):
@@ -72,9 +85,13 @@ def axis_coordinates(n: int, step: float, center: float) -> np.ndarray:
 
 
 def mft_matrix(frequencies: np.ndarray, coordinates: np.ndarray, sign: float, xp: Any, dtype: Any) -> Any:
-    """Matrix ``exp(sign · 2πi f_o x_i)`` of shape ``(n_out, n_in)`` as a backend array."""
-    phase = sign * 2.0 * math.pi * np.outer(frequencies, coordinates)
-    return xp.asarray(np.exp(1j * phase), dtype=dtype)
+    """Matrix ``exp(sign · 2πi f_o x_i)`` of shape ``(n_out, n_in)`` as a backend array (cached)."""
+    key = ("mft", sign, frequencies.tobytes(), coordinates.tobytes())
+
+    def build() -> np.ndarray:
+        return np.exp(1j * sign * 2.0 * math.pi * np.outer(frequencies, coordinates))
+
+    return KERNEL_CACHE.get(key, build, xp, dtype)
 
 
 def mft_axes(
@@ -127,3 +144,52 @@ def crop(field: Any, offsets: tuple[int, int], shape: tuple[int, int]) -> Any:
 def namespace(field: Any) -> Any:
     """Array API namespace of ``field``."""
     return get(backend_of(field)).xp
+
+
+# --- Kernel cache ---------------------------------------------------------------------------------------
+
+CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize", "currsize"])
+
+
+class _KernelCache:
+    """Least-recently-used cache of kernel arrays (transfer functions, MFT matrices) per backend and dtype."""
+
+    def __init__(self, maxsize: int = 64) -> None:
+        self.maxsize = maxsize
+        self._data: OrderedDict[tuple[Any, ...], Any] = OrderedDict()
+        self.hits = 0
+        self.misses = 0
+
+    def get(self, key: tuple[Any, ...], build: Callable[[], np.ndarray], xp: Any, dtype: Any) -> Any:
+        full_key = (*key, getattr(xp, "__name__", str(xp)), str(dtype))
+        if full_key in self._data:
+            self.hits += 1
+            self._data.move_to_end(full_key)
+            return self._data[full_key]
+        self.misses += 1
+        value = xp.asarray(build(), dtype=dtype)
+        self._data[full_key] = value
+        if len(self._data) > self.maxsize:
+            self._data.popitem(last=False)
+        return value
+
+    def info(self) -> CacheInfo:
+        return CacheInfo(self.hits, self.misses, self.maxsize, len(self._data))
+
+    def clear(self) -> None:
+        self._data.clear()
+        self.hits = 0
+        self.misses = 0
+
+
+KERNEL_CACHE = _KernelCache()
+
+
+def cache_info() -> CacheInfo:
+    """Statistics of the propagation kernel cache (hits, misses, maxsize, currsize)."""
+    return KERNEL_CACHE.info()
+
+
+def clear_cache() -> None:
+    """Empty the propagation kernel cache."""
+    KERNEL_CACHE.clear()
