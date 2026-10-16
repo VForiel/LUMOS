@@ -8,6 +8,7 @@ except PackageNotFoundError:  # pragma: no cover - only when running from an uni
     __version__ = "0+unknown"
 
 from lumos._config import config
+from lumos.backend import jit
 from lumos.backend.hardware import hardware_report
 
-__all__ = ["__version__", "config", "hardware_report"]
+__all__ = ["__version__", "config", "hardware_report", "jit"]

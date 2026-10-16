@@ -32,6 +32,10 @@ from lumos.backend._core import (
     to_numpy,
     use,
 )
+from lumos.backend._jax_pytrees import install as _install_jax_pytrees
+from lumos.backend.jit import jit
+
+_install_jax_pytrees()
 
 __all__ = [
     "Backend",
@@ -42,6 +46,7 @@ __all__ = [
     "current",
     "get",
     "get_default",
+    "jit",
     "known",
     "set_default",
     "to_numpy",
