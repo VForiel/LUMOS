@@ -133,3 +133,10 @@ def test_preset_runs(preset):
     result = ctx.run(ctx.meta["outputs"])
     for output in ctx.meta["outputs"]:
         assert result[output] is not None
+
+
+def test_the_extended_scenes_notebook_exists():
+    """Step P8.7: notebook of extended scenes (debris disk behind a coronagraph, nebula)."""
+    names = [path.stem for path in NOTEBOOKS]
+    assert "05_extended_scenes" in names
+    assert (EXAMPLES / "presets" / "debris_disk.lumos").is_file()
