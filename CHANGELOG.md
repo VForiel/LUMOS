@@ -27,3 +27,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `lumos.config`: validated settings (`backend`, `precision`, `fft_workers`).
 - `lumos.backend.memory`: dtypes per precision, memory estimates and chunked computation.
 - `lumos.jit`: JAX compilation on JAX inputs; `Values` snapshots are JAX pytrees.
+- `lumos.fields.Grid`: rectangular spatial or angular sampling, centre at `N // 2`, lazy coordinates.
+- `lumos.fields.Wavefront`: scalar or polarised coherent field with power normalisation in W or photon/s.
+- `lumos.fields.jones`: Jones vectors and matrices (polarisers, retarders, rotators), Stokes parameters.
+- `lumos.fields.Wavecube` and `spectral_samples`: polychromatic stacks with spectral weights and quadrature.
+- `lumos.fields.IncoherentBundle`: mutually incoherent modes, off-axis point sources, natural light.
+- `lumos.fields.RadianceField`: spectral radiance maps with radiometric units and flux-conserving resampling.
+- `lumos.fields.ModalField` and `lumos.fields.smatrix`: guided amplitudes and scattering matrices.
+- `lumos.fields.DataProduct`: detected data with axes, mask, uncertainties; FITS, NPZ and HDF5 files.
+- `lumos.plotting`: intensity, phase (cyclic colour map), radiance and data plots with physical axes.
+
+### Fixed
+
+- The JAX import hook is no longer consumed by `importlib.util.find_spec("jax")`, so `Values` is registered as
+  a pytree when JAX is first imported through the backend.

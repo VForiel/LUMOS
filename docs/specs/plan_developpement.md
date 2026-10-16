@@ -115,7 +115,7 @@ flowchart LR
 - [x] **P3.6 `RadianceField`** — radiance spectrale sur grille, unités radiométriques, rééchantillonnage conservatif.
 - [x] **P3.7 `ModalField`** — amplitudes modales, application de S-matrices.
 - [x] **P3.8 `DataProduct`** — axes, unités, masque, incertitudes ; FITS et NPZ.
-- [ ] **P3.9 Tracés de base** — axes physiques, phase en carte cyclique.
+- [x] **P3.9 Tracés de base** — axes physiques, phase en carte cyclique.
 
 **Tests écrits d'abord :** conventions de centrage (§9 du cahier des charges), invariance de la puissance au changement de backend et à la sérialisation, inclinaison de phase d'une source hors axe (forme analytique), loi de Malus avec un polariseur, unitarité d'un coupleur 50/50, conservation du flux au rééchantillonnage d'une `RadianceField`, aller-retour FITS.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 3** (P3.1).
+Lancer la **phase 4** (P4.1).

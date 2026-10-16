@@ -101,3 +101,10 @@
 .. automodule:: lumos.errors
    :members:
 ```
+
+## Plotting
+
+```{eval-rst}
+.. automodule:: lumos.plotting
+   :members:
+```

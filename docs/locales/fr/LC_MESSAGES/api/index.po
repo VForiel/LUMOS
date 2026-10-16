@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 14:12+0200\n"
+"POT-Creation-Date: 2026-10-16 15:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -24,59 +24,173 @@ msgid "API reference"
 msgstr "Référence de l'API"
 
 #: lumos:1 of
-msgid "LUMOS: Lumos is a Universal and Modular Optical Simulator & Operating System."
-msgstr "LUMOS: Lumos is a Universal and Modular Optical Simulator & Operating System."
+msgid ""
+"LUMOS: Lumos is a Universal and Modular Optical Simulator & Operating "
+"System."
+msgstr ""
+"LUMOS: Lumos is a Universal and Modular Optical Simulator & Operating "
+"System."
 
 #: lumos.backend.hardware.hardware_report:1 of
 msgid "Describe the machine and the software environment."
 msgstr ""
 
-#: ../../api/index.md lumos.backend._core.Backend.asarray lumos.backend._core.Backend.is_array
-#: lumos.backend._core.Backend.to_numpy lumos.backend._core.convert lumos.backend._core.set_default
-#: lumos.backend._core.to_numpy lumos.backend._core.use lumos.backend.fft.fft2 lumos.backend.fft.fft2c
-#: lumos.backend.fft.fftfreq lumos.backend.fft.fftshift lumos.backend.fft.ifft2 lumos.backend.fft.ifft2c
-#: lumos.backend.fft.ifftshift lumos.backend.hardware.GPUInfo lumos.backend.hardware.select_backend
-#: lumos.backend.jit.jit lumos.backend.memory.available_memory lumos.backend.memory.chunk_slices
-#: lumos.backend.memory.estimate_bytes lumos.core.element.Element.apply lumos.core.element.Element.from_lumos
-#: lumos.core.element.Element.to_lumos lumos.core.element.Values lumos.core.param.Param.check_prior
-#: lumos.core.param.Param.validate lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
-#: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si lumos.core.param.Setting.validate
-#: lumos.core.param.State lumos.core.port.Output lumos.core.port.Port lumos.core.port.check_compatible
-#: lumos.core.port.compatible lumos.core.port.ports_of lumos.core.priors.LogUniform lumos.core.priors.Normal
-#: lumos.core.priors.Uniform lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration
-#: lumos.core.registry.Registry.get lumos.core.registry.Registry.load_plugins
+#: ../../api/index.md lumos.backend._core.Backend.asarray
+#: lumos.backend._core.Backend.is_array lumos.backend._core.Backend.to_numpy
+#: lumos.backend._core.convert lumos.backend._core.set_default
+#: lumos.backend._core.to_numpy lumos.backend._core.use lumos.backend.fft.fft2
+#: lumos.backend.fft.fft2c lumos.backend.fft.fftfreq lumos.backend.fft.fftshift
+#: lumos.backend.fft.ifft2 lumos.backend.fft.ifft2c lumos.backend.fft.ifftshift
+#: lumos.backend.hardware.GPUInfo lumos.backend.hardware.select_backend
+#: lumos.backend.jit.jit lumos.backend.memory.available_memory
+#: lumos.backend.memory.chunk_slices lumos.backend.memory.estimate_bytes
+#: lumos.core.element.Element.apply lumos.core.element.Element.from_lumos
+#: lumos.core.element.Element.to_lumos lumos.core.element.Values
+#: lumos.core.param.Param.check_prior lumos.core.param.Param.validate
+#: lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
+#: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si
+#: lumos.core.param.Setting.validate lumos.core.param.State
+#: lumos.core.port.Output lumos.core.port.Port lumos.core.port.check_compatible
+#: lumos.core.port.compatible lumos.core.port.ports_of
+#: lumos.core.priors.LogUniform lumos.core.priors.Normal
+#: lumos.core.priors.Uniform lumos.core.priors.prior_to_json
+#: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
+#: lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
-#: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.version lumos.io.lumos_format.load
-#: lumos.io.lumos_format.save lumos.io.lumos_format.to_document lumos.units.quantity_to_json lumos.units.si_unit
-#: of
+#: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.version
+#: lumos.fields.dataproduct.DataProduct.from_fits
+#: lumos.fields.dataproduct.DataProduct.from_grid
+#: lumos.fields.dataproduct.DataProduct.from_hdf5
+#: lumos.fields.dataproduct.DataProduct.from_json
+#: lumos.fields.dataproduct.DataProduct.from_npz
+#: lumos.fields.dataproduct.DataProduct.to_fits
+#: lumos.fields.dataproduct.DataProduct.to_hdf5
+#: lumos.fields.dataproduct.DataProduct.to_npz lumos.fields.grid.Grid.coords
+#: lumos.fields.grid.Grid.from_extent lumos.fields.grid.Grid.from_json
+#: lumos.fields.grid.Grid.index lumos.fields.grid.Grid.polar
+#: lumos.fields.grid.Grid.to_angular lumos.fields.grid.Grid.to_spatial
+#: lumos.fields.grid.Grid.with_center
+#: lumos.fields.incoherent.IncoherentBundle.from_json
+#: lumos.fields.incoherent.IncoherentBundle.from_signals
+#: lumos.fields.incoherent.IncoherentBundle.map
+#: lumos.fields.incoherent.IncoherentBundle.tilt
+#: lumos.fields.incoherent.IncoherentBundle.to_backend
+#: lumos.fields.incoherent.IncoherentBundle.unpolarized
+#: lumos.fields.incoherent.IncoherentBundle.with_power_unit
+#: lumos.fields.jones.degree_of_polarization lumos.fields.jones.half_wave_plate
+#: lumos.fields.jones.linear lumos.fields.jones.polarizer
+#: lumos.fields.jones.quarter_wave_plate lumos.fields.jones.retarder
+#: lumos.fields.jones.rotator lumos.fields.jones.stokes
+#: lumos.fields.modal.ModalField.apply lumos.fields.modal.ModalField.from_json
+#: lumos.fields.modal.ModalField.to_backend
+#: lumos.fields.radiance.RadianceField.from_json
+#: lumos.fields.radiance.RadianceField.resample
+#: lumos.fields.radiance.RadianceField.to
+#: lumos.fields.radiance.RadianceField.to_backend lumos.fields.smatrix.coupler
+#: lumos.fields.smatrix.is_unitary lumos.fields.smatrix.phase_shifter
+#: lumos.fields.wavecube.Wavecube.from_json
+#: lumos.fields.wavecube.Wavecube.from_wavefronts
+#: lumos.fields.wavecube.Wavecube.plane lumos.fields.wavecube.Wavecube.tilt
+#: lumos.fields.wavecube.Wavecube.to_backend
+#: lumos.fields.wavecube.Wavecube.with_power_unit
+#: lumos.fields.wavefront.Wavefront.from_json
+#: lumos.fields.wavefront.Wavefront.gaussian
+#: lumos.fields.wavefront.Wavefront.normalized
+#: lumos.fields.wavefront.Wavefront.plane lumos.fields.wavefront.Wavefront.tilt
+#: lumos.fields.wavefront.Wavefront.to_backend
+#: lumos.fields.wavefront.Wavefront.with_polarization
+#: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.lumos_format.load
+#: lumos.io.lumos_format.save lumos.io.lumos_format.to_document
+#: lumos.units.quantity_to_json lumos.units.si_unit of
 msgid "Parameters"
 msgstr ""
 
 #: lumos.backend.hardware.hardware_report:3 of
 msgid ""
-"Whether to ask the installed GPU-capable backends (JAX, CuPy, PyTorch) for their devices. This imports "
-"those libraries, which can take a few seconds."
+"Whether to ask the installed GPU-capable backends (JAX, CuPy, PyTorch) "
+"for their devices. This imports those libraries, which can take a few "
+"seconds."
 msgstr ""
 
-#: ../../api/index.md lumos.backend._core.Backend.asarray lumos.backend._core.Backend.is_array
-#: lumos.backend._core.Backend.to_numpy lumos.backend._core.available lumos.backend._core.convert
-#: lumos.backend._core.current lumos.backend._core.get_default lumos.backend._core.known
-#: lumos.backend._core.set_default lumos.backend._core.to_numpy lumos.backend._core.use lumos.backend.fft.fft2
-#: lumos.backend.fft.fft2c lumos.backend.fft.fftfreq lumos.backend.fft.fftshift lumos.backend.fft.ifft2
-#: lumos.backend.fft.ifft2c lumos.backend.fft.ifftshift lumos.backend.hardware.HardwareReport.summary
-#: lumos.backend.hardware.HardwareReport.to_dict lumos.backend.hardware.select_backend lumos.backend.jit.jit
-#: lumos.backend.memory.available_memory lumos.backend.memory.chunk_slices lumos.backend.memory.estimate_bytes
-#: lumos.core.element.Element.apply lumos.core.element.Element.describe lumos.core.element.Element.from_lumos
-#: lumos.core.element.Element.ports lumos.core.element.Element.schema lumos.core.element.Element.to_lumos
-#: lumos.core.element.Element.values lumos.core.param.Param.check_prior lumos.core.param.Param.validate
-#: lumos.core.param.ParamHost.declared lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
-#: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si lumos.core.param.Setting.validate
-#: lumos.core.port.check_compatible lumos.core.port.compatible lumos.core.port.ports_of
-#: lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
-#: lumos.core.registry.Registry.load_plugins lumos.core.registry.Registry.migrate
-#: lumos.core.registry.Registry.register lumos.core.registry.Registry.type_id
-#: lumos.core.registry.Registry.version lumos.io.lumos_format.load lumos.io.lumos_format.save
-#: lumos.io.lumos_format.to_document lumos.units.quantity_to_json lumos.units.si_unit of
+#: ../../api/index.md lumos.backend._core.Backend.asarray
+#: lumos.backend._core.Backend.is_array lumos.backend._core.Backend.to_numpy
+#: lumos.backend._core.available lumos.backend._core.convert
+#: lumos.backend._core.current lumos.backend._core.get_default
+#: lumos.backend._core.known lumos.backend._core.set_default
+#: lumos.backend._core.to_numpy lumos.backend._core.use lumos.backend.fft.fft2
+#: lumos.backend.fft.fft2c lumos.backend.fft.fftfreq lumos.backend.fft.fftshift
+#: lumos.backend.fft.ifft2 lumos.backend.fft.ifft2c lumos.backend.fft.ifftshift
+#: lumos.backend.hardware.HardwareReport.summary
+#: lumos.backend.hardware.HardwareReport.to_dict
+#: lumos.backend.hardware.select_backend lumos.backend.jit.jit
+#: lumos.backend.memory.available_memory lumos.backend.memory.chunk_slices
+#: lumos.backend.memory.estimate_bytes lumos.core.element.Element.apply
+#: lumos.core.element.Element.describe lumos.core.element.Element.from_lumos
+#: lumos.core.element.Element.ports lumos.core.element.Element.schema
+#: lumos.core.element.Element.to_lumos lumos.core.element.Element.values
+#: lumos.core.param.Param.check_prior lumos.core.param.Param.validate
+#: lumos.core.param.ParamHost.declared lumos.core.param.ParamHost.is_free
+#: lumos.core.param.ParamHost.prior lumos.core.param.ParamHost.set_free
+#: lumos.core.param.ParamHost.si lumos.core.param.Setting.validate
+#: lumos.core.port.check_compatible lumos.core.port.compatible
+#: lumos.core.port.ports_of lumos.core.priors.prior_to_json
+#: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
+#: lumos.core.registry.Registry.load_plugins
+#: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
+#: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.version
+#: lumos.fields.dataproduct.DataProduct.from_fits
+#: lumos.fields.dataproduct.DataProduct.from_grid
+#: lumos.fields.dataproduct.DataProduct.from_hdf5
+#: lumos.fields.dataproduct.DataProduct.from_json
+#: lumos.fields.dataproduct.DataProduct.from_npz
+#: lumos.fields.dataproduct.DataProduct.to_fits
+#: lumos.fields.dataproduct.DataProduct.to_hdf5
+#: lumos.fields.dataproduct.DataProduct.to_json
+#: lumos.fields.dataproduct.DataProduct.to_npz lumos.fields.grid.Grid.coords
+#: lumos.fields.grid.Grid.from_extent lumos.fields.grid.Grid.from_json
+#: lumos.fields.grid.Grid.index lumos.fields.grid.Grid.polar
+#: lumos.fields.grid.Grid.to_angular lumos.fields.grid.Grid.to_json
+#: lumos.fields.grid.Grid.to_spatial lumos.fields.grid.Grid.with_center
+#: lumos.fields.incoherent.IncoherentBundle.from_json
+#: lumos.fields.incoherent.IncoherentBundle.from_signals
+#: lumos.fields.incoherent.IncoherentBundle.map
+#: lumos.fields.incoherent.IncoherentBundle.members
+#: lumos.fields.incoherent.IncoherentBundle.tilt
+#: lumos.fields.incoherent.IncoherentBundle.to_backend
+#: lumos.fields.incoherent.IncoherentBundle.to_json
+#: lumos.fields.incoherent.IncoherentBundle.unpolarized
+#: lumos.fields.incoherent.IncoherentBundle.with_power_unit
+#: lumos.fields.jones.degree_of_polarization lumos.fields.jones.half_wave_plate
+#: lumos.fields.jones.linear lumos.fields.jones.polarizer
+#: lumos.fields.jones.quarter_wave_plate lumos.fields.jones.retarder
+#: lumos.fields.jones.rotator lumos.fields.jones.stokes
+#: lumos.fields.modal.ModalField.apply lumos.fields.modal.ModalField.from_json
+#: lumos.fields.modal.ModalField.to_backend
+#: lumos.fields.modal.ModalField.to_json
+#: lumos.fields.radiance.RadianceField.from_json
+#: lumos.fields.radiance.RadianceField.integrated
+#: lumos.fields.radiance.RadianceField.resample
+#: lumos.fields.radiance.RadianceField.to
+#: lumos.fields.radiance.RadianceField.to_backend
+#: lumos.fields.radiance.RadianceField.to_json lumos.fields.smatrix.coupler
+#: lumos.fields.smatrix.is_unitary lumos.fields.smatrix.phase_shifter
+#: lumos.fields.wavecube.Wavecube.from_json
+#: lumos.fields.wavecube.Wavecube.from_wavefronts
+#: lumos.fields.wavecube.Wavecube.plane lumos.fields.wavecube.Wavecube.tilt
+#: lumos.fields.wavecube.Wavecube.to_backend
+#: lumos.fields.wavecube.Wavecube.to_json
+#: lumos.fields.wavecube.Wavecube.wavefronts
+#: lumos.fields.wavecube.Wavecube.with_power_unit
+#: lumos.fields.wavefront.Wavefront.from_json
+#: lumos.fields.wavefront.Wavefront.gaussian
+#: lumos.fields.wavefront.Wavefront.normalized
+#: lumos.fields.wavefront.Wavefront.plane lumos.fields.wavefront.Wavefront.tilt
+#: lumos.fields.wavefront.Wavefront.to_backend
+#: lumos.fields.wavefront.Wavefront.to_json
+#: lumos.fields.wavefront.Wavefront.with_polarization
+#: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.lumos_format.load
+#: lumos.io.lumos_format.save lumos.io.lumos_format.to_document
+#: lumos.units.quantity_to_json lumos.units.si_unit of
 msgid "Return type"
 msgstr ""
 
@@ -86,11 +200,12 @@ msgstr ""
 
 #: lumos.backend.jit.jit:3 of
 msgid ""
-"Usable as ``@jit`` or ``@jit(static_argnames=(\"n\",))``. Static arguments must be hashable; a new value "
-"triggers a new compilation (use them for values determining shapes)."
+"Usable as ``@jit`` or ``@jit(static_argnames=(\"n\",))``. Static "
+"arguments must be hashable; a new value triggers a new compilation (use "
+"them for values determining shapes)."
 msgstr ""
 
-#: ../../api/index.md:8
+#: ../../api/index.md:11
 msgid "Units"
 msgstr "Unités"
 
@@ -100,10 +215,11 @@ msgstr ""
 
 #: lumos.units:3 of
 msgid ""
-"Users always give and receive :class:`astropy.units.Quantity` objects. Inside LUMOS, performance-critical "
-"code works on plain floats or arrays expressed in **unscaled SI units** (metres, seconds, radians...). This"
-" module provides the conversions between both worlds and the JSON encoding of quantities used by the "
-"``.lumos`` file format."
+"Users always give and receive :class:`astropy.units.Quantity` objects. "
+"Inside LUMOS, performance-critical code works on plain floats or arrays "
+"expressed in **unscaled SI units** (metres, seconds, radians...). This "
+"module provides the conversions between both worlds and the JSON encoding"
+" of quantities used by the ``.lumos`` file format."
 msgstr ""
 
 #: lumos.units:9 of
@@ -113,26 +229,30 @@ msgstr ""
 #: lumos.units:10 of
 #, python-brace-format
 msgid ""
-"A quantity is encoded as ``{\"value\": <value>, \"unit\": \"<astropy unit string>\"}``, keeping the user's "
-"unit. ``<value>`` is:"
+"A quantity is encoded as ``{\"value\": <value>, \"unit\": \"<astropy unit"
+" string>\"}``, keeping the user's unit. ``<value>`` is:"
 msgstr ""
 
 #: lumos.units:13 of
 msgid ""
-"a JSON number for a finite real scalar, or one of the strings ``\"nan\"``, ``\"inf\"``, ``\"-inf\"`` "
-"(strict JSON has no non-finite numbers);"
+"a JSON number for a finite real scalar, or one of the strings "
+"``\"nan\"``, ``\"inf\"``, ``\"-inf\"`` (strict JSON has no non-finite "
+"numbers);"
 msgstr ""
 
 #: lumos.units:15 of
 #, python-brace-format
-msgid "``{\"re\": <number|string>, \"im\": <number|string>}`` for a complex scalar;"
+msgid ""
+"``{\"re\": <number|string>, \"im\": <number|string>}`` for a complex "
+"scalar;"
 msgstr ""
 
 #: lumos.units:16 of
 #, python-brace-format
 msgid ""
-"``{\"dtype\": \"<f8\", \"shape\": [n, ...], \"data\": \"<base64>\"}`` for an array: little-endian, C-order "
-"raw bytes encoded in base64, which preserves the exact values and the dtype."
+"``{\"dtype\": \"<f8\", \"shape\": [n, ...], \"data\": \"<base64>\"}`` for"
+" an array: little-endian, C-order raw bytes encoded in base64, which "
+"preserves the exact values and the dtype."
 msgstr ""
 
 #: lumos.units.quantity_from_json:1 of
@@ -148,7 +268,9 @@ msgid "If the dictionary is malformed or the unit string cannot be parsed."
 msgstr ""
 
 #: lumos.units.quantity_to_json:1 of
-msgid "Encode a quantity as a strict-JSON-compatible dictionary (see the module docstring)."
+msgid ""
+"Encode a quantity as a strict-JSON-compatible dictionary (see the module "
+"docstring)."
 msgstr ""
 
 #: lumos.units.require_unit:1 of
@@ -157,8 +279,9 @@ msgstr ""
 
 #: lumos.units.require_unit:3 of
 msgid ""
-"The quantity is returned unchanged (same object, same unit), so the user's unit is preserved. Plain numbers"
-" are only accepted when ``unit`` is dimensionless; they are then wrapped in a dimensionless quantity."
+"The quantity is returned unchanged (same object, same unit), so the "
+"user's unit is preserved. Plain numbers are only accepted when ``unit`` "
+"is dimensionless; they are then wrapped in a dimensionless quantity."
 msgstr ""
 
 #: lumos.units.require_unit:7 of
@@ -174,7 +297,9 @@ msgid "Name of the checked value, used in error messages."
 msgstr ""
 
 #: lumos.units.require_unit:10 of
-msgid "Optional astropy equivalencies, e.g. ``u.spectral()`` to accept a frequency for a wavelength."
+msgid ""
+"Optional astropy equivalencies, e.g. ``u.spectral()`` to accept a "
+"frequency for a wavelength."
 msgstr ""
 
 #: ../../api/index.md
@@ -186,7 +311,9 @@ msgid "The validated quantity."
 msgstr ""
 
 #: lumos.units.require_unit:15 of
-msgid "If ``value`` is not a quantity (or not numeric) while a dimensional unit is expected."
+msgid ""
+"If ``value`` is not a quantity (or not numeric) while a dimensional unit "
+"is expected."
 msgstr ""
 
 #: lumos.units.require_unit:16 of
@@ -199,8 +326,9 @@ msgstr ""
 
 #: lumos.units.si_unit:3 of
 msgid ""
-"For example ``nm`` gives ``m``, ``deg`` gives ``rad``, ``Jy`` gives ``kg / s2`` and ``%`` gives the "
-"dimensionless unit. Irreducible non-SI units (such as ``ph``) are kept."
+"For example ``nm`` gives ``m``, ``deg`` gives ``rad``, ``Jy`` gives ``kg "
+"/ s2`` and ``%`` gives the dimensionless unit. Irreducible non-SI units "
+"(such as ``ph``) are kept."
 msgstr ""
 
 #: lumos.units.to_si:1 of
@@ -213,8 +341,9 @@ msgstr ""
 
 #: lumos.units.to_si:4 of
 msgid ""
-"Optional target dimension; defaults to the dimension of ``quantity``. Use it with ``equivalencies`` to "
-"convert across dimensions (e.g. frequency to wavelength)."
+"Optional target dimension; defaults to the dimension of ``quantity``. Use"
+" it with ``equivalencies`` to convert across dimensions (e.g. frequency "
+"to wavelength)."
 msgstr ""
 
 #: lumos.units.to_si:6 of
@@ -225,40 +354,58 @@ msgstr ""
 msgid "A Python scalar for scalar quantities, an array otherwise."
 msgstr ""
 
-#: ../../api/index.md:15
+#: ../../api/index.md:18
 msgid "Configuration and backends"
 msgstr "Configuration et backends"
 
-#: lumos._config.Config:1 lumos.config:1 of
+#: ../../api/index.md:21
+msgid ""
+"``lumos.config`` is the instance of :class:`lumos._config.Config` holding"
+" the settings of the process."
+msgstr ""
+
+#: lumos._config.Config:1 of
 msgid "Process-wide settings of LUMOS."
 msgstr ""
 
-#: lumos._config.Config:3 lumos.config:3 of
-msgid "Every setting is validated on assignment, and unknown settings are refused (to catch typos)."
-msgstr ""
-
-#: lumos._config.Config:7 lumos.config:7 of
+#: lumos._config.Config:3 of
 msgid ""
-"Default array backend: ``\"auto\"`` (chosen from the hardware, ADR-0004) or a backend name (``\"numpy\"``, "
-"``\"jax\"``, ``\"cupy\"``, ``\"torch\"``)."
+"Every setting is validated on assignment, and unknown settings are "
+"refused (to catch typos)."
 msgstr ""
 
-#: lumos._config.Config:12 lumos.config:12 of
+#: ../../api/index.md
+msgid "Variables"
+msgstr ""
+
+#: lumos._config.Config:5 of
 msgid ""
-"Floating-point precision of new arrays: ``\"double\"`` (float64 / complex128, default) or ``\"single\"`` "
-"(float32 / complex64)."
+"Default array backend: ``\"auto\"`` (chosen from the hardware, ADR-0004) "
+"or a backend name (``\"numpy\"``, ``\"jax\"``, ``\"cupy\"``, "
+"``\"torch\"``)."
 msgstr ""
 
-#: lumos._config.Config:17 lumos.config:17 of
-msgid "Number of CPU threads used by FFTs on the NumPy backend; ``-1`` uses every core."
+#: lumos._config.Config:7 of
+msgid ""
+"Floating-point precision of new arrays: ``\"double\"`` (float64 / "
+"complex128, default) or ``\"single\"`` (float32 / complex64)."
+msgstr ""
+
+#: lumos._config.Config:9 of
+msgid ""
+"Number of CPU threads used by FFTs on the NumPy backend; ``-1`` uses "
+"every core."
 msgstr ""
 
 #: lumos._config.Config.precision:1 of
 msgid "``\"double\"`` or ``\"single\"``."
 msgstr ""
 
-#: lumos._config.Config.backend lumos._config.Config.fft_workers lumos._config.Config.precision
-#: lumos.backend._core.Backend of
+#: lumos._config.Config.backend lumos._config.Config.fft_workers
+#: lumos._config.Config.precision lumos.fields.wavecube.Wavecube.intensity_unit
+#: lumos.fields.wavecube.Wavecube.power_unit
+#: lumos.fields.wavefront.Wavefront.intensity_unit
+#: lumos.fields.wavefront.Wavefront.power_unit of
 msgid "type"
 msgstr ""
 
@@ -288,8 +435,9 @@ msgstr ""
 
 #: lumos.backend:3 of
 msgid ""
-"LUMOS stores its data in arrays of a **backend** and writes numerical code once, against the `Python Array "
-"API standard <https://data-apis.org/array-api/>`_:"
+"LUMOS stores its data in arrays of a **backend** and writes numerical "
+"code once, against the `Python Array API standard <https://data-apis.org"
+"/array-api/>`_:"
 msgstr ""
 
 #: lumos.backend:6 of
@@ -297,7 +445,9 @@ msgid "``numpy``: the CPU reference, always available;"
 msgstr ""
 
 #: lumos.backend:7 of
-msgid "``jax``: JIT compilation, vectorisation, automatic differentiation, CPU/GPU/TPU (differentiable reference);"
+msgid ""
+"``jax``: JIT compilation, vectorisation, automatic differentiation, "
+"CPU/GPU/TPU (differentiable reference);"
 msgstr ""
 
 #: lumos.backend:8 of
@@ -306,38 +456,34 @@ msgstr ""
 
 #: lumos.backend:10 of
 msgid ""
-"Backends are imported only when first used. The **current** backend is local to the running thread or task "
-"and changed with :func:`use`::"
+"Backends are imported only when first used. The **current** backend is "
+"local to the running thread or task and changed with :func:`use`::"
 msgstr ""
 
 #: lumos.backend:17 of
 msgid ""
-"Loading the JAX backend enables JAX's 64-bit mode (``jax_enable_x64``), because LUMOS computes in double "
-"precision by default (REQ-HPC-5)."
+"Loading the JAX backend enables JAX's 64-bit mode (``jax_enable_x64``), "
+"because LUMOS computes in double precision by default (REQ-HPC-5)."
 msgstr ""
 
 #: lumos.backend._core.Backend:1 of
 msgid "An array backend."
 msgstr ""
 
-#: lumos.backend._core.Backend:5 of
+#: lumos.backend._core.Backend:3 of
 msgid "Backend name (``\"numpy\"``, ``\"jax\"``, ``\"cupy\"`` or ``\"torch\"``)."
 msgstr ""
 
-#: lumos.backend._core.Backend:7 of
-msgid "str"
-msgstr ""
-
-#: lumos.backend._core.Backend:11 of
-msgid "Array API namespace of the backend (use it like ``numpy``: ``xp.exp``, ``xp.sum``...)."
-msgstr ""
-
-#: lumos.backend._core.Backend:13 of
-msgid "Any"
+#: lumos.backend._core.Backend:5 of
+msgid ""
+"Array API namespace of the backend (use it like ``numpy``: ``xp.exp``, "
+"``xp.sum``...)."
 msgstr ""
 
 #: lumos.backend._core.Backend.asarray:1 of
-msgid "Create a backend array from ``obj`` (keeping its dtype unless ``dtype`` is given)."
+msgid ""
+"Create a backend array from ``obj`` (keeping its dtype unless ``dtype`` "
+"is given)."
 msgstr ""
 
 #: lumos.backend._core.Backend.is_array:1 of
@@ -353,7 +499,9 @@ msgid "Raised when a known backend is requested but its library is not installed
 msgstr ""
 
 #: lumos.backend._core.available:1 of
-msgid "Return the names of the installed backends, ``\"numpy\"`` first (nothing is imported)."
+msgid ""
+"Return the names of the installed backends, ``\"numpy\"`` first (nothing "
+"is imported)."
 msgstr ""
 
 #: lumos.backend._core.backend_of:1 of
@@ -385,7 +533,9 @@ msgid "If the backend library is not installed."
 msgstr ""
 
 #: lumos.backend._core.get_default:1 of
-msgid "Return the default backend setting: ``\"auto\"`` or a backend name (same as ``lumos.config.backend``)."
+msgid ""
+"Return the default backend setting: ``\"auto\"`` or a backend name (same "
+"as ``lumos.config.backend``)."
 msgstr ""
 
 #: lumos.backend._core.known:1 of
@@ -393,7 +543,9 @@ msgid "Return the names of the backends LUMOS knows about."
 msgstr ""
 
 #: lumos.backend._core.set_default:1 of
-msgid "Set the default backend for the whole process (``\"auto\"`` or a backend name)."
+msgid ""
+"Set the default backend for the whole process (``\"auto\"`` or a backend "
+"name)."
 msgstr ""
 
 #: lumos.backend._core.to_numpy:1 of
@@ -401,7 +553,9 @@ msgid "Return ``array`` as a NumPy array (a copy on the host for device arrays).
 msgstr ""
 
 #: lumos.backend._core.use:1 of
-msgid "Use backend ``name`` inside a ``with`` block (local to the current thread or task)."
+msgid ""
+"Use backend ``name`` inside a ``with`` block (local to the current thread"
+" or task)."
 msgstr ""
 
 #: lumos.backend.fft:1 of
@@ -410,48 +564,67 @@ msgstr ""
 
 #: lumos.backend.fft:3 of
 msgid ""
-"Every function works on the backend of its input array: JAX arrays are transformed by JAX, CuPy arrays on "
-"the GPU, and NumPy arrays by :mod:`scipy.fft`, which keeps single precision and uses "
+"Every function works on the backend of its input array: JAX arrays are "
+"transformed by JAX, CuPy arrays on the GPU, and NumPy arrays by "
+":mod:`scipy.fft`, which keeps single precision and uses "
 "``lumos.config.fft_workers`` CPU threads."
 msgstr ""
 
 #: lumos.backend.fft:7 of
 msgid ""
-"The *centred* transforms :func:`fft2c` and :func:`ifft2c` assume that the origin of both the input and the "
-"output grids is the pixel of index ``N // 2`` along each axis (convention of LUMOS, §9 of the specs). They "
-"are the natural transforms for optics, where fields are centred on the optical axis."
+"The *centred* transforms :func:`fft2c` and :func:`ifft2c` assume that the"
+" origin of both the input and the output grids is the pixel of index ``N "
+"// 2`` along each axis (convention of LUMOS, §9 of the specs). They are "
+"the natural transforms for optics, where fields are centred on the "
+"optical axis."
 msgstr ""
 
 #: lumos.backend.fft.fft2:1 of
-msgid "Return the discrete Fourier transform of ``array`` over ``axes`` (origin at index 0)."
+msgid ""
+"Return the discrete Fourier transform of ``array`` over ``axes`` (origin "
+"at index 0)."
 msgstr ""
 
 #: lumos.backend.fft.fft2c:1 of
-msgid "Return the centred Fourier transform of ``array`` (origins of both grids at index ``N // 2``)."
+msgid ""
+"Return the centred Fourier transform of ``array`` (origins of both grids "
+"at index ``N // 2``)."
 msgstr ""
 
 #: lumos.backend.fft.fftfreq:1 of
-msgid "Return the sample frequencies of an ``n``-point FFT with sample spacing ``d``."
+msgid ""
+"Return the sample frequencies of an ``n``-point FFT with sample spacing "
+"``d``."
 msgstr ""
 
 #: lumos.backend.fft.fftfreq:3 of
-msgid "The array is created with ``backend`` (the current backend by default), in FFT order (zero first)."
+msgid ""
+"The array is created with ``backend`` (the current backend by default), "
+"in FFT order (zero first)."
 msgstr ""
 
 #: lumos.backend.fft.fftshift:1 of
-msgid "Move the zero-frequency sample from index 0 to index ``N // 2`` along ``axes``."
+msgid ""
+"Move the zero-frequency sample from index 0 to index ``N // 2`` along "
+"``axes``."
 msgstr ""
 
 #: lumos.backend.fft.ifft2:1 of
-msgid "Return the inverse discrete Fourier transform of ``array`` over ``axes`` (origin at index 0)."
+msgid ""
+"Return the inverse discrete Fourier transform of ``array`` over ``axes`` "
+"(origin at index 0)."
 msgstr ""
 
 #: lumos.backend.fft.ifft2c:1 of
-msgid "Return the centred inverse Fourier transform of ``array`` (inverse of :func:`fft2c`)."
+msgid ""
+"Return the centred inverse Fourier transform of ``array`` (inverse of "
+":func:`fft2c`)."
 msgstr ""
 
 #: lumos.backend.fft.ifftshift:1 of
-msgid "Inverse of :func:`fftshift`: move the sample at index ``N // 2`` to index 0 along ``axes``."
+msgid ""
+"Inverse of :func:`fftshift`: move the sample at index ``N // 2`` to index"
+" 0 along ``axes``."
 msgstr ""
 
 #: lumos.backend.hardware:1 of
@@ -460,9 +633,11 @@ msgstr ""
 
 #: lumos.backend.hardware:3 of
 msgid ""
-":func:`hardware_report` describes the machine LUMOS runs on: operating system, CPU, memory, GPUs seen by "
-"the installed backends and versions of the main libraries. The report is stored in archive metadata (REQ-"
-"RES-2) and drives :func:`select_backend`, used when ``lumos.config.backend`` is ``\"auto\"``."
+":func:`hardware_report` describes the machine LUMOS runs on: operating "
+"system, CPU, memory, GPUs seen by the installed backends and versions of "
+"the main libraries. The report is stored in archive metadata (REQ-RES-2) "
+"and drives :func:`select_backend`, used when ``lumos.config.backend`` is "
+"``\"auto\"``."
 msgstr ""
 
 #: lumos.backend.hardware.GPUInfo:1 of
@@ -482,41 +657,55 @@ msgid "Return a short human-readable description."
 msgstr ""
 
 #: lumos.backend.hardware.select_backend:1 of
-msgid "Choose the backend to use on the machine described by ``report`` (policy of ADR-0004)."
+msgid ""
+"Choose the backend to use on the machine described by ``report`` (policy "
+"of ADR-0004)."
 msgstr ""
 
 #: lumos.backend.hardware.select_backend:3 of
 msgid ""
-"A GPU backend is chosen when it sees a GPU, JAX first, then CuPy, then PyTorch; otherwise NumPy, the CPU "
-"reference."
+"A GPU backend is chosen when it sees a GPU, JAX first, then CuPy, then "
+"PyTorch; otherwise NumPy, the CPU reference."
 msgstr ""
 
 #: lumos.backend.memory:1 of
-msgid "Numerical precision, memory estimates and chunked computation (REQ-HPC-4, REQ-HPC-5)."
+msgid ""
+"Numerical precision, memory estimates and chunked computation (REQ-HPC-4,"
+" REQ-HPC-5)."
 msgstr ""
 
 #: lumos.backend.memory:3 of
 msgid ""
-"Large computations (a wavecube of hundreds of wavelengths, thousands of incoherent modes...) may not fit in"
-" memory at once. Most of them are independent along one axis, so :func:`map_chunked` cuts the input along "
-"that axis into chunks that fit a memory budget, applies the computation to each chunk and concatenates the "
-"results, which are identical to those of a single computation."
+"Large computations (a wavecube of hundreds of wavelengths, thousands of "
+"incoherent modes...) may not fit in memory at once. Most of them are "
+"independent along one axis, so :func:`map_chunked` cuts the input along "
+"that axis into chunks that fit a memory budget, applies the computation "
+"to each chunk and concatenates the results, which are identical to those "
+"of a single computation."
 msgstr ""
 
 #: lumos.backend.memory.available_memory:1 of
-msgid "Return the memory in bytes currently available to ``backend`` (the current backend by default)."
+msgid ""
+"Return the memory in bytes currently available to ``backend`` (the "
+"current backend by default)."
 msgstr ""
 
 #: lumos.backend.memory.available_memory:3 of
-msgid "CPU backends report the available RAM; GPU backends report the free memory of their first device."
+msgid ""
+"CPU backends report the available RAM; GPU backends report the free "
+"memory of their first device."
 msgstr ""
 
 #: lumos.backend.memory.chunk_slices:1 of
-msgid "Split ``range(n)`` into consecutive slices of at most ``budget_bytes // item_bytes`` items."
+msgid ""
+"Split ``range(n)`` into consecutive slices of at most ``budget_bytes // "
+"item_bytes`` items."
 msgstr ""
 
 #: lumos.backend.memory.chunk_slices:3 of
-msgid "Every chunk holds at least one item, even when a single item exceeds the budget."
+msgid ""
+"Every chunk holds at least one item, even when a single item exceeds the "
+"budget."
 msgstr ""
 
 #: lumos.backend.memory.dtypes:1 of
@@ -525,8 +714,8 @@ msgstr ""
 
 #: lumos.backend.memory.dtypes:3 of
 msgid ""
-"``\"double\"`` (float64 / complex128) or ``\"single\"`` (float32 / complex64); defaults to "
-"``lumos.config.precision``."
+"``\"double\"`` (float64 / complex128) or ``\"single\"`` (float32 / "
+"complex64); defaults to ``lumos.config.precision``."
 msgstr ""
 
 #: lumos.backend.memory.dtypes:5 of
@@ -538,13 +727,16 @@ msgid "Return the size in bytes of an array of ``shape`` and ``dtype``."
 msgstr ""
 
 #: lumos.backend.memory.map_chunked:1 of
-msgid "Apply ``function`` to chunks of ``array`` along ``axis`` and concatenate the results."
+msgid ""
+"Apply ``function`` to chunks of ``array`` along ``axis`` and concatenate "
+"the results."
 msgstr ""
 
 #: lumos.backend.memory.map_chunked:3 of
 msgid ""
-"``function`` must treat the elements along ``axis`` independently and keep their number (for example a 2-D "
-"FFT applied to every wavelength of a cube). The result equals ``function(array)``."
+"``function`` must treat the elements along ``axis`` independently and "
+"keep their number (for example a 2-D FFT applied to every wavelength of a"
+" cube). The result equals ``function(array)``."
 msgstr ""
 
 #: lumos.backend.memory.map_chunked:6 of
@@ -560,19 +752,25 @@ msgid "Axis along which the input is cut."
 msgstr ""
 
 #: lumos.backend.memory.map_chunked:9 of
-msgid "Maximum size of the input of one chunk; defaults to a quarter of the memory available to the backend."
+msgid ""
+"Maximum size of the input of one chunk; defaults to a quarter of the "
+"memory available to the backend."
 msgstr ""
 
-#: ../../api/index.md:37
+#: ../../api/index.md:39
 msgid "Core"
 msgstr "Cœur"
 
 #: lumos.core.param:1 of
-msgid "Declarative fields of LUMOS objects: physical parameters, settings and state (REQ-EL-1 to REQ-EL-3)."
+msgid ""
+"Declarative fields of LUMOS objects: physical parameters, settings and "
+"state (REQ-EL-1 to REQ-EL-3)."
 msgstr ""
 
 #: lumos.core.param:3 of
-msgid "A class derived from :class:`ParamHost` declares its fields as class attributes::"
+msgid ""
+"A class derived from :class:`ParamHost` declares its fields as class "
+"attributes::"
 msgstr ""
 
 #: lumos.core.param:10 of
@@ -581,16 +779,21 @@ msgstr ""
 
 #: lumos.core.param:12 of
 msgid ""
-":class:`Param`: a physical quantity (always an :class:`astropy.units.Quantity`) describing the "
-"configuration of an object, such as a focal length;"
+":class:`Param`: a physical quantity (always an "
+":class:`astropy.units.Quantity`) describing the configuration of an "
+"object, such as a focal length;"
 msgstr ""
 
 #: lumos.core.param:14 of
-msgid ":class:`State`: a physical quantity changed by the actions of an equipment, such as a stage position;"
+msgid ""
+":class:`State`: a physical quantity changed by the actions of an "
+"equipment, such as a stage position;"
 msgstr ""
 
 #: lumos.core.param:15 of
-msgid ":class:`Setting`: a non-physical value (integer, string, boolean, choice), such as a method name."
+msgid ""
+":class:`Setting`: a non-physical value (integer, string, boolean, "
+"choice), such as a method name."
 msgstr ""
 
 #: lumos.core.param:17 of
@@ -599,21 +802,23 @@ msgstr ""
 
 #: lumos.core.param:19 of
 msgid ""
-"the **user value**, exactly as given (same number, same unit), returned when the attribute is read, so that"
-" ``550 nm`` is never displayed as ``550.0000000001 nm``;"
+"the **user value**, exactly as given (same number, same unit), returned "
+"when the attribute is read, so that ``550 nm`` is never displayed as "
+"``550.0000000001 nm``;"
 msgstr ""
 
 #: lumos.core.param:21 of
 msgid ""
-"the **SI value**, a float, complex or read-only array in unscaled SI units, returned by "
-":meth:`ParamHost.si` for the numerical kernels."
+"the **SI value**, a float, complex or read-only array in unscaled SI "
+"units, returned by :meth:`ParamHost.si` for the numerical kernels."
 msgstr ""
 
 #: lumos.core.param:24 of
 msgid ""
-"Arrays are copied on assignment and stored read-only, so they cannot be modified behind the host's back: "
-"every change goes through an assignment, which calls :meth:`ParamHost._on_field_changed` (used to "
-"invalidate cached results)."
+"Arrays are copied on assignment and stored read-only, so they cannot be "
+"modified behind the host's back: every change goes through an assignment,"
+" which calls :meth:`ParamHost._on_field_changed` (used to invalidate "
+"cached results)."
 msgstr ""
 
 #: lumos.core.param.Param:1 of
@@ -621,7 +826,9 @@ msgid "A physical parameter of a LUMOS object."
 msgstr ""
 
 #: lumos.core.param.Param:3 of
-msgid "Unit (or any unit of the same dimension) of the parameter; ``None`` for a dimensionless parameter."
+msgid ""
+"Unit (or any unit of the same dimension) of the parameter; ``None`` for a"
+" dimensionless parameter."
 msgstr ""
 
 #: lumos.core.param.Param:4 of
@@ -629,7 +836,9 @@ msgid "Default value. It is validated when the parameter is declared."
 msgstr ""
 
 #: lumos.core.param.Param:5 of
-msgid "``(low, high)`` limits, each a quantity or ``None``. They apply to every element of an array."
+msgid ""
+"``(low, high)`` limits, each a quantity or ``None``. They apply to every "
+"element of an array."
 msgstr ""
 
 #: lumos.core.param.Param:6 of
@@ -637,7 +846,9 @@ msgid "Whether ``low`` and ``high`` are allowed values."
 msgstr ""
 
 #: lumos.core.param.Param:7 of
-msgid "Required shape: ``()`` for a scalar (default), a tuple for a fixed shape, ``None`` for any shape."
+msgid ""
+"Required shape: ``()`` for a scalar (default), a tuple for a fixed shape,"
+" ``None`` for any shape."
 msgstr ""
 
 #: lumos.core.param.Param:8 of
@@ -645,11 +856,15 @@ msgid "``\"real\"`` (default) or ``\"complex\"``."
 msgstr ""
 
 #: lumos.core.param.Param:9 of
-msgid "Description of the parameter (shown in the documentation, the web interface and the MCP server)."
+msgid ""
+"Description of the parameter (shown in the documentation, the web "
+"interface and the MCP server)."
 msgstr ""
 
 #: lumos.core.param.Param:10 of
-msgid "Whether the parameter is free (fitted by calibration or inference) by default."
+msgid ""
+"Whether the parameter is free (fitted by calibration or inference) by "
+"default."
 msgstr ""
 
 #: lumos.core.param.Param:11 of
@@ -661,7 +876,9 @@ msgid "Whether gradients with respect to this parameter are meaningful."
 msgstr ""
 
 #: lumos.core.param.Param:13 of
-msgid "Astropy equivalencies accepted for this parameter, e.g. ``u.spectral()`` for a wavelength."
+msgid ""
+"Astropy equivalencies accepted for this parameter, e.g. ``u.spectral()`` "
+"for a wavelength."
 msgstr ""
 
 #: lumos.core.param.Param.check_prior:1 of
@@ -673,11 +890,15 @@ msgid "Check ``value`` and return ``(user_value, si_value)``."
 msgstr ""
 
 #: lumos.core.param.ParamHost:1 of
-msgid "Base class of objects declaring :class:`Param`, :class:`State` and :class:`Setting` fields."
+msgid ""
+"Base class of objects declaring :class:`Param`, :class:`State` and "
+":class:`Setting` fields."
 msgstr ""
 
 #: lumos.core.param.ParamHost:3 of
-msgid "Keyword arguments of the constructor set the fields; fields without a default are required."
+msgid ""
+"Keyword arguments of the constructor set the fields; fields without a "
+"default are required."
 msgstr ""
 
 #: lumos.core.param.ParamHost.declared:1 of
@@ -685,7 +906,9 @@ msgid "Return the declared fields, in definition order (inherited fields first).
 msgstr ""
 
 #: lumos.core.param.ParamHost.si:1 of
-msgid "Return the value of field ``name`` in unscaled SI units (settings are returned as is)."
+msgid ""
+"Return the value of field ``name`` in unscaled SI units (settings are "
+"returned as is)."
 msgstr ""
 
 #: lumos.core.param.ParamHost.is_free:1 of
@@ -693,19 +916,27 @@ msgid "Whether parameter ``name`` is free (fitted by calibration or inference)."
 msgstr ""
 
 #: lumos.core.param.ParamHost.prior:1 of
-msgid "Return the prior of parameter ``name`` (``None`` if fixed or without prior)."
+msgid ""
+"Return the prior of parameter ``name`` (``None`` if fixed or without "
+"prior)."
 msgstr ""
 
 #: lumos.core.param.ParamHost.set_free:1 of
-msgid "Mark parameter ``name`` as free (with an optional prior) or fixed, for this object only."
+msgid ""
+"Mark parameter ``name`` as free (with an optional prior) or fixed, for "
+"this object only."
 msgstr ""
 
 #: lumos.core.param.Setting:1 of
-msgid "A non-physical setting: an integer, a float without unit, a string or a boolean."
+msgid ""
+"A non-physical setting: an integer, a float without unit, a string or a "
+"boolean."
 msgstr ""
 
 #: lumos.core.param.Setting:3 of
-msgid "Expected Python type. Booleans are not accepted for ``int`` or ``float`` settings."
+msgid ""
+"Expected Python type. Booleans are not accepted for ``int`` or ``float`` "
+"settings."
 msgstr ""
 
 #: lumos.core.param.Setting:4 of
@@ -725,7 +956,9 @@ msgid "Check ``value`` and return it twice (settings have no SI form)."
 msgstr ""
 
 #: lumos.core.param.State:1 of
-msgid "A physical quantity describing the current state of an equipment (changed by its actions)."
+msgid ""
+"A physical quantity describing the current state of an equipment (changed"
+" by its actions)."
 msgstr ""
 
 #: lumos.core.priors:1 of
@@ -734,21 +967,29 @@ msgstr ""
 
 #: lumos.core.priors:3 of
 msgid ""
-"Priors describe what is known about a free parameter before calibration or inference. They carry physical "
-"units, so they can be checked against the parameter they are attached to. Plain numbers are accepted for "
-"dimensionless parameters. Sampling and log-densities are added with the inference blocks (phase 17)."
+"Priors describe what is known about a free parameter before calibration "
+"or inference. They carry physical units, so they can be checked against "
+"the parameter they are attached to. Plain numbers are accepted for "
+"dimensionless parameters. Sampling and log-densities are added with the "
+"inference blocks (phase 17)."
 msgstr ""
 
 #: lumos.core.priors.LogUniform:1 of
-msgid "Log-uniform distribution between ``low`` and ``high`` (``0 < low < high``)."
+msgid ""
+"Log-uniform distribution between ``low`` and ``high`` (``0 < low < "
+"high``)."
 msgstr ""
 
 #: lumos.core.priors.LogUniform:3 of
-msgid "Suited to scale parameters known only to an order of magnitude (fluxes, contrasts...)."
+msgid ""
+"Suited to scale parameters known only to an order of magnitude (fluxes, "
+"contrasts...)."
 msgstr ""
 
 #: lumos.core.priors.Normal:1 of
-msgid "Normal (Gaussian) distribution of mean ``mean`` and standard deviation ``std > 0``."
+msgid ""
+"Normal (Gaussian) distribution of mean ``mean`` and standard deviation "
+"``std > 0``."
 msgstr ""
 
 #: lumos.core.priors.Prior:1 of
@@ -756,7 +997,9 @@ msgid "Base class of prior distributions."
 msgstr ""
 
 #: lumos.core.priors.Prior:3 of
-msgid "Subclasses are frozen dataclasses whose first field fixes the unit of the distribution."
+msgid ""
+"Subclasses are frozen dataclasses whose first field fixes the unit of the"
+" distribution."
 msgstr ""
 
 #: lumos.core.priors.Prior.unit:1 of
@@ -786,9 +1029,11 @@ msgstr ""
 
 #: lumos.core.signal:3 of
 msgid ""
-"The hierarchy of signal classes defines which ports can be connected: an output producing a signal of type "
-"``T`` can feed an input expecting ``S`` when ``T`` is ``S`` or a subclass of ``S``. Concrete signals "
-"(``Wavefront``, ``Wavecube``, ``DataProduct``...) derive from these classes; they arrive in phase 3."
+"The hierarchy of signal classes defines which ports can be connected: an "
+"output producing a signal of type ``T`` can feed an input expecting ``S``"
+" when ``T`` is ``S`` or a subclass of ``S``. Concrete signals "
+"(``Wavefront``, ``Wavecube``, ``DataProduct``...) derive from these "
+"classes; they arrive in phase 3."
 msgstr ""
 
 #: lumos.core.signal.DataSignal:1 of
@@ -796,11 +1041,15 @@ msgid "Detected or processed data: images, cubes, time series, scalars..."
 msgstr ""
 
 #: lumos.core.signal.OpticalSignal:1 of
-msgid "Light: coherent fields, incoherent bundles, radiance fields, modal amplitudes..."
+msgid ""
+"Light: coherent fields, incoherent bundles, radiance fields, modal "
+"amplitudes..."
 msgstr ""
 
 #: lumos.core.signal.Signal:1 of
-msgid "Anything that flows along a connection. An input of type ``Signal`` accepts every signal."
+msgid ""
+"Anything that flows along a connection. An input of type ``Signal`` "
+"accepts every signal."
 msgstr ""
 
 #: lumos.core.port:1 of
@@ -813,8 +1062,9 @@ msgstr ""
 
 #: lumos.core.port:10 of
 msgid ""
-"Reading a port on an instance returns a :class:`PortRef`, which identifies \"this port of this object\" and"
-" is what connections are made of (``ctx.connect(source.out, splitter.in_)``)."
+"Reading a port on an instance returns a :class:`PortRef`, which "
+"identifies \"this port of this object\" and is what connections are made "
+"of (``ctx.connect(source.out, splitter.in_)``)."
 msgstr ""
 
 #: lumos.core.port.Input:1 of
@@ -830,7 +1080,9 @@ msgid "Port name; defaults to the attribute name without its trailing underscore
 msgstr ""
 
 #: lumos.core.port.Input:5 of
-msgid "Whether several connections may feed this input (fan-in). By default an input takes one connection."
+msgid ""
+"Whether several connections may feed this input (fan-in). By default an "
+"input takes one connection."
 msgstr ""
 
 #: lumos.core.port.Input:7 of
@@ -866,7 +1118,9 @@ msgid "Signal type of the port."
 msgstr ""
 
 #: lumos.core.port.check_compatible:1 of
-msgid "Raise :class:`PortCompatibilityError` if ``source`` cannot feed ``target``."
+msgid ""
+"Raise :class:`PortCompatibilityError` if ``source`` cannot feed "
+"``target``."
 msgstr ""
 
 #: lumos.core.port.compatible:1 of
@@ -874,27 +1128,34 @@ msgid "Whether ``source`` (an output) can feed ``target`` (an input)."
 msgstr ""
 
 #: lumos.core.port.ports_of:1 of
-msgid "Return the ports declared by ``cls`` and its bases, by port name, base classes first."
+msgid ""
+"Return the ports declared by ``cls`` and its bases, by port name, base "
+"classes first."
 msgstr ""
 
 #: lumos.core.element:1 of
-msgid "Base class of every LUMOS element: equipment, optical component, detector or processing block."
+msgid ""
+"Base class of every LUMOS element: equipment, optical component, detector"
+" or processing block."
 msgstr ""
 
 #: lumos.core.element:3 of
 msgid ""
-"An element declares its fields (:class:`~lumos.core.param.Param`, :class:`~lumos.core.param.State`, "
-":class:`~lumos.core.param.Setting`) and its ports (:class:`~lumos.core.port.Input`, "
-":class:`~lumos.core.port.Output`) as class attributes, and implements its behaviour as a **pure** transfer "
-"function::"
+"An element declares its fields (:class:`~lumos.core.param.Param`, "
+":class:`~lumos.core.param.State`, :class:`~lumos.core.param.Setting`) and"
+" its ports (:class:`~lumos.core.port.Input`, "
+":class:`~lumos.core.port.Output`) as class attributes, and implements its"
+" behaviour as a **pure** transfer function::"
 msgstr ""
 
 #: lumos.core.element:19 of
 msgid ""
-"``transfer`` must be a ``staticmethod``: it cannot read or modify the element itself. It receives an "
-"immutable snapshot of the SI values of all fields (:class:`Values`) and the input signals by port name, and"
-" returns the output signals by port name. This separation between the element's state and its computation "
-"is what allows JIT compilation, vectorisation and automatic differentiation (ADR-0002)."
+"``transfer`` must be a ``staticmethod``: it cannot read or modify the "
+"element itself. It receives an immutable snapshot of the SI values of all"
+" fields (:class:`Values`) and the input signals by port name, and returns"
+" the output signals by port name. This separation between the element's "
+"state and its computation is what allows JIT compilation, vectorisation "
+"and automatic differentiation (ADR-0002)."
 msgstr ""
 
 #: lumos.core.element.Element:1 of
@@ -906,7 +1167,9 @@ msgid "Optional human-readable name of the element."
 msgstr ""
 
 #: lumos.core.element.Element:4 of
-msgid "Values of the declared fields; fields without a default value are required."
+msgid ""
+"Values of the declared fields; fields without a default value are "
+"required."
 msgstr ""
 
 #: lumos.core.element.Element.name:1 of
@@ -930,7 +1193,9 @@ msgid "SI values of the element's fields."
 msgstr ""
 
 #: lumos.core.element.Element.transfer:4 of
-msgid "Input signals by port name (a sequence of signals for ports accepting several connections)."
+msgid ""
+"Input signals by port name (a sequence of signals for ports accepting "
+"several connections)."
 msgstr ""
 
 #: lumos.core.element.Element.transfer:6 of
@@ -938,15 +1203,21 @@ msgid "Output signals by port name."
 msgstr ""
 
 #: lumos.core.element.Element.apply:1 of
-msgid "Run the transfer function on ``inputs``, checking port names and signal types."
+msgid ""
+"Run the transfer function on ``inputs``, checking port names and signal "
+"types."
 msgstr ""
 
 #: lumos.core.element.Element.to_lumos:1 of
-msgid "Return the ``.lumos`` document describing this element (see :mod:`lumos.io`)."
+msgid ""
+"Return the ``.lumos`` document describing this element (see "
+":mod:`lumos.io`)."
 msgstr ""
 
 #: lumos.core.element.Element.from_lumos:1 of
-msgid "Create an element from a ``.lumos`` document, checking that it is an instance of ``cls``."
+msgid ""
+"Create an element from a ``.lumos`` document, checking that it is an "
+"instance of ``cls``."
 msgstr ""
 
 #: lumos.core.element.Element.describe:1 of
@@ -954,16 +1225,20 @@ msgid "Return a readable description of the element: fields, values and ports."
 msgstr ""
 
 #: lumos.core.element.Element.schema:1 of
-msgid "Return the JSON Schema (draft 2020-12) of the serialised form of this element."
+msgid ""
+"Return the JSON Schema (draft 2020-12) of the serialised form of this "
+"element."
 msgstr ""
 
 #: lumos.core.element.Element.schema:3 of
 #, python-brace-format
 msgid ""
-"The serialised body is ``{\"name\": ..., \"params\": {...}, \"settings\": {...}, \"state\": {...}}``, where"
-" physical values are encoded with :func:`lumos.units.quantity_to_json`. Information that JSON Schema cannot"
-" express (units, bounds, dimension...) is given in ``x-lumos-*`` keywords; unit compatibility and bounds "
-"are checked when the element is loaded."
+"The serialised body is ``{\"name\": ..., \"params\": {...}, \"settings\":"
+" {...}, \"state\": {...}}``, where physical values are encoded with "
+":func:`lumos.units.quantity_to_json`. Information that JSON Schema cannot"
+" express (units, bounds, dimension...) is given in ``x-lumos-*`` "
+"keywords; unit compatibility and bounds are checked when the element is "
+"loaded."
 msgstr ""
 
 #: lumos.core.element.Values:1 of
@@ -972,9 +1247,10 @@ msgstr ""
 
 #: lumos.core.element.Values:3 of
 msgid ""
-"Values are reachable by key (``values[\"focal_length\"]``) or attribute (``values.focal_length``). Physical"
-" fields are floats, complex numbers or read-only arrays in unscaled SI units; settings are returned as they"
-" are."
+"Values are reachable by key (``values[\"focal_length\"]``) or attribute "
+"(``values.focal_length``). Physical fields are floats, complex numbers or"
+" read-only arrays in unscaled SI units; settings are returned as they "
+"are."
 msgstr ""
 
 #: lumos.core.registry:1 of
@@ -983,22 +1259,25 @@ msgstr ""
 
 #: lumos.core.registry:3 of
 msgid ""
-"Every element class that can be saved to or loaded from a ``.lumos`` file is registered under a **stable "
-"identifier** and a **type version**::"
+"Every element class that can be saved to or loaded from a ``.lumos`` file"
+" is registered under a **stable identifier** and a **type version**::"
 msgstr ""
 
 #: lumos.core.registry:9 of
 msgid ""
-"Loading a file only instantiates registered classes: the identifier is looked up in the registry, never "
-"imported. Identifiers starting with ``lumos.`` are reserved for classes defined in the ``lumos`` package; "
-"third-party packages use their own prefix and declare a module to import in the ``lumos.elements`` entry-"
-"point group, loaded by :meth:`Registry.load_plugins`."
+"Loading a file only instantiates registered classes: the identifier is "
+"looked up in the registry, never imported. Identifiers starting with "
+"``lumos.`` are reserved for classes defined in the ``lumos`` package; "
+"third-party packages use their own prefix and declare a module to import "
+"in the ``lumos.elements`` entry-point group, loaded by "
+":meth:`Registry.load_plugins`."
 msgstr ""
 
 #: lumos.core.registry:14 of
 msgid ""
-"The type version is incremented when the serialised form of an element changes; migrations from older "
-"versions are registered with the ``.lumos`` file format (step P1.6)."
+"The type version is incremented when the serialised form of an element "
+"changes; migrations from older versions are registered with the "
+"``.lumos`` file format (step P1.6)."
 msgstr ""
 
 #: lumos.core.registry.Registry:1 of
@@ -1011,8 +1290,9 @@ msgstr ""
 
 #: lumos.core.registry.Registry.register:3 of
 msgid ""
-"Dotted identifier: lowercase package segments followed by a class name, for example "
-"``\"mylab.optics.ThinLens\"``. The ``lumos.`` prefix is reserved for classes of LUMOS."
+"Dotted identifier: lowercase package segments followed by a class name, "
+"for example ``\"mylab.optics.ThinLens\"``. The ``lumos.`` prefix is "
+"reserved for classes of LUMOS."
 msgstr ""
 
 #: lumos.core.registry.Registry.register:5 of
@@ -1032,29 +1312,37 @@ msgid "Return the identifier under which ``cls`` is registered."
 msgstr ""
 
 #: lumos.core.registry.Registry.add_migration:1 of
-msgid "Return a decorator registering the migration of ``type_id`` from ``from_version`` to the next one."
+msgid ""
+"Return a decorator registering the migration of ``type_id`` from "
+"``from_version`` to the next one."
 msgstr ""
 
 #: lumos.core.registry.Registry.add_migration:3 of
 msgid ""
-"A migration receives the serialised body of an element (``name``, ``params``, ``settings``, ``state``) "
-"written with type version ``from_version`` and returns the body for version ``from_version + 1``. Loading "
-"an old document applies the migrations one version at a time."
+"A migration receives the serialised body of an element (``name``, "
+"``params``, ``settings``, ``state``) written with type version "
+"``from_version`` and returns the body for version ``from_version + 1``. "
+"Loading an old document applies the migrations one version at a time."
 msgstr ""
 
 #: lumos.core.registry.Registry.migrate:1 of
-msgid "Upgrade ``body`` from ``from_version`` to the current version of ``type_id``."
+msgid ""
+"Upgrade ``body`` from ``from_version`` to the current version of "
+"``type_id``."
 msgstr ""
 
 #: lumos.core.registry.Registry.load_plugins:1 of
-msgid "Load the plugins declared in the entry-point ``group`` and return the names of those loaded."
+msgid ""
+"Load the plugins declared in the entry-point ``group`` and return the "
+"names of those loaded."
 msgstr ""
 
 #: lumos.core.registry.Registry.load_plugins:3 of
 msgid ""
-"A plugin entry point designates a module (or object) whose import registers element types. A plugin that "
-"fails to load is logged as a warning and skipped, so that one broken plugin does not prevent LUMOS from "
-"working."
+"A plugin entry point designates a module (or object) whose import "
+"registers element types. A plugin that fails to load is logged as a "
+"warning and skipped, so that one broken plugin does not prevent LUMOS "
+"from working."
 msgstr ""
 
 #: lumos.core.registry.UnknownTypeError:1 of
@@ -1062,23 +1350,1560 @@ msgid "Raised when an element type identifier or class is not registered."
 msgstr ""
 
 #: lumos.core.registry.Registry.register:1 of
-msgid "Register an element class in the global registry (see :meth:`Registry.register`)."
+msgid ""
+"Register an element class in the global registry (see "
+":meth:`Registry.register`)."
 msgstr ""
 
 #: lumos.core.registry.registry:1 of
 msgid "The global registry used by LUMOS."
 msgstr ""
 
-#: ../../api/index.md:59
+#: ../../api/index.md:61
+#, fuzzy
+msgid "Fields"
+msgstr "Fichiers"
+
+#: lumos.fields.grid:1 of
+msgid "Rectangular sampling grids of the transverse plane (REQ-SIG-1)."
+msgstr ""
+
+#: lumos.fields.grid:3 of
+msgid ""
+"A :class:`Grid` describes where the samples of a 2D field are: ``nx × "
+"ny`` pixels of steps ``dx, dy`` around a centre ``(x0, y0)``, in a "
+"**spatial** plane (lengths, e.g. a pupil or a detector) or an **angular**"
+" plane (angles, e.g. the sky or the far field)."
+msgstr ""
+
+#: lumos.fields.grid:8 of
+msgid "Conventions (§9 of the specifications)"
+msgstr ""
+
+#: lumos.fields.grid:9 of
+msgid "Arrays are indexed ``[..., y, x]``: the grid shape is ``(ny, nx)``."
+msgstr ""
+
+#: lumos.fields.grid:10 of
+msgid ""
+"The central pixel is index ``N // 2`` for even and odd ``N``, and the "
+"coordinates are"
+msgstr ""
+
+#: lumos.fields.grid:12 of
+msgid ""
+"x_i = (i - \\lfloor N_x / 2 \\rfloor)\\,\\Delta x + x_0, \\qquad\n"
+"y_j = (j - \\lfloor N_y / 2 \\rfloor)\\,\\Delta y + y_0 .\n"
+"\n"
+msgstr ""
+
+#: lumos.fields.grid:15 of
+msgid ""
+"This is the ordering of a centred discrete Fourier transform "
+"(:func:`lumos.backend.fft.fft2c`), so the origin of a field and of its "
+"spectrum fall on the same pixel."
+msgstr ""
+
+#: lumos.fields.grid:17 of
+msgid ""
+"An angular plane maps to the focal plane of a lens of focal length "
+":math:`f` with :math:`x = f\\,\\theta`."
+msgstr ""
+
+#: lumos.fields.grid:19 of
+msgid ""
+"Coordinates are computed only when asked for, in the current backend and "
+"precision, and cached."
+msgstr ""
+
+#: lumos.fields.grid.Grid:1 of
+msgid "Rectangular sampling of a spatial or angular plane."
+msgstr ""
+
+#: lumos.fields.grid.Grid:3 lumos.fields.grid.Grid.nx:1 of
+msgid "Number of pixels along x (columns)."
+msgstr ""
+
+#: lumos.fields.grid.Grid:4 of
+msgid "Number of pixels along y (rows); defaults to ``nx``."
+msgstr ""
+
+#: lumos.fields.grid.Grid:5 of
+msgid ""
+"Step along x: a length (spatial plane) or an angle (angular plane). Its "
+"unit is used to display every quantity of the grid."
+msgstr ""
+
+#: lumos.fields.grid.Grid:7 of
+msgid "Step along y, in the same plane as ``dx``; defaults to ``dx``."
+msgstr ""
+
+#: lumos.fields.grid.Grid:8 lumos.fields.grid.Grid:9 of
+msgid "Coordinates of the central pixel ``(ny // 2, nx // 2)``; default to zero."
+msgstr ""
+
+#: lumos.fields.grid.Grid:11 of
+msgid "If a size is not an integer or a step or centre is not a quantity."
+msgstr ""
+
+#: lumos.fields.grid.Grid:12 of
+msgid "If a size is not positive or a step is not positive and finite."
+msgstr ""
+
+#: lumos.fields.grid.Grid:13 of
+msgid ""
+"If a step is neither a length nor an angle, or the steps and centre are "
+"not in the same plane."
+msgstr ""
+
+#: lumos.fields.grid.Grid:16 of
+msgid "Examples"
+msgstr ""
+
+#: lumos.fields.grid.Grid.from_extent:1 of
+msgid ""
+"Build a grid of ``nx × ny`` pixels covering ``width × height`` "
+"(``height`` defaults to width)."
+msgstr ""
+
+#: lumos.fields.grid.Grid.ny:1 of
+msgid "Number of pixels along y (rows)."
+msgstr ""
+
+#: lumos.fields.grid.Grid.shape:1 of
+msgid "Array shape ``(ny, nx)``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.size:1 of
+msgid "Number of pixels."
+msgstr ""
+
+#: lumos.fields.grid.Grid.plane:1 of
+msgid "``\"spatial\"`` (lengths) or ``\"angular\"`` (angles)."
+msgstr ""
+
+#: lumos.fields.grid.Grid.unit:1 of
+msgid "Unit used to display the quantities of the grid (the unit of ``dx``)."
+msgstr ""
+
+#: lumos.fields.grid.Grid.dx:1 of
+msgid "Step along x."
+msgstr ""
+
+#: lumos.fields.grid.Grid.dy:1 of
+msgid "Step along y."
+msgstr ""
+
+#: lumos.fields.grid.Grid.x0:1 of
+msgid "The x coordinate of the central pixel."
+msgstr ""
+
+#: lumos.fields.grid.Grid.y0:1 of
+msgid "The y coordinate of the central pixel."
+msgstr ""
+
+#: lumos.fields.grid.Grid.dx_si:1 of
+msgid "Step along x in SI units (m or rad)."
+msgstr ""
+
+#: lumos.fields.grid.Grid.dy_si:1 of
+msgid "Step along y in SI units (m or rad)."
+msgstr ""
+
+#: lumos.fields.grid.Grid.x0_si:1 of
+msgid "The x coordinate of the centre in SI units."
+msgstr ""
+
+#: lumos.fields.grid.Grid.y0_si:1 of
+msgid "The y coordinate of the centre in SI units."
+msgstr ""
+
+#: lumos.fields.grid.Grid.center_index:1 of
+msgid "Indices ``(iy, ix) = (ny // 2, nx // 2)`` of the central pixel."
+msgstr ""
+
+#: lumos.fields.grid.Grid.extent:1 of
+msgid "Width and height ``(nx·dx, ny·dy)``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.bounds:1 of
+msgid ""
+"Outer pixel edges ``(xmin, xmax, ymin, ymax)``, e.g. for "
+"``imshow(extent=...)``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.pixel_area:1 of
+msgid ""
+"Area ``dx·dy`` of a pixel (m² for a spatial plane, rad² = sr for an "
+"angular plane)."
+msgstr ""
+
+#: lumos.fields.grid.Grid.x:1 of
+msgid "Pixel centres along x, as a NumPy quantity in :attr:`unit`."
+msgstr ""
+
+#: lumos.fields.grid.Grid.y:1 of
+msgid "Pixel centres along y, as a NumPy quantity in :attr:`unit`."
+msgstr ""
+
+#: lumos.fields.grid.Grid.axes:1 of
+msgid ""
+"Return the 1D SI coordinates ``(x, y)`` of the pixel centres as backend "
+"arrays."
+msgstr ""
+
+#: lumos.fields.grid.Grid.axes:3 of
+msgid ""
+"Backend name; defaults to the current backend. The dtype follows "
+"``lumos.config.precision``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.coords:1 of
+msgid ""
+"Return the 2D SI coordinates ``(X, Y)`` of the pixel centres, each of "
+"shape ``(ny, nx)``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.coords:3 of
+msgid ""
+"``X[j, i] = x_i`` and ``Y[j, i] = y_j``. The arrays are computed on first"
+" use and cached per backend and precision."
+msgstr ""
+
+#: lumos.fields.grid.Grid.polar:1 of
+msgid ""
+"Return the polar SI coordinates ``(r, θ)`` of the pixel centres, θ "
+"measured from +x towards +y."
+msgstr ""
+
+#: lumos.fields.grid.Grid.index:1 of
+msgid ""
+"Return the fractional pixel indices ``(ix, iy)`` of the point(s) ``(x, "
+"y)``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.index:3 of
+msgid ""
+"This inverts :math:`x_i = (i - N_x // 2)\\,\\Delta x + x_0`; integer "
+"results are pixel centres."
+msgstr ""
+
+#: lumos.fields.grid.Grid.with_center:1 of
+msgid "Return the same sampling around a new centre ``(x0, y0)``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.to_spatial:1 of
+msgid ""
+"Map an angular grid to the focal plane of a lens of focal length ``f``: "
+"``x = f·θ``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.to_angular:1 of
+msgid ""
+"Map a focal-plane grid to angles seen through a lens of focal length "
+"``f``: ``θ = x / f``."
+msgstr ""
+
+#: lumos.fields.grid.Grid.to_json:1 of
+msgid ""
+"Encode the grid as a strict-JSON-compatible dictionary, keeping the "
+"display unit."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.from_json:1
+#: lumos.fields.grid.Grid.from_json:1 of
+msgid "Decode a dictionary produced by :meth:`to_json`."
+msgstr ""
+
+#: lumos.fields.wavefront:1 of
+msgid "Coherent monochromatic fields sampled on a grid (REQ-SIG-2)."
+msgstr ""
+
+#: lumos.fields.wavefront:3 of
+msgid ""
+"A :class:`Wavefront` is the complex amplitude :math:`U(x, y)` of a "
+"monochromatic field at one vacuum wavelength :math:`\\lambda`, sampled on"
+" a :class:`~lumos.fields.Grid`. With the convention of §9 of the "
+"specifications, the physical field is :math:`E(\\mathbf r, t) = "
+"\\mathrm{Re}\\{U(\\mathbf r)\\,e^{-i\\omega t}\\}` and a wave travelling "
+"towards :math:`+z` varies as :math:`e^{+ikz}` with :math:`k = "
+"2\\pi/\\lambda`."
+msgstr ""
+
+#: lumos.fields.wavefront:9 of
+msgid "Normalisation"
+msgstr ""
+
+#: lumos.fields.wavefront:10 of
+msgid ""
+"The field is stored without units in an array of the current backend. Its"
+" normalisation is a metadata, :attr:`Wavefront.power_unit` (``W`` or "
+"``photon / s``), chosen such that"
+msgstr ""
+
+#: lumos.fields.wavefront:13 of
+#, python-brace-format
+msgid ""
+"P = \\sum_{i,j} |U_{ij}|^2\\,\\Delta x\\,\\Delta y\n"
+"\n"
+msgstr ""
+
+#: lumos.fields.wavefront:15 of
+msgid ""
+"is the power carried by the field. :math:`|U|^2` is then an irradiance (W"
+" m⁻²) on a spatial grid, or a radiant intensity (W sr⁻¹) on an angular "
+"grid."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront:1 of
+msgid "Complex scalar field at one wavelength, sampled on a grid."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront:3 of
+msgid ""
+"Complex amplitude, shape ``grid.shape``: any array-like. A NumPy array or"
+" a list is copied into the current backend, an array of another backend "
+"stays on it; the dtype follows ``lumos.config.precision``."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront:6 of
+msgid "Sampling of the field."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront:7 of
+msgid ""
+"Vacuum wavelength (a frequency or a photon energy is converted with "
+"``u.spectral()``)."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront:8 of
+msgid "Normalisation of the field: ``u.W`` (default) or ``u.photon / u.s``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle:6 lumos.fields.wavecube.Wavecube:10
+#: lumos.fields.wavefront.Wavefront:11 of
+#, fuzzy
+msgid "Notes"
+msgstr "Unités"
+
+#: lumos.fields.wavefront.Wavefront:12 of
+msgid ""
+"Wavefronts are immutable values: operations return new wavefronts. They "
+"are JAX pytrees (the field is the only leaf), so pure functions of "
+"wavefronts can be compiled with :func:`lumos.jit` and differentiated."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.plane:1 of
+msgid ""
+"Uniform, flat-phase field carrying ``power`` (in W or photon / s) over "
+"the grid."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.plane:3 of
+msgid ""
+"``polarization`` (a Jones vector or a state name of "
+":func:`lumos.fields.jones.vector`) makes a polarised field."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.gaussian:1 of
+#, python-brace-format
+msgid ""
+"Gaussian beam at its waist, :math:`U = \\sqrt{2P/(\\pi "
+"w^2)}\\,\\exp(-r^2/w^2)`, centred on the grid."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.gaussian:3 of
+msgid ""
+"The intensity integrates to ``power`` over the infinite plane; the "
+"sampled power differs from it only when the beam is truncated by the grid"
+" or undersampled."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.field:1 of
+msgid ""
+"Complex amplitude, a backend array of shape ``grid.shape`` (in "
+"sqrt(power_unit) / grid.unit)."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.grid:1
+#: lumos.fields.wavefront.Wavefront.grid:1 of
+msgid "Sampling grid."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.polarized:1 of
+msgid ""
+"Whether the field holds the Jones components ``(Ex, Ey)`` along its first"
+" axis."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.with_polarization:1 of
+msgid "Return a polarised copy of a scalar field, in the state ``polarization``."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.with_polarization:3 of
+msgid ""
+"``polarization`` is a Jones vector (normalised here, so the power is "
+"unchanged) or a state name of :func:`lumos.fields.jones.vector`."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.shape:1
+#: lumos.fields.wavecube.Wavecube.shape:1
+#: lumos.fields.wavefront.Wavefront.shape:1 of
+msgid "Shape of :attr:`field`."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.backend:1
+#: lumos.fields.wavecube.Wavecube.backend:1
+#: lumos.fields.wavefront.Wavefront.backend:1 of
+msgid "Name of the backend holding the field."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.wavelength:1 of
+msgid "Vacuum wavelength."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.wavelength_si:1 of
+msgid "Vacuum wavelength in metres."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.wavenumber_si:1 of
+msgid "Vacuum wavenumber ``k = 2π/λ`` in rad / m."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.power_unit:1
+#: lumos.fields.wavefront.Wavefront.power_unit:1 of
+msgid "``W`` or ``photon / s``."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.power_unit:3 of
+msgid "Normalisation of the field"
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.intensity_unit:1
+#: lumos.fields.wavefront.Wavefront.intensity_unit:1 of
+msgid "power per m² (spatial grid) or per sr (angular grid)."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.intensity_unit:3 of
+msgid "Unit of :attr:`intensity`"
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.intensity:1 of
+msgid ""
+":math:`|U|^2` (:math:`|E_x|^2 + |E_y|^2` if polarised), a real "
+"``grid.shape`` array."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.amplitude:1 of
+msgid ""
+":math:`|U|` of each component, a real backend array of the shape of "
+":attr:`field`."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.phase:1 of
+msgid ":math:`\\arg U` of each component in radians, in ``(-π, π]``."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.power:1 of
+msgid ""
+"Power :math:`\\sum |U|^2 \\Delta x \\Delta y` carried by the field, in "
+":attr:`power_unit`."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.normalized:1 of
+msgid ""
+"Return the field scaled to carry ``power`` (its unit becomes the power "
+"unit)."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.with_power_unit:1 of
+msgid ""
+"Return the same light expressed in another power unit, using the photon "
+"energy ``hc/λ``."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.tilt:1 of
+msgid ""
+"Multiply by the phase of a plane wave travelling at angles "
+":math:`(\\theta_x, \\theta_y)` to z."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.tilt:3 of
+msgid ""
+"The factor is :math:`\\exp[ik(x\\sin\\theta_x + y\\sin\\theta_y)]`, null "
+"at the coordinate origin; the angles are measured in the x-z and y-z "
+"planes."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.to_backend:1 of
+msgid "Return the same field held by backend ``name``."
+msgstr ""
+
+#: lumos.fields.wavefront.Wavefront.to_json:1 of
+msgid ""
+"Encode the wavefront as a strict-JSON-compatible dictionary (the field "
+"inline, in base64)."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.from_json:1
+#: lumos.fields.modal.ModalField.from_json:1
+#: lumos.fields.radiance.RadianceField.from_json:1
+#: lumos.fields.wavecube.Wavecube.from_json:1
+#: lumos.fields.wavefront.Wavefront.from_json:1 of
+msgid "Decode a dictionary produced by :meth:`to_json` into the current backend."
+msgstr ""
+
+#: lumos.fields.wavecube:1 of
+msgid "Polychromatic fields: stacks of wavefronts on a spectral axis (REQ-SIG-4)."
+msgstr ""
+
+#: lumos.fields.wavecube:3 of
+msgid ""
+"A :class:`Wavecube` holds the complex amplitudes :math:`U_k` of a field "
+"at the vacuum wavelengths :math:`\\lambda_k`, all sampled on the **same**"
+" :class:`~lumos.fields.Grid`, with spectral weights :math:`w_k`. Its "
+"field has shape ``(nλ, ny, nx)`` (scalar) or ``(nλ, 2, ny, nx)`` "
+"(polarised)."
+msgstr ""
+
+#: lumos.fields.wavecube:7 of
+msgid ""
+"Each channel is normalised like a :class:`~lumos.fields.Wavefront`: "
+":math:`P_k = \\sum |U_k|^2 \\Delta x \\Delta y` is the power carried by "
+"channel :math:`k`. Fields at different wavelengths do not interfere in a "
+"time-averaged intensity (Born & Wolf, *Principles of Optics*, §10.3), so "
+"the detected quantities are weighted **incoherent** sums over the "
+"channels:"
+msgstr ""
+
+#: lumos.fields.wavecube:12 of
+msgid ""
+"I = \\sum_k w_k |U_k|^2, \\qquad P = \\sum_k w_k P_k .\n"
+"\n"
+msgstr ""
+
+#: lumos.fields.wavecube:14 of
+msgid ""
+"The weights hold quadrature weights, a spectral transmission or a "
+"detector response (default: 1); see "
+":func:`~lumos.fields.spectral_samples` to sample a band."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube:1 of
+msgid "Complex field at several wavelengths, sampled on a common grid."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube:3 of
+msgid ""
+"Complex amplitudes, shape ``(nλ, ny, nx)`` or ``(nλ, 2, ny, nx)`` (Jones "
+"components)."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube:4 of
+msgid "Common sampling of every channel."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube:5 of
+msgid ""
+"``nλ`` vacuum wavelengths (or frequencies, converted with "
+"``u.spectral()``)."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube:6 of
+msgid ""
+"``nλ`` dimensionless spectral weights used by the integrated quantities "
+"(default: ones)."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube:7 of
+msgid "Normalisation of every channel: ``u.W`` (default) or ``u.photon / u.s``."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube:11 of
+msgid "Wavecubes are immutable JAX pytrees whose only leaf is the field."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.from_wavefronts:1 of
+msgid "Stack wavefronts sharing the same grid, power unit and polarisation."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.plane:1 of
+msgid ""
+"Uniform flat-phase field; ``power`` is the power of each channel (a "
+"scalar or one per channel)."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.field:1 of
+msgid "Complex amplitudes, a backend array of shape ``(nλ, [2,] ny, nx)``."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.grid:1 of
+msgid "Common sampling grid."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.polarized:1 of
+msgid "Whether each channel holds the Jones components ``(Ex, Ey)``."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.n_wavelengths:1
+#: lumos.fields.radiance.RadianceField.n_wavelengths:1
+#: lumos.fields.wavecube.Wavecube.n_wavelengths:1 of
+msgid "Number of spectral channels."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.wavelengths:1 of
+msgid "Vacuum wavelengths of the channels."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.wavelengths_si:1
+#: lumos.fields.wavecube.Wavecube.wavelengths_si:1 of
+msgid "Vacuum wavelengths in metres."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.weights:1 of
+msgid "Spectral weights of the channels (a copy)."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.power_unit:3 of
+msgid "Normalisation of every channel"
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.intensity_unit:3 of
+msgid "Unit of the intensities"
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.wavefronts:1 of
+msgid "Iterate over the channels as wavefronts."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.intensity:1 of
+msgid "Intensity of each channel, shape ``(nλ, ny, nx)`` (polarisations summed)."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.integrated_intensity:1 of
+msgid "Weighted incoherent sum :math:`\\sum_k w_k |U_k|^2`, shape ``grid.shape``."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.power:1 of
+msgid "Power of each channel, shape ``(nλ,)``, in :attr:`power_unit`."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.total_power:1 of
+msgid "Weighted total power :math:`\\sum_k w_k P_k`."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.with_power_unit:1 of
+msgid ""
+"Return the same light in another power unit, using the photon energy of "
+"each channel."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.tilt:1 of
+msgid ""
+"Multiply each channel by :math:`\\exp[ik_k(x\\sin\\theta_x + "
+"y\\sin\\theta_y)]` (chromatic tilt)."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.to_backend:1 of
+msgid "Return the same cube held by backend ``name``."
+msgstr ""
+
+#: lumos.fields.wavecube.Wavecube.to_json:1 of
+msgid ""
+"Encode the cube as a strict-JSON-compatible dictionary (the field inline,"
+" in base64)."
+msgstr ""
+
+#: lumos.fields.incoherent:1 of
+msgid "Sets of mutually incoherent modes (REQ-SIG-5)."
+msgstr ""
+
+#: lumos.fields.incoherent:3 of
+msgid ""
+"An :class:`IncoherentBundle` holds :math:`M` fields :math:`U_m` (the "
+"*modes*) that are mutually incoherent: point sources of a scene, samples "
+"of an extended object, coherent modes of a partially coherent beam or the"
+" two orthogonal polarisations of natural light. Each mode is a "
+":class:`~lumos.fields.Wavefront` or a :class:`~lumos.fields.Wavecube` and"
+" all modes share the same grid, wavelengths and power unit, so the bundle"
+" is one array of shape ``(M, *mode_shape)`` that elements process in a "
+"single vectorised operation."
+msgstr ""
+
+#: lumos.fields.incoherent:9 of
+msgid ""
+"Since the modes do not interfere (Born & Wolf, *Principles of Optics*, "
+"§10.3; Goodman, *Statistical Optics*, §5.2), detected quantities are "
+"**sums of intensities** with mode weights :math:`v_m` (default 1):"
+msgstr ""
+
+#: lumos.fields.incoherent:12 of
+msgid ""
+"I = \\sum_m v_m I_m, \\qquad P = \\sum_m v_m P_m ,\n"
+"\n"
+msgstr ""
+
+#: lumos.fields.incoherent:14 of
+msgid ""
+"where :math:`I_m` and :math:`P_m` are the (spectrally integrated) "
+"intensity and power of mode :math:`m`."
+msgstr ""
+
+#: lumos.fields.incoherent:16 of
+msgid ""
+"A point source at infinity in the direction :math:`(\\theta_x, "
+"\\theta_y)` illuminates a pupil with the plane wave "
+":math:`\\exp[ik(x\\sin\\theta_x + y\\sin\\theta_y)]` "
+"(:meth:`IncoherentBundle.point_sources`)."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle:1 of
+msgid "Mutually incoherent modes sharing a grid, wavelengths and power unit."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle:3 of
+msgid ""
+"Build bundles with :meth:`from_signals`, :meth:`point_sources` or "
+":meth:`unpolarized`."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle:7 of
+msgid ""
+"Bundles are immutable JAX pytrees whose only leaf is the field of shape "
+"``(M, *mode_shape)``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.from_signals:1 of
+msgid ""
+"Bundle wavefronts (or wavecubes) sharing grid, wavelengths, power unit "
+"and polarisation."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:1 of
+msgid ""
+"Plane waves of point sources at infinity seen by a pupil sampled on "
+"``grid``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:3 of
+msgid "Spatial pupil grid."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:4 of
+msgid "One wavelength (modes are wavefronts) or several (modes are wavecubes)."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:5
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:6 of
+msgid ""
+"Directions of the ``M`` sources (angles from the optical axis in the x-z "
+"and y-z planes)."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:7 of
+msgid ""
+"Power of each source collected by the grid (per spectral channel for "
+"several wavelengths)."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:8 of
+msgid "Spectral weights (several wavelengths only)."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:9 of
+msgid "Weights of the modes in the incoherent sum."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.point_sources:10 of
+msgid "Optional Jones vector or state name making polarised modes."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.unpolarized:1 of
+msgid ""
+"Natural light with the spatial and spectral content of a scalar "
+"``signal``: two orthogonal modes."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.unpolarized:3 of
+msgid ""
+"The power of ``signal`` is split equally between the H and V "
+"polarisations, which do not interfere."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.field:1 of
+msgid "Complex amplitudes of the modes, shape ``(M, *mode_shape)``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.n_modes:1 of
+msgid "Number of modes ``M``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.mode_weights:1 of
+msgid "Weights of the modes in the incoherent sum (a copy)."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.grid:1 of
+msgid "Common grid of the modes."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.polarized:1 of
+msgid "Whether the modes hold Jones components."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.polychromatic:1 of
+msgid "Whether the modes are wavecubes."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.power_unit:1 of
+msgid "Normalisation of the modes."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.intensity_unit:1 of
+msgid "Unit of :attr:`intensity`."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.members:1 of
+msgid "Iterate over the modes."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.mode_intensity:1 of
+msgid ""
+"Intensity of each mode (spectrally integrated for wavecubes), shape ``(M,"
+" ny, nx)``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.intensity:1 of
+msgid "Incoherent sum :math:`\\sum_m v_m I_m`, shape ``grid.shape``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.power:1 of
+msgid "Power of each mode (spectrally integrated for wavecubes), shape ``(M,)``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.total_power:1 of
+msgid "Weighted total power :math:`\\sum_m v_m P_m`."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.map:1 of
+msgid ""
+"Apply ``function`` (member signal -> member signal) to every mode and "
+"bundle the results."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.with_power_unit:1 of
+msgid "Return the same light in another power unit."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.tilt:1 of
+msgid "Tilt every mode by the same angles."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.to_backend:1 of
+msgid "Return the same bundle held by backend ``name``."
+msgstr ""
+
+#: lumos.fields.incoherent.IncoherentBundle.to_json:1 of
+msgid "Encode the bundle as a strict-JSON-compatible dictionary."
+msgstr ""
+
+#: lumos.fields.radiance:1 of
+msgid "Spectral radiance maps of incoherent scenes (REQ-SIG-6)."
+msgstr ""
+
+#: lumos.fields.radiance:3 of
+msgid ""
+"A :class:`RadianceField` describes light that has no phase: the spectral "
+"radiance :math:`L(x, y, \\lambda)` of a scene, optionally with the Stokes"
+" parameters :math:`(I, Q, U, V)`, sampled at wavelengths "
+":math:`\\lambda_k` on a :class:`~lumos.fields.Grid`. On an angular grid "
+"(the sky) it is the radiance seen from the observer; on a spatial grid (a"
+" laboratory source) it is the radiance leaving each point of the source "
+"plane. Its data has shape ``(nλ, ny, nx)`` or ``(nλ, 4, ny, nx)``."
+msgstr ""
+
+#: lumos.fields.radiance:10 of
+msgid "Radiometric units"
+msgstr ""
+
+#: lumos.fields.radiance:11 of
+msgid ""
+"The radiance may be given per wavelength or per frequency, in energy or "
+"photon units, e.g. ``W m⁻² sr⁻¹ m⁻¹``, ``photon s⁻¹ m⁻² sr⁻¹ m⁻¹``, ``erg"
+" s⁻¹ cm⁻² sr⁻¹ Å⁻¹`` or ``Jy sr⁻¹``. Conversions use the wavelength of "
+"each channel (Rybicki & Lightman, *Radiative Processes in Astrophysics*, "
+"§1.3):"
+msgstr ""
+
+#: lumos.fields.radiance:15 of
+msgid ""
+"L_\\lambda = L_\\nu \\frac{c}{\\lambda^2}, \\qquad L^{\\mathrm{ph}} = L "
+"\\frac{\\lambda}{h c} .\n"
+"\n"
+msgstr ""
+
+#: lumos.fields.radiance:17 of
+msgid ""
+"Pixels are piecewise-constant: :meth:`RadianceField.resample` computes "
+"each new pixel as the area-weighted mean of the old pixels it overlaps, "
+"which conserves the flux :math:`\\sum L\\,\\Delta A` (§9 of the "
+"specifications)."
+msgstr ""
+
+#: lumos.fields.radiance.CANONICAL_RADIANCE:1 of
+msgid "Canonical SI spectral radiance, per wavelength."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField:1 of
+msgid "Spectral radiance of an incoherent scene sampled on a grid."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField:3 of
+msgid ""
+"Spectral radiance, a quantity of shape ``(nλ, ny, nx)`` or ``(nλ, 4, ny, "
+"nx)`` (Stokes I, Q, U, V)."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField:4 of
+msgid "Angular (sky) or spatial (source plane) sampling."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField:5 of
+msgid "``nλ`` vacuum wavelengths of the channels."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField:7 of
+msgid "Values of the radiance in :attr:`unit`, as a real backend array."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.data:1 of
+msgid "Radiance values in :attr:`unit` (real backend array)."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.radiance:1 of
+msgid "Radiance as a NumPy quantity in :attr:`unit`."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.unit:1 of
+msgid "Unit of :attr:`data`."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.wavelengths:1 of
+msgid "Wavelengths of the channels."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.wavelengths_si:1 of
+msgid "Wavelengths in metres."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.has_stokes:1 of
+msgid "Whether the data holds the four Stokes parameters along axis 1."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.shape:1 of
+msgid "Shape of :attr:`data`."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.backend:1 of
+msgid "Name of the backend holding the data."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.to:1 of
+msgid ""
+"Return the same radiance expressed in ``unit`` (per wavelength or "
+"frequency, energy or photons)."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.integrated:1 of
+msgid ""
+"Return :math:`\\sum L\\,\\Delta A` per wavelength (Stokes I only), shape "
+"``(nλ,)``."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.integrated:3 of
+msgid ""
+"On an angular grid it is the spectral irradiance at the observer (e.g. W "
+"m⁻² m⁻¹); on a spatial grid it is the spectral radiant intensity of the "
+"source (e.g. W sr⁻¹ m⁻¹)."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.resample:1 of
+msgid ""
+"Resample onto ``grid`` by area-weighted averaging, conserving the flux "
+"inside the overlap."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.to_backend:1 of
+msgid "Return the same radiance held by backend ``name``."
+msgstr ""
+
+#: lumos.fields.radiance.RadianceField.to_json:1 of
+msgid "Encode the radiance field as a strict-JSON-compatible dictionary."
+msgstr ""
+
+#: lumos.fields.modal:1 of
+msgid "Modal amplitudes in guided-wave and photonic circuits (REQ-SIG-7)."
+msgstr ""
+
+#: lumos.fields.modal:3 of
+msgid ""
+"A :class:`ModalField` holds the complex amplitudes :math:`a_j` of the "
+"light in :math:`n` channels (waveguides or guided modes) at the "
+"wavelengths :math:`\\lambda_k`, optionally for :math:`M` mutually "
+"incoherent inputs. Its array has shape ``(nλ, n)`` or ``(M, nλ, n)``, and"
+" :math:`|a_j|^2` is the power in channel :math:`j` (in "
+":attr:`ModalField.power_unit`)."
+msgstr ""
+
+#: lumos.fields.modal:8 of
+msgid ""
+"Components act by scattering matrices (:mod:`lumos.fields.smatrix`) with "
+":meth:`ModalField.apply`. Incoherent inputs add in power and spectral "
+"channels add with the weights :math:`w_k`, like "
+":class:`~lumos.fields.Wavecube`."
+msgstr ""
+
+#: lumos.fields.modal.ModalField:1 of
+msgid "Complex amplitudes of guided channels at several wavelengths."
+msgstr ""
+
+#: lumos.fields.modal.ModalField:3 of
+msgid ""
+"Complex amplitudes, shape ``(nλ, n)`` or ``(M, nλ, n)`` (``M`` incoherent"
+" inputs)."
+msgstr ""
+
+#: lumos.fields.modal.ModalField:4 of
+msgid "``nλ`` vacuum wavelengths."
+msgstr ""
+
+#: lumos.fields.modal.ModalField:5 of
+msgid "Spectral weights for :attr:`detected_power` (default: ones)."
+msgstr ""
+
+#: lumos.fields.modal.ModalField:6 of
+msgid "Optional names of the ``n`` channels."
+msgstr ""
+
+#: lumos.fields.modal.ModalField:7 of
+msgid ""
+"``u.W`` (default) or ``u.photon / u.s``: :math:`|a|^2` is a power in this"
+" unit."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.amplitudes:1 of
+msgid ""
+"Complex amplitudes, a backend array of shape ``(nλ, n)`` or ``(M, nλ, "
+"n)``."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.shape:1 of
+msgid "Shape of :attr:`amplitudes`."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.n_modes:1 of
+msgid "Number of incoherent inputs ``M`` (1 without a mode axis)."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.n_channels:1 of
+msgid "Number of guided channels ``n``."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.wavelengths:1 of
+msgid "Vacuum wavelengths."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.weights:1 of
+msgid "Spectral weights (a copy)."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.labels:1 of
+msgid "Names of the channels, if given."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.power_unit:1 of
+msgid "Unit of :math:`|a|^2`."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.backend:1 of
+msgid "Name of the backend holding the amplitudes."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.channel_power:1 of
+msgid ""
+"Power per wavelength and channel, summed over incoherent inputs, shape "
+"``(nλ, n)``."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.total_power:1 of
+msgid "Power summed over channels, per wavelength, shape ``(nλ,)``."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.detected_power:1 of
+#, python-brace-format
+msgid ""
+"Spectrally weighted power per channel :math:`\\sum_k w_k P_{kj}`, shape "
+"``(n,)``."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.apply:1 of
+msgid ""
+"Apply a scattering matrix ``(n_out, n_in)`` or ``(nλ, n_out, n_in)`` to "
+"every input and wavelength."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.apply:3 of
+msgid ""
+"``labels`` names the output channels (the input labels are kept for a "
+"square matrix by default)."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.to_backend:1 of
+msgid "Return the same amplitudes held by backend ``name``."
+msgstr ""
+
+#: lumos.fields.modal.ModalField.to_json:1 of
+msgid "Encode the modal field as a strict-JSON-compatible dictionary."
+msgstr ""
+
+#: lumos.fields.dataproduct:1 of
+msgid ""
+"Detected and processed data with units, axes, mask and uncertainties "
+"(REQ-SIG-9)."
+msgstr ""
+
+#: lumos.fields.dataproduct:3 of
+msgid ""
+"A :class:`DataProduct` is what a detector or a processing block produces:"
+" an image, a cube, a time series or scalars. It carries"
+msgstr ""
+
+#: lumos.fields.dataproduct:6 of
+msgid "``data``: a NumPy quantity (``adu``, ``electron``, ``photon``, ``W``...);"
+msgstr ""
+
+#: lumos.fields.dataproduct:7 of
+msgid ""
+"``axes``: one named 1D coordinate quantity per data axis (pixels by "
+"default);"
+msgstr ""
+
+#: lumos.fields.dataproduct:8 of
+msgid "``mask``: optional booleans, ``True`` for invalid samples;"
+msgstr ""
+
+#: lumos.fields.dataproduct:9 of
+msgid "``uncertainty``: optional standard deviations, in the unit of the data;"
+msgstr ""
+
+#: lumos.fields.dataproduct:10 of
+msgid ""
+"``meta``: acquisition metadata (strings, numbers, booleans, quantities, "
+"lists of them)."
+msgstr ""
+
+#: lumos.fields.dataproduct:12 of
+msgid ""
+"Sums and differences of independent products add their uncertainties in "
+"quadrature, and scaling by a constant scales the uncertainty by its "
+"absolute value (JCGM 100:2008, *GUM*, §5.1)."
+msgstr ""
+
+#: ../../api/index.md:95 lumos.fields.dataproduct:16 of
 msgid "Files"
 msgstr "Fichiers"
+
+#: lumos.fields.dataproduct:17 of
+msgid ""
+"FITS (:meth:`DataProduct.to_fits`): the data in the primary HDU with "
+"``BUNIT`` and a linear WCS "
+"(``CTYPE``/``CUNIT``/``CRPIX``/``CRVAL``/``CDELT``) for every regularly "
+"sampled axis, then the extensions ``MASK``, ``UNCERT``, ``AXIS<i>`` "
+"(exact coordinates) and ``META`` (JSON)."
+msgstr ""
+
+#: lumos.fields.dataproduct:20 of
+msgid ""
+"NPZ (:meth:`DataProduct.to_npz`): plain arrays and a JSON header, "
+"readable with ``allow_pickle=False``."
+msgstr ""
+
+#: lumos.fields.dataproduct:21 of
+msgid ""
+"HDF5 (:meth:`DataProduct.to_hdf5`, needs ``h5py``): datasets and a JSON "
+"attribute."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct:1 of
+msgid ""
+"Detected or processed data with units, physical axes, mask, uncertainties"
+" and metadata."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct:3 of
+msgid "A quantity (use ``u.dimensionless_unscaled`` for pure numbers)."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct:4 of
+msgid ""
+"Mapping from axis names to 1D coordinate quantities, one per data axis, "
+"in the order of the data axes. Defaults to pixel indices named ``axis0``,"
+" ``axis1``..."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct:6 of
+msgid "Booleans of the shape of ``data``; ``True`` marks invalid samples."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct:7 of
+msgid ""
+"Standard deviations, a quantity of the shape of ``data`` convertible to "
+"its unit."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct:8 of
+msgid "Acquisition metadata."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.from_grid:1 of
+msgid ""
+"Build a product whose last two axes are the ``y`` and ``x`` coordinates "
+"of ``grid``."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.data:1 of
+msgid "The data quantity."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.unit:1 of
+msgid "Unit of the data."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.shape:1 of
+msgid "Shape of the data."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.axes:1 of
+msgid "Coordinates of each axis (a copy of the mapping)."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.axis_names:1 of
+msgid "Names of the axes, in data order."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.mask:1 of
+msgid "Invalid-sample mask, if any."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.uncertainty:1 of
+msgid "Standard deviations in the data unit, if any."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.meta:1 of
+msgid "Acquisition metadata (a copy)."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.to_json:1 of
+msgid "Encode the product as a strict-JSON-compatible dictionary."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.to_fits:1 of
+msgid "Write a FITS file (see the module documentation for its layout)."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.from_fits:1 of
+msgid ""
+"Read a FITS file written by :meth:`to_fits` (or a plain image with "
+"``BUNIT``)."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.to_npz:1 of
+msgid ""
+"Write a NumPy ``.npz`` archive of plain arrays and a JSON header (no "
+"pickled objects)."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.from_npz:1 of
+msgid ""
+"Read a ``.npz`` archive written by :meth:`to_npz` "
+"(``allow_pickle=False``)."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.to_hdf5:1 of
+msgid "Write an HDF5 file (needs ``h5py``)."
+msgstr ""
+
+#: lumos.fields.dataproduct.DataProduct.from_hdf5:1 of
+msgid "Read an HDF5 file written by :meth:`to_hdf5` (needs ``h5py``)."
+msgstr ""
+
+#: lumos.fields.smatrix:1 of
+msgid "Scattering matrices of guided-wave components (REQ-SIG-7)."
+msgstr ""
+
+#: lumos.fields.smatrix:3 of
+#, python-brace-format
+msgid ""
+"A component with :math:`n_\\mathrm{in}` input and :math:`n_\\mathrm{out}`"
+" output channels maps the modal amplitudes :math:`a` to :math:`S a`, with"
+" :math:`S` of shape ``(n_out, n_in)`` or, for a wavelength-dependent "
+"component, ``(nλ, n_out, n_in)``. Lossless reciprocal components have "
+"unitary matrices, :math:`S^\\dagger S = 1` (Pozar, *Microwave "
+"Engineering*, §4.3), and conserve the power."
+msgstr ""
+
+#: lumos.fields.smatrix:8 of
+#, python-brace-format
+msgid ""
+"Phases follow the :math:`e^{-i\\omega t}` convention of §9 of the "
+"specifications: :math:`e^{+i\\phi}` is a delay."
+msgstr ""
+
+#: lumos.fields.smatrix.coupler:1 of
+msgid ""
+"Symmetric lossless directional coupler with power coupling ratio "
+"``ratio`` (``κ²``)."
+msgstr ""
+
+#: lumos.fields.smatrix.coupler:3 of
+#, python-brace-format
+msgid ""
+"S = \\begin{pmatrix} t & i\\kappa \\\\ i\\kappa & t \\end{pmatrix}, "
+"\\qquad t = \\sqrt{1 - \\kappa^2}\n"
+"\n"
+msgstr ""
+
+#: lumos.fields.smatrix.coupler:5 of
+msgid ""
+"(Okamoto, *Fundamentals of Optical Waveguides*, §4.4). ``ratio = 0.5`` is"
+" the 50/50 coupler."
+msgstr ""
+
+#: lumos.fields.smatrix.is_unitary:1 of
+msgid ""
+"Whether a square matrix (or every matrix of a stack) satisfies ``S^† S = "
+"1`` within ``atol``."
+msgstr ""
+
+#: lumos.fields.smatrix.phase_shifter:1 of
+msgid "Diagonal matrix applying the phase ``phases[j]`` to channel ``j``."
+msgstr ""
+
+#: lumos.fields.spectral:1 of
+msgid "Sampling of a spectral band for polychromatic computations (REQ-SIG-4)."
+msgstr ""
+
+#: lumos.fields.spectral:3 of
+msgid ""
+"A polychromatic quantity is integrated over a band with a quadrature "
+"rule: wavelengths :math:`\\lambda_k` and weights :math:`w_k` such that"
+msgstr ""
+
+#: lumos.fields.spectral:6 of
+#, python-brace-format
+msgid ""
+"\\frac{1}{\\Delta\\lambda}\\int_{\\lambda_0 - "
+"\\Delta\\lambda/2}^{\\lambda_0 + \\Delta\\lambda/2}\n"
+"f(\\lambda)\\,d\\lambda \\approx \\sum_k w_k f(\\lambda_k), \\qquad "
+"\\sum_k w_k = 1 .\n"
+"\n"
+msgstr ""
+
+#: lumos.fields.spectral:9 of
+msgid ""
+"``\"midpoint\"``: ``n`` equal panels sampled at their centres, equal "
+"weights ``1/n``; exact for linear spectra, robust for any spectrum."
+msgstr ""
+
+#: lumos.fields.spectral:11 of
+msgid ""
+"``\"gauss\"``: Gauss-Legendre nodes and weights; exact for polynomials of"
+" degree ``2n - 1``, the most accurate choice for smooth spectra."
+msgstr ""
+
+#: lumos.fields.spectral.spectral_samples:1 of
+msgid "Return wavelengths and normalised weights sampling a band."
+msgstr ""
+
+#: lumos.fields.spectral.spectral_samples:3 of
+msgid "Central wavelength of the band."
+msgstr ""
+
+#: lumos.fields.spectral.spectral_samples:4 of
+msgid "Full width of the band; the band must stay at positive wavelengths."
+msgstr ""
+
+#: lumos.fields.spectral.spectral_samples:5 of
+msgid "Number of samples."
+msgstr ""
+
+#: lumos.fields.spectral.spectral_samples:6 of
+msgid "``\"midpoint\"`` or ``\"gauss\"`` (Gauss-Legendre)."
+msgstr ""
+
+#: lumos.fields.spectral.spectral_samples:8 of
+msgid ""
+"* **wavelengths** (*astropy.units.Quantity*) -- ``n`` wavelengths in the "
+"unit of ``center``. * **weights** (*numpy.ndarray*) -- ``n`` weights "
+"summing to 1 (band average)."
+msgstr ""
+
+#: lumos.fields.spectral.spectral_samples:8 of
+msgid ""
+"**wavelengths** (*astropy.units.Quantity*) -- ``n`` wavelengths in the "
+"unit of ``center``."
+msgstr ""
+
+#: lumos.fields.spectral.spectral_samples:9 of
+msgid ""
+"**weights** (*numpy.ndarray*) -- ``n`` weights summing to 1 (band "
+"average)."
+msgstr ""
+
+#: lumos.fields.jones:1 of
+msgid ""
+"Polarisation: Jones vectors, Jones matrices and Stokes parameters (REQ-"
+"SIG-3)."
+msgstr ""
+
+#: lumos.fields.jones:3 of
+msgid ""
+"A polarised :class:`~lumos.fields.Wavefront` holds the Jones components "
+":math:`(E_x, E_y)` in the laboratory basis along the first axis of its "
+"field, of shape ``(2, ny, nx)``. Polarising elements multiply it by a "
+":math:`2 \\times 2` Jones matrix, uniform (shape ``(2, 2)``) or varying "
+"across the grid (shape ``(2, 2, ny, nx)``), with :func:`apply`."
+msgstr ""
+
+#: lumos.fields.jones:9 of
+msgid "Conventions"
+msgstr ""
+
+#: lumos.fields.jones:10 of
+msgid "Angles are measured from +x towards +y."
+msgstr ""
+
+#: lumos.fields.jones:11 of
+#, python-brace-format
+msgid ""
+"With the time dependence :math:`e^{-i\\omega t}` of §9 of the "
+"specifications, a phase factor :math:`e^{+i\\phi}` is a delay. A retarder"
+" of retardance :math:`\\Gamma` with its fast axis along x is "
+":math:`\\mathrm{diag}(1, e^{i\\Gamma})`."
+msgstr ""
+
+#: lumos.fields.jones:14 of
+msgid "Stokes parameters:"
+msgstr ""
+
+#: lumos.fields.jones:16 of
+#, python-brace-format
+msgid ""
+"S_0 = |E_x|^2 + |E_y|^2,\\quad S_1 = |E_x|^2 - |E_y|^2,\\quad\n"
+"S_2 = 2\\,\\mathrm{Re}(E_x^* E_y),\\quad S_3 = 2\\,\\mathrm{Im}(E_x^* "
+"E_y).\n"
+"\n"
+msgstr ""
+
+#: lumos.fields.jones:19 of
+msgid ""
+"The right circular state :math:`R = (1, i)/\\sqrt 2` turns clockwise for "
+"an observer facing the source and has :math:`S_3 = +S_0` (Born & Wolf, "
+"*Principles of Optics*, §1.4.2)."
+msgstr ""
+
+#: lumos.fields.jones.apply:1 of
+msgid ""
+"Apply a Jones matrix to a polarised wavefront, wavecube (every channel) "
+"or bundle (every mode)."
+msgstr ""
+
+#: lumos.fields.jones.apply:3 of
+msgid ""
+"Shape ``(2, 2)`` (uniform) or ``(2, 2, ny, nx)`` (varying across the "
+"grid), any backend."
+msgstr ""
+
+#: lumos.fields.jones.apply:4 of
+msgid ""
+"Polarised :class:`~lumos.fields.Wavefront` (field ``(2, ny, nx)``) or "
+":class:`~lumos.fields.Wavecube` (field ``(nλ, 2, ny, nx)``)."
+msgstr ""
+
+#: lumos.fields.jones.degree_of_polarization:1 of
+#, python-brace-format
+msgid ""
+"Return :math:`\\sqrt{S_1^2 + S_2^2 + S_3^2} / S_0` for Stokes parameters "
+"along the first axis."
+msgstr ""
+
+#: lumos.fields.jones.half_wave_plate:1 of
+msgid "Half-wave plate (retardance π) with its fast axis at ``angle``."
+msgstr ""
+
+#: lumos.fields.jones.linear:1 of
+msgid "Return the Jones vector of a linear polarisation at ``angle`` from x."
+msgstr ""
+
+#: lumos.fields.jones.polarizer:1 of
+msgid ""
+"Ideal linear polariser transmitting the polarisation at ``angle`` (a "
+"projector)."
+msgstr ""
+
+#: lumos.fields.jones.quarter_wave_plate:1 of
+msgid "Quarter-wave plate (retardance π/2) with its fast axis at ``angle``."
+msgstr ""
+
+#: lumos.fields.jones.retarder:1 of
+msgid ""
+"Linear retarder of retardance :math:`\\Gamma` with its fast axis at "
+"``angle``."
+msgstr ""
+
+#: lumos.fields.jones.retarder:3 of
+#, python-brace-format
+msgid "The slow axis is delayed by :math:`e^{i\\Gamma}`."
+msgstr ""
+
+#: lumos.fields.jones.rotator:1 of
+msgid ""
+"Polarisation rotator turning every linear polarisation by ``angle`` (e.g."
+" a Faraday rotator)."
+msgstr ""
+
+#: lumos.fields.jones.stokes:1 of
+msgid ""
+"Return the Stokes parameters ``(S0, S1, S2, S3)``, shape ``(4, ny, nx)`` "
+"or ``(nλ, 4, ny, nx)``."
+msgstr ""
+
+#: lumos.fields.jones.stokes:3 of
+msgid ""
+"They are in the intensity unit of the signal. For an "
+":class:`~lumos.fields.IncoherentBundle`, the Stokes parameters of the "
+"modes add with the mode weights (incoherent superposition, Born & Wolf "
+"§10.8.3), which describes partially polarised and natural light."
+msgstr ""
+
+#: lumos.fields.jones.vector:1 of
+msgid "Return the normalised Jones vector of a basis state."
+msgstr ""
+
+#: lumos.fields.jones.vector:3 of
+msgid ""
+"``\"H\"`` (horizontal, x), ``\"V\"`` (vertical, y), ``\"D\"`` (diagonal, "
+"+45°), ``\"A\"`` (anti-diagonal, -45°), ``\"R\"`` (right circular) or "
+"``\"L\"`` (left circular)."
+msgstr ""
 
 #: lumos.io:1 of
 msgid "Reading and writing LUMOS documents (``.lumos`` files)."
 msgstr ""
 
 #: lumos.errors.FormatVersionError:1 of
-msgid "A ``.lumos`` document uses a format or type version this version of LUMOS cannot read."
+msgid ""
+"A ``.lumos`` document uses a format or type version this version of LUMOS"
+" cannot read."
 msgstr ""
 
 #: lumos.errors.LumosFormatError:1 of
@@ -1110,9 +2935,17 @@ msgid "Write ``element`` to a ``.lumos`` file (UTF-8, indented strict JSON)."
 msgstr ""
 
 #: lumos.io.lumos_format.to_document:1 of
-msgid "Return the ``.lumos`` document (a JSON-compatible dictionary) describing ``element``."
+msgid ""
+"Return the ``.lumos`` document (a JSON-compatible dictionary) describing "
+"``element``."
 msgstr ""
 
 #: lumos.errors:1 of
 msgid "Exceptions shared by several LUMOS modules."
 msgstr ""
+
+#~ msgid "str"
+#~ msgstr ""
+
+#~ msgid "Any"
+#~ msgstr ""
