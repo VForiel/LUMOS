@@ -18,7 +18,7 @@ orientations; this ADR records the concrete tooling chosen in phase 0.
 | Build backend | `hatchling` with `hatch-vcs` (version derived from git tags) |
 | Layout | `src/` layout, typed package (`py.typed`) |
 | Lint / format | `ruff` (lint and format), configured in `pyproject.toml` |
-| Type checking | `pyright` (standard mode for the whole package, strict mode for the core packages as they are created) |
+| Type checking | `pyright` in standard mode; annotations of public code enforced by ruff (`ANN` rules) in `src/` |
 | Tests | `pytest`, `pytest-cov`, `hypothesis`; markers `network`, `hardware`, `gpu`, `slow` excluded by default |
 | Test discipline | tests first, separate test commits, independent reference values, enforced by `tools/check_test_integrity.py` |
 | Commits | Conventional Commits, scope = plan step (`feat(P4.3): …`); breaking test changes use `test(Px.y)!:` with a justification |
@@ -32,6 +32,13 @@ orientations; this ADR records the concrete tooling chosen in phase 0.
 `vfscitools` (archives and `.plt` figures, REQ-RES-*) is **not published on PyPI**, and a package published on
 PyPI cannot depend on a git URL. It is therefore not declared yet. It must be published on PyPI before step P7.3,
 when LUMOS starts using it.
+
+### Amendment (2026-10-16, step P1.1): no pyright strict mode
+
+Strict mode was tried on `lumos.units`: it reported 17 errors, almost all caused by the incomplete typing of
+astropy (`Quantity.unit` may be `None`, unknown members) and by NumPy dtype unions, not by actual defects.
+Silencing them would have required casts everywhere in physics code. Pyright stays in standard mode, and ruff
+enforces type annotations on every public function of `src/`.
 
 ## Alternatives considered
 

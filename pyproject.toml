@@ -107,6 +107,7 @@ select = [
     "PT",           # pytest style
     "RUF",          # ruff-specific rules
     "D",            # docstrings (NumPy convention)
+    "ANN",          # type annotations on public code
     "T20",          # no print
     "S301",         # no pickle
     "S501",         # no requests with verify=False
@@ -114,15 +115,20 @@ select = [
 ignore = [
     # Physics notation uses Greek letters (λ, θ, φ...) in identifiers, strings and comments.
     "RUF001", "RUF002", "RUF003",
+    # Any is legitimate at the boundary with untyped scientific libraries.
+    "ANN401",
 ]
+
+[tool.ruff.lint.isort]
+known-first-party = ["lumos"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["D", "PT011"]  # PT011: asserting only the exception type is intended in specs
-"tools/**" = ["D100", "D103", "T20"]
-"docs/**" = ["D"]
+"tests/**" = ["D", "ANN", "PT011"]  # PT011: asserting only the exception type is intended in specs
+"tools/**" = ["D100", "D103", "T20", "ANN"]
+"docs/**" = ["D", "ANN"]
 
 # --- Type checking -----------------------------------------------------------
 
@@ -132,8 +138,6 @@ pythonVersion = "3.12"
 typeCheckingMode = "standard"
 venvPath = "."
 venv = ".venv"
-# Core packages are switched to strict mode as they are created (ADR-0001).
-strict = []
 
 # --- Tests -------------------------------------------------------------------
 
