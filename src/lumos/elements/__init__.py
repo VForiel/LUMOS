@@ -7,6 +7,6 @@ Importing this package registers every built-in element type in :data:`lumos.cor
 that ``.lumos`` files can refer to them by their stable identifiers (``lumos.<family>.<Name>``).
 """
 
-from lumos.elements import sources
+from lumos.elements import apertures, sources
 
-__all__ = ["sources"]
+__all__ = ["apertures", "sources"]
