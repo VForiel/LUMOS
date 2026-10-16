@@ -171,10 +171,12 @@ def test_fits_file_follows_the_standard(tmp_path):
         assert header["NAXIS1"] == 6  # fastest axis = last NumPy axis (x)
         assert header["NAXIS2"] == 4
         np.testing.assert_array_equal(hdul[0].data, dp.data.value)
-        world = WCS(header).pixel_to_world_values(np.arange(6), np.zeros(6))
-    # astropy.wcs converts lengths to metres
-    np.testing.assert_allclose(world[0], dp.axes["x"].to_value(u.m), rtol=1e-12)
-    np.testing.assert_allclose(world[1], 0.0, atol=1e-18)
+        wcs = WCS(header)
+        world = wcs.pixel_to_world_values(np.arange(6), np.zeros(6))
+    # Linear axes keep their CUNIT in astropy.wcs (only celestial and spectral axes are converted to SI).
+    x_unit, y_unit = (u.Unit(unit) for unit in wcs.world_axis_units)
+    np.testing.assert_allclose(world[0], dp.axes["x"].to_value(x_unit), rtol=1e-12)
+    np.testing.assert_allclose(world[1], dp.axes["y"][0].to_value(y_unit), atol=1e-18)
 
 
 def test_fits_with_irregular_axis_round_trips(tmp_path):
