@@ -136,7 +136,7 @@ def test_odd_axis_coordinates_by_hand():
 def test_shifted_rectangular_coordinates_by_hand():
     grid = Grid(3, 2, dx=2 * u.mm, dy=0.5 * u.mm, x0=10 * u.mm, y0=-1 * u.mm)
     np.testing.assert_allclose(grid.x.to_value(u.mm), [8.0, 10.0, 12.0])
-    np.testing.assert_allclose(grid.y.to_value(u.mm), [-2.0, -1.0])
+    np.testing.assert_allclose(grid.y.to_value(u.mm), [-1.5, -1.0])  # (j - 1)·0.5 - 1
 
 
 def test_center_index_is_n_over_two():
