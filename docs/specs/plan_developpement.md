@@ -107,7 +107,7 @@ flowchart LR
 
 ## Phase 3 — Représentations du champ
 
-- [ ] **P3.1 `Grid`** — rectangulaire, centre, plan spatial ou angulaire, coordonnées paresseuses.
+- [x] **P3.1 `Grid`** — rectangulaire, centre, plan spatial ou angulaire, coordonnées paresseuses.
 - [ ] **P3.2 `Wavefront`** — champ complexe, λ, normalisation, propriétés, opérations.
 - [ ] **P3.3 Polarisation** — Jones, matrices de Jones, Stokes.
 - [ ] **P3.4 `Wavecube`** — axe spectral, poids, intégration.

@@ -58,6 +58,13 @@
    :members: Registry, UnknownTypeError, registry, register
 ```
 
+## Fields
+
+```{eval-rst}
+.. automodule:: lumos.fields.grid
+   :members: Grid
+```
+
 ## Files
 
 ```{eval-rst}
