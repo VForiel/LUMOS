@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, cast
 
 from astropy import units as u
 
@@ -102,7 +102,7 @@ def context() -> Iterator[None]:
     """Apply the LUMOS style inside a ``with`` block (the previous settings are restored afterwards)."""
     import matplotlib as mpl
 
-    with mpl.rc_context(STYLE):
+    with mpl.rc_context(cast(Any, STYLE)):
         yield
 
 
@@ -110,7 +110,7 @@ def apply() -> None:
     """Apply the LUMOS style for the rest of the session."""
     import matplotlib as mpl
 
-    mpl.rcParams.update(STYLE)
+    mpl.rcParams.update(cast(Any, STYLE))
 
 
 def figure(
