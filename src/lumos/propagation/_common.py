@@ -8,6 +8,7 @@ SI floats, and ``xp`` is the Array API namespace of the field. They return the f
 from __future__ import annotations
 
 import math
+import sys
 from collections import OrderedDict, namedtuple
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -169,6 +170,12 @@ def namespace(field: Any) -> Any:
 CacheInfo = namedtuple("CacheInfo", ["hits", "misses", "maxsize", "currsize"])
 
 
+def _is_tracer(value: Any) -> bool:
+    """Whether ``value`` is an abstract JAX array of a trace in progress."""
+    jax = sys.modules.get("jax")
+    return jax is not None and isinstance(value, jax.core.Tracer)
+
+
 class _KernelCache:
     """Least-recently-used cache of kernel arrays (transfer functions, MFT matrices) per backend and dtype."""
 
@@ -181,21 +188,28 @@ class _KernelCache:
     def get(self, key: tuple[Any, ...], build: Callable[[], np.ndarray], xp: Any, dtype: Any) -> Any:
         """Return the cached kernel as an array of ``xp`` with ``dtype``.
 
-        Kernels are stored as host NumPy arrays: arrays created while JAX traces a compiled function are
-        tracers, which must not outlive the trace.
+        Kernels are built in double precision and kept as host NumPy arrays, together with their conversions
+        to each backend and dtype, so that a GPU kernel is copied from the host once rather than at every
+        call. Arrays created while JAX traces a compiled function are tracers, which must not outlive the
+        trace: they are not kept.
         """
-        full_key = key  # kernels are built in double precision and cast on the way out
-        if full_key in self._data:
+        if key in self._data:
             self.hits += 1
-            self._data.move_to_end(full_key)
-            value = self._data[full_key]
+            self._data.move_to_end(key)
+            host, converted = self._data[key]
         else:
             self.misses += 1
-            value = np.asarray(build(), dtype=np.complex128)
-            self._data[full_key] = value
+            host, converted = np.asarray(build(), dtype=np.complex128), {}
+            self._data[key] = (host, converted)
             if len(self._data) > self.maxsize:
                 self._data.popitem(last=False)
-        return xp.asarray(value, dtype=dtype)
+        target = (getattr(xp, "__name__", id(xp)), str(dtype))
+        if target in converted:
+            return converted[target]
+        value = xp.asarray(host, dtype=dtype)
+        if not _is_tracer(value):
+            converted[target] = value
+        return value
 
     def info(self) -> CacheInfo:
         return CacheInfo(self.hits, self.misses, self.maxsize, len(self._data))
