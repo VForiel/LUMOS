@@ -11,6 +11,7 @@ import logging
 import os
 import platform
 import subprocess
+import sys
 from dataclasses import asdict, dataclass, field
 from importlib import metadata
 from pathlib import Path
@@ -100,7 +101,7 @@ def _cpu_model() -> str:
             )
             if result.stdout.strip():
                 return result.stdout.strip()
-        elif system == "Windows":
+        elif sys.platform == "win32":  # lets type checkers skip winreg on other platforms
             import winreg
 
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"HARDWARE\DESCRIPTION\System\CentralProcessor\0")
