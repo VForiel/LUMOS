@@ -146,8 +146,22 @@ class Element(ParamHost):
 
     def __init__(self, name: str | None = None, **values: Any) -> None:
         self._lumos_listeners: list[Callable[[Element, str], None]] = []
+        self._lumos_context: Any = None
         self.name = name
         super().__init__(**values)
+
+    @property
+    def context(self) -> Any:
+        """The :class:`~lumos.Context` holding this element, or ``None``."""
+        return self._lumos_context
+
+    def __rshift__(self, other: Any) -> Any:
+        """Connect the unique output of this element to the unique input of ``other`` (an element or port).
+
+        Both must end up in the same context: ``other`` is added to the context of this element if needed.
+        Returns ``other`` (its owner for a port) so that chains read ``a >> b >> c``.
+        """
+        return _connect_shorthand(self, other)
 
     # --- Change notification ----------------------------------------------------------------
 
@@ -438,6 +452,35 @@ def _field_schema(field: Field) -> dict[str, Any]:
     if field.default is not MISSING:
         schema["default"] = quantity_to_json(field.default)
     return schema
+
+
+def _unique_port(element: Any, direction: str) -> PortRef:
+    from lumos.core.graph import GraphError
+
+    ports = [name for name, port in element.instance_ports().items() if port.direction == direction]
+    if len(ports) != 1:
+        kind = "output" if direction == "out" else "input"
+        raise GraphError(
+            f"'>>' is ambiguous: {element!r} has {len(ports)} {kind} ports {ports}; "
+            "use ctx.connect() or name a port"
+        )
+    return element.port(ports[0])
+
+
+def _connect_shorthand(left: Any, right: Any) -> Any:
+    """Implement ``left >> right`` for elements and ports."""
+    from lumos.core.graph import GraphError
+
+    source = left if isinstance(left, PortRef) else _unique_port(left, "out")
+    context = source.owner.context
+    if context is None:
+        raise GraphError(f"{source.owner!r} is not in a context; add it with ctx.add() before using '>>'")
+    target_owner = right.owner if isinstance(right, PortRef) else right
+    if target_owner not in context:
+        context.add(target_owner)
+    target = right if isinstance(right, PortRef) else _unique_port(right, "in")
+    context.connect(source, target)
+    return target_owner
 
 
 _RESERVED_NAMES = {name for name in dir(Element) if not name.startswith("_")} | {"name"}

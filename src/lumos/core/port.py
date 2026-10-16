@@ -137,6 +137,12 @@ class PortRef:
         """Hash consistent with equality."""
         return hash((id(self.owner), id(self.port)))
 
+    def __rshift__(self, other: Any) -> Any:
+        """Connect this output port to ``other`` (an element with a unique input, or an input port)."""
+        from lumos.core.element import _connect_shorthand
+
+        return _connect_shorthand(self, other)
+
     def __repr__(self) -> str:
         """Represent the reference as ``Owner.port``."""
         owner_name = getattr(self.owner, "name", None) or type(self.owner).__name__

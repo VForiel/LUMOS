@@ -10,5 +10,6 @@ except PackageNotFoundError:  # pragma: no cover - only when running from an uni
 from lumos._config import config
 from lumos.backend import jit
 from lumos.backend.hardware import hardware_report
+from lumos.core.context import Context
 
-__all__ = ["__version__", "config", "hardware_report", "jit"]
+__all__ = ["Context", "__version__", "config", "hardware_report", "jit"]
