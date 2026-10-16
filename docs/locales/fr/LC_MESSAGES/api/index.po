@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 15:27+0200\n"
+"POT-Creation-Date: 2026-10-16 16:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -101,6 +101,9 @@ msgstr ""
 #: lumos.fields.wavefront.Wavefront.with_polarization
 #: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.lumos_format.load
 #: lumos.io.lumos_format.save lumos.io.lumos_format.to_document
+#: lumos.plotting.plot_data lumos.plotting.plot_field
+#: lumos.plotting.plot_radiance lumos.propagation.api.focus
+#: lumos.propagation.api.plan lumos.propagation.api.register_method
 #: lumos.units.quantity_to_json lumos.units.si_unit of
 msgid "Parameters"
 msgstr ""
@@ -190,7 +193,12 @@ msgstr ""
 #: lumos.fields.wavefront.Wavefront.with_polarization
 #: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.lumos_format.load
 #: lumos.io.lumos_format.save lumos.io.lumos_format.to_document
-#: lumos.units.quantity_to_json lumos.units.si_unit of
+#: lumos.plotting.plot_data lumos.plotting.plot_field
+#: lumos.plotting.plot_radiance lumos.propagation._common.cache_info
+#: lumos.propagation._common.clear_cache lumos.propagation.api.focus
+#: lumos.propagation.api.methods lumos.propagation.api.plan
+#: lumos.propagation.api.register_method lumos.units.quantity_to_json
+#: lumos.units.si_unit of
 msgid "Return type"
 msgstr ""
 
@@ -2942,6 +2950,564 @@ msgstr ""
 
 #: lumos.errors:1 of
 msgid "Exceptions shared by several LUMOS modules."
+msgstr ""
+
+#: ../../api/index.md:105
+msgid "Propagation"
+msgstr ""
+
+#: lumos.propagation:1 of
+msgid ""
+"Numerical propagation of optical fields between arbitrary planes and "
+"grids (``REQ-PROP-*``)."
+msgstr ""
+
+#: lumos.propagation:3 of
+msgid ""
+":func:`propagate`: free-space propagation over a distance, or to the far "
+"field;"
+msgstr ""
+
+#: lumos.propagation:4 of
+msgid ":func:`focus`: focal plane of a thin lens;"
+msgstr ""
+
+#: lumos.propagation:5 of
+msgid ""
+":func:`methods`: the available methods; ``method=\"auto\"`` lets the "
+"planner choose and log one;"
+msgstr ""
+
+#: lumos.propagation:6 of
+msgid ":func:`plan`: the planner's choice and its reason, without propagating."
+msgstr ""
+
+#: lumos.propagation._common.cache_info:1 of
+msgid ""
+"Statistics of the propagation kernel cache (hits, misses, maxsize, "
+"currsize)."
+msgstr ""
+
+#: lumos.propagation._common.clear_cache:1 of
+msgid "Empty the propagation kernel cache."
+msgstr ""
+
+#: lumos.propagation.api.focus:1 of
+msgid ""
+"Field in the focal plane of a thin lens of focal length ``f`` placed in "
+"the plane of ``signal``."
+msgstr ""
+
+#: lumos.propagation.api.focus:3 of
+msgid ""
+"The lens multiplies the field by :math:`\\exp(-ik r^2 / 2f)` and the "
+"field then propagates over :math:`f`. With ``method=\"fraunhofer\"`` (the"
+" default choice of the planner) this is evaluated exactly as"
+msgstr ""
+
+#: lumos.propagation.api.focus:6 of
+msgid ""
+"U_f(x, y) = \\frac{e^{ikf}}{i\\lambda f} e^{ik(x^2 + y^2)/2f}\\,\n"
+"\\tilde U\\!\\left(\\frac{x}{\\lambda f}, \\frac{y}{\\lambda f}\\right),\n"
+"\n"
+msgstr ""
+
+#: lumos.propagation.api.focus:9 of
+msgid ""
+"the Fresnel integral whose input quadratic phase the lens cancels; other "
+"methods apply the lens phase and propagate. The output sampling is "
+"arbitrary (matrix Fourier transform)."
+msgstr ""
+
+#: lumos.propagation.api.methods:1 of
+msgid ""
+"Return the registered propagation methods by name (``\"auto\"`` is the "
+"planner, not listed)."
+msgstr ""
+
+#: lumos.propagation.api.plan:1 of
+msgid ""
+"Return the :class:`~lumos.propagation.planner.Plan` that "
+":func:`propagate` would follow."
+msgstr ""
+
+#: lumos.propagation.api.propagate:1 of
+msgid ""
+"Propagate a field from the plane ``z = 0`` to the plane ``z = distance`` "
+"in free space (vacuum)."
+msgstr ""
+
+#: lumos.propagation.api.propagate:3 of
+msgid ""
+":class:`~lumos.fields.Wavefront`, :class:`~lumos.fields.Wavecube` or "
+":class:`~lumos.fields.IncoherentBundle` on a spatial grid."
+msgstr ""
+
+#: lumos.propagation.api.propagate:5 of
+msgid ""
+"Propagation distance (negative to back-propagate), or ``None`` for the "
+"far field: the output is then the angular spectrum on an angular grid of "
+"direction cosines, normalised so that :math:`\\sum |U|^2 \\Delta\\Omega` "
+"is the power."
+msgstr ""
+
+#: lumos.propagation.api.propagate:8 of
+msgid ""
+"Sampling of the output plane; defaults to the input grid (required for "
+"the far field)."
+msgstr ""
+
+#: lumos.propagation.api.propagate:9 of
+msgid ""
+"``\"auto\"`` (the planner chooses and logs the method) or one of "
+":func:`methods`."
+msgstr ""
+
+#: lumos.propagation.api.propagate:10 of
+msgid ""
+"Optional memory budget in bytes: the modes of an incoherent bundle are "
+"then propagated in chunks."
+msgstr ""
+
+#: lumos.propagation.api.propagate:12 of
+msgid "Signal of the same type on ``output_grid``."
+msgstr ""
+
+#: lumos.propagation.api.register_method:1 of
+msgid "Register a propagation method under ``method.name``."
+msgstr ""
+
+#: lumos.propagation.planner:1 of
+msgid ""
+"Automatic choice of the propagation method (REQ-PROP-4, step P4.6, "
+"ADR-0005)."
+msgstr ""
+
+#: lumos.propagation.planner:3 of
+msgid "The planner inspects the field itself, not only the grids: it measures"
+msgstr ""
+
+#: lumos.propagation.planner:5 of
+#, python-brace-format
+msgid ""
+"the **spatial support**, the smallest box holding :math:`1 - 10^{-6}` of "
+"the power;"
+msgstr ""
+
+#: lumos.propagation.planner:6 of
+#, python-brace-format
+msgid ""
+"the **spectral support**, the highest spatial frequency below which "
+":math:`1 - 10^{-6}` of the spectral power lies along each axis;"
+msgstr ""
+
+#: lumos.propagation.planner:9 of
+msgid ""
+"and applies the rules of ADR-0005, in order, for every wavelength of the "
+"signal:"
+msgstr ""
+
+#: lumos.propagation.planner:11 of
+msgid "far field (``distance=None``): ``\"fraunhofer\"``;"
+msgstr ""
+
+#: lumos.propagation.planner:12 of
+msgid ""
+"back-propagation (:math:`z < 0`): ``\"asm\"``, whose transfer function is"
+" exactly invertible;"
+msgstr ""
+
+#: lumos.propagation.planner:13 of
+msgid ""
+"``\"asm\"`` (exact) if the spectral support lies inside the Matsushima "
+"band limit and the output plane lies inside the zero-padded window;"
+msgstr ""
+
+#: lumos.propagation.planner:15 of
+msgid ""
+"Fresnel methods if the neglected phase :math:`k\\rho^4/8z^3 \\le 0.01` "
+"rad for the largest lateral distance :math:`\\rho` between the support "
+"and the output plane:"
+msgstr ""
+
+#: lumos.propagation.planner:18 of
+msgid ""
+"``\"fresnel_mft\"`` if the chirped field is sampled (its local "
+"frequencies stay below Nyquist) and the output frequencies do not reach "
+"the periodic replicas;"
+msgstr ""
+
+#: lumos.propagation.planner:20 of
+msgid ""
+"otherwise ``\"fresnel_ir\"`` (:math:`\\Delta x \\le \\lambda z / L`) or "
+"``\"fresnel_tf\"`` on the input grid;"
+msgstr ""
+
+#: lumos.propagation.planner:22 of
+#, python-brace-format
+msgid ""
+"``\"fraunhofer\"`` at finite distance if, in addition, the input "
+"quadratic phase :math:`k\\rho_\\mathrm{in}^2 / 2z \\le 0.05` rad;"
+msgstr ""
+
+#: lumos.propagation.planner:24 of
+msgid ""
+"``\"rs\"``, the direct sum, valid everywhere but expensive (a warning is "
+"logged above :data:`RS_WARNING_COST` operations)."
+msgstr ""
+
+#: lumos.propagation.planner:27 of
+msgid ""
+"The choice and its reason are logged at the INFO level on the "
+"``lumos.propagation`` logger, and :func:`plan` returns them without "
+"propagating."
+msgstr ""
+
+#: lumos.propagation.planner.Plan:1 of
+msgid "Outcome of the planner."
+msgstr ""
+
+#: lumos.propagation.planner.Plan:3 of
+msgid "Name of the chosen method."
+msgstr ""
+
+#: lumos.propagation.planner.Plan:5 of
+msgid "Why it was chosen."
+msgstr ""
+
+#: lumos.propagation.planner.Plan:7 of
+msgid "Estimated number of complex operations per wavelength and component."
+msgstr ""
+
+#: lumos.propagation.planner.Plan:9 of
+msgid "Grid on which the field will be computed."
+msgstr ""
+
+#: lumos.propagation.rs:1 of
+msgid ""
+"Direct Rayleigh-Sommerfeld propagation, the reference method (REQ-PROP-1,"
+" step P4.2)."
+msgstr ""
+
+#: lumos.propagation.rs:3 of
+msgid ""
+"The first Rayleigh-Sommerfeld solution gives the field at :math:`(x, y, "
+"z)` from the field at :math:`z = 0` (Goodman, *Introduction to Fourier "
+"Optics*, 3rd ed., eq. 3-42):"
+msgstr ""
+
+#: lumos.propagation.rs:6 of
+#, python-brace-format
+msgid ""
+"U(x, y, z) = \\iint U(x', y', 0)\\, h(r)\\, dx'\\, dy', \\qquad\n"
+"h(r) = \\frac{z}{2\\pi r^2}\\left(\\frac{1}{r} - ik\\right) e^{ikr},\n"
+"\n"
+msgstr ""
+
+#: lumos.propagation.rs:9 of
+#, python-brace-format
+msgid ""
+"with :math:`r = \\sqrt{(x - x')^2 + (y - y')^2 + z^2}`. The integral is "
+"evaluated as a direct sum over the input pixels for every output point, "
+"which is exact for the sampled field (no paraxial or far-field "
+"approximation) and works between any grids. Its cost is "
+":math:`N_\\mathrm{in} N_\\mathrm{out}`, so it is used for validation and "
+"for small grids; the output points are processed in chunks to bound the "
+"memory."
+msgstr ""
+
+#: lumos.propagation.rs:14 of
+msgid ""
+"The sum is accurate when the phase of :math:`h` changes by much less than"
+" :math:`2\\pi` across one input pixel, i.e. :math:`k\\,\\rho\\,\\Delta x "
+"/ r \\ll 2\\pi` where :math:`\\rho` is the lateral distance."
+msgstr ""
+
+#: lumos.propagation.fraunhofer:1 of
+msgid ""
+"Fraunhofer propagation with matrix Fourier transforms (REQ-PROP-2, step "
+"P4.3)."
+msgstr ""
+
+#: lumos.propagation.fraunhofer:4 of
+#, fuzzy
+msgid "Far field"
+msgstr "Fichiers"
+
+#: lumos.propagation.fraunhofer:5 of
+msgid ""
+"At infinite distance the field in the direction of direction cosines "
+":math:`(\\alpha, \\beta)` is the Fourier transform of the pupil field at "
+"the spatial frequencies :math:`(\\alpha/\\lambda, \\beta/\\lambda)` "
+"(Goodman, *Introduction to Fourier Optics*, §4.2):"
+msgstr ""
+
+#: lumos.propagation.fraunhofer:9 of
+#, python-brace-format
+msgid ""
+"U_\\infty(\\alpha, \\beta) = \\frac{1}{i\\lambda} \\iint U(x, y)\\,\n"
+"e^{-2\\pi i (\\alpha x + \\beta y)/\\lambda}\\, dx\\, dy ,\n"
+"\n"
+msgstr ""
+
+#: lumos.propagation.fraunhofer:12 of
+msgid ""
+"normalised so that :math:`\\iint |U_\\infty|^2 d\\alpha\\, d\\beta` is "
+"the power (Parseval)."
+msgstr ""
+
+#: lumos.propagation.fraunhofer:15 of
+msgid "Finite distance and focal plane"
+msgstr ""
+
+#: lumos.propagation.fraunhofer:16 of
+msgid ""
+"At a distance :math:`z` in the Fraunhofer regime (Fresnel number "
+":math:`a^2/\\lambda z \\ll 1`), or in the focal plane of a thin lens of "
+"focal length :math:`z` placed in the input plane (where the lens cancels "
+"the input quadratic phase exactly),"
+msgstr ""
+
+#: lumos.propagation.fraunhofer:20 of
+msgid ""
+"U(x, y) = \\frac{e^{ikz}}{i\\lambda z} e^{ik(x^2 + y^2)/2z}\n"
+"\\iint U(x', y')\\, e^{-2\\pi i (x x' + y y')/\\lambda z}\\, dx'\\, dy' ."
+"\n"
+"\n"
+msgstr ""
+
+#: lumos.propagation.fraunhofer:23 of
+#, python-brace-format
+msgid ""
+"The transforms are evaluated as matrix Fourier transforms (Soummer et al."
+" 2007, Opt. Express 15, 15935): two matrix products with :math:`e^{-2\\pi"
+" i u x}` matrices, so the output sampling and centre are arbitrary and "
+"the cost is :math:`O(N^2 M + N M^2)` for :math:`N^2` input and "
+":math:`M^2` output pixels."
+msgstr ""
+
+#: lumos.propagation.fresnel:1 of
+msgid "Fresnel (paraxial) propagation (REQ-PROP-2, step P4.4)."
+msgstr ""
+
+#: lumos.propagation.fresnel:3 of
+msgid ""
+"In the Fresnel approximation the field at distance :math:`z` is the "
+"convolution of the input field with the paraxial impulse response "
+"(Goodman, *Introduction to Fourier Optics*, §4.2):"
+msgstr ""
+
+#: lumos.propagation.fresnel:6 of
+msgid ""
+"U(x, y, z) = \\iint U(x', y', 0)\\, h(x - x', y - y')\\, dx'\\, dy', "
+"\\qquad\n"
+"h(x, y) = \\frac{e^{ikz}}{i\\lambda z} e^{ik(x^2 + y^2)/2z},\n"
+"\n"
+msgstr ""
+
+#: lumos.propagation.fresnel:9 of
+#, python-brace-format
+msgid ""
+"whose transfer function is :math:`H(f_x, f_y) = e^{ikz} e^{-i\\pi\\lambda"
+" z (f_x^2 + f_y^2)}`. The approximation holds when the neglected term of "
+"the phase is small, :math:`k \\rho^4 / 8 z^3 \\ll 1` for lateral "
+"distances :math:`\\rho`."
+msgstr ""
+
+#: lumos.propagation.fresnel:13 of
+msgid ""
+"Three discretisations are provided (Voelz, *Computational Fourier "
+"Optics*, 2011, §5):"
+msgstr ""
+
+#: lumos.propagation.fresnel:15 of
+msgid ""
+"``\"fresnel_tf\"`` multiplies the spectrum by :math:`H` (FFT, output on "
+"the input grid). It is accurate when the chirp of :math:`H` is sampled "
+"over the spectrum of the field, typically for short distances, "
+":math:`\\Delta x \\gtrsim \\lambda z / L`;"
+msgstr ""
+
+#: lumos.propagation.fresnel:18 of
+msgid ""
+"``\"fresnel_ir\"`` convolves with the sampled :math:`h` (FFT, output on "
+"the input grid), accurate for longer distances, :math:`\\Delta x "
+"\\lesssim \\lambda z / L`;"
+msgstr ""
+
+#: lumos.propagation.fresnel:20 of
+msgid ""
+"``\"fresnel_mft\"`` expands the quadratic phase and evaluates one Fourier"
+" integral with a matrix Fourier transform, which gives the field on "
+"**any** output grid:"
+msgstr ""
+
+#: lumos.propagation.fresnel:23 of
+msgid ""
+"U(x, y, z) = \\frac{e^{ikz}}{i\\lambda z} e^{ik(x^2 + y^2)/2z} \\iint "
+"U(x', y')\\,\n"
+"e^{ik(x'^2 + y'^2)/2z} e^{-2\\pi i (x x' + y y')/\\lambda z} dx'\\, dy',\n"
+"\n"
+msgstr ""
+
+#: lumos.propagation.fresnel:26 of
+msgid ""
+"accurate when the input chirp is sampled over the support of the field, "
+":math:`k \\rho\\, \\Delta x / z < \\pi`."
+msgstr ""
+
+#: lumos.propagation.fresnel:28 of
+msgid ""
+"The FFT methods zero-pad the field by a factor 2 to avoid circular wrap-"
+"around. Negative distances back-propagate."
+msgstr ""
+
+#: lumos.propagation.asm:1 of
+msgid "Band-limited angular spectrum propagation (REQ-PROP-2, step P4.5)."
+msgstr ""
+
+#: lumos.propagation.asm:3 of
+#, python-brace-format
+msgid ""
+"The angular spectrum method is exact for free-space propagation of the "
+"sampled field (no paraxial approximation; Goodman, *Introduction to "
+"Fourier Optics*, §3.10): the spectrum :math:`A(f_x, f_y) = \\iint U "
+"e^{-2\\pi i (f_x x + f_y y)} dx\\, dy` is multiplied by the transfer "
+"function"
+msgstr ""
+
+#: lumos.propagation.asm:7 of
+msgid ""
+"H(f_x, f_y) = \\exp\\left(2\\pi i z \\sqrt{\\lambda^{-2} - f_x^2 - "
+"f_y^2}\\right)\n"
+"\n"
+msgstr ""
+
+#: lumos.propagation.asm:9 of
+msgid ""
+"(evanescent components decay for :math:`z > 0` and are removed when back-"
+"propagating), and the field is recovered by the inverse transform."
+msgstr ""
+
+#: lumos.propagation.asm:13 of
+msgid "Band limit"
+msgstr ""
+
+#: lumos.propagation.asm:14 of
+msgid ""
+"Sampling :math:`H` on the frequency grid of a window of width :math:`2S` "
+"(the field zero-padded by 2) aliases its chirp at long distances. "
+"Following Matsushima & Shimobaba (2009, Opt. Express 17, 19662), "
+"frequencies are kept only up to"
+msgstr ""
+
+#: lumos.propagation.asm:18 of
+msgid ""
+"|f_x| \\le \\frac{1}{\\lambda \\sqrt{(2 \\Delta f_x z)^2 + 1}}, \\qquad "
+"\\Delta f_x = \\frac{1}{2 S_x},\n"
+"\n"
+msgstr ""
+
+#: lumos.propagation.asm:20 of
+msgid ""
+"and likewise along y. The method is accurate when the spectrum of the "
+"field lies inside this band, which the planner checks."
+msgstr ""
+
+#: lumos.propagation.asm:24 of
+msgid "Output grids"
+msgstr ""
+
+#: lumos.propagation.asm:25 of
+msgid ""
+"On the input grid the inverse transform is an FFT. On any other grid "
+"(scaled, shifted or rectangular output) the inverse transform is "
+"evaluated as a matrix Fourier transform at the output coordinates, the "
+"\"scaled/shifted\" angular spectrum: exact for the band-limited field, "
+"valid as long as the output plane stays inside the padded window."
+msgstr ""
+
+#: ../../api/index.md:120
+msgid "Plotting"
+msgstr ""
+
+#: lumos.plotting:1 of
+msgid "Basic plots of fields and data (step P3.9)."
+msgstr ""
+
+#: lumos.plotting:3 of
+msgid ""
+"Every map is drawn with ``origin=\"lower\"`` and an extent equal to the "
+"outer pixel edges of its grid, so the axes show physical coordinates with"
+" x to the right and y upwards (§9 of the specifications). Phases are "
+"drawn with the cyclic ``twilight`` colour map over ``[-π, π]``, so that "
+"the wrap-around at ±π is invisible."
+msgstr ""
+
+#: lumos.plotting:7 of
+msgid ""
+"Each function accepts an existing matplotlib ``Axes`` and returns the "
+"axes it drew on (or the figure for multi-panel plots)."
+msgstr ""
+
+#: lumos.plotting.PHASE_CMAP:1 of
+msgid "Cyclic colour map used for phases."
+msgstr ""
+
+#: lumos.plotting.plot_data:1 of
+msgid ""
+"Draw a 1D data product as a line or a 2D one as an image with its "
+"physical axes."
+msgstr ""
+
+#: lumos.plotting.plot_field:1 of
+msgid ""
+"Draw intensity and phase side by side (one row per Jones component for a "
+"polarised field)."
+msgstr ""
+
+#: lumos.plotting.plot_intensity:1 of
+msgid ""
+"Draw the intensity of a wavefront, wavecube (spectrally integrated) or "
+"incoherent bundle."
+msgstr ""
+
+#: lumos.plotting.plot_intensity:3 of
+msgid ""
+":class:`~lumos.fields.Wavefront`, :class:`~lumos.fields.Wavecube` or "
+":class:`~lumos.fields.IncoherentBundle`."
+msgstr ""
+
+#: lumos.plotting.plot_intensity:5 of
+msgid "Axes to draw on (a new figure by default)."
+msgstr ""
+
+#: lumos.plotting.plot_intensity:6 of
+msgid "Logarithmic colour scale."
+msgstr ""
+
+#: lumos.plotting.plot_intensity:7 of
+msgid "Add a colour bar labelled with the intensity unit."
+msgstr ""
+
+#: lumos.plotting.plot_intensity:8 of
+msgid "Passed to ``imshow``."
+msgstr ""
+
+#: lumos.plotting.plot_phase:1 of
+msgid "Draw the phase of a wavefront in ``[-π, π]`` with a cyclic colour map."
+msgstr ""
+
+#: lumos.plotting.plot_phase:3 of
+msgid "Scalar or polarised wavefront (``component`` selects Ex = 0 or Ey = 1)."
+msgstr ""
+
+#: lumos.plotting.plot_phase:4 of
+msgid "Mask the phase where the amplitude is below ``threshold × max amplitude``."
+msgstr ""
+
+#: lumos.plotting.plot_radiance:1 of
+msgid "Draw one spectral channel (and Stokes parameter) of a radiance field."
 msgstr ""
 
 #~ msgid "str"

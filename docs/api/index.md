@@ -102,6 +102,21 @@
    :members:
 ```
 
+## Propagation
+
+```{eval-rst}
+.. automodule:: lumos.propagation
+   :members: propagate, focus, plan, methods, register_method, cache_info, clear_cache
+
+.. automodule:: lumos.propagation.planner
+   :members: Plan
+
+.. automodule:: lumos.propagation.rs
+.. automodule:: lumos.propagation.fraunhofer
+.. automodule:: lumos.propagation.fresnel
+.. automodule:: lumos.propagation.asm
+```
+
 ## Plotting
 
 ```{eval-rst}

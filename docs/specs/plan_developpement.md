@@ -132,7 +132,7 @@ flowchart LR
 - [x] **P4.7 Vectorisation** — λ, polarisation, modes ; cache des noyaux ; découpage.
 - [x] **P4.8 Différentiabilité** — gradients JAX vérifiés par différences finies.
 - [x] **P4.9 Comparaisons externes** — POPPY et HCIPy (extra `[validation]`).
-- [ ] **P4.10 Doc *Learn*** — méthodes, échantillonnage, planificateur.
+- [x] **P4.10 Doc *Learn*** — méthodes, échantillonnage, planificateur.
 - [ ] **P4.11 Benchmarks** CPU contre GPU.
 
 **Critères d'acceptation (v0.1) :** toutes les méthodes passent la suite dans leur domaine de validité ; le planificateur choisit une méthode valide sur 100 % des cas ; l'écart à RS direct est < 1e-3 en énergie ; le gain GPU est mesuré et documenté.

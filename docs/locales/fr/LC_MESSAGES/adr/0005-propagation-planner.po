@@ -1,0 +1,233 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 16:03+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0005-propagation-planner.md:1
+msgid "ADR-0005: Propagation methods and planner rules"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:4
+msgid "**Date**: 2026-10-16"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:5
+msgid "**Plan step**: P4.6"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:9
+msgid ""
+"LUMOS propagates fields from any grid to any grid (REQ-PROP-1/2) and must"
+" choose the numerical method automatically, log the choice and allow "
+"forcing it (REQ-PROP-4). Each method is accurate only in a domain set by "
+"the sampling of the field, the distance and the output grid; a wrong "
+"choice gives aliased or approximate fields without any error message. The"
+" plan asked for \"transfer function, impulse response, two steps\" "
+"Fresnel methods and for scaled or shifted angular spectra (MFT or CZT)."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:15
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:17
+msgid ""
+"**Methods.** Six kernels, all pure functions of backend arrays "
+"(ADR-0002), applied to every polarisation component, mode and wavelength:"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "Name"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "Output grid"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "Domain"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "`rs`"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "any"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "everywhere (direct sum, cost `N_in N_out`)"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "`fraunhofer`"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "far field, focal plane of a lens, Fraunhofer regime"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "`fresnel_tf`"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "input grid"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "Fresnel regime, `dx ≳ λz/L`"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "`fresnel_ir`"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "Fresnel regime, `dx ≲ λz/L`"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "`fresnel_mft`"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "Fresnel regime, chirp sampled over the field support"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "`asm`"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md
+msgid "spectrum inside the Matsushima band limit"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:29
+msgid ""
+"The \"two-step\" Fresnel method of the plan is replaced by `fresnel_mft`,"
+" a one-step Fresnel transform evaluated with a matrix Fourier transform: "
+"it gives any output sampling and centre directly, which is what the two-"
+"step scheme was meant to provide. Scaled and shifted angular spectra use "
+"an inverse matrix Fourier transform rather than a chirp-z transform: same"
+" result, simpler code, and the cost is dominated by the FFT for the grid "
+"sizes of interest."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:35
+msgid ""
+"**Planner.** The planner measures the spatial support and the spectral "
+"support of the actual field (boxes holding `1 - 1e-6` of the power) and "
+"applies, for every wavelength, these rules in order:"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:38
+msgid "`distance=None` → `fraunhofer`;"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:39
+msgid "`z < 0` → `asm` (exactly invertible);"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:40
+msgid ""
+"spectral support inside the band limit and output inside the padded "
+"window → `asm`;"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:41
+msgid ""
+"neglected Fresnel phase `k ρ⁴ / 8z³ ≤ 0.01` rad → `fresnel_mft` if the "
+"chirped field is sampled and the output frequencies avoid the periodic "
+"replicas, otherwise `fresnel_ir` / `fresnel_tf` on the input grid (split "
+"at the critical distance `N dx² / λ`);"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:44
+msgid "input quadratic phase `k ρ_in² / 2z ≤ 0.05` rad → `fraunhofer`;"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:45
+msgid "otherwise `rs`, with a warning above `1e10` operations."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:47
+msgid ""
+"A wavecube or bundle uses one method for all its channels: the most "
+"conservative per-wavelength choice. The decision and its reason are "
+"logged on `lumos.propagation` and available without propagating through "
+"`lumos.propagation.plan()`. An explicit `method=` bypasses the planner."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:51
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:53
+msgid ""
+"Choosing from the grids only (sampling criteria such as `z_c = N dx² / "
+"λ`): simpler, but blind to the actual bandwidth of the field; a smooth "
+"beam is propagated exactly by the angular spectrum far beyond `z_c`, "
+"while a sharp aperture is not."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:56
+msgid ""
+"Always using the angular spectrum with large padding: exact but memory-"
+"hungry at long distances, and it cannot reach the far field."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:58
+msgid ""
+"Chirp-z transforms for scaled outputs: equivalent results, more code; can"
+" be added later as a kernel."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:60
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:62
+msgid ""
+"Every rule is checked by the validation suite (P4.1) and by Hypothesis "
+"batteries against analytic solutions (P4.6), which demonstrate a valid "
+"choice in all tested cases."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:64
+msgid ""
+"Supports are computed with an FFT of up to 16 representative fields on "
+"the host: the planner runs outside compiled code. Compiled pipelines "
+"should fix the method once (from `plan()`) and call the kernel directly."
+msgstr ""
+
+#: ../../adr/0005-propagation-planner.md:66
+msgid ""
+"New methods register with `lumos.propagation.register_method`; the "
+"planner must be extended explicitly."
+msgstr ""

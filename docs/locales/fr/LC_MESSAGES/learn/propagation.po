@@ -1,0 +1,257 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 16:03+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../learn/propagation.md:1
+msgid "Wave propagation"
+msgstr "Propagation des ondes"
+
+#: ../../learn/propagation.md:3
+msgid ""
+"LUMOS propagates a field sampled on one grid to a field sampled on another grid, in another plane. This "
+"page explains the methods, their domains of validity and how the planner chooses between them."
+msgstr ""
+"LUMOS propage un champ échantillonné sur une grille vers un champ échantillonné sur une autre grille, dans "
+"un autre plan. Cette page présente les méthodes, leurs domaines de validité et la façon dont le "
+"planificateur choisit entre elles."
+
+#: ../../learn/propagation.md:20
+msgid "Conventions"
+msgstr "Conventions"
+
+#: ../../learn/propagation.md:22
+msgid ""
+"The field is the complex amplitude `U` of `E = Re{U e^{-iωt}}`: a wave travelling towards +z varies as "
+"`e^{+ikz}`, with `k = 2π/λ`. Every method includes this propagation phase. In the far field, the angular "
+"grid holds direction cosines and the field is normalised so that `Σ |U|² ΔΩ` is the power."
+msgstr ""
+"Le champ est l'amplitude complexe `U` de `E = Re{U e^{-iωt}}` : une onde se propageant vers +z varie comme "
+"`e^{+ikz}`, avec `k = 2π/λ`. Toutes les méthodes incluent cette phase de propagation. En champ lointain, la"
+" grille angulaire contient des cosinus directeurs et le champ est normalisé pour que `Σ |U|² ΔΩ` soit la "
+"puissance."
+
+#: ../../learn/propagation.md:26
+msgid "Methods"
+msgstr "Méthodes"
+
+#: ../../learn/propagation.md:28
+msgid ""
+"**Rayleigh-Sommerfeld (`rs`).** The first Rayleigh-Sommerfeld solution is summed directly over the input "
+"pixels for each output point. It makes no approximation and works between any grids, but its cost is the "
+"product of the numbers of input and output pixels. It is the reference against which the other methods are "
+"validated."
+msgstr ""
+"**Rayleigh-Sommerfeld (`rs`).** La première solution de Rayleigh-Sommerfeld est sommée directement sur les "
+"pixels d'entrée pour chaque point de sortie. Elle ne fait aucune approximation et fonctionne entre grilles "
+"quelconques, mais son coût est le produit des nombres de pixels d'entrée et de sortie. C'est la référence "
+"qui sert à valider les autres méthodes."
+
+#: ../../learn/propagation.md:33
+msgid ""
+"**Angular spectrum (`asm`).** The field is decomposed into plane waves by a Fourier transform; each plane "
+"wave of spatial frequency `(fx, fy)` advances by `exp(2πi z sqrt(1/λ² - fx² - fy²))`. This is exact, "
+"including evanescent waves, as long as the transfer function is sampled finely enough. Sampling it on the "
+"grid of a window of width `2S` aliases its chirp at long distances, so LUMOS keeps only the frequencies "
+"below the band limit of Matsushima and Shimobaba (2009). On another output grid, the inverse transform is "
+"evaluated as a matrix Fourier transform at the output coordinates."
+msgstr ""
+"**Spectre angulaire (`asm`).** Le champ est décomposé en ondes planes par une transformée de Fourier ; "
+"chaque onde plane de fréquence spatiale `(fx, fy)` progresse de `exp(2πi z sqrt(1/λ² - fx² - fy²))`. C'est "
+"exact, ondes évanescentes comprises, tant que la fonction de transfert est assez finement échantillonnée. "
+"L'échantillonner sur la grille d'une fenêtre de largeur `2S` replie son chirp aux grandes distances : LUMOS"
+" ne garde donc que les fréquences sous la limite de bande de Matsushima et Shimobaba (2009). Sur une autre "
+"grille de sortie, la transformée inverse est évaluée par transformée de Fourier matricielle aux coordonnées"
+" de sortie."
+
+#: ../../learn/propagation.md:40
+msgid ""
+"**Fresnel (`fresnel_tf`, `fresnel_ir`, `fresnel_mft`).** In the paraxial approximation the propagation is a"
+" convolution with a quadratic-phase kernel. The approximation holds when the neglected phase `k ρ⁴ / 8z³` "
+"is small for the largest lateral distance `ρ`. The transfer-function form (`tf`) suits short distances and "
+"the impulse-response form (`ir`) long ones; the two are separated by the critical distance `N dx² / λ`. The"
+" one-step form (`mft`) expands the kernel and evaluates a single Fourier integral with a matrix Fourier "
+"transform, which gives the field on any output grid."
+msgstr ""
+"**Fresnel (`fresnel_tf`, `fresnel_ir`, `fresnel_mft`).** Dans l'approximation paraxiale, la propagation est"
+" une convolution par un noyau à phase quadratique. L'approximation est valable quand la phase négligée `k "
+"ρ⁴ / 8z³` est petite pour la plus grande distance latérale `ρ`. La forme par fonction de transfert (`tf`) "
+"convient aux courtes distances et la forme par réponse impulsionnelle (`ir`) aux longues ; elles sont "
+"séparées par la distance critique `N dx² / λ`. La forme en une étape (`mft`) développe le noyau et évalue "
+"une seule intégrale de Fourier par transformée de Fourier matricielle, ce qui donne le champ sur n'importe "
+"quelle grille de sortie."
+
+#: ../../learn/propagation.md:47
+msgid ""
+"**Fraunhofer (`fraunhofer`).** Far from the input plane, or in the focal plane of a lens, the field is the "
+"Fourier transform of the input field. Matrix Fourier transforms (Soummer et al. 2007) compute it at any "
+"sampling and centre, at a cost proportional to `N² M + N M²` for `N²` input and `M²` output pixels."
+msgstr ""
+"**Fraunhofer (`fraunhofer`).** Loin du plan d'entrée, ou dans le plan focal d'une lentille, le champ est la"
+" transformée de Fourier du champ d'entrée. Les transformées de Fourier matricielles (Soummer et al. 2007) "
+"le calculent pour tout échantillonnage et tout centre, pour un coût proportionnel à `N² M + N M²` avec `N²`"
+" pixels d'entrée et `M²` pixels de sortie."
+
+#: ../../learn/propagation.md
+msgid "Method"
+msgstr "Méthode"
+
+#: ../../learn/propagation.md
+msgid "Output grid"
+msgstr "Grille de sortie"
+
+#: ../../learn/propagation.md
+msgid "Use it for"
+msgstr "À utiliser pour"
+
+#: ../../learn/propagation.md
+msgid "`rs`"
+msgstr "`rs`"
+
+#: ../../learn/propagation.md
+msgid "any"
+msgstr "quelconque"
+
+#: ../../learn/propagation.md
+msgid "reference, small grids, extreme near field"
+msgstr "référence, petites grilles, champ très proche"
+
+#: ../../learn/propagation.md
+msgid "`asm`"
+msgstr "`asm`"
+
+#: ../../learn/propagation.md
+msgid "most free-space propagation, back-propagation"
+msgstr "la plupart des propagations en espace libre, rétro-propagation"
+
+#: ../../learn/propagation.md
+msgid "`fresnel_tf`"
+msgstr "`fresnel_tf`"
+
+#: ../../learn/propagation.md
+msgid "input grid"
+msgstr "grille d'entrée"
+
+#: ../../learn/propagation.md
+msgid "short paraxial distances"
+msgstr "courtes distances paraxiales"
+
+#: ../../learn/propagation.md
+msgid "`fresnel_ir`"
+msgstr "`fresnel_ir`"
+
+#: ../../learn/propagation.md
+msgid "long paraxial distances"
+msgstr "longues distances paraxiales"
+
+#: ../../learn/propagation.md
+msgid "`fresnel_mft`"
+msgstr "`fresnel_mft`"
+
+#: ../../learn/propagation.md
+msgid "paraxial propagation with resampling"
+msgstr "propagation paraxiale avec rééchantillonnage"
+
+#: ../../learn/propagation.md
+msgid "`fraunhofer`"
+msgstr "`fraunhofer`"
+
+#: ../../learn/propagation.md
+msgid "far field, focal planes, coronagraph planes"
+msgstr "champ lointain, plans focaux, plans de coronographe"
+
+#: ../../learn/propagation.md:60
+msgid "Sampling"
+msgstr "Échantillonnage"
+
+#: ../../learn/propagation.md:62
+msgid ""
+"A sampled field represents a band-limited function: the grid step `dx` sets the highest spatial frequency "
+"`1/(2dx)`, hence the largest angle `λ/(2dx)` the field can carry, and the window width `L = N dx` sets the "
+"frequency resolution `1/L`. Every method then has its own conditions:"
+msgstr ""
+"Un champ échantillonné représente une fonction à bande limitée : le pas `dx` fixe la plus haute fréquence "
+"spatiale `1/(2dx)`, donc le plus grand angle `λ/(2dx)` que le champ peut porter, et la largeur de fenêtre "
+"`L = N dx` fixe la résolution fréquentielle `1/L`. Chaque méthode a ensuite ses propres conditions :"
+
+#: ../../learn/propagation.md:66
+msgid ""
+"the Fourier methods are periodic: light leaving the window comes back on the other side unless the window "
+"is padded (LUMOS pads by a factor 2);"
+msgstr ""
+"les méthodes de Fourier sont périodiques : la lumière qui sort de la fenêtre revient de l'autre côté si la "
+"fenêtre n'est pas complétée de zéros (LUMOS la double) ;"
+
+#: ../../learn/propagation.md:68
+msgid ""
+"a quadratic phase (Fresnel kernels, lenses) must change by less than π between neighbouring samples where "
+"the field is not negligible;"
+msgstr ""
+"une phase quadratique (noyaux de Fresnel, lentilles) doit varier de moins de π entre échantillons voisins "
+"là où le champ n'est pas négligeable ;"
+
+#: ../../learn/propagation.md:70
+msgid ""
+"a matrix Fourier transform evaluates the periodic spectrum of the sampled field: output frequencies must "
+"stay away from its replicas, one period `1/dx` apart."
+msgstr ""
+"une transformée de Fourier matricielle évalue le spectre périodique du champ échantillonné : les fréquences"
+" de sortie doivent rester loin de ses répliques, espacées d'une période `1/dx`."
+
+#: ../../learn/propagation.md:73
+msgid "The planner"
+msgstr "Le planificateur"
+
+#: ../../learn/propagation.md:75
+msgid ""
+"With `method=\"auto\"` (the default), the planner looks at the field itself. It measures the region holding"
+" all but `1e-6` of the power and the band holding all but `1e-6` of the spectral power, then applies "
+"ordered rules: the far field uses `fraunhofer`, back-propagation uses `asm`, then `asm` if the spectrum "
+"fits inside its band limit, then a Fresnel method if the paraxial phase error is below 0.01 rad and its "
+"sampling conditions hold, then `fraunhofer` at finite distance, and finally the direct sum. The choice and "
+"its reason are logged on the `lumos.propagation` logger and returned by `plan()`; passing `method=` forces "
+"a method. The rules are recorded in [ADR-0005](../adr/0005-propagation-planner.md)."
+msgstr ""
+"Avec `method=\"auto\"` (par défaut), le planificateur examine le champ lui-même. Il mesure la région qui "
+"contient toute la puissance sauf `1e-6` et la bande qui contient toute la puissance spectrale sauf `1e-6`, "
+"puis applique des règles ordonnées : le champ lointain utilise `fraunhofer`, la rétro-propagation `asm`, "
+"puis `asm` si le spectre tient dans sa limite de bande, puis une méthode de Fresnel si l'erreur de phase "
+"paraxiale est inférieure à 0,01 rad et que ses conditions d'échantillonnage sont remplies, puis "
+"`fraunhofer` à distance finie, et enfin la somme directe. Le choix et sa raison sont journalisés sur le "
+"logger `lumos.propagation` et renvoyés par `plan()` ; passer `method=` impose une méthode. Les règles sont "
+"consignées dans l'[ADR-0005](../adr/0005-propagation-planner.md)."
+
+#: ../../learn/propagation.md:83
+msgid "Validation"
+msgstr "Validation"
+
+#: ../../learn/propagation.md:85
+msgid ""
+"Each method is tested against analytic results before being implemented: Airy zeros and peak intensity, the"
+" sampled and continuous transforms of a square aperture, the Gaussian beam waist, curvature and Gouy phase,"
+" the exact on-axis field of a circular aperture, an explicit Rayleigh-Sommerfeld sum, Parseval's theorem, "
+"back-propagation and reciprocity. Far-field and focal-plane results agree with POPPY and HCIPy to round-"
+"off. Gradients computed by JAX through every method agree with finite differences."
+msgstr ""
+"Chaque méthode est testée contre des résultats analytiques avant d'être implémentée : zéros et intensité "
+"crête d'Airy, transformées échantillonnée et continue d'une ouverture carrée, rayon, courbure et phase de "
+"Gouy d'un faisceau gaussien, champ exact sur l'axe d'une ouverture circulaire, somme de Rayleigh-Sommerfeld"
+" explicite, théorème de Parseval, rétro-propagation et réciprocité. En champ lointain et au plan focal, les"
+" résultats concordent avec POPPY et HCIPy aux arrondis près. Les gradients calculés par JAX à travers "
+"chaque méthode concordent avec les différences finies."

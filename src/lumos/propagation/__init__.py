@@ -1,4 +1,4 @@
-"""Numerical propagation of optical fields between arbitrary planes and grids (REQ-PROP-*).
+"""Numerical propagation of optical fields between arbitrary planes and grids (``REQ-PROP-*``).
 
 - :func:`propagate`: free-space propagation over a distance, or to the far field;
 - :func:`focus`: focal plane of a thin lens;
