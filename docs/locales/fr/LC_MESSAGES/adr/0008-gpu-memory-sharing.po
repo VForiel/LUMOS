@@ -1,0 +1,116 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 23:38+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0008-gpu-memory-sharing.md:1
+msgid "ADR-0008: Sharing the GPU memory"
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:4
+msgid "**Date**: 2026-10-16"
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:5
+msgid "**Plan step**: P2.2 (found while validating P4 and P6 on a GPU)"
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:9
+#, python-format
+msgid ""
+"JAX reserves 75 % of the GPU memory when it creates its GPU client "
+"(`XLA_PYTHON_CLIENT_PREALLOCATE`, JAX documentation \"GPU memory "
+"allocation\"). The memory reserved this way is only available to XLA: "
+"cuFFT and cuBLAS workspaces, CuPy arrays and other processes must fit in "
+"the rest. On a 6 GB GeForce GTX 1060 that also drives the Windows display"
+" (about 2 GB used), the test suite run under WSL with the JAX CUDA "
+"backend had 63 `CUDA_ERROR_OUT_OF_MEMORY` failures; with preallocation "
+"disabled, all tests passed."
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:15
+msgid ""
+"LUMOS users run on desktop and laptop GPUs shared with the display, and "
+"LUMOS may use JAX and CuPy in the same process (REQ-HPC-1)."
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:18
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:20
+msgid ""
+"Before LUMOS loads the JAX backend or lists the JAX devices, it sets "
+"`XLA_PYTHON_CLIENT_PREALLOCATE=false` if the variable is not set "
+"(`lumos.backend._core.prepare_jax`). JAX then allocates memory on demand."
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:22
+msgid ""
+"A value set by the user (environment or `os.environ` before the first use"
+" of a JAX device) is kept, so dedicated compute nodes can still "
+"preallocate for speed."
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:25
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:27
+msgid ""
+"**Keep the JAX default**: fastest allocation on dedicated GPUs, but out-"
+"of-memory errors on shared ones."
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:28
+msgid ""
+"**`XLA_PYTHON_CLIENT_MEM_FRACTION`**: a fixed fraction is either too "
+"large for small shared GPUs or too small for large computations."
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:30
+msgid ""
+"**Setting the variable when `lumos` is imported**: would also change the "
+"behaviour of JAX code that does not use LUMOS."
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:33
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:35
+msgid ""
+"JAX allocations are slightly slower (on demand) and memory may fragment "
+"on long runs; users can set `XLA_PYTHON_CLIENT_PREALLOCATE=true` for "
+"benchmarks on dedicated GPUs."
+msgstr ""
+
+#: ../../adr/0008-gpu-memory-sharing.md:37
+msgid ""
+"If the JAX GPU client already exists when LUMOS loads JAX (the user used "
+"JAX first), the setting has no effect; this is documented."
+msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 16:06+0200\n"
+"POT-Creation-Date: 2026-10-16 23:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -162,3 +162,54 @@ msgid ""
 msgstr ""
 "Le gain sur GPU se mesure avec le même benchmark sur une machine équipée d'un GPU CUDA (CuPy, ou JAX avec "
 "un périphérique GPU). Les mesures seront ajoutées ici."
+
+#: ../../learn/performance.md:31
+msgid "Enabling an NVIDIA GPU"
+msgstr "Activer un GPU NVIDIA"
+
+#: ../../learn/performance.md:33
+msgid ""
+"LUMOS sees a GPU only through an array library built for CUDA; `lumos.hardware_report()` lists the GPUs "
+"that these libraries see, and `lumos.config.backend = \"auto\"` then chooses a GPU backend."
+msgstr ""
+"LUMOS ne voit un GPU qu'à travers une bibliothèque de tableaux compilée pour CUDA ; "
+"`lumos.hardware_report()` liste les GPU que ces bibliothèques voient, et `lumos.config.backend = \"auto\"` "
+"choisit alors un backend GPU."
+
+#: ../../learn/performance.md:36
+msgid ""
+"**Windows**: install CuPy with the CUDA 12 libraries from pip, which need no system CUDA toolkit: `pip "
+"install cupy-cuda12x \"cuda-toolkit[cublas,cudart,cufft,curand,nvrtc]==12.*\"`. CUDA 12 supports GPUs from "
+"the Maxwell generation on (CUDA 13 needs Turing or newer)."
+msgstr ""
+"**Windows** : installer CuPy avec les bibliothèques CUDA 12 de pip, qui ne demandent pas de CUDA Toolkit "
+"système : `pip install cupy-cuda12x \"cuda-toolkit[cublas,cudart,cufft,curand,nvrtc]==12.*\"`. CUDA 12 "
+"prend en charge les GPU à partir de la génération Maxwell (CUDA 13 demande Turing ou plus récent)."
+
+#: ../../learn/performance.md:39
+msgid "**Linux or WSL 2**: `pip install \"jax[cuda12]\"` (JAX publishes no CUDA build for native Windows), or CuPy."
+msgstr ""
+"**Linux ou WSL 2** : `pip install \"jax[cuda12]\"` (JAX ne publie pas de version CUDA pour Windows natif), "
+"ou CuPy."
+
+#: ../../learn/performance.md:40
+#, python-format
+msgid ""
+"JAX reserves 75 % of the GPU memory by default; LUMOS turns this off so that JAX shares the GPU with the "
+"display and CuPy (ADR-0008). Set `XLA_PYTHON_CLIENT_PREALLOCATE=true` to preallocate on a dedicated GPU."
+msgstr ""
+"JAX réserve par défaut 75 % de la mémoire du GPU ; LUMOS désactive cette réservation pour que JAX partage "
+"le GPU avec l'affichage et CuPy (ADR-0008). Définir `XLA_PYTHON_CLIENT_PREALLOCATE=true` pour préallouer "
+"sur un GPU dédié."
+
+#: ../../learn/performance.md:42
+msgid "Measure with the GPU otherwise idle: a game or another GPU application changes the results by large factors."
+msgstr ""
+"Mesurer avec un GPU inoccupé par ailleurs : un jeu ou une autre application GPU modifie les résultats d'un "
+"facteur important."
+
+#: ../../learn/performance.md:45
+msgid "The test suite runs on NumPy by default; `LUMOS_TEST_BACKEND=jax` (or `cupy`) runs it on another backend."
+msgstr ""
+"La suite de tests tourne par défaut sur NumPy ; `LUMOS_TEST_BACKEND=jax` (ou `cupy`) la lance sur un autre "
+"backend."

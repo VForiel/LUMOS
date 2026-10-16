@@ -76,3 +76,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 - The JAX import hook is no longer consumed by `importlib.util.find_spec("jax")`, so `Values` is registered as
   a pytree when JAX is first imported through the backend.
+- GPU probes log the warnings of GPU libraries instead of failing on them (CuPy without `CUDA_PATH` hid the
+  GPU).
+- Signals held by CuPy accept NumPy masks and factors (`lumos.backend.operand`).
+- JAX no longer reserves 75 % of the GPU memory when LUMOS loads it (ADR-0008).
+- Turbulent phase screens restore their low frequencies (structure function within a few % of von Kármán).

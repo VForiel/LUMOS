@@ -11,12 +11,19 @@ Chaque entrée indique le contexte, ce que j'ai fait en attendant et ce dont j'a
 - [ ] **Publier `vfscitools` sur PyPI** (nécessaire pour P7.3/P7.4 : `.plt` via pltedit, `vfst.archive`).
   En attendant : intégration derrière un import optionnel, avec repli documenté (voir P7).
 
-- [ ] **Mesurer le gain GPU** (critère d'acceptation de la phase 4). Cette machine a bien un GPU (GeForce
-  GTX 1060 6 Go, pilote 582.28, CUDA 13.0), mais aucun backend de LUMOS ne peut l'utiliser : `jaxlib` est la
-  version CPU (JAX ne publie pas de version CUDA pour Windows natif, seulement Linux/WSL2) et ni CuPy ni
-  PyTorch ne sont installés, d'où `gpus=()` dans `lumos.hardware_report()`. Pour l'utiliser : installer
-  l'extra `[gpu]` (`cupy-cuda12x` ; le pilote CUDA 13 exécute les programmes CUDA 12, et CUDA 12 gère
-  encore l'architecture Pascal de la 1060), avec le CUDA Toolkit 12.x ou les bibliothèques CUDA installées
-  par pip ; ou JAX CUDA sous WSL2. Ensuite :
-  `python -m pytest -m benchmark tests/benchmarks/test_bench_propagation.py`, et reporter les temps dans
-  `docs/learn/performance.md`. Dis-moi si tu veux que je fasse l'installation de CuPy dans le `.venv`.
+- [ ] **Mesurer le gain GPU** (critère d'acceptation de la phase 4). Le GPU (GTX 1060 6 Go) est maintenant
+  utilisable : CuPy (+ bibliothèques CUDA 12 de pip) dans le `.venv` Windows, et JAX CUDA dans Ubuntu/WSL
+  (clone dans `/root/LUMOS` ; distribution déplacée sur `D:\WSL\Ubuntu` car C: était plein). Les deux suites
+  passent sur GPU. Mes mesures ont été faussées par Helldivers 2 en cours d'exécution (CPU à 74 %, GPU
+  occupé) : je ne les ai pas reportées. À relancer machine au repos, puis reporter dans
+  `docs/learn/performance.md` :
+  - Windows : `.venv\Scripts\python.exe -m pytest -m benchmark tests/benchmarks/test_bench_propagation.py`
+  - WSL : `wsl -d Ubuntu -u root -- bash -lc "cd ~/LUMOS && .venv/bin/python -m pytest -m benchmark tests/benchmarks/test_bench_propagation.py"`
+
+- [ ] **Créer ton utilisateur Ubuntu** : la distribution a été initialisée en `root`, sans interaction.
+  `wsl -d Ubuntu -u root -- adduser <nom>`, puis `ubuntu config --default-user <nom>`.
+
+## À examiner plus tard
+
+- **JAX sur GPU plus lent que CuPy** sur la même carte (propagation `asm` 1024² : ~93 ms contre ~20-30 ms,
+  mesures faites sous charge) : profiler le chemin JAX (transferts hôte, cache des noyaux, double précision).
