@@ -128,7 +128,7 @@ flowchart LR
 - [x] **P4.3 Fraunhofer + MFT** — échantillonnage et centre de sortie arbitraires ; pupille ↔ plan focal.
 - [x] **P4.4 Fresnel** — fonction de transfert, réponse impulsionnelle, deux étapes.
 - [x] **P4.5 ASM à bande limitée**, puis ASM mis à l'échelle ou décalé (MFT ou CZT).
-- [ ] **P4.6 Planificateur** — critères d'échantillonnage, coût estimé, choix de méthode, journalisation et forçage. ADR-0005 « Règles du planificateur ».
+- [x] **P4.6 Planificateur** — critères d'échantillonnage, coût estimé, choix de méthode, journalisation et forçage. ADR-0005 « Règles du planificateur ».
 - [ ] **P4.7 Vectorisation** — λ, polarisation, modes ; cache des noyaux ; découpage.
 - [ ] **P4.8 Différentiabilité** — gradients JAX vérifiés par différences finies.
 - [ ] **P4.9 Comparaisons externes** — POPPY et HCIPy (extra `[validation]`).

@@ -22,7 +22,7 @@ from lumos.fields.wavefront import Wavefront
 from lumos.propagation._common import Method, namespace
 from lumos.units import require_unit, to_si
 
-__all__ = ["focus", "methods", "propagate", "register_method"]
+__all__ = ["focus", "methods", "plan", "propagate", "register_method"]
 
 logger = logging.getLogger(__name__)
 
@@ -158,6 +158,19 @@ def propagate(
         return chosen.kernel(field, grid_in, grid_out, wavelength, z, xp)
 
     return _map_channels(signal, output_grid, apply)
+
+
+def plan(signal: Signal, distance: u.Quantity | None, *, output_grid: Grid | None = None) -> Any:
+    """Return the :class:`~lumos.propagation.planner.Plan` that :func:`propagate` would follow."""
+    from lumos.propagation.planner import plan_for
+
+    grid_in = _check_signal(signal)
+    z = _distance(distance)
+    if output_grid is None:
+        if z is None:
+            raise ValueError("the far field (distance=None) needs an angular output_grid")
+        output_grid = grid_in
+    return plan_for(signal, z, output_grid)
 
 
 def _check_method(method: Method, grid_in: Grid, grid_out: Grid, z: float | None) -> None:
