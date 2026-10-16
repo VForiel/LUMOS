@@ -191,8 +191,21 @@ def gaussian_beam(grid, z, power=1.0):
     return amplitude * np.exp(1j * (K * z + K * r2 * curvature / 2 - gouy))
 
 
-@pytest.mark.parametrize("method", ["fresnel_tf", "fresnel_ir", "fresnel_mft", "asm", "auto"])
-@pytest.mark.parametrize("z_over_zr", [0.5, 1.0, 2.0])
+# Domains of validity on BEAM_GRID (N dx = L = 512 µm, dx = 2 µm), with z_c = L dx / λ = 1.02 mm = 0.82 zR
+# (Voelz, Computational Fourier Optics, §5.3): the impulse-response kernel is aliased and the one-step MFT
+# output window λz/dx is smaller than the grid for z < z_c. The transfer function is valid at all three
+# distances because its chirp is sampled over the narrow spectrum of the beam (aliasing starts at
+# f = 1/(2 λ z Δf) ≥ 1.0e5 m⁻¹ where the spectrum is below exp(-41)); the angular spectrum is exact.
+GAUSSIAN_CASES = [
+    *[("fresnel_tf", r) for r in (0.5, 1.0, 2.0)],
+    *[("fresnel_ir", r) for r in (1.0, 2.0)],
+    *[("fresnel_mft", r) for r in (1.0, 2.0)],
+    *[("asm", r) for r in (0.5, 1.0, 2.0)],
+    *[("auto", r) for r in (0.5, 1.0, 2.0)],
+]
+
+
+@pytest.mark.parametrize(("method", "z_over_zr"), GAUSSIAN_CASES)
 def test_gaussian_beam_propagation(method, z_over_zr):
     z = z_over_zr * ZR
     wf = Wavefront(gaussian_beam(BEAM_GRID, 0.0), BEAM_GRID, LAM * u.m)
