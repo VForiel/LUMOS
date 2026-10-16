@@ -191,15 +191,20 @@ class Context:
         """The graph of elements."""
         return self._graph
 
-    def add(self, *elements: Any) -> Any:
-        """Add elements and return them (the element itself when only one is given)."""
+    def add(self, *elements: Any, id: str | None = None) -> Any:
+        """Add elements and return them (the element itself when only one is given).
+
+        ``id`` sets the identifier of a single element (by default its name, or its class name and a counter).
+        """
+        if id is not None and len(elements) != 1:
+            raise ValueError("an explicit id can only be given for a single element")
         for element in elements:
             owner = getattr(element, "_lumos_container", None)
             if owner is not None and owner is not self:
                 raise GraphError(f"{element!r} already belongs to another context")
             if owner is self:
                 continue
-            self._graph.add(element)
+            self._graph.add(element, id=id)
             element._lumos_container = self
         return elements[0] if len(elements) == 1 else elements
 
@@ -441,6 +446,12 @@ class Context:
         elements and identical between runs with the same seed.
         """
         return np.random.default_rng(np.random.SeedSequence(self.seed, spawn_key=self.spawn_key(target)))
+
+    def to_python(self) -> str:
+        """Return a Python script rebuilding this context (see :func:`lumos.io.codegen.to_python`)."""
+        from lumos.io.codegen import to_python
+
+        return to_python(self)
 
     def __repr__(self) -> str:
         """Summarise the context."""
