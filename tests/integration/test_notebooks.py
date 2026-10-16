@@ -26,6 +26,12 @@ from nbclient import NotebookClient
 
 import lumos.io
 
+# On Windows, pyzmq warns that asyncio's default Proactor event loop lacks add_reader and starts a
+# selector thread (pyzmq documentation, "asyncio on Windows"): a notice of the kernel client, not of LUMOS.
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:Proactor event loop does not implement add_reader:RuntimeWarning"
+)
+
 EXAMPLES = Path(__file__).resolve().parents[2] / "examples"
 NOTEBOOKS = sorted(EXAMPLES.glob("[0-9][0-9]_*.ipynb"))
 PRESETS = sorted((EXAMPLES / "presets").glob("*.lumos"))
