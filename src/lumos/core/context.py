@@ -15,7 +15,9 @@ every element gets its own reproducible random stream.
 
 from __future__ import annotations
 
+import logging
 import math
+import time
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from typing import Any, Literal, cast
@@ -26,11 +28,14 @@ from astropy.time import Time
 
 from lumos.backend._core import known, use
 from lumos.core.clock import Clock, duration_si
+from lumos.core.driver import Command, DriverError
 from lumos.core.graph import Graph, GraphError, Result
 from lumos.core.port import PortRef
 from lumos.units import require_unit, to_si
 
 __all__ = ["MODES", "Context", "Observation"]
+
+logger = logging.getLogger("lumos.context")
 
 Mode = Literal["simulation", "operation"]
 MODES: tuple[str, ...] = ("simulation", "operation")
@@ -132,6 +137,8 @@ class Context:
         self._graph = Graph()
         self.clock = Clock(start)
         self._parallel: list[list[float]] = []
+        self._overrides: dict[int, str] = {}
+        self._twin_states: dict[int, dict[str, Any]] = {}
         self.mode = mode
         self.twin = twin
         self.backend = backend
@@ -293,11 +300,70 @@ class Context:
             if isinstance(inner, Graph):
                 stack.extend(inner)
 
+    # --- Modes and actions ---------------------------------------------------------------------
+
+    def simulate(self, element: Any, flag: bool = True) -> None:
+        """Force ``element`` to simulation, even in operation mode (``flag=False`` removes the override)."""
+        if flag:
+            self._overrides[id(element)] = "simulation"
+        else:
+            self._overrides.pop(id(element), None)
+
+    def mode_of(self, element: Any) -> Mode:
+        """Effective mode of ``element``: the context mode unless the element is forced to simulation."""
+        return cast(Mode, self._overrides.get(id(element), self._mode))
+
+    def path_of(self, element: Any) -> str:
+        """Path of ``element`` from the context: ``"id"`` or ``"group.child"``."""
+        parts = []
+        node = element
+        while node is not None and node is not self:
+            container = node.container
+            if container is None:
+                raise GraphError(f"{element!r} is not in this context")
+            parts.append(container.id_of(node))
+            node = container
+        return ".".join(reversed(parts))
+
+    def twin_state(self, element: Any) -> dict[str, Any]:
+        """State measured on the equipment at the last command, next to the twin's simulated state."""
+        return dict(self._twin_states.get(id(element), {}))
+
     def _perform(self, element: Any, spec: Any, args: tuple[Any, ...], kwargs: dict[str, Any]) -> Any:
         """Execute an action of ``element`` (called by the :func:`~lumos.core.action.action` wrapper)."""
-        seconds = spec.duration_si(element, args, kwargs)
-        result = spec.method(element, *args, **kwargs)
-        self._advance(seconds)
+        predicted = spec.duration_si(element, args, kwargs)
+        path = self.path_of(element)
+        if self.mode_of(element) == "simulation":
+            result = spec.method(element, *args, **kwargs)
+            logger.info("%s.%s simulated (%.6g s)", path, spec.name, predicted)
+            self._advance(predicted)
+            return result
+        driver = element.driver
+        if driver is None:
+            raise DriverError(f"{path} has no driver; attach one or use ctx.simulate({path!r})")
+        if not driver.connected:
+            raise DriverError(f"the driver of {path} is not connected")
+        command = Command(path, spec.name, tuple(args), dict(kwargs))
+        started = time.perf_counter()
+        reply = driver.send(command)
+        wall = time.perf_counter() - started
+        measured = wall if reply.duration is None else duration_si(reply.duration, name="measured duration")
+        if self._twin:
+            result = spec.method(element, *args, **kwargs)
+            self._twin_states[id(element)] = dict(reply.state)
+        else:
+            result = reply.value
+            for name, value in reply.state.items():
+                setattr(element, name, value)
+        logger.info(
+            "%s.%s sent to %s (predicted %.6g s, measured %.6g s)",
+            path,
+            spec.name,
+            type(driver).__name__,
+            predicted,
+            measured,
+        )
+        self._advance(measured)
         return result
 
     # --- Random streams -----------------------------------------------------------------------

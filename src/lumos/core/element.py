@@ -152,6 +152,7 @@ class Element(ParamHost):
     def __init__(self, name: str | None = None, **values: Any) -> None:
         self._lumos_listeners: list[Callable[[Element, str], None]] = []
         self._lumos_container: Any = None
+        self._lumos_driver: Any = None
         self.name = name
         super().__init__(**values)
 
@@ -162,6 +163,19 @@ class Element(ParamHost):
         while container is not None and not hasattr(container, "mode"):
             container = container._lumos_container  # an ElementGroup: go up
         return container
+
+    @property
+    def driver(self) -> Any:
+        """Driver of the equipment represented by this element (used in operation mode), or ``None``."""
+        return self._lumos_driver
+
+    @driver.setter
+    def driver(self, value: Any) -> None:
+        from lumos.core.driver import Driver
+
+        if value is not None and not isinstance(value, Driver):
+            raise TypeError(f"driver must be a lumos.core.driver.Driver or None, got {type(value).__name__}")
+        self._lumos_driver = value
 
     @property
     def container(self) -> Any:
@@ -208,7 +222,7 @@ class Element(ParamHost):
         cls = type(self)
         if (
             key.startswith("_")
-            or key == "name"
+            or key in ("name", "driver")
             or key in cls._lumos_fields
             or isinstance(getattr(cls, key, None), Port)
         ):

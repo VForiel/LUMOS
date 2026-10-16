@@ -146,7 +146,7 @@ flowchart LR
 - [x] **P5.3 `Context`** — mode, jumeau, backend, observation, graines, accès par nom, `>>`.
 - [x] **P5.4 `ElementGroup`** — ports exposés, imbrication, sérialisation `kind: group`.
 - [x] **P5.5 `Clock` et actions** — `@action(duration=…)`, `ctx.wait`, `ctx.parallel`, éléments dépendants du temps.
-- [ ] **P5.6 Modes** — simulation, interface `Driver`, `SimulatedDriver`, dérogation par élément, squelette du jumeau.
+- [x] **P5.6 Modes** — simulation, interface `Driver`, `SimulatedDriver`, dérogation par élément, squelette du jumeau.
 - [ ] **P5.7 Journal** — logging structuré avec l'origine des actions.
 - [ ] **P5.8 `.lumos` contexte** — import et export, *sidecar*, migrations, JSON Schema publié.
 - [ ] **P5.9 Codegen** — script Python équivalent.
