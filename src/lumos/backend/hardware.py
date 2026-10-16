@@ -12,6 +12,7 @@ import os
 import platform
 import subprocess
 import sys
+import warnings
 from dataclasses import asdict, dataclass, field
 from importlib import metadata
 from pathlib import Path
@@ -178,7 +179,13 @@ def hardware_report(*, probe_gpus: bool = True) -> HardwareReport:
         for name in _GPU_PREFERENCE:
             if name in backends:
                 try:
-                    gpus.extend(_PROBES[name]())
+                    # import-time warnings of GPU libraries (e.g. CuPy without CUDA_PATH) are logged, not
+                    # raised: under ``-W error`` they would otherwise hide working GPUs
+                    with warnings.catch_warnings(record=True) as caught:
+                        warnings.simplefilter("always")
+                        gpus.extend(_PROBES[name]())
+                    for warning in caught:
+                        logger.warning("%s: %s", name, warning.message)
                 except Exception as error:  # a broken GPU stack must not prevent LUMOS from running
                     logger.warning("could not list the %s devices: %s", name, error)
     memory = psutil.virtual_memory()
