@@ -137,7 +137,7 @@ convention = "numpy"
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D", "ANN", "PT011", "RUF059", "SIM300"]  # PT011: exception type only; RUF059: readable
 # unpacking; SIM300: "CALLS == Counter(...)" is not a Yoda condition
-"tools/**" = ["D100", "D103", "T20", "ANN"]
+"tools/**" = ["D100", "D103", "T20", "ANN", "E501"]
 "docs/**" = ["D", "ANN"]
 "examples/**" = ["T20", "D", "ANN", "E501"]  # notebooks: prints, no docstrings, long plotting calls
 
