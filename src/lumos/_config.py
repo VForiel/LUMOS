@@ -17,15 +17,30 @@ class Config:
     backend
         Default array backend: ``"auto"`` (chosen from the hardware, ADR-0004) or a backend name
         (``"numpy"``, ``"jax"``, ``"cupy"``, ``"torch"``).
+    precision
+        Floating-point precision of new arrays: ``"double"`` (float64 / complex128, default) or
+        ``"single"`` (float32 / complex64).
     fft_workers
         Number of CPU threads used by FFTs on the NumPy backend; ``-1`` uses every core.
     """
 
-    __slots__ = ("_backend", "_fft_workers")
+    __slots__ = ("_backend", "_fft_workers", "_precision")
 
     def __init__(self) -> None:
         self._backend = "auto"
+        self._precision = "double"
         self._fft_workers = -1
+
+    @property
+    def precision(self) -> str:
+        """Floating-point precision of new arrays: ``"double"`` or ``"single"``."""
+        return self._precision
+
+    @precision.setter
+    def precision(self, value: str) -> None:
+        if value not in ("double", "single"):
+            raise ValueError(f"precision must be 'double' or 'single', got {value!r}")
+        self._precision = value
 
     @property
     def backend(self) -> str:
@@ -61,7 +76,10 @@ class Config:
 
     def __repr__(self) -> str:
         """List the settings."""
-        return f"lumos.config(backend={self.backend!r}, fft_workers={self.fft_workers})"
+        return (
+            f"lumos.config(backend={self.backend!r}, precision={self.precision!r}, "
+            f"fft_workers={self.fft_workers})"
+        )
 
 
 config = Config()
