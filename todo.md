@@ -11,20 +11,12 @@ Chaque entrée indique le contexte, ce que j'ai fait en attendant et ce dont j'a
 - [ ] **Publier `vfscitools` sur PyPI** (nécessaire pour P7.3/P7.4 : `.plt` via pltedit, `vfst.archive`).
   En attendant : intégration derrière un import optionnel, avec repli documenté (voir P7).
 
-- [ ] **Mesurer le gain GPU** (critère d'acceptation de la phase 4) : je n'ai pas de GPU sur cette machine.
-  Lance `python -m pytest -m benchmark tests/benchmarks/test_bench_propagation.py` sur une machine avec GPU
-  CUDA (`pip install -e ".[dev,jax,gpu]"` ou JAX CUDA) et reporte les temps dans `docs/learn/performance.md`.
-
-## Choix techniques à valider
-
-- **P4.4 : Fresnel « deux étapes »** remplacé par un Fresnel en une étape par MFT (`fresnel_mft`), qui donne
-  directement n'importe quel échantillonnage de sortie (but visé par le schéma à deux étapes). Idem pour
-  l'ASM mis à l'échelle : MFT inverse plutôt que CZT. Détails et justification dans l'ADR-0005. Dis-moi si tu
-  tiens au schéma à deux étapes ou à la CZT.
-
-## Remarques
-
-- P2.5 : bug trouvé et corrigé pendant P3.2. Le hook d'import JAX était consommé par
-  `importlib.util.find_spec("jax")` (appelé par `backend.available()`), si bien que `Values` n'était pas
-  enregistré comme pytree quand JAX était ensuite chargé par le backend. Un test de non-régression a été
-  ajouté (commits `7782853`, `f8c004c`).
+- [ ] **Mesurer le gain GPU** (critère d'acceptation de la phase 4). Cette machine a bien un GPU (GeForce
+  GTX 1060 6 Go, pilote 582.28, CUDA 13.0), mais aucun backend de LUMOS ne peut l'utiliser : `jaxlib` est la
+  version CPU (JAX ne publie pas de version CUDA pour Windows natif, seulement Linux/WSL2) et ni CuPy ni
+  PyTorch ne sont installés, d'où `gpus=()` dans `lumos.hardware_report()`. Pour l'utiliser : installer
+  l'extra `[gpu]` (`cupy-cuda12x` ; le pilote CUDA 13 exécute les programmes CUDA 12, et CUDA 12 gère
+  encore l'architecture Pascal de la 1060), avec le CUDA Toolkit 12.x ou les bibliothèques CUDA installées
+  par pip ; ou JAX CUDA sous WSL2. Ensuite :
+  `python -m pytest -m benchmark tests/benchmarks/test_bench_propagation.py`, et reporter les temps dans
+  `docs/learn/performance.md`. Dis-moi si tu veux que je fasse l'installation de CuPy dans le `.venv`.
