@@ -134,4 +134,5 @@ def test_map_chunked_without_budget_fits_available_memory():
 
 def test_map_chunked_rejects_functions_changing_the_chunked_axis():
     with pytest.raises(ValueError):
-        map_chunked(lambda block: block[:1], np.ones((4, 2)), axis=0, budget_bytes=16)
+        # Budget of 32 bytes: chunks of two rows of 2 x 8 bytes, which block[:1] reduces to one row.
+        map_chunked(lambda block: block[:1], np.ones((4, 2)), axis=0, budget_bytes=32)
