@@ -160,7 +160,7 @@ flowchart LR
 
 Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transfert numérique, ses **tests physiques écrits avant**, sa docstring physique et sa doc API.
 
-- [ ] **P6.1 Sources ponctuelles et de laboratoire** — source ponctuelle, `Star` (corps noir, magnitudes, bandes), `Planet` (thermique et réfléchie, phase), système planétaire (géométrie orbitale), laser gaussien, lampe incohérente.
+- [x] **P6.1 Sources ponctuelles et de laboratoire** — source ponctuelle, `Star` (corps noir, magnitudes, bandes), `Planet` (thermique et réfléchie, phase), système planétaire (géométrie orbitale), laser gaussien, lampe incohérente.
 - [ ] **P6.2 Ouvertures et pupilles** — primitives, préréglages JWST, VLT et ELT, anti-crénelage.
 - [ ] **P6.3 Optique de volume** — espace libre, lentille et miroir minces, séparatrice, lames, polariseurs, filtre, ligne à retard.
 - [ ] **P6.4 Télescopes et réseaux** — préréglages VLTI et LIFE, bases projetées.

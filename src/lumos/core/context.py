@@ -68,10 +68,21 @@ class Observation:
     """
 
     def __init__(self) -> None:
+        self._listeners: list[Any] = []
         self._band: tuple[u.Quantity, u.Quantity] | None = None
         self.n_wavelengths = 1
         self.rule: Literal["midpoint", "gauss"] = "midpoint"
         self.extra: dict[str, Any] = {}
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """Set an attribute and notify the context (observation-dependent elements are recomputed)."""
+        object.__setattr__(self, name, value)
+        if not name.startswith("_"):
+            self._changed()
+
+    def _changed(self) -> None:
+        for listener in getattr(self, "_listeners", []):
+            listener()
 
     @property
     def band(self) -> tuple[u.Quantity, u.Quantity] | None:
@@ -82,6 +93,7 @@ class Observation:
     def band(self, value: tuple[u.Quantity, u.Quantity] | None) -> None:
         if value is None:
             self._band = None
+            self._changed()
             return
         low, high = value
         lo = float(
@@ -101,6 +113,7 @@ class Observation:
         if not (math.isfinite(lo) and math.isfinite(hi) and 0 < lo < hi):
             raise ValueError("the band must satisfy 0 < min < max")
         self._band = (low, high)
+        self._changed()
 
     def wavelengths(self) -> tuple[u.Quantity, np.ndarray]:
         """Return the wavelengths and normalised weights sampling the band."""
@@ -160,6 +173,7 @@ class Context:
         self.meta: dict[str, Any] = {}
         self.ui: dict[str, Any] = {}
         self.observation = Observation()
+        self.observation._listeners.append(self._observation_changed)
 
     # --- Settings -----------------------------------------------------------------------------
 
@@ -357,6 +371,11 @@ class Context:
         for element in self._walk():
             if type(element).time_dependent:
                 element._on_field_changed("time")
+
+    def _observation_changed(self) -> None:
+        for element in self._walk():
+            if getattr(type(element), "observation_dependent", False):
+                element._on_field_changed("observation")
 
     def _walk(self) -> Iterator[Any]:
         """Every element of the context, including the children of groups."""

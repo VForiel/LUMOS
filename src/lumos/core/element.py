@@ -30,6 +30,8 @@ import inspect
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from typing import Any, ClassVar
 
+from astropy import units as u
+
 from lumos.core.param import MISSING, Field, Param, ParamHost, Setting
 from lumos.core.port import Port, PortRef
 from lumos.units import quantity_to_json
@@ -118,6 +120,9 @@ class Element(ParamHost):
     #: Whether the transfer function reads the elapsed time ``values.time`` (seconds since the start of the
     #: context). Time-dependent elements are recomputed whenever the clock advances.
     time_dependent: ClassVar[bool] = False
+    #: Whether the transfer function reads the spectral sampling of the context, ``values.wavelengths`` and
+    #: ``values.bandwidths`` (tuples of SI floats from ``ctx.observation``).
+    observation_dependent: ClassVar[bool] = False
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Collect fields and ports and check the class definition."""
@@ -148,6 +153,10 @@ class Element(ParamHost):
             raise TypeError(f"{cls.__name__}: field(s) and port(s) share the name(s) {sorted(clashes)}")
         if cls.time_dependent and "time" in cls._lumos_fields:
             raise TypeError(f"{cls.__name__}: time-dependent elements cannot declare a field named 'time'")
+        if cls.observation_dependent and {"wavelengths", "bandwidths"} & set(cls._lumos_fields):
+            raise TypeError(
+                f"{cls.__name__}: 'wavelengths' and 'bandwidths' are reserved for the observation"
+            )
 
     def __init__(self, name: str | None = None, **values: Any) -> None:
         self._lumos_listeners: list[Callable[[Element, str], None]] = []
@@ -259,6 +268,14 @@ class Element(ParamHost):
         if type(self).time_dependent:
             context = self.context
             data["time"] = 0.0 if context is None else context.clock.elapsed_si
+        if type(self).observation_dependent:
+            context = self.context
+            if context is None or context.observation.band is None:
+                raise ValueError(f"{self!r} needs the spectral band of its context (ctx.observation.band)")
+            wavelengths, weights = context.observation.wavelengths()
+            low, high = (float(q.to_value(u.m, equivalencies=u.spectral())) for q in context.observation.band)
+            data["wavelengths"] = tuple(float(v) for v in wavelengths.to_value(u.m))
+            data["bandwidths"] = tuple(float(w) * (high - low) for w in weights)
         return Values(data)
 
     @classmethod

@@ -41,6 +41,7 @@ from astropy import units as u
 from astropy.time import Time
 
 import lumos
+import lumos.elements
 from lumos.core import registry as _registry_module
 from lumos.core.context import Context
 from lumos.core.element import Element
