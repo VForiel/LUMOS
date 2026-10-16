@@ -83,7 +83,7 @@ def test_field_is_stored_as_complex_backend_array_without_units():
     wf = Wavefront(np.ones(GRID.shape), GRID, WAVELENGTH)
     assert not isinstance(wf.field, u.Quantity)
     assert wf.field.dtype == np.complex128
-    assert wf.backend == "numpy"
+    assert wf.backend == backend.current().name  # NumPy input is copied into the current backend
 
 
 def test_field_follows_the_precision(restore_precision):
