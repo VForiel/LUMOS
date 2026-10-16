@@ -9,6 +9,8 @@ Independent references:
   ``|FFT|²`` of slope ``-β`` in log-log (Wiener-Khinchin theorem); measured here with ``numpy.fft``;
 - a Siemens star of N spokes alternates 2N times between dark and bright around a circle (construction);
 - a checkerboard of period p has a mean of 1/2 over whole periods and anti-symmetric neighbouring squares;
+- the geometry of test targets is given in pixels of their grid, so that the same target serves sky scenes
+  (``pixel_scale``, an angle) and laboratory scenes (``pixel_size``, a length);
 - random fields are reproducible: same seed, same field; another seed, another field (ADR-0007).
 """
 
@@ -81,7 +83,7 @@ def test_random_field_stays_positive():
 
 
 def test_siemens_star_alternates_twice_per_spoke():
-    star = SiemensStar(name="star", n_spokes=12, n_pixels=256, pixel_scale=1 * u.mas, radius=120 * u.mas)
+    star = SiemensStar(name="star", n_spokes=12, n_pixels=256, pixel_scale=1 * u.mas, radius=120.0)
     image = brightness(run(star))
     angles = np.linspace(0, 2 * np.pi, 2000, endpoint=False)
     radius = 80  # pixels
@@ -93,23 +95,24 @@ def test_siemens_star_alternates_twice_per_spoke():
 
 
 def test_siemens_star_is_dark_outside_its_radius():
-    star = SiemensStar(name="star", n_spokes=8, n_pixels=128, pixel_scale=1 * u.mas, radius=40 * u.mas)
+    star = SiemensStar(name="star", n_spokes=8, n_pixels=128, pixel_scale=1 * u.mas, radius=40.0)
     image = brightness(run(star))
     assert image[0, 0] == 0.0
     assert image.max() == pytest.approx(1e-3, rel=1e-6)  # default surface brightness
 
 
 def test_checkerboard():
-    board = Checkerboard(name="board", period=8 * u.mas, n_pixels=64, pixel_scale=1 * u.mas)
+    board = Checkerboard(name="board", period=8.0, n_pixels=64, pixel_scale=1 * u.mas)
     image = brightness(run(board))
     levels = image / image.max()
     assert levels.mean() == pytest.approx(0.5, abs=1e-12)
-    assert levels[0, 0] != levels[0, 4]
-    assert levels[0, 0] == levels[4, 4]
+    # squares have a corner on the axis: pixel centres 1 and 5 lie inside neighbouring squares
+    assert levels[1, 1] != levels[1, 5]
+    assert levels[1, 1] == levels[5, 5]
 
 
 def test_bar_target_has_the_requested_bars():
-    bars = BarTarget(name="bars", n_bars=3, period=10 * u.mas, n_pixels=128, pixel_scale=0.5 * u.mas)
+    bars = BarTarget(name="bars", n_bars=3, period=20.0, n_pixels=128, pixel_scale=0.5 * u.mas)
     image = brightness(run(bars))
     row = image[64] > 0.5 * image.max()
     starts = np.count_nonzero(row & ~np.roll(row, 1))
@@ -117,7 +120,7 @@ def test_bar_target_has_the_requested_bars():
 
 
 def test_spatial_targets_for_laboratory_scenes():
-    star = SiemensStar(name="star", n_spokes=8, n_pixels=64, pixel_size=10 * u.um, radius=0.3 * u.mm)
+    star = SiemensStar(name="star", n_spokes=8, n_pixels=64, pixel_size=10 * u.um, radius=30.0)
     result = run(star)
     assert result.grid.plane == "spatial"
     assert result.grid.dx.to_value(u.um) == pytest.approx(10.0)
