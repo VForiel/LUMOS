@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import logging
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -10,6 +11,8 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
+
+from lumos._config import config
 
 __all__ = [
     "Backend",
@@ -144,25 +147,37 @@ _EXTRAS = {"jax": "jax", "cupy": "gpu", "torch": "torch"}
 
 # --- Current and default backends -------------------------------------------------------------------
 
-_default = "numpy"
+logger = logging.getLogger(__name__)
 _current: ContextVar[str | None] = ContextVar("lumos_backend", default=None)
+_auto_choice: str | None = None
 
 
 def get_default() -> str:
-    """Return the name of the default backend (used when no :func:`use` block is active)."""
-    return _default
+    """Return the default backend setting: ``"auto"`` or a backend name (same as ``lumos.config.backend``)."""
+    return config.backend
 
 
 def set_default(name: str) -> None:
-    """Set the default backend for the whole process."""
-    global _default
-    get(name)  # validate and load
-    _default = name
+    """Set the default backend for the whole process (``"auto"`` or a backend name)."""
+    config.backend = name
+
+
+def _resolve_default() -> str:
+    """Return the default backend name, chosen from the hardware when the setting is ``"auto"``."""
+    global _auto_choice
+    if config.backend != "auto":
+        return config.backend
+    if _auto_choice is None:
+        from lumos.backend.hardware import hardware_report, select_backend  # deferred: probes the GPUs
+
+        _auto_choice = select_backend(hardware_report(probe_gpus=True))
+        logger.info("automatically selected the %r backend", _auto_choice)
+    return _auto_choice
 
 
 def current() -> Backend:
     """Return the backend active in the current thread or task."""
-    return get(_current.get() or _default)
+    return get(_current.get() or _resolve_default())
 
 
 @contextmanager

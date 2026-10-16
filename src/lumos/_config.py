@@ -14,14 +14,31 @@ class Config:
 
     Attributes
     ----------
+    backend
+        Default array backend: ``"auto"`` (chosen from the hardware, ADR-0004) or a backend name
+        (``"numpy"``, ``"jax"``, ``"cupy"``, ``"torch"``).
     fft_workers
         Number of CPU threads used by FFTs on the NumPy backend; ``-1`` uses every core.
     """
 
-    __slots__ = ("_fft_workers",)
+    __slots__ = ("_backend", "_fft_workers")
 
     def __init__(self) -> None:
+        self._backend = "auto"
         self._fft_workers = -1
+
+    @property
+    def backend(self) -> str:
+        """Default array backend: ``"auto"`` or a backend name."""
+        return self._backend
+
+    @backend.setter
+    def backend(self, value: str) -> None:
+        if value != "auto":
+            from lumos.backend._core import get  # deferred: the backend package reads this configuration
+
+            get(value)  # raises for unknown or missing backends
+        self._backend = value
 
     @property
     def fft_workers(self) -> int:
@@ -44,7 +61,7 @@ class Config:
 
     def __repr__(self) -> str:
         """List the settings."""
-        return f"lumos.config(fft_workers={self.fft_workers})"
+        return f"lumos.config(backend={self.backend!r}, fft_workers={self.fft_workers})"
 
 
 config = Config()

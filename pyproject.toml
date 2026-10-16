@@ -35,6 +35,7 @@ dependencies = [
     "platformdirs>=4.0",
     "array-api-compat>=1.9",
     "jsonschema>=4.23",
+    "psutil>=5.9",
 ]
 
 [project.optional-dependencies]
