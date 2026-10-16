@@ -17,12 +17,15 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 from typing import Any, Literal, cast
 
 import numpy as np
 from astropy import units as u
+from astropy.time import Time
 
 from lumos.backend._core import known, use
+from lumos.core.clock import Clock, duration_si
 from lumos.core.graph import Graph, GraphError, Result
 from lumos.core.port import PortRef
 from lumos.units import require_unit, to_si
@@ -110,6 +113,8 @@ class Context:
         Array backend used by :meth:`run`: ``"auto"`` (default, the process default) or a backend name.
     seed
         Seed of the random streams; a random seed is drawn (and kept) if ``None``.
+    start
+        Absolute start date of the clock (``astropy.time.Time``, UTC); defaults to now.
     name
         Optional name of the context.
     """
@@ -121,9 +126,12 @@ class Context:
         twin: bool = True,
         backend: str = "auto",
         seed: int | None = None,
+        start: Time | None = None,
         name: str | None = None,
     ) -> None:
         self._graph = Graph()
+        self.clock = Clock(start)
+        self._parallel: list[list[float]] = []
         self.mode = mode
         self.twin = twin
         self.backend = backend
@@ -237,6 +245,60 @@ class Context:
             return self._graph.run(targets)
         with use(self._backend):
             return self._graph.run(targets)
+
+    # --- Time -------------------------------------------------------------------------------------
+
+    @property
+    def time(self) -> Time:
+        """Current absolute date of the clock."""
+        return self.clock.time
+
+    @property
+    def elapsed(self) -> u.Quantity:
+        """Time elapsed since the start of the clock."""
+        return self.clock.elapsed
+
+    def wait(self, duration: u.Quantity) -> None:
+        """Let ``duration`` pass (counts as one duration inside a :meth:`parallel` block)."""
+        self._advance(duration_si(duration))
+
+    @contextmanager
+    def parallel(self) -> Iterator[None]:
+        """Run the actions of the block simultaneously: the clock advances by the longest duration."""
+        self._parallel.append([])
+        try:
+            yield
+        finally:
+            durations = self._parallel.pop()
+            self._advance(max(durations, default=0.0))
+
+    def _advance(self, seconds: float) -> None:
+        if self._parallel:
+            self._parallel[-1].append(seconds)
+            return
+        if seconds == 0:
+            return
+        self.clock.advance(seconds)
+        for element in self._walk():
+            if type(element).time_dependent:
+                element._on_field_changed("time")
+
+    def _walk(self) -> Iterator[Any]:
+        """Every element of the context, including the children of groups."""
+        stack = list(self._graph)
+        while stack:
+            element = stack.pop()
+            yield element
+            inner = getattr(element, "graph", None)
+            if isinstance(inner, Graph):
+                stack.extend(inner)
+
+    def _perform(self, element: Any, spec: Any, args: tuple[Any, ...], kwargs: dict[str, Any]) -> Any:
+        """Execute an action of ``element`` (called by the :func:`~lumos.core.action.action` wrapper)."""
+        seconds = spec.duration_si(element, args, kwargs)
+        result = spec.method(element, *args, **kwargs)
+        self._advance(seconds)
+        return result
 
     # --- Random streams -----------------------------------------------------------------------
 

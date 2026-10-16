@@ -115,6 +115,9 @@ class Element(ParamHost):
     """
 
     _lumos_ports: ClassVar[dict[str, Port]] = {}
+    #: Whether the transfer function reads the elapsed time ``values.time`` (seconds since the start of the
+    #: context). Time-dependent elements are recomputed whenever the clock advances.
+    time_dependent: ClassVar[bool] = False
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Collect fields and ports and check the class definition."""
@@ -143,6 +146,8 @@ class Element(ParamHost):
         clashes = set(cls._lumos_fields) & set(ports)
         if clashes:
             raise TypeError(f"{cls.__name__}: field(s) and port(s) share the name(s) {sorted(clashes)}")
+        if cls.time_dependent and "time" in cls._lumos_fields:
+            raise TypeError(f"{cls.__name__}: time-dependent elements cannot declare a field named 'time'")
 
     def __init__(self, name: str | None = None, **values: Any) -> None:
         self._lumos_listeners: list[Callable[[Element, str], None]] = []
@@ -231,8 +236,23 @@ class Element(ParamHost):
         return PortRef(self, ports[name])
 
     def values(self) -> Values:
-        """Return an immutable snapshot of the SI values of all fields."""
-        return Values({name: self.si(name) for name in type(self)._lumos_fields})
+        """Return an immutable snapshot of the SI values of all fields.
+
+        Time-dependent elements also get ``time``, the elapsed time of their context in seconds (0 outside a
+        context).
+        """
+        data = {name: self.si(name) for name in type(self)._lumos_fields}
+        if type(self).time_dependent:
+            context = self.context
+            data["time"] = 0.0 if context is None else context.clock.elapsed_si
+        return Values(data)
+
+    @classmethod
+    def actions(cls) -> Mapping[str, Any]:
+        """Return the timed actions declared by the class, by name (see :func:`lumos.core.action.action`)."""
+        from lumos.core.action import actions_of
+
+        return actions_of(cls)
 
     # --- Behaviour --------------------------------------------------------------------------
 
