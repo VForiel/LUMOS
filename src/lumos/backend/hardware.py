@@ -20,7 +20,7 @@ from typing import Any
 
 import psutil
 
-from lumos.backend._core import available
+from lumos.backend._core import available, prepare_jax
 
 __all__ = ["GPUInfo", "HardwareReport", "hardware_report", "select_backend"]
 
@@ -122,6 +122,7 @@ def _library_versions() -> dict[str, str | None]:
 
 
 def _jax_gpus() -> list[GPUInfo]:
+    prepare_jax()
     import jax
 
     gpus = []

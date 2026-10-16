@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import logging
+import os
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -76,7 +77,18 @@ def _load_numpy() -> Backend:
     return Backend("numpy", xp, lambda a: isinstance(a, np.ndarray), np.asarray)
 
 
+def prepare_jax() -> None:
+    """Let JAX share the GPU: no preallocation of 75 % of its memory unless the user chose otherwise.
+
+    JAX reads ``XLA_PYTHON_CLIENT_PREALLOCATE`` when it creates its GPU client, at the first use of a device,
+    so LUMOS sets it to ``false`` (if unset) before it loads JAX or lists its devices (ADR-0008). With
+    preallocation, cuFFT and cuBLAS run out of memory on GPUs shared with the display or with CuPy.
+    """
+    os.environ.setdefault("XLA_PYTHON_CLIENT_PREALLOCATE", "false")
+
+
 def _load_jax() -> Backend:
+    prepare_jax()
     import jax
     import jax.numpy as jnp
 
