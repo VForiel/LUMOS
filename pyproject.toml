@@ -138,6 +138,8 @@ pythonVersion = "3.12"
 typeCheckingMode = "standard"
 venvPath = "."
 venv = ".venv"
+# Tests deliberately call APIs with invalid arguments to check runtime validation.
+executionEnvironments = [{ root = "tests", reportArgumentType = "none" }, { root = "src" }, { root = "tools" }]
 
 # --- Tests -------------------------------------------------------------------
 
