@@ -145,4 +145,8 @@ def test_aperture_on_axis_is_always_accurate(fresnel_number):
     out = propagate(wf, z * u.m, output_grid=Grid(1, dx=1e-6 * u.m))
     r = math.sqrt(z**2 + a**2)
     expected = np.exp(1j * K * z) - z / r * np.exp(1j * K * r)
-    assert abs(backend.to_numpy(out.field)[0, 0] - expected) < 0.03
+    # The pixel-coverage map is the disk convolved with a pixel, so its diffraction is the exact one times
+    # sinc(f dx): edge waves reach the axis at f = a / (λ z), attenuated by ≈ (π a dx / (λ z))² / 6. The rest
+    # (edge digitisation, quadrature) stays below 1 % of U0.
+    pixel_attenuation = (math.pi * a * 1e-6 / (LAM * z)) ** 2 / 6
+    assert abs(backend.to_numpy(out.field)[0, 0] - expected) < 0.01 + pixel_attenuation
