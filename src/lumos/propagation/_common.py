@@ -77,14 +77,27 @@ def mft_matrix(frequencies: np.ndarray, coordinates: np.ndarray, sign: float, xp
     return xp.asarray(np.exp(1j * phase), dtype=dtype)
 
 
+def mft_axes(
+    field: Any,
+    out_x: np.ndarray,
+    out_y: np.ndarray,
+    in_x: np.ndarray,
+    in_y: np.ndarray,
+    sign: float,
+    xp: Any,
+) -> Any:
+    """Separable sum ``Σ_{i,j} F[..., j, i] exp(sign 2πi (u_o x_i + v_p y_j))`` (no area factor)."""
+    dtype = complex_dtype(field)
+    ex = mft_matrix(out_x, in_x, sign, xp, dtype)  # (n_out_x, n_in_x)
+    ey = mft_matrix(out_y, in_y, sign, xp, dtype)  # (n_out_y, n_in_y)
+    return xp.matmul(xp.matmul(ey, field), xp.matrix_transpose(ex))
+
+
 def mft(field: Any, ux: np.ndarray, uy: np.ndarray, grid: Grid, sign: float, xp: Any) -> Any:
     """Matrix Fourier transform ``Σ U(x, y) exp(sign 2πi (u x + v y)) dx dy`` at frequencies ``(ux, uy)``."""
-    dtype = complex_dtype(field)
     x = axis_coordinates(grid.nx, grid.dx_si, grid.x0_si)
     y = axis_coordinates(grid.ny, grid.dy_si, grid.y0_si)
-    ex = mft_matrix(ux, x, sign, xp, dtype)  # (n_ux, nx)
-    ey = mft_matrix(uy, y, sign, xp, dtype)  # (n_uy, ny)
-    return xp.matmul(xp.matmul(ey, field), xp.matrix_transpose(ex)) * (grid.dx_si * grid.dy_si)
+    return mft_axes(field, ux, uy, x, y, sign, xp) * (grid.dx_si * grid.dy_si)
 
 
 def frequencies(n: int, step: float) -> np.ndarray:
