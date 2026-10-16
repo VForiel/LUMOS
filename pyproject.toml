@@ -34,6 +34,7 @@ dependencies = [
     "pyyaml>=6.0",
     "platformdirs>=4.0",
     "array-api-compat>=1.9",
+    "jsonschema>=4.23",
 ]
 
 [project.optional-dependencies]
@@ -138,8 +139,13 @@ pythonVersion = "3.12"
 typeCheckingMode = "standard"
 venvPath = "."
 venv = ".venv"
-# Tests deliberately call APIs with invalid arguments to check runtime validation.
-executionEnvironments = [{ root = "tests", reportArgumentType = "none" }, { root = "src" }, { root = "tools" }]
+# Tests deliberately misuse the API (invalid arguments, forbidden overrides, dynamic attributes)
+# to check that it is refused at runtime.
+executionEnvironments = [
+    { root = "tests", reportArgumentType = "none", reportAttributeAccessIssue = "none", reportIncompatibleMethodOverride = "none", reportIncompatibleVariableOverride = "none", reportAssignmentType = "none" },
+    { root = "src" },
+    { root = "tools" },
+]
 
 # --- Tests -------------------------------------------------------------------
 
