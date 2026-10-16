@@ -27,7 +27,6 @@ from astropy.modeling.models import BlackBody
 import lumos.io
 from lumos import Context
 from lumos.fields import RadianceField
-from lumos.processing import radial_profile
 from lumos.scenes import Scene
 from lumos.scenes.diffuse import (
     GaussianComponent,
@@ -135,9 +134,10 @@ def test_gaussian_width_and_flux():
     blob = GaussianComponent(name="g", fwhm=fwhm, flux_density=1 * u.Jy, n_pixels=128, pixel_scale=1 * u.mas)
     field = evaluate(blob, n=1)
     image = field.radiance[0].value
-    radii, profile = radial_profile(image, field.grid, bin_width=0.25 * u.mas)
-    half = radii[np.argmin(np.abs(profile - profile[0] / 2))]
-    assert 2 * half.to_value(u.mas) == pytest.approx(30.0, rel=2e-2)
+    row = image[64, 64:]  # from the centre (index N // 2) towards +x, one value per 1 mas pixel
+    x = np.arange(row.size) * 1.0
+    half = np.interp(row[0] / 2, row[::-1], x[::-1])  # half-maximum crossing, linear interpolation
+    assert 2 * half == pytest.approx(30.0, rel=2e-2)
     expected = f_lambda(1 * u.Jy, field.wavelengths)
     np.testing.assert_allclose(field.integrated().to_value(F_LAMBDA), expected.value, rtol=1e-3)
 
