@@ -229,8 +229,11 @@ def test_spatially_varying_matrix():
     matrix[:, :, :, 4:] = jones.polarizer(90 * u.deg)[:, :, None, None]
     out = jones.apply(matrix, polarized(jones.vector("D")))
     assert power_w(out) == pytest.approx(0.5, rel=1e-12)
-    assert np.all(np.abs(backend.to_numpy(out.field[1, :, :4])) < 1e-15)
-    assert np.all(np.abs(backend.to_numpy(out.field[0, :, 4:])) < 1e-15)
+    # Relative to the field amplitude: cos(90°) is 6e-17 in double precision, not 0.
+    field = np.abs(backend.to_numpy(out.field))
+    scale = field.max()
+    assert np.all(field[1, :, :4] < 1e-15 * scale)
+    assert np.all(field[0, :, 4:] < 1e-15 * scale)
 
 
 def test_matrix_of_wrong_shape_is_refused():
