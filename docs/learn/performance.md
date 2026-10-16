@@ -26,7 +26,33 @@ input grid.
 ## GPU
 
 The GPU speed-up is measured with the same benchmark on a machine with a CUDA GPU (CuPy, or JAX with a GPU
-device). The measurements will be added here.
+device): the Ryzen 7 2700X above with an NVIDIA GeForce GTX 1060 6 GB (Pascal, driver 582.28, CUDA 12
+libraries), idle, double precision. Mean time of one propagation in milliseconds, and speed-up over NumPy on
+the same system.
+
+Windows 11, CuPy 14.2:
+
+| Method | N = 256, NumPy | N = 256, CuPy | Speed-up | N = 1024, NumPy | N = 1024, CuPy | Speed-up |
+|--------|---------------:|--------------:|---------:|----------------:|---------------:|---------:|
+| `asm` | 9.0 | 1.9 | 4.7 | 345 | 13.2 | 26 |
+| `fresnel_tf` | 9.6 | 1.9 | 5.0 | 340 | 16.1 | 21 |
+| `fresnel_mft` (256² output) | 11.1 | 2.8 | 3.9 | 92 | 25.6 | 3.6 |
+| `fraunhofer` (256² output) | 5.7 | 2.0 | 2.8 | 30.4 | 17.3 | 1.8 |
+
+Ubuntu 26.04 under WSL 2, JAX 0.11.2 with CUDA 12:
+
+| Method | N = 256, NumPy | N = 256, JAX GPU | Speed-up | N = 1024, NumPy | N = 1024, JAX GPU | Speed-up |
+|--------|---------------:|-----------------:|---------:|----------------:|------------------:|---------:|
+| `asm` | 7.8 | 11.0 | 0.7 | 173 | 36.3 | 4.8 |
+| `fresnel_tf` | 14.4 | 10.1 | 1.4 | 186 | 33.5 | 5.5 |
+| `fresnel_mft` (256² output) | 18.5 | 7.2 | 2.6 | 110 | 23.9 | 4.6 |
+| `fraunhofer` (256² output) | 8.4 | 5.3 | 1.6 | 41.6 | 20.5 | 2.0 |
+
+The GPU pays off on large padded FFTs (`asm`, `fresnel_tf`: 21 to 26 times faster with CuPy at N = 1024);
+matrix Fourier transforms to a small output grid gain less. The GTX 1060 computes in double precision at
+1/32 of its single-precision rate, so `lumos.config.precision = "single"` should gain more on such consumer
+GPUs. With the same GPU, JAX is about 2 to 3 times slower than CuPy on the padded FFTs, and slower than NumPy
+on small grids, where dispatching to the GPU dominates.
 
 ### Enabling an NVIDIA GPU
 
