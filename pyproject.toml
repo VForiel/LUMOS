@@ -36,6 +36,7 @@ dependencies = [
     "array-api-compat>=1.9",
     "jsonschema>=4.23",
     "psutil>=5.9",
+    "vfscitools>=0.1",
 ]
 
 [project.optional-dependencies]
