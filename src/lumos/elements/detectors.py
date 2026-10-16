@@ -26,10 +26,9 @@ give one value per guided channel when they receive a :class:`~lumos.fields.Moda
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
-from astropy import constants as const
 from astropy import units as u
 
 from lumos.backend._core import get
@@ -47,9 +46,10 @@ from lumos.fields.wavefront import Wavefront
 
 __all__ = ["Camera", "Photodiode", "PowerMeter"]
 
-_H = float(const.h.value)
-_C = float(const.c.value)
-_Q = float(const.e.value)
+# exact SI values (2019 redefinition of the SI)
+_H = 6.62607015e-34  # J s
+_C = 299_792_458.0  # m / s
+_Q = 1.602176634e-19  # C
 _PHOTON_RATE = u.photon / u.s
 
 
@@ -89,19 +89,23 @@ def _spectral_power(signal: Any) -> tuple[np.ndarray, np.ndarray, np.ndarray, u.
     return lams, weights, density * grid.dx_si * grid.dy_si, member.power_unit
 
 
+def _scale(unit: u.UnitBase, target: u.UnitBase) -> float:
+    return float(cast(Any, unit.to(target)))
+
+
 def _photon_rates(lams: np.ndarray, power: np.ndarray, unit: u.UnitBase) -> np.ndarray:
     """Convert powers ``(nλ, ...)`` to photons per second."""
     shape = (-1,) + (1,) * (power.ndim - 1)
     if unit.is_equivalent(u.W):
-        return power * float(unit.to(u.W)) * (lams / (_H * _C)).reshape(shape)
-    return power * float(unit.to(_PHOTON_RATE))
+        return power * _scale(unit, u.W) * (lams / (_H * _C)).reshape(shape)
+    return power * _scale(unit, _PHOTON_RATE)
 
 
 def _watts(lams: np.ndarray, power: np.ndarray, unit: u.UnitBase) -> np.ndarray:
     shape = (-1,) + (1,) * (power.ndim - 1)
     if unit.is_equivalent(u.W):
-        return power * float(unit.to(u.W))
-    return power * float(unit.to(_PHOTON_RATE)) * (_H * _C / lams).reshape(shape)
+        return power * _scale(unit, u.W)
+    return power * _scale(unit, _PHOTON_RATE) * (_H * _C / lams).reshape(shape)
 
 
 def _weighted(weights: np.ndarray, values: np.ndarray) -> np.ndarray:
