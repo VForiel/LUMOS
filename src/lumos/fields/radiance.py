@@ -6,8 +6,8 @@ wavelengths :math:`\lambda_k` on a :class:`~lumos.fields.Grid`. On an angular gr
 radiance seen from the observer; on a spatial grid (a laboratory source) it is the radiance leaving each
 point of the source plane. Its data has shape ``(nλ, ny, nx)`` or ``(nλ, 4, ny, nx)``.
 
-Units
------
+Radiometric units
+-----------------
 The radiance may be given per wavelength or per frequency, in energy or photon units, e.g.
 ``W m⁻² sr⁻¹ m⁻¹``, ``photon s⁻¹ m⁻² sr⁻¹ m⁻¹``, ``erg s⁻¹ cm⁻² sr⁻¹ Å⁻¹`` or ``Jy sr⁻¹``. Conversions use
 the wavelength of each channel (Rybicki & Lightman, *Radiative Processes in Astrophysics*, §1.3):
