@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -47,6 +47,10 @@ def _intensity(signal: Any) -> tuple[np.ndarray, Any]:
             intensity = intensity.sum(axis=0)
         return intensity, signal.intensity_unit
     raise TypeError(f"cannot plot the intensity of a {type(signal).__name__}")
+
+
+def _value(quantity: Any, unit: Any) -> float:
+    return float(quantity.to_value(unit))
 
 
 def _mean_wavelength(signal: Any) -> float:
@@ -95,15 +99,15 @@ def plot_psf(
     unit_name = unit_label(grid.unit)
     extent = [b.to_value(grid.unit) for b in grid.bounds]
     if diameter is not None:
-        scale = _mean_wavelength(signal) / float(diameter.to_value(u.m))
+        scale = _mean_wavelength(signal) / _value(diameter, u.m)
         if grid.plane == "spatial":
             if focal_length is None:
                 raise ValueError("a spatial focal plane needs focal_length to be drawn in λ/D units")
-            scale *= float(focal_length.to_value(u.m))
+            scale *= _value(focal_length, u.m)
             unit_name = "λf/D"
         else:
             unit_name = "λ/D"
-        extent = [float(b.to_value(u.m if grid.plane == "spatial" else u.rad)) / scale for b in grid.bounds]
+        extent = [_value(b, u.m if grid.plane == "spatial" else u.rad) / scale for b in grid.bounds]
     if log:
         kwargs.setdefault("norm", LogNorm(vmin=1 / dynamic_range, vmax=1.0))
     kwargs.setdefault("cmap", CMAPS["intensity"])
@@ -162,7 +166,7 @@ def plot_spectrum(signal: Any, *, ax: Any = None, wavelength_unit: Any = u.um, *
         if len(signal.axis_names) != 1:
             raise ValueError("plot_spectrum draws 1D data products")
         axis = signal.axes[signal.axis_names[0]]
-        if not axis.unit.is_equivalent(u.m, equivalencies=u.spectral()):
+        if not u.Unit(cast(Any, axis.unit)).is_equivalent(u.m, equivalencies=u.spectral()):
             raise ValueError(f"the axis {signal.axis_names[0]!r} is not a wavelength")
         lam = axis.to_value(wavelength_unit, equivalencies=u.spectral())
         ax.plot(lam, np.asarray(signal.data.value), marker=".", **kwargs)
