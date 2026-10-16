@@ -25,7 +25,7 @@ from typing import Any, cast
 import numpy as np
 from astropy import units as u
 
-from lumos.backend._core import backend_of, convert, get
+from lumos.backend._core import backend_of, convert, get, operand
 from lumos.backend.memory import dtypes
 from lumos.core.signal import OpticalSignal
 from lumos.fields.grid import Grid
@@ -320,6 +320,7 @@ class IncoherentBundle(OpticalSignal):
         """Multiply every mode by a scalar or a mask (broadcast like the member signals)."""
         if isinstance(other, IncoherentBundle | Wavefront | Wavecube):
             return NotImplemented
+        other = operand(other, self.backend)
         if hasattr(other, "shape") and len(other.shape) == 3 and self.polarized and self.polychromatic:
             other = other[:, None]
         return self._with_field(self._field * other)

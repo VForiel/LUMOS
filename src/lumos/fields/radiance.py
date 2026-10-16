@@ -26,7 +26,7 @@ from typing import Any, Literal, cast
 import numpy as np
 from astropy import units as u
 
-from lumos.backend._core import backend_of, convert, current, get
+from lumos.backend._core import backend_of, convert, current, get, operand
 from lumos.backend.memory import dtypes
 from lumos.core.signal import OpticalSignal
 from lumos.fields.grid import Grid
@@ -244,7 +244,7 @@ class RadianceField(OpticalSignal):
         """Multiply by a dimensionless scalar or transmission map (broadcast on the data)."""
         if isinstance(other, OpticalSignal):
             return NotImplemented
-        return self._with(self._data * other)
+        return self._with(self._data * operand(other, self.backend))
 
     __rmul__ = __mul__
 

@@ -18,7 +18,7 @@ from typing import Any, cast
 import numpy as np
 from astropy import units as u
 
-from lumos.backend._core import backend_of, convert, get
+from lumos.backend._core import backend_of, convert, get, operand
 from lumos.backend.memory import dtypes
 from lumos.core.signal import OpticalSignal
 from lumos.fields.wavecube import _wavelengths
@@ -223,7 +223,7 @@ class ModalField(OpticalSignal):
         """Multiply by a scalar or per-channel factors (broadcast on the last axis)."""
         if isinstance(other, OpticalSignal):
             return NotImplemented
-        return self._with(self._amplitudes * other, self._labels)
+        return self._with(self._amplitudes * operand(other, self.backend), self._labels)
 
     __rmul__ = __mul__
 

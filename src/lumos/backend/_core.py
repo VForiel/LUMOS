@@ -24,6 +24,7 @@ __all__ = [
     "get",
     "get_default",
     "known",
+    "operand",
     "set_default",
     "to_numpy",
     "use",
@@ -210,6 +211,17 @@ def backend_of(array: Any) -> str:
     if root in _KNOWN and root != "numpy" and get(root).is_array(array):
         return root
     raise TypeError(f"{type(array).__name__} is not an array of a known backend")
+
+
+def operand(value: Any, name: str) -> Any:
+    """Return ``value`` ready to combine with arrays of backend ``name``.
+
+    NumPy arrays (masks, transmission maps, factors) are converted to the backend; scalars and arrays of the
+    backend are returned unchanged. CuPy, unlike JAX and PyTorch, refuses to mix its arrays with NumPy arrays.
+    """
+    if isinstance(value, np.ndarray) and name != "numpy":
+        return get(name).asarray(value)
+    return value
 
 
 def to_numpy(array: Any) -> np.ndarray:

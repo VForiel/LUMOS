@@ -24,7 +24,7 @@ from typing import Any, cast
 import numpy as np
 from astropy import units as u
 
-from lumos.backend._core import backend_of, convert, get
+from lumos.backend._core import backend_of, convert, get, operand
 from lumos.backend.memory import dtypes
 from lumos.core.signal import OpticalSignal
 from lumos.fields.grid import Grid
@@ -322,6 +322,7 @@ class Wavecube(OpticalSignal):
         """Multiply by a scalar, an achromatic mask ``(ny, nx)`` or a chromatic mask ``(nλ, ny, nx)``."""
         if isinstance(other, Wavecube | Wavefront):
             return NotImplemented
+        other = operand(other, self.backend)
         shape = tuple(getattr(other, "shape", ()))
         if self.polarized and len(shape) == 3:
             other = other[:, None]  # chromatic mask applied to both components
