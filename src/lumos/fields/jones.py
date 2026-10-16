@@ -30,6 +30,7 @@ from astropy import units as u
 
 from lumos.backend._core import get
 from lumos.backend.memory import dtypes
+from lumos.fields.incoherent import IncoherentBundle
 from lumos.fields.wavecube import Wavecube
 from lumos.fields.wavefront import Wavefront
 from lumos.units import require_unit, to_si
@@ -129,8 +130,8 @@ def rotator(angle: u.Quantity) -> np.ndarray:
     return np.array([[c, -s], [s, c]], dtype=complex)
 
 
-def apply[F: Wavefront | Wavecube](matrix: Any, wavefront: F) -> F:
-    """Apply a Jones matrix to a polarised wavefront or wavecube (every channel).
+def apply[F: Wavefront | Wavecube | IncoherentBundle](matrix: Any, wavefront: F) -> F:
+    """Apply a Jones matrix to a polarised wavefront, wavecube (every channel) or bundle (every mode).
 
     Parameters
     ----------
@@ -156,11 +157,20 @@ def apply[F: Wavefront | Wavecube](matrix: Any, wavefront: F) -> F:
 # --- Stokes parameters ----------------------------------------------------------------------------------
 
 
-def stokes(wavefront: Wavefront | Wavecube) -> Any:
+def stokes(wavefront: Wavefront | Wavecube | IncoherentBundle) -> Any:
     """Return the Stokes parameters ``(S0, S1, S2, S3)``, shape ``(4, ny, nx)`` or ``(nλ, 4, ny, nx)``.
 
-    They are in the intensity unit of the wavefront (:attr:`Wavefront.intensity_unit`).
+    They are in the intensity unit of the signal. For an :class:`~lumos.fields.IncoherentBundle`, the Stokes
+    parameters of the modes add with the mode weights (incoherent superposition, Born & Wolf §10.8.3), which
+    describes partially polarised and natural light.
     """
+    if isinstance(wavefront, IncoherentBundle):
+        if not wavefront.polarized:
+            raise ValueError("Stokes parameters need polarised modes")
+        xp = get(wavefront.backend).xp
+        per_mode = [stokes(member) for member in wavefront.members()]
+        weights = wavefront.mode_weights
+        return sum((float(w) * s for w, s in zip(weights, per_mode, strict=True)), xp.zeros_like(per_mode[0]))
     if not wavefront.polarized:
         raise ValueError("Stokes parameters need a polarised wavefront")
     xp = get(wavefront.backend).xp

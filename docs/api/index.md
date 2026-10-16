@@ -70,6 +70,9 @@
 .. automodule:: lumos.fields.wavecube
    :members: Wavecube
 
+.. automodule:: lumos.fields.incoherent
+   :members: IncoherentBundle
+
 .. automodule:: lumos.fields.spectral
    :members:
 

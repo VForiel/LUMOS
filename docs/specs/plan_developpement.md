@@ -111,7 +111,7 @@ flowchart LR
 - [x] **P3.2 `Wavefront`** — champ complexe, λ, normalisation, propriétés, opérations.
 - [x] **P3.3 Polarisation** — Jones, matrices de Jones, Stokes.
 - [x] **P3.4 `Wavecube`** — axe spectral, poids, intégration.
-- [ ] **P3.5 `IncoherentBundle`** — axe de modes, somme en intensité, rampes de phase pour les sources hors axe.
+- [x] **P3.5 `IncoherentBundle`** — axe de modes, somme en intensité, rampes de phase pour les sources hors axe.
 - [ ] **P3.6 `RadianceField`** — radiance spectrale sur grille, unités radiométriques, rééchantillonnage conservatif.
 - [ ] **P3.7 `ModalField`** — amplitudes modales, application de S-matrices.
 - [ ] **P3.8 `DataProduct`** — axes, unités, masque, incertitudes ; FITS et NPZ.
