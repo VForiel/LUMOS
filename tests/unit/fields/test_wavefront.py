@@ -24,7 +24,7 @@ import math
 import numpy as np
 import pytest
 from astropy import units as u
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.extra import numpy as hnp
 
@@ -267,6 +267,8 @@ def test_tilt_requires_a_spatial_grid():
 
 
 @pytest.mark.parametrize("name", BACKENDS)
+# the first example of a new shape compiles the JAX operations (about 0.2 s), which is not what is tested
+@settings(deadline=None)
 @given(field=complex_fields)
 def test_power_is_invariant_under_backend_change(name, field):
     wf = Wavefront(field, GRID, WAVELENGTH)
