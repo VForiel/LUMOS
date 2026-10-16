@@ -73,6 +73,9 @@
 .. automodule:: lumos.fields.incoherent
    :members: IncoherentBundle
 
+.. automodule:: lumos.fields.radiance
+   :members: RadianceField, CANONICAL_RADIANCE
+
 .. automodule:: lumos.fields.spectral
    :members:
 
