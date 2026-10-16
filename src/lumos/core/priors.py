@@ -2,7 +2,8 @@
 
 Priors describe what is known about a free parameter before calibration or inference. They carry physical
 units, so they can be checked against the parameter they are attached to. Plain numbers are accepted for
-dimensionless parameters. Sampling and log-densities are added with the inference blocks (phase 17).
+dimensionless parameters. :meth:`Prior.sample` draws values (Monte-Carlo runs); log-densities are added
+with the inference blocks (phase 17).
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+import numpy as np
 from astropy import units as u
 
 from lumos.units import quantity_from_json, quantity_to_json, require_unit
@@ -43,6 +45,10 @@ class Prior:
         first = next(iter(self.__dataclass_fields__))  # type: ignore[attr-defined]
         return getattr(self, first).unit
 
+    def sample(self, rng: np.random.Generator, size: int | tuple[int, ...] | None = None) -> u.Quantity:
+        """Draw values from the distribution with the NumPy generator ``rng``."""
+        raise NotImplementedError
+
 
 @dataclass(frozen=True)
 class Uniform(Prior):
@@ -56,6 +62,10 @@ class Uniform(Prior):
         low, high = self._normalise("low", "high")
         if not low.value < high.value:
             raise ValueError(f"Uniform prior needs low < high, got low={low} and high={high}")
+
+    def sample(self, rng: np.random.Generator, size: int | tuple[int, ...] | None = None) -> u.Quantity:
+        """Draw uniformly between ``low`` and ``high``."""
+        return u.Quantity(rng.uniform(self.low.value, self.high.value, size), self.unit)
 
 
 @dataclass(frozen=True)
@@ -74,6 +84,11 @@ class LogUniform(Prior):
         if not 0 < low.value < high.value:
             raise ValueError(f"LogUniform prior needs 0 < low < high, got low={low} and high={high}")
 
+    def sample(self, rng: np.random.Generator, size: int | tuple[int, ...] | None = None) -> u.Quantity:
+        """Draw uniformly in ``log`` between ``log(low)`` and ``log(high)``."""
+        draws = rng.uniform(np.log(self.low.value), np.log(self.high.value), size)
+        return u.Quantity(np.exp(draws), self.unit)
+
 
 @dataclass(frozen=True)
 class Normal(Prior):
@@ -87,6 +102,10 @@ class Normal(Prior):
         _, std = self._normalise("mean", "std")
         if not std.value > 0:
             raise ValueError(f"Normal prior needs std > 0, got {std}")
+
+    def sample(self, rng: np.random.Generator, size: int | tuple[int, ...] | None = None) -> u.Quantity:
+        """Draw from the normal distribution."""
+        return u.Quantity(rng.normal(self.mean.value, self.std.value, size), self.unit)
 
 
 _PRIOR_KINDS: dict[str, type[Prior]] = {"uniform": Uniform, "loguniform": LogUniform, "normal": Normal}

@@ -15,11 +15,13 @@ every element gets its own reproducible random stream.
 
 from __future__ import annotations
 
+import itertools
 import logging
 import math
 import time
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
+from dataclasses import dataclass
 from typing import Any, Literal, cast
 
 import numpy as np
@@ -34,12 +36,20 @@ from lumos.core.journal import ORIGINS, Journal, JournalEntry, _Capture
 from lumos.core.port import PortRef
 from lumos.units import require_unit, to_si
 
-__all__ = ["MODES", "Context", "Observation"]
+__all__ = ["MODES", "Context", "Observation", "SweepPoint"]
 
 logger = logging.getLogger("lumos.context")
 
 Mode = Literal["simulation", "operation"]
 MODES: tuple[str, ...] = ("simulation", "operation")
+
+
+@dataclass(frozen=True)
+class SweepPoint:
+    """One point of a sweep: the field values and the computed outputs."""
+
+    params: dict[str, Any]
+    outputs: Result
 
 
 class Observation:
@@ -446,6 +456,112 @@ class Context:
         elements and identical between runs with the same seed.
         """
         return np.random.default_rng(np.random.SeedSequence(self.seed, spawn_key=self.spawn_key(target)))
+
+    # --- Sweeps and Monte-Carlo ----------------------------------------------------------------
+
+    def _parameter(self, path: str) -> tuple[Any, str]:
+        owner, _, field = path.rpartition(".")
+        if not owner:
+            raise KeyError(f"{path!r} is not of the form 'element.field'")
+        element = self[owner]
+        if field not in type(element).declared():
+            raise AttributeError(f"{owner} has no field {field!r}")
+        return element, field
+
+    def sweep(
+        self,
+        parameters: Mapping[str, Sequence[Any]],
+        *,
+        outputs: Iterable[Any],
+        mode: Literal["grid", "zip"] = "grid",
+    ) -> list[SweepPoint]:
+        """Run the context for several values of some fields and collect the outputs.
+
+        Parameters
+        ----------
+        parameters
+            Values of each field, by path ``"element.field"`` (``"group.child.field"`` inside groups).
+        outputs
+            Outputs to compute at each point (see :meth:`run`).
+        mode
+            ``"grid"``: every combination (Cartesian product, last parameter varying fastest); ``"zip"``: the
+            i-th values of every parameter together.
+
+        Returns
+        -------
+        list of SweepPoint
+            One point per combination. The fields get their original values back afterwards.
+        """
+        if mode not in ("grid", "zip"):
+            raise ValueError(f"mode must be 'grid' or 'zip', got {mode!r}")
+        targets = [(path, *self._parameter(path)) for path in parameters]
+        values = [list(parameters[path]) for path, _, _ in targets]
+        if mode == "zip":
+            lengths = {len(v) for v in values}
+            if len(lengths) > 1:
+                raise ValueError(
+                    f"zip sweeps need sequences of the same length, got lengths {sorted(lengths)}"
+                )
+            combinations: Iterable[tuple[Any, ...]] = zip(*values, strict=True)
+        else:
+            combinations = itertools.product(*values)
+        wanted = list(outputs)
+        original = [getattr(element, field) for _, element, field in targets]
+        points: list[SweepPoint] = []
+        try:
+            for combination in combinations:
+                for (_, element, field), value in zip(targets, combination, strict=True):
+                    setattr(element, field, value)
+                result = self.run(wanted)
+                params = {path: getattr(element, field) for path, element, field in targets}
+                points.append(SweepPoint(params, result))
+        finally:
+            for (_, element, field), value in zip(targets, original, strict=True):
+                setattr(element, field, value)
+        return points
+
+    def _ordered_elements(self) -> list[tuple[str, Any]]:
+        """``(path, element)`` of every element, groups expanded depth-first in insertion order."""
+        found: list[tuple[str, Any]] = []
+
+        def visit(prefix: str, graph: Graph) -> None:
+            for identifier, element in graph.elements.items():
+                path = f"{prefix}{identifier}"
+                found.append((path, element))
+                inner = getattr(element, "graph", None)
+                if isinstance(inner, Graph):
+                    visit(f"{path}.", inner)
+
+        visit("", self._graph)
+        return found
+
+    def free_parameters(self) -> dict[str, Any]:
+        """Return the priors of the free parameters, by path ``"element.field"`` (``None`` without prior)."""
+        found: dict[str, Any] = {}
+        for path, element in self._ordered_elements():
+            for name in type(element).declared():
+                is_free = getattr(element, "is_free", None)
+                try:
+                    free = bool(is_free(name)) if is_free is not None else False
+                except (TypeError, KeyError):
+                    free = False
+                if free:
+                    found[f"{path}.{name}"] = element.prior(name)
+        return found
+
+    def sample(self, n: int, *, outputs: Iterable[Any]) -> list[SweepPoint]:
+        """Monte-Carlo run: draw ``n`` values of every free parameter from its prior and run the context.
+
+        Draws come from the reproducible stream ``ctx.rng("sample")``, parameter after parameter in the order
+        of :meth:`free_parameters`.
+        """
+        priors = self.free_parameters()
+        missing = [path for path, prior in priors.items() if prior is None]
+        if missing:
+            raise ValueError(f"free parameters without a prior cannot be sampled: {missing}")
+        rng = self.rng("sample")
+        draws = {path: prior.sample(rng, int(n)) for path, prior in priors.items()}
+        return self.sweep(draws, outputs=outputs, mode="zip")
 
     def to_python(self) -> str:
         """Return a Python script rebuilding this context (see :func:`lumos.io.codegen.to_python`)."""

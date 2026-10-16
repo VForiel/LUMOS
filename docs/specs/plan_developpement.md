@@ -150,7 +150,7 @@ flowchart LR
 - [x] **P5.7 Journal** — logging structuré avec l'origine des actions.
 - [x] **P5.8 `.lumos` contexte** — import et export, *sidecar*, migrations, JSON Schema publié.
 - [x] **P5.9 Codegen** — script Python équivalent.
-- [ ] **P5.10 Balayages** — `ctx.sweep`.
+- [x] **P5.10 Balayages** — `ctx.sweep`.
 
 **Tests écrits d'abord :** refus d'une connexion incompatible ou d'un cycle ; seul l'aval est recalculé après un changement de paramètre (compteurs d'appels) ; avance de l'horloge pour des actions séquentielles et parallèles (valeurs calculées à la main) ; aller-retour `.lumos` et codegen à résultat identique ; une commande simulée est journalisée sans appel au transport.
 
