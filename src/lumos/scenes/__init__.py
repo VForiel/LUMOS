@@ -4,22 +4,28 @@
   ``sources`` (point sources) and ``radiance`` (diffuse radiance on the angular grid of the scene);
 - :mod:`~lumos.scenes.diffuse`: parametric diffuse components (disks, Gaussians, Sérsic profiles, inclined
   rings, backgrounds, zodiacal light);
-- :class:`~lumos.scenes.mapped.MappedComponent`: radiance maps from FITS files, arrays and images.
+- :class:`~lumos.scenes.mapped.MappedComponent`: radiance maps from FITS files, arrays and images;
+- :mod:`~lumos.scenes.imaging`: imaging of extended scenes (isoplanatic, anisoplanatic, decomposition).
 
 Importing this package registers its element types for ``.lumos`` files.
 """
 
-from lumos.scenes import diffuse, mapped
+from lumos.scenes import diffuse, imaging, mapped
+from lumos.scenes.imaging import ImagingSystem, SceneToSources, image_scene
 from lumos.scenes.mapped import MappedComponent
 from lumos.scenes.scene import FRAMES, RADIANCE_UNIT, Scene, SceneCombiner, scene_grid
 
 __all__ = [
     "FRAMES",
     "RADIANCE_UNIT",
+    "ImagingSystem",
     "MappedComponent",
     "Scene",
     "SceneCombiner",
+    "SceneToSources",
     "diffuse",
+    "image_scene",
+    "imaging",
     "mapped",
     "scene_grid",
 ]
