@@ -5,12 +5,13 @@
 - :mod:`~lumos.scenes.diffuse`: parametric diffuse components (disks, Gaussians, Sérsic profiles, inclined
   rings, backgrounds, zodiacal light);
 - :class:`~lumos.scenes.mapped.MappedComponent`: radiance maps from FITS files, arrays and images;
+- :mod:`~lumos.scenes.procedural`: random textures and test targets (Siemens star, checkerboard, bars);
 - :mod:`~lumos.scenes.imaging`: imaging of extended scenes (isoplanatic, anisoplanatic, decomposition).
 
 Importing this package registers its element types for ``.lumos`` files.
 """
 
-from lumos.scenes import diffuse, imaging, mapped
+from lumos.scenes import diffuse, imaging, mapped, procedural
 from lumos.scenes.imaging import ImagingSystem, SceneToSources, image_scene
 from lumos.scenes.mapped import MappedComponent
 from lumos.scenes.scene import FRAMES, RADIANCE_UNIT, Scene, SceneCombiner, scene_grid
@@ -27,5 +28,6 @@ __all__ = [
     "image_scene",
     "imaging",
     "mapped",
+    "procedural",
     "scene_grid",
 ]
