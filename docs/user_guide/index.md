@@ -9,6 +9,7 @@ This guide will explain the concepts of LUMOS:
 - the `.lumos` file format;
 - the **element library**: sources, optics, telescopes, atmosphere, coronagraphs, fibres, photonic chips and
   detectors;
+- **scenes**: point and extended objects in a frame, and the imaging of extended scenes;
 - **results**: figures, data files and archives of runs.
 
 ```{toctree}
@@ -17,5 +18,6 @@ This guide will explain the concepts of LUMOS:
 fields
 context
 elements
+scenes
 results
 ```

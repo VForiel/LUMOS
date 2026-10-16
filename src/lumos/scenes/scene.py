@@ -133,6 +133,8 @@ class SceneCombiner(Element):
 class Scene(ElementGroup):
     """Group of scene components in a frame, with the outputs ``sources`` and ``radiance``.
 
+    Components added with :meth:`add` are connected automatically according to the type of their output.
+
     Parameters
     ----------
     name
@@ -143,8 +145,6 @@ class Scene(ElementGroup):
         Fields of the :class:`SceneCombiner`: ``ra``, ``dec`` (celestial pointing), ``latitude``,
         ``longitude``, ``altitude`` (terrestrial), ``distance`` (laboratory), ``pixel_scale`` and
         ``n_pixels`` (angular grid of the scene).
-
-    Components added with :meth:`add` are connected automatically according to the type of their output.
     """
 
     def __init__(self, name: str | None = None, *, frame: str = "celestial", **settings: Any) -> None:

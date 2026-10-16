@@ -222,8 +222,10 @@ class ImageResult:
         Power per pixel and spectral channel, ``(nλ, ny, nx)``, in ``power_unit``.
     grid
         Sampling of the image plane.
-    wavelengths, weights
-        Spectral channels and their quadrature weights.
+    wavelengths
+        Spectral channels.
+    weights
+        Quadrature weights of the channels.
     power_unit
         Unit of ``power`` (photon s⁻¹ for scenes imaged through telescopes).
     strategy, reason

@@ -190,13 +190,13 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 8 — Scènes et imagerie de scènes étendues
 
-- [ ] **P8.1 `Scene` et repères** — céleste, terrestre, laboratoire ; placement à l'infini ou à distance finie.
-- [ ] **P8.2 Radiométrie** — radiance, éclairement, flux en pupille, étendue, photons ↔ énergie, magnitudes et bandes.
-- [ ] **P8.3 Composants diffus paramétriques** — disque, gaussienne, Sérsic, anneau ou disque incliné, zodi, fond.
-- [ ] **P8.4 Composants cartographiés** — import FITS avec WCS, cubes, images calibrées ; rééchantillonnage conservatif.
-- [ ] **P8.5 Stratégies d'imagerie** — isoplanatique (convolution), anisoplanatique (grille de PSF), décomposition en `IncoherentBundle` ; sélection automatique et journalisée. ADR-0006 « Imagerie des scènes étendues ».
-- [ ] **P8.6 Composants procéduraux** — textures et champs aléatoires (tests, imagerie générique).
-- [ ] **P8.7 Notebook** `05_extended_scenes` (disque de débris derrière un coronographe, nébuleuse).
+- [x] **P8.1 `Scene` et repères** — céleste, terrestre, laboratoire ; placement à l'infini ou à distance finie.
+- [x] **P8.2 Radiométrie** — radiance, éclairement, flux en pupille, étendue, photons ↔ énergie, magnitudes et bandes.
+- [x] **P8.3 Composants diffus paramétriques** — disque, gaussienne, Sérsic, anneau ou disque incliné, zodi, fond.
+- [x] **P8.4 Composants cartographiés** — import FITS avec WCS, cubes, images calibrées ; rééchantillonnage conservatif.
+- [x] **P8.5 Stratégies d'imagerie** — isoplanatique (convolution), anisoplanatique (grille de PSF), décomposition en `IncoherentBundle` ; sélection automatique et journalisée. ADR-0006 « Imagerie des scènes étendues ».
+- [x] **P8.6 Composants procéduraux** — textures et champs aléatoires (tests, imagerie générique).
+- [x] **P8.7 Notebook** `05_extended_scenes` (disque de débris derrière un coronographe, nébuleuse).
 
 **Tests écrits d'abord :** flux total d'un corps noir intégré (loi de Stefan-Boltzmann), conservation du flux scène → image, équivalence des trois stratégies sur un système isoplanatique, image d'un disque uniforme par une ouverture circulaire comparée à la solution analytique, refus de la stratégie convolutive pour un système non invariant.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 8** (P8.1).
+Lancer la **phase 9** (P9.1).

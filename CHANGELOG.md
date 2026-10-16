@@ -78,6 +78,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   (`ctx.run(..., archive=...)`, `vfst.archive`) next to the script or notebook with the context, complete
   metadata, journal, figures and outputs; `lumos.load_archive` (ADR-0010).
 - Example notebooks `01_first_simulation` to `04_interferometry` and shared presets in `examples/presets/`.
+- `lumos.scenes`: scenes in celestial, terrestrial and laboratory frames (`Scene`, a registered group type
+  saved with `"group_type"` in `.lumos` files); parametric diffuse components (uniform disk, Gaussian, Sérsic,
+  inclined ring, background, zodiacal light); mapped components from FITS images and cubes with a WCS, arrays
+  and calibrated images; procedural components (random textures, Siemens star, checkerboard, bar target).
+- `lumos.physics.radiometry`: étendue, solid angles, irradiance, exitance, photon conversions, spectra.
+- Imaging of extended scenes by convolution, field-dependent PSFs or decomposition into point sources, chosen
+  automatically by probing the shift invariance of the system and logged (`image_scene`, `SceneToSources`,
+  ADR-0011); notebook `05_extended_scenes` and the `debris_disk` preset.
 
 ### Changed
 
@@ -85,6 +93,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   propagation.
 
 ### Fixed
+
+- Random streams of stochastic elements inside groups are keyed by their path `group.child`.
 
 - The JAX import hook is no longer consumed by `importlib.util.find_spec("jax")`, so `Values` is registered as
   a pytree when JAX is first imported through the backend.

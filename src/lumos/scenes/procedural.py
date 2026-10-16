@@ -14,8 +14,8 @@ grid (radius, period), measured from the central pixel ``N // 2`` (§9 of the sp
 target serves both kinds of scene. Edges are anti-aliased by averaging ``supersample`` × ``supersample``
 sub-pixels.
 
-Components
-----------
+Patterns
+--------
 - :class:`GaussianRandomField`: a log-normal random texture of mean ``surface_brightness``, relative standard
   deviation ``contrast`` and power spectrum :math:`\propto k^{-\beta}` (``spectral_index`` β). White Gaussian
   noise is filtered by :math:`k^{-\beta/2}` in Fourier space, standardised to :math:`z`, then

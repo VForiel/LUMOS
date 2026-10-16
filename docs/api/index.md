@@ -246,3 +246,25 @@
 .. automodule:: lumos.results.reader
    :members:
 ```
+
+## Scenes
+
+```{eval-rst}
+.. automodule:: lumos.scenes.scene
+   :members: Scene, SceneCombiner, FRAMES, scene_grid
+
+.. automodule:: lumos.scenes.diffuse
+   :members:
+
+.. automodule:: lumos.scenes.mapped
+   :members:
+
+.. automodule:: lumos.scenes.procedural
+   :members:
+
+.. automodule:: lumos.scenes.imaging
+   :members:
+
+.. automodule:: lumos.physics.radiometry
+   :members:
+```

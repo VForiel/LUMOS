@@ -15,8 +15,8 @@ Sources
 - :meth:`MappedComponent.from_image`: PNG, JPEG or TIFF images (read by matplotlib) with a calibration, the
   surface brightness of a pixel value of 1; colour images are averaged over their RGB channels.
 
-Units
------
+Brightness units
+----------------
 Accepted brightness units: per solid angle (``Jy/sr``, ``MJy/sr``, ``Jy/arcsec2``, ``W m-2 sr-1 m-1``,
 ``erg s-1 cm-2 Å-1 arcsec-2``...) or per pixel (``Jy``, ``Jy/pixel``, ``W m-2 m-1``...), divided by the pixel
 solid angle. Quantities per unit wavelength are converted to per unit frequency with
