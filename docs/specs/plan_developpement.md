@@ -73,8 +73,8 @@ flowchart LR
 - [x] **P0.3 Qualité** — ruff, pyright ou mypy, pytest, pytest-cov, hypothesis, pre-commit.
 - [x] **P0.4 CI** — lint, typage, tests (matrice OS × versions Python), doc ; job d'**intégrité des tests** (alerte sur les commits qui modifient `tests/` et `src/` ensemble, ou un test sans `test(…)!`).
 - [x] **P0.5 Docs** — Sphinx + Breeze + MyST + myst-nb + Mermaid, `.readthedocs.yaml`, squelette des sections (REQ-DOC-4), chaîne de traduction `sphinx-intl` (EN → FR) et projet RTD FR.
-- [ ] **P0.6 Réservation du nom** — publication d'une version `0.0.1` vide de `lumos-maxima` sur TestPyPI puis PyPI (*trusted publishing*).
-  - *État :* workflow `publish.yml` prêt et paquet vérifié localement. Reste à faire par le mainteneur : déclarer le dépôt comme *trusted publisher* sur PyPI et TestPyPI (projets « en attente » `lumos-maxima`, environnements GitHub `pypi` et `testpypi`), puis créer le tag `v0.0.1` et la Release GitHub.
+- [x] **P0.6 Réservation du nom** — publication d'une version `0.0.1` vide de `lumos-maxima` sur TestPyPI puis PyPI (*trusted publishing*).
+  - *Fait le 2026-10-16 :* `lumos-maxima` 0.0.1 publié sur PyPI par *trusted publishing* (tag `v0.0.1`).
 
 **Critères d'acceptation :** `pip install -e .[dev]` fonctionne ; un test fumée passe ; la doc EN et FR se construit sans avertissement ; la CI est verte ; le job d'intégrité détecte un commit mixte de test.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Terminer **P0.6** (actions du mainteneur sur PyPI et GitHub), puis lancer la **phase 1** (P1.1).
+Lancer la **phase 1** (P1.1).
