@@ -79,6 +79,9 @@
 .. automodule:: lumos.fields.modal
    :members: ModalField
 
+.. automodule:: lumos.fields.dataproduct
+   :members: DataProduct
+
 .. automodule:: lumos.fields.smatrix
    :members:
 

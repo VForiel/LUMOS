@@ -48,6 +48,7 @@ web = ["fastapi>=0.115", "uvicorn[standard]>=0.30", "argon2-cffi>=23.1"]
 mcp = ["mcp>=1.2"]
 ai = ["numpyro>=0.15", "optax>=0.2", "blackjax>=1.2"]
 validation = ["poppy>=1.1", "hcipy>=0.6"]
+hdf5 = ["h5py>=3.10"]
 docs = [
     "sphinx>=8.0",
     "sphinx-breeze-theme>=0.13",
@@ -68,6 +69,7 @@ dev = [
     "pyright>=1.1.380",
     "pre-commit>=3.8",
     "build>=1.2",
+    "h5py>=3.10",
 ]
 all = ["lumos-maxima[jax,catalogs,hardware,web,mcp]"]
 

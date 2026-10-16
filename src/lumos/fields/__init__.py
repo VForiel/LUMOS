@@ -6,6 +6,7 @@
 - :class:`IncoherentBundle`: mutually incoherent modes (point sources, natural light...).
 - :class:`RadianceField`: spectral radiance maps of incoherent scenes.
 - :class:`ModalField`: modal amplitudes of guided channels; :mod:`~lumos.fields.smatrix` scattering matrices.
+- :class:`DataProduct`: detected data with axes, mask, uncertainties; FITS, NPZ, HDF5.
 - :mod:`~lumos.fields.jones`: Jones vectors and matrices, Stokes parameters.
 - :func:`spectral_samples`: quadrature of a spectral band.
 """
@@ -13,6 +14,7 @@
 from typing import Any
 
 from lumos.fields import jones, smatrix
+from lumos.fields.dataproduct import DataProduct
 from lumos.fields.grid import Grid, Plane
 from lumos.fields.incoherent import IncoherentBundle
 from lumos.fields.modal import ModalField
@@ -22,6 +24,7 @@ from lumos.fields.wavecube import Wavecube
 from lumos.fields.wavefront import Wavefront
 
 __all__ = [
+    "DataProduct",
     "Grid",
     "IncoherentBundle",
     "ModalField",
