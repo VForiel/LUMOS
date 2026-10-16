@@ -14,15 +14,16 @@ import math
 from typing import Any
 
 import numpy as np
-from astropy import units as u
 
 from lumos.backend import to_numpy
 from lumos.fields import DataProduct, Grid, IncoherentBundle, RadianceField, Wavecube, Wavefront
+from lumos.plotting import style
+from lumos.plotting.style import CMAPS
 
-__all__ = ["PHASE_CMAP", "plot_data", "plot_field", "plot_intensity", "plot_phase", "plot_radiance"]
+__all__ = ["PHASE_CMAP", "plot_data", "plot_field", "plot_intensity", "plot_phase", "plot_radiance", "style"]
 
 #: Cyclic colour map used for phases.
-PHASE_CMAP = "twilight"
+PHASE_CMAP = CMAPS["phase"]
 
 
 def _axes(ax: Any) -> Any:
@@ -35,16 +36,15 @@ def _axes(ax: Any) -> Any:
 
 
 def _unit_label(unit: Any) -> str:
-    text = u.Unit(unit).to_string()
-    return text if text else "dimensionless"
+    return style.unit_label(unit)
 
 
 def _image(ax: Any, data: np.ndarray, grid: Grid, *, colorbar_label: str | None, **kwargs: Any) -> Any:
     unit = grid.unit
     extent = [b.to_value(unit) for b in grid.bounds]
     im = ax.imshow(data, origin="lower", extent=extent, **kwargs)
-    ax.set_xlabel(f"x ({_unit_label(unit)})")
-    ax.set_ylabel(f"y ({_unit_label(unit)})")
+    ax.set_xlabel(style.axis_label("x", unit))
+    ax.set_ylabel(style.axis_label("y", unit))
     if colorbar_label is not None:
         colorbar = ax.figure.colorbar(im, ax=ax)
         colorbar.set_label(colorbar_label)
@@ -86,7 +86,7 @@ def plot_intensity(
         positive = data[data > 0]
         vmin = float(positive.min()) if positive.size else 1e-300
         kwargs.setdefault("norm", LogNorm(vmin=max(vmin, float(data.max()) * 1e-12), vmax=float(data.max())))
-    kwargs.setdefault("cmap", "inferno")
+    kwargs.setdefault("cmap", CMAPS["intensity"])
     _image(ax, data, signal.grid, colorbar_label=_unit_label(unit) if colorbar else None, **kwargs)
     return ax
 
@@ -136,7 +136,9 @@ def plot_field(signal: Wavefront, *, threshold: float | None = 1e-3) -> Any:
 
     field = np.asarray(to_numpy(signal.field))
     components = list(field) if signal.polarized else [field]
-    fig, axes = plt.subplots(len(components), 2, figsize=(9, 3.6 * len(components)), squeeze=False)
+    fig, axes = plt.subplots(
+        len(components), 2, figsize=(9, 3.6 * len(components)), squeeze=False, layout="constrained"
+    )
     names = ["Ex", "Ey"] if signal.polarized else [""]
     for row, (component, name) in enumerate(zip(components, names, strict=True)):
         intensity = np.abs(component) ** 2
@@ -145,12 +147,11 @@ def plot_field(signal: Wavefront, *, threshold: float | None = 1e-3) -> Any:
             intensity,
             signal.grid,
             colorbar_label=_unit_label(signal.intensity_unit),
-            cmap="inferno",
+            cmap=CMAPS["intensity"],
         )
         axes[row, 0].set_title(f"intensity {name}".strip())
         _phase_image(axes[row, 1], component, signal.grid, threshold=threshold, colorbar=True)
         axes[row, 1].set_title(f"phase {name}".strip())
-    fig.tight_layout()
     return fig
 
 
@@ -168,7 +169,7 @@ def plot_radiance(
     data = np.asarray(to_numpy(field.data))[channel]
     if field.has_stokes:
         data = data[stokes]
-    kwargs.setdefault("cmap", "magma")
+    kwargs.setdefault("cmap", CMAPS["radiance"])
     _image(ax, data, field.grid, colorbar_label=_unit_label(field.unit) if colorbar else None, **kwargs)
     ax.set_title(f"λ = {field.wavelengths[channel]:.4g}")
     return ax
@@ -182,7 +183,7 @@ def plot_data(product: DataProduct, *, ax: Any = None, colorbar: bool = True, **
     if values.ndim == 1:
         axis = product.axes[names[0]]
         ax.plot(axis.value, values, **kwargs)
-        ax.set_xlabel(f"{names[0]} ({_unit_label(axis.unit)})")
+        ax.set_xlabel(style.axis_label(names[0], axis.unit))
         ax.set_ylabel(_unit_label(product.unit))
         return ax
     if values.ndim != 2:
@@ -194,10 +195,10 @@ def plot_data(product: DataProduct, *, ax: Any = None, colorbar: bool = True, **
         return float(c[0] - step / 2), float(c[-1] + step / 2)
 
     extent = [*edges(np.asarray(x.value)), *edges(np.asarray(y.value))]
-    kwargs.setdefault("cmap", "gray")
+    kwargs.setdefault("cmap", CMAPS["data"])
     im = ax.imshow(values, origin="lower", extent=extent, **kwargs)
-    ax.set_xlabel(f"{names[1]} ({_unit_label(x.unit)})")
-    ax.set_ylabel(f"{names[0]} ({_unit_label(y.unit)})")
+    ax.set_xlabel(style.axis_label(names[1], x.unit))
+    ax.set_ylabel(style.axis_label(names[0], y.unit))
     if colorbar:
         ax.figure.colorbar(im, ax=ax).set_label(_unit_label(product.unit))
     return ax
