@@ -5,11 +5,13 @@ user can override), REQ-RES-2 (the report goes into archive metadata, so it must
 Reference values come from the Python standard library (platform, os, importlib.metadata).
 """
 
+import importlib
 import importlib.util
 import os
 import platform
 import subprocess
 import sys
+import warnings
 from importlib import metadata
 
 import pytest
@@ -53,8 +55,30 @@ def test_library_versions(report):
     assert report.libraries["numpy"] == metadata.version("numpy")
     assert report.libraries["astropy"] == metadata.version("astropy")
     for name in ("jax", "cupy", "torch", "numba"):
-        expected = metadata.version(name) if importlib.util.find_spec(name) else None
+        # the distribution name may differ from the module name (cupy-cuda12x...): use the module version
+        expected = None
+        if importlib.util.find_spec(name):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")  # e.g. CuPy warns when CUDA_PATH is not set
+                expected = importlib.import_module(name).__version__
         assert report.libraries[name] == expected
+
+
+def test_gpu_probes_survive_warnings(monkeypatch, caplog):
+    """An import-time warning of a GPU library (even turned into an error) must not hide its GPUs."""
+    from lumos.backend import hardware
+
+    def probe():
+        warnings.warn("CUDA path could not be detected", UserWarning, stacklevel=1)
+        return [GPUInfo("jax", "Fake GPU", "cuda", 1)]
+
+    monkeypatch.setattr(hardware, "available", lambda: ("numpy", "jax"))
+    monkeypatch.setitem(hardware._PROBES, "jax", probe)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        report = hardware_report(probe_gpus=True)
+    assert [gpu.name for gpu in report.gpus] == ["Fake GPU"]
+    assert "CUDA path could not be detected" in caplog.text
 
 
 def test_backends(report):
