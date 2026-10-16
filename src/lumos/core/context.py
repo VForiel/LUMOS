@@ -30,6 +30,7 @@ from lumos.backend._core import known, use
 from lumos.core.clock import Clock, duration_si
 from lumos.core.driver import Command, DriverError
 from lumos.core.graph import Graph, GraphError, Result
+from lumos.core.journal import ORIGINS, Journal, JournalEntry, _Capture
 from lumos.core.port import PortRef
 from lumos.units import require_unit, to_si
 
@@ -139,6 +140,8 @@ class Context:
         self._parallel: list[list[float]] = []
         self._overrides: dict[int, str] = {}
         self._twin_states: dict[int, dict[str, Any]] = {}
+        self.journal = Journal()
+        self._origins: list[str] = ["python"]
         self.mode = mode
         self.twin = twin
         self.backend = backend
@@ -246,12 +249,56 @@ class Context:
     # --- Execution ----------------------------------------------------------------------------
 
     def run(self, outputs: Iterable[Any]) -> Result:
-        """Compute the requested outputs (ports, elements or ``"id.port"`` strings), see :meth:`Graph.run`."""
+        """Compute the requested outputs (ports, elements or ``"id.port"`` strings), see :meth:`Graph.run`.
+
+        Records of the LUMOS loggers emitted during the run (numerical choices, physical warnings) are copied
+        to the journal.
+        """
         targets = [self.port(t) if isinstance(t, str) and "." in t else t for t in outputs]
-        if self._backend == "auto":
-            return self._graph.run(targets)
-        with use(self._backend):
-            return self._graph.run(targets)
+        root = logging.getLogger("lumos")
+        handler = _Capture(self.journal, self._entry)
+        previous_level = root.level
+        root.addHandler(handler)
+        if root.getEffectiveLevel() > logging.INFO:
+            root.setLevel(logging.INFO)
+        try:
+            if self._backend == "auto":
+                return self._graph.run(targets)
+            with use(self._backend):
+                return self._graph.run(targets)
+        finally:
+            root.removeHandler(handler)
+            root.setLevel(previous_level)
+
+    # --- Journal ----------------------------------------------------------------------------------
+
+    @property
+    def origin(self) -> str:
+        """Origin of the actions being executed: ``"python"``, ``"web"`` or ``"mcp"``."""
+        return self._origins[-1]
+
+    @contextmanager
+    def as_origin(self, origin: str) -> Iterator[None]:
+        """Attribute the actions of the block to ``origin`` in the journal."""
+        if origin not in ORIGINS:
+            raise ValueError(f"origin must be one of {ORIGINS}, got {origin!r}")
+        self._origins.append(origin)
+        try:
+            yield
+        finally:
+            self._origins.pop()
+
+    def _entry(self, kind: str) -> JournalEntry:
+        return JournalEntry(
+            kind=kind,
+            elapsed=self.clock.elapsed_si,
+            date=str(self.clock.time.isot),
+            origin=self.origin,
+        )
+
+    def _log(self, entry: JournalEntry, message: str, *args: Any) -> None:
+        self.journal.append(entry)
+        logger.info(message, *args, extra={"lumos": entry.to_json()})
 
     # --- Time -------------------------------------------------------------------------------------
 
@@ -267,7 +314,11 @@ class Context:
 
     def wait(self, duration: u.Quantity) -> None:
         """Let ``duration`` pass (counts as one duration inside a :meth:`parallel` block)."""
-        self._advance(duration_si(duration))
+        seconds = duration_si(duration)
+        entry = self._entry("wait")
+        entry.predicted = seconds
+        self._log(entry, "wait %.6g s", seconds)
+        self._advance(seconds)
 
     @contextmanager
     def parallel(self) -> Iterator[None]:
@@ -333,9 +384,15 @@ class Context:
         """Execute an action of ``element`` (called by the :func:`~lumos.core.action.action` wrapper)."""
         predicted = spec.duration_si(element, args, kwargs)
         path = self.path_of(element)
-        if self.mode_of(element) == "simulation":
+        command = Command(path, spec.name, tuple(args), dict(kwargs))
+        entry = self._entry("action")
+        entry.element, entry.action, entry.command = path, spec.name, command
+        entry.args = ", ".join([str(a) for a in args] + [f"{k}={v}" for k, v in kwargs.items()])
+        entry.mode = self.mode_of(element)
+        entry.predicted = predicted
+        if entry.mode == "simulation":
             result = spec.method(element, *args, **kwargs)
-            logger.info("%s.%s simulated (%.6g s)", path, spec.name, predicted)
+            self._log(entry, "%s.%s simulated (%.6g s)", path, spec.name, predicted)
             self._advance(predicted)
             return result
         driver = element.driver
@@ -343,7 +400,6 @@ class Context:
             raise DriverError(f"{path} has no driver; attach one or use ctx.simulate({path!r})")
         if not driver.connected:
             raise DriverError(f"the driver of {path} is not connected")
-        command = Command(path, spec.name, tuple(args), dict(kwargs))
         started = time.perf_counter()
         reply = driver.send(command)
         wall = time.perf_counter() - started
@@ -355,11 +411,14 @@ class Context:
             result = reply.value
             for name, value in reply.state.items():
                 setattr(element, name, value)
-        logger.info(
+        entry.measured = measured
+        entry.driver = type(driver).__name__
+        self._log(
+            entry,
             "%s.%s sent to %s (predicted %.6g s, measured %.6g s)",
             path,
             spec.name,
-            type(driver).__name__,
+            entry.driver,
             predicted,
             measured,
         )
