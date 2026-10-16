@@ -142,7 +142,7 @@ flowchart LR
 ## Phase 5 — Contexte, graphe, temps et modes
 
 - [x] **P5.1 `Graph`** — connexions typées, détection de cycles, tri topologique, sous-graphe requis.
-- [ ] **P5.2 Exécution pull et cache** — cache par port, invalidation en aval.
+- [x] **P5.2 Exécution pull et cache** — cache par port, invalidation en aval.
 - [ ] **P5.3 `Context`** — mode, jumeau, backend, observation, graines, accès par nom, `>>`.
 - [ ] **P5.4 `ElementGroup`** — ports exposés, imbrication, sérialisation `kind: group`.
 - [ ] **P5.5 `Clock` et actions** — `@action(duration=…)`, `ctx.wait`, `ctx.parallel`, éléments dépendants du temps.

@@ -1,21 +1,25 @@
-"""Directed acyclic graph of elements connected port to port (REQ-CTX-1, REQ-CTX-2).
+"""Directed acyclic graph of elements connected port to port, with pull execution (REQ-CTX-1/2/4).
 
 A :class:`Graph` holds elements under unique identifiers and the connections between their ports. A
 connection goes from an output port to an input port whose signal type is the same or a base class
 (REQ-SIG-11). The graph is acyclic: physical loops (adaptive optics, servo loops, iterative calibration) are
 iterations in time driven by the context, not cycles of signals.
+
+Execution is *pull*: :meth:`Graph.run` computes only the elements needed by the requested outputs, in
+topological order. The outputs of every element are cached; changing a parameter or a state of an element,
+or a connection, invalidates the cache of that element and of everything downstream.
 """
 
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from typing import Any
 
 from lumos.core.port import PortRef, check_compatible
 
-__all__ = ["Connection", "CycleError", "Graph", "GraphError"]
+__all__ = ["Connection", "CycleError", "Graph", "GraphError", "Result"]
 
 _IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_\-]*$")
 
@@ -51,6 +55,7 @@ class Graph:
         self._ids: dict[int, str] = {}
         self._connections: list[Connection] = []
         self._counters: dict[str, int] = {}
+        self._cache: dict[int, Mapping[str, Any]] = {}
 
     # --- Elements ---------------------------------------------------------------------------
 
@@ -79,11 +84,16 @@ class Graph:
             raise GraphError(f"the identifier {id!r} is already used in the graph")
         self._elements[id] = element
         self._ids[id_(element)] = id
+        if hasattr(element, "_add_listener"):
+            element._add_listener(self._on_element_changed)
         return id
 
     def remove(self, element: Any) -> None:
         """Remove ``element`` and its connections."""
         key = self.id_of(element)
+        self.invalidate(element)
+        if hasattr(element, "_remove_listener"):
+            element._remove_listener(self._on_element_changed)
         self._connections = [
             c for c in self._connections if c.source.owner is not element and c.target.owner is not element
         ]
@@ -157,6 +167,7 @@ class Graph:
             )
         connection = Connection(source, target)
         self._connections.append(connection)
+        self.invalidate(target.owner)
         return connection
 
     def disconnect(self, source: PortRef, target: PortRef) -> None:
@@ -164,6 +175,7 @@ class Graph:
         for k, c in enumerate(self._connections):
             if c.source == source and c.target == target:
                 del self._connections[k]
+                self.invalidate(target.owner)
                 return
         raise GraphError(f"{source!r} is not connected to {target!r}")
 
@@ -225,6 +237,96 @@ class Graph:
             wanted.add(id_(element))
             stack.extend(self.upstream(element))
         return [e for e in self.topological_order() if id_(e) in wanted]
+
+    # --- Execution ------------------------------------------------------------------------------
+
+    def _on_element_changed(self, element: Any, name: str) -> None:
+        self.invalidate(element)
+
+    def invalidate(self, element: Any = None) -> None:
+        """Drop the cached outputs of ``element`` and everything downstream (everything if ``None``)."""
+        if element is None:
+            self._cache.clear()
+            return
+        stack = [element]
+        seen: set[int] = set()
+        while stack:
+            node = stack.pop()
+            if id_(node) in seen:
+                continue
+            seen.add(id_(node))
+            self._cache.pop(id_(node), None)
+            stack.extend(self.downstream(node))
+
+    def is_cached(self, element: Any) -> bool:
+        """Whether the outputs of ``element`` are cached."""
+        return id_(element) in self._cache
+
+    def resolve(self, target: Any) -> Any:
+        """Turn ``"id"`` or ``"id.port"`` into an element or a port reference; other values pass through."""
+        if not isinstance(target, str):
+            return target
+        key, _, port = target.rpartition(".") if "." in target else (target, "", "")
+        if not port:
+            return self[target]
+        if key in self._elements:
+            return self._elements[key].port(port)
+        return self[target]
+
+    def _inputs(self, element: Any) -> dict[str, Any]:
+        inputs: dict[str, Any] = {}
+        for name, port in element.instance_ports().items():
+            if port.direction != "in":
+                continue
+            connections = self.incoming(element.port(name))
+            if not connections and not port.multiple:
+                raise GraphError(f"input {self.id_of(element)}.{name} is not connected")
+            signals = [self._cache[id_(c.source.owner)][c.source.name] for c in connections]
+            inputs[name] = signals if port.multiple else signals[0]
+        return inputs
+
+    def _compute(self, element: Any) -> Mapping[str, Any]:
+        return element.apply(**self._inputs(element))
+
+    def run(self, targets: Iterable[Any]) -> Result:
+        """Compute the requested outputs.
+
+        Parameters
+        ----------
+        targets
+            Output ports, elements (all their outputs) or identifiers ``"id"`` / ``"id.port"``.
+
+        Returns
+        -------
+        Result
+            The signals by output port, also reachable by ``"id.port"``.
+        """
+        resolved = [self.resolve(t) for t in targets]
+        for element in self.required(resolved):
+            if id_(element) not in self._cache:
+                self._cache[id_(element)] = dict(self._compute(element))
+        result = Result(self)
+        for target in resolved:
+            if isinstance(target, PortRef):
+                result[target] = self._cache[id_(target.owner)][target.name]
+            else:
+                for name, signal in self._cache[id_(target)].items():
+                    result[target.port(name)] = signal
+        return result
+
+
+class Result(dict[PortRef, Any]):
+    """Signals computed by :meth:`Graph.run`, by port reference or ``"id.port"`` string."""
+
+    def __init__(self, graph: Graph) -> None:
+        super().__init__()
+        self._graph = graph
+
+    def __getitem__(self, key: Any) -> Any:
+        """Return the signal of an output port given as a reference or as ``"id.port"``."""
+        if isinstance(key, str):
+            key = self._graph.resolve(key)
+        return super().__getitem__(key)
 
 
 def id_(obj: Any) -> int:

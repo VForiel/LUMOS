@@ -27,11 +27,11 @@ from __future__ import annotations
 import difflib
 import html
 import inspect
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from typing import Any, ClassVar
 
 from lumos.core.param import MISSING, Field, Param, ParamHost, Setting
-from lumos.core.port import Port
+from lumos.core.port import Port, PortRef
 from lumos.units import quantity_to_json
 
 __all__ = ["Element", "Values"]
@@ -145,8 +145,23 @@ class Element(ParamHost):
             raise TypeError(f"{cls.__name__}: field(s) and port(s) share the name(s) {sorted(clashes)}")
 
     def __init__(self, name: str | None = None, **values: Any) -> None:
+        self._lumos_listeners: list[Callable[[Element, str], None]] = []
         self.name = name
         super().__init__(**values)
+
+    # --- Change notification ----------------------------------------------------------------
+
+    def _on_field_changed(self, name: str) -> None:
+        """Notify the listeners (graphs, contexts) that field ``name`` changed."""
+        for listener in list(self._lumos_listeners):
+            listener(self, name)
+
+    def _add_listener(self, listener: Callable[[Element, str], None]) -> None:
+        self._lumos_listeners.append(listener)
+
+    def _remove_listener(self, listener: Callable[[Element, str], None]) -> None:
+        if listener in self._lumos_listeners:
+            self._lumos_listeners.remove(listener)
 
     # --- Attributes -----------------------------------------------------------------------
 
@@ -181,6 +196,17 @@ class Element(ParamHost):
     def ports(cls) -> Mapping[str, Port]:
         """Return the declared ports by name, inputs and outputs in definition order."""
         return dict(cls._lumos_ports)
+
+    def instance_ports(self) -> Mapping[str, Port]:
+        """Return the ports of this instance (the class ports; groups add the ports they expose)."""
+        return type(self).ports()
+
+    def port(self, name: str) -> PortRef:
+        """Return the port ``name`` of this instance, bound to it."""
+        ports = self.instance_ports()
+        if name not in ports:
+            raise KeyError(f"{self!r} has no port {name!r}; ports: {', '.join(ports)}")
+        return PortRef(self, ports[name])
 
     def values(self) -> Values:
         """Return an immutable snapshot of the SI values of all fields."""
