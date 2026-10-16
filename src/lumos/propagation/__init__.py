@@ -5,7 +5,7 @@
 - :func:`methods`: the available methods; ``method="auto"`` lets the planner choose and log one.
 """
 
-from lumos.propagation import fraunhofer, fresnel, rs
+from lumos.propagation import asm, fraunhofer, fresnel, rs
 from lumos.propagation.api import focus, methods, propagate, register_method
 
 register_method(rs.METHOD)
@@ -13,5 +13,6 @@ register_method(fraunhofer.METHOD)
 register_method(fresnel.FRESNEL_TF)
 register_method(fresnel.FRESNEL_IR)
 register_method(fresnel.FRESNEL_MFT)
+register_method(asm.METHOD)
 
 __all__ = ["focus", "methods", "propagate", "register_method"]
