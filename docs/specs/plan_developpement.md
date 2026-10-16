@@ -82,12 +82,12 @@ flowchart LR
 
 ## Phase 1 — Unités, paramètres, Element, registre
 
-- [ ] **P1.1 `lumos.units`** — validation (`require_unit`), conversion SI, sérialisation `{"value", "unit"}` des scalaires et des tableaux.
-- [ ] **P1.2 `Param`** — descripteur : unité, défaut, bornes, doc, `free`, `prior`, `differentiable`, unité utilisateur mémorisée, stockage SI, callback d'invalidation.
-- [ ] **P1.3 `Port` et types de signaux abstraits** — direction, type, multiplicité, règles de compatibilité.
-- [ ] **P1.4 `Element`** — paramètres et ports déclaratifs, état virtuel séparé du transfert pur (ADR-0002 « État et transferts purs »), `describe()`, `_repr_html_`, `schema()`.
-- [ ] **P1.5 Registre** — identifiants stables, `type_version`, décorateur d'enregistrement, *entry points*.
-- [ ] **P1.6 Sérialisation d'un élément** — `kind: element`, validation par schéma, refus des types non enregistrés. ADR-0003 « Format .lumos ».
+- [x] **P1.1 `lumos.units`** — validation (`require_unit`), conversion SI, sérialisation `{"value", "unit"}` des scalaires et des tableaux.
+- [x] **P1.2 `Param`** — descripteur : unité, défaut, bornes, doc, `free`, `prior`, `differentiable`, unité utilisateur mémorisée, stockage SI, callback d'invalidation.
+- [x] **P1.3 `Port` et types de signaux abstraits** — direction, type, multiplicité, règles de compatibilité.
+- [x] **P1.4 `Element`** — paramètres et ports déclaratifs, état virtuel séparé du transfert pur (ADR-0002 « État et transferts purs »), `describe()`, `_repr_html_`, `schema()`.
+- [x] **P1.5 Registre** — identifiants stables, `type_version`, décorateur d'enregistrement, *entry points*.
+- [x] **P1.6 Sérialisation d'un élément** — `kind: element`, validation par schéma, refus des types non enregistrés. ADR-0003 « Format .lumos ».
 
 **Tests écrits d'abord :** erreurs et conversions d'unités, bornes, aller-retour de sérialisation (Hypothesis), contenu du schéma JSON, refus d'un type inconnu, invalidation déclenchée par un changement de `Param`.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 1** (P1.1).
+Lancer la **phase 2** (P2.1).

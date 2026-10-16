@@ -1,4 +1,4 @@
-"""Abstract signal types flowing between elements (REQ-SIG-*).
+"""Abstract signal types flowing between elements (``REQ-SIG-*``).
 
 The hierarchy of signal classes defines which ports can be connected: an output producing a signal of
 type ``T`` can feed an input expecting ``S`` when ``T`` is ``S`` or a subclass of ``S``. Concrete signals
