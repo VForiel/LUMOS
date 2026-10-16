@@ -118,9 +118,10 @@ class Wavefront(OpticalSignal):
         self._init(array, grid, _wavelength(wavelength), _power_unit(power_unit))
 
     def _init(self, field: Any, grid: Grid, wavelength: u.Quantity, power_unit: u.UnitBase) -> None:
-        if tuple(field.shape) != grid.shape:
+        if tuple(field.shape) not in (grid.shape, (2, *grid.shape)):
             raise ValueError(
-                f"the field shape {tuple(field.shape)} does not match the grid shape {grid.shape}"
+                f"the field shape {tuple(field.shape)} must be the grid shape {grid.shape} (scalar field) "
+                f"or {(2, *grid.shape)} (Jones components Ex, Ey)"
             )
         self._field = field
         self._grid = grid
@@ -135,11 +136,23 @@ class Wavefront(OpticalSignal):
     # --- Factories --------------------------------------------------------------------------------
 
     @classmethod
-    def plane(cls, grid: Grid, wavelength: u.Quantity, *, power: u.Quantity) -> Wavefront:
-        """Uniform, flat-phase field carrying ``power`` (in W or photon / s) over the grid."""
+    def plane(
+        cls,
+        grid: Grid,
+        wavelength: u.Quantity,
+        *,
+        power: u.Quantity,
+        polarization: Any = None,
+    ) -> Wavefront:
+        """Uniform, flat-phase field carrying ``power`` (in W or photon / s) over the grid.
+
+        ``polarization`` (a Jones vector or a state name of :func:`lumos.fields.jones.vector`) makes a
+        polarised field.
+        """
         power_unit, value = cls._power_value(power)
         amplitude = math.sqrt(value / (grid.size * grid.dx_si * grid.dy_si))
-        return cls(np.full(grid.shape, amplitude), grid, wavelength, power_unit=power_unit)
+        wf = cls(np.full(grid.shape, amplitude), grid, wavelength, power_unit=power_unit)
+        return wf if polarization is None else wf.with_polarization(polarization)
 
     @classmethod
     def gaussian(
@@ -149,6 +162,7 @@ class Wavefront(OpticalSignal):
         *,
         waist: u.Quantity,
         power: u.Quantity,
+        polarization: Any = None,
     ) -> Wavefront:
         r"""Gaussian beam at its waist, :math:`U = \sqrt{2P/(\pi w^2)}\,\exp(-r^2/w^2)`, centred on the grid.
 
@@ -164,7 +178,8 @@ class Wavefront(OpticalSignal):
         x, y = grid.axes(backend="numpy")
         r2 = (x[None, :] - grid.x0_si) ** 2 + (y[:, None] - grid.y0_si) ** 2
         field = math.sqrt(2 * value / (math.pi * w**2)) * np.exp(-r2 / w**2)
-        return cls(field, grid, wavelength, power_unit=power_unit)
+        wf = cls(field, grid, wavelength, power_unit=power_unit)
+        return wf if polarization is None else wf.with_polarization(polarization)
 
     @staticmethod
     def _power_value(power: u.Quantity) -> tuple[u.UnitBase, float]:
@@ -187,6 +202,32 @@ class Wavefront(OpticalSignal):
     def grid(self) -> Grid:
         """Sampling grid."""
         return self._grid
+
+    @property
+    def polarized(self) -> bool:
+        """Whether the field holds the Jones components ``(Ex, Ey)`` along its first axis."""
+        return len(self._field.shape) == 3
+
+    def with_polarization(self, polarization: Any) -> Wavefront:
+        """Return a polarised copy of a scalar field, in the state ``polarization``.
+
+        ``polarization`` is a Jones vector (normalised here, so the power is unchanged) or a state name of
+        :func:`lumos.fields.jones.vector`.
+        """
+        from lumos.fields import jones
+
+        if self.polarized:
+            raise ValueError("the field is already polarised; apply a Jones matrix to change its state")
+        vector = jones.vector(polarization) if isinstance(polarization, str) else np.asarray(polarization)
+        if vector.shape != (2,):
+            raise ValueError(f"a Jones vector has shape (2,), got {vector.shape}")
+        norm = float(np.linalg.norm(vector))
+        if norm == 0:
+            raise ValueError("the Jones vector is zero")
+        xp = self._xp
+        _, complex_dtype = dtypes(backend=self.backend)
+        components = get(self.backend).asarray(vector / norm, dtype=complex_dtype)
+        return self._with_field(components[:, None, None] * xp.expand_dims(self._field, axis=0))
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -232,18 +273,19 @@ class Wavefront(OpticalSignal):
 
     @property
     def intensity(self) -> Any:
-        """:math:`|U|^2`, a real backend array in :attr:`intensity_unit`."""
+        """:math:`|U|^2` (:math:`|E_x|^2 + |E_y|^2` if polarised), a real ``grid.shape`` array."""
         xp = self._xp
-        return xp.real(self._field * xp.conj(self._field))
+        density = xp.real(self._field * xp.conj(self._field))
+        return xp.sum(density, axis=0) if self.polarized else density
 
     @property
     def amplitude(self) -> Any:
-        """:math:`|U|`, a real backend array."""
+        """:math:`|U|` of each component, a real backend array of the shape of :attr:`field`."""
         return self._xp.abs(self._field)
 
     @property
     def phase(self) -> Any:
-        r""":math:`\arg U` in radians, in ``(-π, π]``."""
+        r""":math:`\arg U` of each component in radians, in ``(-π, π]``."""
         xp = self._xp
         return xp.atan2(xp.imag(self._field), xp.real(self._field))
 
@@ -318,6 +360,8 @@ class Wavefront(OpticalSignal):
             raise ValueError("cannot coherently add wavefronts of different wavelengths")
         if other._power_unit != self._power_unit:
             raise ValueError("cannot add wavefronts with different power units; use with_power_unit()")
+        if other.polarized != self.polarized:
+            raise ValueError("cannot add a polarised and a scalar wavefront; use with_polarization()")
         return self._with_field(self._field + other._field)
 
     def __neg__(self) -> Wavefront:

@@ -1,15 +1,17 @@
 """Discrete representations of optical fields and detected data (REQ-SIG-*).
 
 - :class:`Grid`: rectangular sampling of a spatial or angular plane.
-- :class:`Wavefront`: coherent monochromatic field sampled on a grid.
+- :class:`Wavefront`: coherent monochromatic field sampled on a grid, scalar or polarised.
+- :mod:`~lumos.fields.jones`: Jones vectors and matrices, Stokes parameters.
 """
 
 from typing import Any
 
+from lumos.fields import jones
 from lumos.fields.grid import Grid, Plane
 from lumos.fields.wavefront import Wavefront
 
-__all__ = ["Grid", "Plane", "Wavefront", "pytree_classes"]
+__all__ = ["Grid", "Plane", "Wavefront", "jones", "pytree_classes"]
 
 
 def pytree_classes() -> tuple[type[Any], ...]:

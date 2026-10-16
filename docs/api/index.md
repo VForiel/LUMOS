@@ -66,6 +66,9 @@
 
 .. automodule:: lumos.fields.wavefront
    :members: Wavefront
+
+.. automodule:: lumos.fields.jones
+   :members:
 ```
 
 ## Files
