@@ -19,3 +19,9 @@ def pytest_sessionstart(session):
     from lumos import backend
 
     backend.current()
+
+    # The tests compare results with NumPy references (np.asarray, np.testing): they run on the NumPy
+    # reference backend unless LUMOS_TEST_BACKEND names another one; tests of the automatic choice set "auto".
+    import lumos
+
+    lumos.config.backend = os.environ.get("LUMOS_TEST_BACKEND", "numpy")
