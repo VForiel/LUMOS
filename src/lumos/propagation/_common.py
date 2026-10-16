@@ -161,17 +161,23 @@ class _KernelCache:
         self.misses = 0
 
     def get(self, key: tuple[Any, ...], build: Callable[[], np.ndarray], xp: Any, dtype: Any) -> Any:
-        full_key = (*key, getattr(xp, "__name__", str(xp)), str(dtype))
+        """Return the cached kernel as an array of ``xp`` with ``dtype``.
+
+        Kernels are stored as host NumPy arrays: arrays created while JAX traces a compiled function are
+        tracers, which must not outlive the trace.
+        """
+        full_key = key  # kernels are built in double precision and cast on the way out
         if full_key in self._data:
             self.hits += 1
             self._data.move_to_end(full_key)
-            return self._data[full_key]
-        self.misses += 1
-        value = xp.asarray(build(), dtype=dtype)
-        self._data[full_key] = value
-        if len(self._data) > self.maxsize:
-            self._data.popitem(last=False)
-        return value
+            value = self._data[full_key]
+        else:
+            self.misses += 1
+            value = np.asarray(build(), dtype=np.complex128)
+            self._data[full_key] = value
+            if len(self._data) > self.maxsize:
+                self._data.popitem(last=False)
+        return xp.asarray(value, dtype=dtype)
 
     def info(self) -> CacheInfo:
         return CacheInfo(self.hits, self.misses, self.maxsize, len(self._data))
