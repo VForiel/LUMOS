@@ -20,7 +20,22 @@ from lumos.fields import DataProduct, Grid, IncoherentBundle, RadianceField, Wav
 from lumos.plotting import style
 from lumos.plotting.style import CMAPS
 
-__all__ = ["PHASE_CMAP", "plot_data", "plot_field", "plot_intensity", "plot_phase", "plot_radiance", "style"]
+__all__ = [
+    "PHASE_CMAP",
+    "plot_chip_outputs",
+    "plot_context",
+    "plot_data",
+    "plot_field",
+    "plot_intensity",
+    "plot_phase",
+    "plot_psf",
+    "plot_radial_profile",
+    "plot_radiance",
+    "plot_spectrum",
+    "plot_transmission_map",
+    "save_context_diagram",
+    "style",
+]
 
 #: Cyclic colour map used for phases.
 PHASE_CMAP = CMAPS["phase"]
@@ -202,3 +217,14 @@ def plot_data(product: DataProduct, *, ax: Any = None, colorbar: bool = True, **
     if colorbar:
         ax.figure.colorbar(im, ax=ax).set_label(_unit_label(product.unit))
     return ax
+
+
+from lumos.plotting.results import (  # noqa: E402 - results uses plot_data defined above
+    plot_chip_outputs,
+    plot_context,
+    plot_psf,
+    plot_radial_profile,
+    plot_spectrum,
+    plot_transmission_map,
+    save_context_diagram,
+)
