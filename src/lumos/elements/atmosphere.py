@@ -67,7 +67,10 @@ def _spectra(
 ) -> tuple[ScreenSpectrum, ...]:
     rng = generator({"random_key": random_key})
     return tuple(
-        ScreenSpectrum.draw(n, dx, r0, outer_scale, rng, subharmonics=subharmonics) for r0 in r0_layers
+        ScreenSpectrum.draw(
+            n, dx, r0, outer_scale, rng, subharmonics=None if subharmonics < 0 else subharmonics
+        )
+        for r0 in r0_layers
     )
 
 
@@ -139,7 +142,9 @@ class Atmosphere(Element):
     pupil_diameter = Param(unit=u.m, default=8 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
     corrected_modes = Setting(int, default=0, doc="Noll modes removed by the adaptive optics (0: none)")
     screen_oversize = Setting(int, default=2, doc="screen size in units of the field grid")
-    subharmonics = Setting(int, default=3, doc="levels of low-frequency subharmonics")
+    subharmonics = Setting(
+        int, default=-1, doc="levels of low-frequency subharmonics (-1: to the outer scale)"
+    )
     in_ = Input(OpticalSignal)
     out = Output(OpticalSignal)
 
