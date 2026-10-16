@@ -73,6 +73,7 @@ def document_schema() -> dict[str, Any]:
                 "type": "object",
                 "properties": {
                     "type": {"const": "lumos.group"},
+                    "group_type": {"type": "string", "description": "registered specialised group class"},
                     "name": {"type": ["string", "null"]},
                     "children": {"type": "array", "items": {"$ref": "#/$defs/child"}},
                     "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},

@@ -28,11 +28,49 @@ from lumos.core.element import Element
 from lumos.core.graph import Graph, GraphError
 from lumos.core.port import Input, Output, Port, PortRef
 
-__all__ = ["GROUP_TYPE", "ElementGroup"]
+__all__ = ["GROUP_TYPE", "ElementGroup", "group_class", "group_type_of", "register_group"]
 
 #: Type identifier of groups in ``.lumos`` documents.
 GROUP_TYPE = "lumos.group"
 _NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+#: Specialised group classes by identifier (saved as ``"group_type"`` in ``.lumos`` group entries).
+_GROUP_CLASSES: dict[str, type[ElementGroup]] = {}
+
+
+def register_group(type_id: str) -> Any:
+    """Return a class decorator registering a specialised group class (such as a scene) under ``type_id``.
+
+    A registered subclass is saved as an ordinary group entry with ``"group_type": type_id`` and recreated
+    with its class when loaded. Its children, connections and exposed ports are saved like those of any
+    group; the subclass must keep its configuration in its children.
+    """
+
+    def decorator(cls: type[ElementGroup]) -> type[ElementGroup]:
+        if not (isinstance(cls, type) and issubclass(cls, ElementGroup)):
+            raise TypeError("only ElementGroup subclasses can be registered as group types")
+        existing = _GROUP_CLASSES.get(type_id)
+        if existing is not None and existing is not cls:
+            raise ValueError(f"group type {type_id!r} is already registered for {existing.__qualname__}")
+        _GROUP_CLASSES[type_id] = cls
+        setattr(cls, "_lumos_group_type", type_id)  # noqa: B010 - class attribute added at registration
+        return cls
+
+    return decorator
+
+
+def group_class(type_id: str) -> type[ElementGroup]:
+    """Return the group class registered under ``type_id``."""
+    try:
+        return _GROUP_CLASSES[type_id]
+    except KeyError:
+        raise LookupError(f"unknown group type {type_id!r}; known: {', '.join(_GROUP_CLASSES)}") from None
+
+
+def group_type_of(group: ElementGroup) -> str | None:
+    """Return the registered type of ``group``'s class, or ``None`` for a plain group."""
+    type_id = type(group).__dict__.get("_lumos_group_type")
+    return type_id if isinstance(type_id, str) else None
 
 
 class ElementGroup(Element):
@@ -48,6 +86,13 @@ class ElementGroup(Element):
         super().__init__(name=name)
         self._graph = Graph()
         self._exposed: dict[str, tuple[Port, PortRef]] = {}
+
+    @classmethod
+    def _empty(cls, name: str | None = None) -> ElementGroup:
+        """Create an instance without children, to be filled from a ``.lumos`` entry."""
+        group = cls.__new__(cls)
+        ElementGroup.__init__(group, name=name)
+        return group
 
     # --- Children -----------------------------------------------------------------------------
 

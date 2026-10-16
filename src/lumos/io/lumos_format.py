@@ -33,7 +33,7 @@ import re
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import jsonschema
 import numpy as np
@@ -42,10 +42,11 @@ from astropy.time import Time
 
 import lumos
 import lumos.elements
+import lumos.scenes
 from lumos.core import registry as _registry_module
 from lumos.core.context import Context
 from lumos.core.element import Element
-from lumos.core.group import GROUP_TYPE, ElementGroup
+from lumos.core.group import GROUP_TYPE, ElementGroup, group_class, group_type_of
 from lumos.core.param import Param, Setting
 from lumos.core.priors import prior_from_json, prior_to_json
 from lumos.core.registry import Registry
@@ -144,13 +145,17 @@ def entry_of(element: Element, registry: Registry | None = None) -> dict[str, An
         children = [{"id": child_id, **entry_of(child, reg)} for child_id, child in graph.elements.items()]
         connections = _connections_of(graph)
         exposed = {name: f"{graph.id_of(ref.owner)}.{ref.name}" for name, ref in element.exposed().items()}
-        return {
+        entry: dict[str, Any] = {
             "type": GROUP_TYPE,
             "name": element.name,
             "children": children,
             "connections": connections,
             "exposed_ports": exposed,
         }
+        group_type = group_type_of(element)
+        if group_type is not None:
+            entry["group_type"] = group_type
+        return entry
     type_id = reg.type_id(type(element))
     groups: dict[str, dict[str, Any]] = {"param": {}, "setting": {}, "state": {}}
     free: dict[str, Any] = {}
@@ -232,7 +237,7 @@ def _context_from_document(document: Mapping[str, Any], reg: Registry) -> Contex
             twin=bool(settings["twin"]),
             backend=settings.get("backend", {}).get("preferred", "auto"),
             seed=int(settings["seed"]),
-            start=Time(clock["start"], scale="utc"),
+            start=cast(Time, Time(clock["start"], scale="utc")),
             name=meta.pop("name", None),
         )
         ctx.clock.reset(elapsed=quantity_from_json(clock["elapsed"]))
@@ -302,18 +307,23 @@ def from_entry(entry: Any, *, registry: Registry | None = None) -> Element:
 
 
 def _group_from_entry(entry: Mapping[str, Any], reg: Registry) -> Element:
-    unknown = set(entry) - {"type", "name", "children", "connections", "exposed_ports", "id"}
+    unknown = set(entry) - {"type", "name", "children", "connections", "exposed_ports", "id", "group_type"}
     if unknown:
         raise LumosFormatError(f"unknown key(s) in a group entry: {sorted(unknown)}")
-    group = ElementGroup(name=entry.get("name"))
+    group: ElementGroup = ElementGroup(name=entry.get("name"))
+    if "group_type" in entry:
+        try:
+            group = group_class(entry["group_type"])._empty(name=entry.get("name"))
+        except (LookupError, TypeError) as error:
+            raise LumosFormatError(str(error)) from error
     for child in entry.get("children", []):
         if not isinstance(child, Mapping) or not isinstance(child.get("id"), str):
             raise LumosFormatError("every child of a group needs a string 'id'")
         body = {key: value for key, value in child.items() if key != "id"}
-        group.add(from_entry(body, registry=reg), id=child["id"])
+        ElementGroup.add(group, from_entry(body, registry=reg), id=child["id"])
     try:
         for connection in entry.get("connections", []):
-            group.connect(_port(group, connection["from"]), _port(group, connection["to"]))
+            ElementGroup.connect(group, _port(group, connection["from"]), _port(group, connection["to"]))
         for name, path in entry.get("exposed_ports", {}).items():
             group.expose(name, _port(group, path))
     except (KeyError, TypeError, ValueError) as error:

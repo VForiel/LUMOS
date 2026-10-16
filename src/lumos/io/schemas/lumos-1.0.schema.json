@@ -165,6 +165,10 @@
         "type": {
           "const": "lumos.group"
         },
+        "group_type": {
+          "type": "string",
+          "description": "registered specialised group class"
+        },
         "name": {
           "type": [
             "string",
