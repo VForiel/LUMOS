@@ -17,6 +17,7 @@ from astropy import units as u
 from hypothesis import given
 from hypothesis import strategies as st
 from hypothesis.extra import numpy as hnp
+
 from lumos.units import quantity_from_json, quantity_to_json, require_unit, si_unit, to_si
 
 # --- require_unit --------------------------------------------------------------
