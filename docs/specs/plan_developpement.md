@@ -124,8 +124,8 @@ flowchart LR
 ## Phase 4 — Propagation numérique
 
 - [x] **P4.1 Suite de validation** (écrite en premier, et elle constitue l'étape à elle seule) — Airy (zéros à 1,22 ; 2,23 ; 3,24 λ/D), sinc d'une ouverture carrée, faisceau gaussien en Fresnel (w(z), R(z), phase de Gouy), champ proche d'une ouverture comparé à l'intégrale de RS calculée indépendamment sur un petit cas, Parseval, réciprocité, rétro-propagation, tolérances justifiées physiquement.
-- [ ] **P4.2 Rayleigh-Sommerfeld direct** — référence par blocs, grilles quelconques.
-- [ ] **P4.3 Fraunhofer + MFT** — échantillonnage et centre de sortie arbitraires ; pupille ↔ plan focal.
+- [x] **P4.2 Rayleigh-Sommerfeld direct** — référence par blocs, grilles quelconques.
+- [x] **P4.3 Fraunhofer + MFT** — échantillonnage et centre de sortie arbitraires ; pupille ↔ plan focal.
 - [ ] **P4.4 Fresnel** — fonction de transfert, réponse impulsionnelle, deux étapes.
 - [ ] **P4.5 ASM à bande limitée**, puis ASM mis à l'échelle ou décalé (MFT ou CZT).
 - [ ] **P4.6 Planificateur** — critères d'échantillonnage, coût estimé, choix de méthode, journalisation et forçage. ADR-0005 « Règles du planificateur ».
