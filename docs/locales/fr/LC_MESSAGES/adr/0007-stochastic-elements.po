@@ -1,0 +1,130 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 20:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0007-stochastic-elements.md:1
+msgid "ADR-0007: Random streams of stochastic elements"
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:4
+msgid "**Date**: 2026-10-16"
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:5
+msgid "**Plan step**: P6.5"
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:9
+msgid ""
+"Turbulent phase screens (P6.5) and detector noise (P6.9) need random "
+"numbers inside transfer functions. Transfers are pure static functions of"
+" their values and inputs (ADR-0002), so they cannot call "
+"`ctx.rng(element)`. Results must still be reproducible from the seed of "
+"the context (REQ-CTX-6), streams must be independent between elements, "
+"and a cached output must be recomputed when the seed changes."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:14
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:16
+msgid ""
+"An element class sets `stochastic = True` to declare that its transfer "
+"draws random numbers, like `time_dependent` and `observation_dependent`."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:18
+msgid ""
+"`Element.values()` then adds `random_key = (seed, *spawn_key)`, the key "
+"of the context stream of the element (`(0,)` outside a context). It is a "
+"tuple of integers: hashable (usable as a cache key, e.g. for phase-screen"
+" spectra) and static for JAX pytrees."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:21
+msgid ""
+"`lumos.core.element.generator(values)` builds the NumPy generator of that"
+" stream, `default_rng(SeedSequence(seed, spawn_key=...))`, identical to "
+"`ctx.rng(element)`."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:23
+msgid ""
+"`Context.seed` is a property: setting it invalidates every stochastic "
+"element."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:24
+msgid ""
+"Draws that must differ over time (e.g. successive exposures) mix the "
+"elapsed time of the clock into the key in the element itself."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:27
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:29
+msgid ""
+"**A `seed` setting per element**: simple, but duplicates the seed of the "
+"context and breaks the \"one seed per context\" rule of REQ-CTX-6."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:31
+msgid ""
+"**Passing a `Generator` object in the values**: a generator is stateful "
+"(draws depend on call order) and is neither hashable nor a valid static "
+"pytree leaf."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:33
+msgid ""
+"**Drawing in the context and feeding noise as an input signal**: makes "
+"graphs harder to read and moves element physics outside the element."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:36
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:38
+msgid ""
+"Stochastic transfers stay pure: the same values (including the key) give "
+"the same output."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:39
+msgid ""
+"Elements outside a context always use the same stream; tests vary "
+"realisations by creating contexts with different seeds."
+msgstr ""
+
+#: ../../adr/0007-stochastic-elements.md:41
+msgid "`random_key` is a reserved field name for stochastic elements."
+msgstr ""

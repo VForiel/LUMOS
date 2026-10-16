@@ -1,0 +1,278 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 20:50+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../user_guide/elements.md:1
+msgid "Element library"
+msgstr "Bibliothèque d'éléments"
+
+#: ../../user_guide/elements.md:3
+msgid ""
+"LUMOS ships a library of elements covering the path of light from the source to the detector. Every element"
+" declares physical parameters with units, typed ports and a pure transfer function; it can be added to a "
+"context, connected with `>>`, saved in a `.lumos` file and rebuilt by the generated Python script."
+msgstr ""
+"LUMOS fournit une bibliothèque d'éléments couvrant le trajet de la lumière, de la source au détecteur. "
+"Chaque élément déclare des paramètres physiques avec unités, des ports typés et une fonction de transfert "
+"pure ; il peut être ajouté à un contexte, connecté avec `>>`, enregistré dans un fichier `.lumos` et "
+"reconstruit par le script Python généré."
+
+#: ../../user_guide/elements.md
+msgid "Family"
+msgstr "Famille"
+
+#: ../../user_guide/elements.md
+msgid "Module"
+msgstr "Module"
+
+#: ../../user_guide/elements.md
+msgid "Elements"
+msgstr "Éléments"
+
+#: ../../user_guide/elements.md
+msgid "Sources"
+msgstr "Sources"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.sources`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "`PointSource`, `Star`, `PlanetarySystem`, `GaussianLaser`, `IncoherentLamp`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "Apertures"
+msgstr "Ouvertures"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.apertures`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "`CircularAperture`, `PolygonAperture`, `HexSegmentedAperture`; presets `vlt()`, `jwst()`, `elt()`"
+msgstr "`CircularAperture`, `PolygonAperture`, `HexSegmentedAperture` ; préréglages `vlt()`, `jwst()`, `elt()`"
+
+#: ../../user_guide/elements.md
+msgid "Bulk optics"
+msgstr "Optique de volume"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.optics`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid ""
+"`FreeSpace`, `ThinLens`, `ThinMirror`, `BeamSplitter`, `DelayLine`, `SpectralFilter`, `Polarizer`, "
+"`WavePlate`, `PhasePlate`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "Telescopes"
+msgstr "Télescopes"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.telescopes`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "`Telescope`, `TelescopeArray`; presets `vlti()`, `life()`"
+msgstr "`Telescope`, `TelescopeArray` ; préréglages `vlti()`, `life()`"
+
+#: ../../user_guide/elements.md
+msgid "Atmosphere and AO"
+msgstr "Atmosphère et OA"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.atmosphere`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "`Atmosphere`, `DeformableMirror`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "Coronagraphs"
+msgstr "Coronographes"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.coronagraphs`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "`VortexCoronagraph`, `FourQuadrantPhaseMask`, `LyotCoronagraph`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "Guided optics"
+msgstr "Optique guidée"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.fibers`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "`Fiber`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "Integrated photonics"
+msgstr "Photonique intégrée"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.photonics`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid ""
+"`Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`; chips `bracewell()`, "
+"`kernel_nuller()`"
+msgstr ""
+"`Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI` ; puces `bracewell()`, "
+"`kernel_nuller()`"
+
+#: ../../user_guide/elements.md ../../user_guide/elements.md:89
+msgid "Detectors"
+msgstr "Détecteurs"
+
+#: ../../user_guide/elements.md
+msgid "`lumos.elements.detectors`"
+msgstr ""
+
+#: ../../user_guide/elements.md
+msgid "`Camera`, `Photodiode`, `PowerMeter`"
+msgstr ""
+
+#: ../../user_guide/elements.md:19
+msgid ""
+"The physics of each element, with its references, is given in the docstring of its module (see the [API "
+"reference](../api/index.md))."
+msgstr ""
+"La physique de chaque élément, avec ses références, est donnée dans la docstring de son module (voir la "
+"[référence de l'API](../api/index.md))."
+
+#: ../../user_guide/elements.md:22
+msgid "Sources and telescopes"
+msgstr "Sources et télescopes"
+
+#: ../../user_guide/elements.md:24
+msgid ""
+"Sources at infinity produce a `SourceList` sampled at the spectral channels of the context, so the context "
+"needs an observation band. A `Telescope` turns the sources into the plane waves sampled on its pupil, one "
+"mode of an `IncoherentBundle` per source, carrying the photon rate collected by the pupil:"
+msgstr ""
+"Les sources à l'infini produisent une `SourceList` échantillonnée aux canaux spectraux du contexte, qui "
+"doit donc avoir une bande d'observation. Un `Telescope` transforme les sources en ondes planes "
+"échantillonnées sur sa pupille, un mode d'un `IncoherentBundle` par source, portant le flux de photons "
+"collecté par la pupille :"
+
+#: ../../user_guide/elements.md:48
+msgid ""
+"A `TelescopeArray` models an interferometer whose beams are injected into single-mode guides: its output is"
+" a `ModalField` with one channel per telescope. In the `\"ground\"` frame the station positions are "
+"projected on the sky for the declination and hour angle of the target, and the hour angle follows the clock"
+" of the context; in the `\"sky\"` frame (space arrays such as LIFE) the array rotates about the line of "
+"sight."
+msgstr ""
+"Un `TelescopeArray` modélise un interféromètre dont les faisceaux sont injectés dans des guides monomodes :"
+" sa sortie est un `ModalField` avec un canal par télescope. Dans le repère `\"ground\"`, les positions des "
+"stations sont projetées sur le ciel selon la déclinaison et l'angle horaire de la cible, et l'angle horaire"
+" suit l'horloge du contexte ; dans le repère `\"sky\"` (réseaux spatiaux comme LIFE), le réseau tourne "
+"autour de la ligne de visée."
+
+#: ../../user_guide/elements.md:53
+msgid "Optics, atmosphere and coronagraphs"
+msgstr "Optique, atmosphère et coronographes"
+
+#: ../../user_guide/elements.md:55
+msgid ""
+"Bulk optics act on wavefronts, wavecubes and incoherent bundles alike, channel by channel and mode by mode."
+" A `FreeSpace` element propagates with any method of `lumos.propagation` to an arbitrary output grid."
+msgstr ""
+"Les éléments d'optique de volume agissent de la même façon sur les fronts d'onde, les cubes de fronts "
+"d'onde et les ensembles incohérents, canal par canal et mode par mode. Un élément `FreeSpace` propage avec "
+"n'importe quelle méthode de `lumos.propagation` vers une grille de sortie quelconque."
+
+#: ../../user_guide/elements.md:58
+msgid ""
+"`Atmosphere` adds the optical path of von Kármán turbulence layers carried by the wind (frozen flow), drawn"
+" from the reproducible random stream of the element: the same seed gives the same screens. Its "
+"`corrected_modes` setting removes the first Zernike modes over the pupil, a simple model of adaptive "
+"optics. `DeformableMirror` is a grid of actuators whose commands can be fitted to an optical path map."
+msgstr ""
+"`Atmosphere` ajoute le chemin optique de couches de turbulence de von Kármán transportées par le vent "
+"(écoulement figé), tirées du flux aléatoire reproductible de l'élément : la même graine donne les mêmes "
+"écrans. Son réglage `corrected_modes` retire les premiers modes de Zernike sur la pupille, un modèle simple"
+" d'optique adaptative. `DeformableMirror` est une grille d'actionneurs dont les commandes peuvent être "
+"ajustées à une carte de chemin optique."
+
+#: ../../user_guide/elements.md:63
+msgid ""
+"Coronagraphs receive the pupil field, apply their focal-plane mask and return the field after the Lyot "
+"stop. Ideal masks (even-charge vortex, four-quadrant phase mask) reject an on-axis star down to the "
+"sampling error of the pupil."
+msgstr ""
+"Les coronographes reçoivent le champ pupillaire, appliquent leur masque focal et renvoient le champ après "
+"le diaphragme de Lyot. Les masques idéaux (vortex de charge paire, masque de phase à quatre quadrants) "
+"éteignent une étoile sur l'axe jusqu'à l'erreur d'échantillonnage de la pupille."
+
+#: ../../user_guide/elements.md:67
+msgid "Guided and integrated optics"
+msgstr "Optique guidée et intégrée"
+
+#: ../../user_guide/elements.md:69
+msgid ""
+"A `Fiber` projects the field on its face onto its LP modes, propagates them and outputs both the modal "
+"amplitudes and the near field at its output. Photonic components transform `ModalField` signals with their "
+"scattering matrices, on the channels listed in their `channels` setting. Chips are element groups:"
+msgstr ""
+"Une `Fiber` projette le champ sur sa face d'entrée sur ses modes LP, les propage et fournit à la fois les "
+"amplitudes modales et le champ proche à sa sortie. Les composants photoniques transforment les signaux "
+"`ModalField` par leurs matrices de diffusion, sur les canaux listés dans leur réglage `channels`. Les puces"
+" sont des groupes d'éléments :"
+
+#: ../../user_guide/elements.md:91
+msgid ""
+"A `Camera` reads the field sampled on its pixels: quantum efficiency (constant or a curve), photon and dark"
+" noise, full-well saturation, charge binning, read noise, gain, bias and analog-to-digital conversion. Its "
+"`expose()` action lasts the exposure time and draws a new frame; with `noise=False` it returns the expected"
+" image. A `Photodiode` gives a photocurrent with shot noise and a `PowerMeter` the power in watts; both "
+"read every channel of a `ModalField`."
+msgstr ""
+"Une `Camera` lit le champ échantillonné sur ses pixels : efficacité quantique (constante ou courbe), bruits"
+" de photons et d'obscurité, saturation du puits, binning de charge, bruit de lecture, gain, offset et "
+"conversion analogique-numérique. Son action `expose()` dure le temps de pose et tire une nouvelle trame ; "
+"avec `noise=False` elle renvoie l'image attendue. Une `Photodiode` donne un photocourant avec bruit de "
+"grenaille et un `PowerMeter` la puissance en watts ; tous deux lisent chaque canal d'un `ModalField`."
+
+#: ../../user_guide/elements.md:97
+msgid "Random streams"
+msgstr "Flux aléatoires"
+
+#: ../../user_guide/elements.md:99
+msgid ""
+"Elements that draw random numbers (atmosphere, camera, photodiode) are *stochastic*: they receive the key "
+"of their random stream in the context (`ctx.seed` and their identifier). Results are reproducible for a "
+"given seed, independent between elements, and recomputed when `ctx.seed` changes (ADR-0007)."
+msgstr ""
+"Les éléments qui tirent des nombres aléatoires (atmosphère, caméra, photodiode) sont *stochastiques* : ils "
+"reçoivent la clé de leur flux aléatoire dans le contexte (`ctx.seed` et leur identifiant). Les résultats "
+"sont reproductibles pour une graine donnée, indépendants entre éléments, et recalculés quand `ctx.seed` "
+"change (ADR-0007)."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 16:47+0200\n"
+"POT-Creation-Date: 2026-10-16 20:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -58,29 +58,78 @@ msgstr ""
 #: lumos.core.driver.SimulatedDriver lumos.core.element.Element.apply
 #: lumos.core.element.Element.from_lumos lumos.core.element.Element.port
 #: lumos.core.element.Element.to_lumos lumos.core.element.Values
-#: lumos.core.graph.Connection lumos.core.graph.Graph.add
-#: lumos.core.graph.Graph.disconnect lumos.core.graph.Graph.downstream
-#: lumos.core.graph.Graph.id_of lumos.core.graph.Graph.incoming
-#: lumos.core.graph.Graph.invalidate lumos.core.graph.Graph.is_cached
-#: lumos.core.graph.Graph.remove lumos.core.graph.Graph.required
-#: lumos.core.graph.Graph.resolve lumos.core.graph.Graph.upstream
-#: lumos.core.graph.Result lumos.core.group.ElementGroup.add
-#: lumos.core.group.ElementGroup.apply lumos.core.group.ElementGroup.connect
-#: lumos.core.group.ElementGroup.expose lumos.core.group.ElementGroup.id_of
-#: lumos.core.group.ElementGroup.remove lumos.core.journal.Journal.append
-#: lumos.core.journal.Journal.entries lumos.core.journal.JsonFormatter.format
-#: lumos.core.param.Param.check_prior lumos.core.param.Param.validate
-#: lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
-#: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si
-#: lumos.core.param.Setting.validate lumos.core.param.State
-#: lumos.core.port.Output lumos.core.port.Port lumos.core.port.check_compatible
-#: lumos.core.port.compatible lumos.core.port.ports_of
-#: lumos.core.priors.LogUniform.sample lumos.core.priors.Normal.sample
-#: lumos.core.priors.Prior.sample lumos.core.priors.Uniform.sample
-#: lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration
-#: lumos.core.registry.Registry.get lumos.core.registry.Registry.load_plugins
+#: lumos.core.element.generator lumos.core.graph.Connection
+#: lumos.core.graph.Graph.add lumos.core.graph.Graph.disconnect
+#: lumos.core.graph.Graph.downstream lumos.core.graph.Graph.id_of
+#: lumos.core.graph.Graph.incoming lumos.core.graph.Graph.invalidate
+#: lumos.core.graph.Graph.is_cached lumos.core.graph.Graph.remove
+#: lumos.core.graph.Graph.required lumos.core.graph.Graph.resolve
+#: lumos.core.graph.Graph.upstream lumos.core.graph.Result
+#: lumos.core.group.ElementGroup.add lumos.core.group.ElementGroup.apply
+#: lumos.core.group.ElementGroup.connect lumos.core.group.ElementGroup.expose
+#: lumos.core.group.ElementGroup.id_of lumos.core.group.ElementGroup.remove
+#: lumos.core.journal.Journal.append lumos.core.journal.Journal.entries
+#: lumos.core.journal.JsonFormatter.format lumos.core.param.Param.check_prior
+#: lumos.core.param.Param.validate lumos.core.param.ParamHost.is_free
+#: lumos.core.param.ParamHost.prior lumos.core.param.ParamHost.set_free
+#: lumos.core.param.ParamHost.si lumos.core.param.Setting.decode
+#: lumos.core.param.Setting.encode lumos.core.param.Setting.validate
+#: lumos.core.param.State lumos.core.port.Output lumos.core.port.Port
+#: lumos.core.port.check_compatible lumos.core.port.compatible
+#: lumos.core.port.ports_of lumos.core.priors.LogUniform.sample
+#: lumos.core.priors.Normal.sample lumos.core.priors.Prior.sample
+#: lumos.core.priors.Uniform.sample lumos.core.priors.prior_to_json
+#: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
+#: lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
 #: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.version
+#: lumos.elements.apertures.Aperture.mask
+#: lumos.elements.apertures.HexSegmentedAperture.segment_count
+#: lumos.elements.apertures._transfer.<locals>.transfer
+#: lumos.elements.apertures.elt lumos.elements.apertures.jwst
+#: lumos.elements.apertures.vlt lumos.elements.atmosphere.Atmosphere.opd
+#: lumos.elements.atmosphere.Atmosphere.transfer
+#: lumos.elements.atmosphere.DeformableMirror.fit
+#: lumos.elements.atmosphere.DeformableMirror.opd
+#: lumos.elements.atmosphere.DeformableMirror.transfer
+#: lumos.elements.coronagraphs.Coronagraph
+#: lumos.elements.coronagraphs.FourQuadrantPhaseMask.transfer
+#: lumos.elements.coronagraphs.LyotCoronagraph.transfer
+#: lumos.elements.coronagraphs.VortexCoronagraph.transfer
+#: lumos.elements.detectors.Camera.transfer
+#: lumos.elements.detectors.Photodiode.transfer
+#: lumos.elements.detectors.PowerMeter.transfer
+#: lumos.elements.fibers.Fiber.effective_indices
+#: lumos.elements.fibers.Fiber.mode_fields
+#: lumos.elements.fibers.Fiber.mode_labels lumos.elements.fibers.Fiber.transfer
+#: lumos.elements.fibers.Fiber.v_number
+#: lumos.elements.optics.BeamSplitter.transfer
+#: lumos.elements.optics.DelayLine.transfer
+#: lumos.elements.optics.FreeSpace.transfer
+#: lumos.elements.optics.PhasePlate.opd
+#: lumos.elements.optics.PhasePlate.transfer
+#: lumos.elements.optics.Polarizer.transfer
+#: lumos.elements.optics.SpectralFilter.transfer
+#: lumos.elements.optics.ThinLens.transfer
+#: lumos.elements.optics.ThinMirror.transfer
+#: lumos.elements.optics.WavePlate.transfer
+#: lumos.elements.photonics.Crossing.transfer
+#: lumos.elements.photonics.DirectionalCoupler.transfer
+#: lumos.elements.photonics.MMI.transfer
+#: lumos.elements.photonics.PhaseShifter.transfer
+#: lumos.elements.photonics.Waveguide.transfer
+#: lumos.elements.photonics.YJunction.transfer
+#: lumos.elements.photonics.bracewell lumos.elements.photonics.kernel_nuller
+#: lumos.elements.photonics.kernels
+#: lumos.elements.sources.GaussianLaser.transfer
+#: lumos.elements.sources.IncoherentLamp.transfer
+#: lumos.elements.sources.PlanetarySystem.transfer
+#: lumos.elements.sources.PointSource.transfer
+#: lumos.elements.sources.Star.transfer
+#: lumos.elements.telescopes.Telescope.pupil_grid
+#: lumos.elements.telescopes.Telescope.transfer
+#: lumos.elements.telescopes.TelescopeArray.transfer
+#: lumos.elements.telescopes.life lumos.elements.telescopes.vlti
 #: lumos.fields.dataproduct.DataProduct.from_fits
 #: lumos.fields.dataproduct.DataProduct.from_grid
 #: lumos.fields.dataproduct.DataProduct.from_hdf5
@@ -124,7 +173,31 @@ msgstr ""
 #: lumos.fields.wavefront.Wavefront.with_polarization
 #: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.codegen.to_python
 #: lumos.io.lumos_format.load lumos.io.lumos_format.save
-#: lumos.io.lumos_format.to_document lumos.plotting.plot_data
+#: lumos.io.lumos_format.to_document lumos.physics.apertures.annulus
+#: lumos.physics.apertures.disk lumos.physics.apertures.hex_centers
+#: lumos.physics.apertures.hex_segments lumos.physics.apertures.regular_polygon
+#: lumos.physics.apertures.spiders lumos.physics.blackbody.planck_lambda
+#: lumos.physics.blackbody.planck_lambda_si
+#: lumos.physics.blackbody.planck_photon_lambda
+#: lumos.physics.coronagraphy.window lumos.physics.fibers.lp_modes
+#: lumos.physics.fibers.lp_radial lumos.physics.fibers.marcuse_waist
+#: lumos.physics.orbits.kepler_position lumos.physics.orbits.kepler_position_3d
+#: lumos.physics.orbits.orbital_period lumos.physics.orbits.orbital_period_si
+#: lumos.physics.orbits.solve_kepler lumos.physics.photometry.Band
+#: lumos.physics.photometry.ab_magnitude
+#: lumos.physics.photometry.flux_from_magnitude
+#: lumos.physics.photometry.lambert_phase
+#: lumos.physics.photometry.magnitude_from_flux
+#: lumos.physics.photometry.photon_flux_from_fnu_si
+#: lumos.physics.photonics.beat_length lumos.physics.photonics.effective_width
+#: lumos.physics.photonics.mmi_matrix lumos.physics.photonics.port_positions
+#: lumos.physics.photonics.slab_modes
+#: lumos.physics.turbulence.ScreenSpectrum.draw
+#: lumos.physics.turbulence.ScreenSpectrum.evaluate
+#: lumos.physics.turbulence.von_karman_psd
+#: lumos.physics.turbulence.von_karman_psd_si
+#: lumos.physics.zernike.noll_indices lumos.physics.zernike.zernike
+#: lumos.physics.zernike.zernike_basis lumos.plotting.plot_data
 #: lumos.plotting.plot_field lumos.plotting.plot_radiance
 #: lumos.propagation.api.focus lumos.propagation.api.plan
 #: lumos.propagation.api.register_method lumos.units.quantity_to_json
@@ -172,15 +245,16 @@ msgstr ""
 #: lumos.core.element.Element.instance_ports lumos.core.element.Element.port
 #: lumos.core.element.Element.ports lumos.core.element.Element.schema
 #: lumos.core.element.Element.to_lumos lumos.core.element.Element.values
-#: lumos.core.graph.Graph.add lumos.core.graph.Graph.disconnect
-#: lumos.core.graph.Graph.downstream lumos.core.graph.Graph.id_of
-#: lumos.core.graph.Graph.incoming lumos.core.graph.Graph.invalidate
-#: lumos.core.graph.Graph.is_cached lumos.core.graph.Graph.remove
-#: lumos.core.graph.Graph.required lumos.core.graph.Graph.resolve
-#: lumos.core.graph.Graph.topological_order lumos.core.graph.Graph.upstream
-#: lumos.core.group.ElementGroup.add lumos.core.group.ElementGroup.apply
-#: lumos.core.group.ElementGroup.connect lumos.core.group.ElementGroup.expose
-#: lumos.core.group.ElementGroup.exposed lumos.core.group.ElementGroup.id_of
+#: lumos.core.element.generator lumos.core.graph.Graph.add
+#: lumos.core.graph.Graph.disconnect lumos.core.graph.Graph.downstream
+#: lumos.core.graph.Graph.id_of lumos.core.graph.Graph.incoming
+#: lumos.core.graph.Graph.invalidate lumos.core.graph.Graph.is_cached
+#: lumos.core.graph.Graph.remove lumos.core.graph.Graph.required
+#: lumos.core.graph.Graph.resolve lumos.core.graph.Graph.topological_order
+#: lumos.core.graph.Graph.upstream lumos.core.group.ElementGroup.add
+#: lumos.core.group.ElementGroup.apply lumos.core.group.ElementGroup.connect
+#: lumos.core.group.ElementGroup.expose lumos.core.group.ElementGroup.exposed
+#: lumos.core.group.ElementGroup.id_of
 #: lumos.core.group.ElementGroup.instance_ports
 #: lumos.core.group.ElementGroup.remove lumos.core.journal.Journal.append
 #: lumos.core.journal.Journal.clear lumos.core.journal.Journal.commands
@@ -190,6 +264,7 @@ msgstr ""
 #: lumos.core.param.Param.validate lumos.core.param.ParamHost.declared
 #: lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
 #: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si
+#: lumos.core.param.Setting.decode lumos.core.param.Setting.encode
 #: lumos.core.param.Setting.validate lumos.core.port.check_compatible
 #: lumos.core.port.compatible lumos.core.port.ports_of
 #: lumos.core.priors.LogUniform.sample lumos.core.priors.Normal.sample
@@ -198,6 +273,58 @@ msgstr ""
 #: lumos.core.registry.Registry.get lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
 #: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.version
+#: lumos.elements.apertures.Aperture.mask
+#: lumos.elements.apertures.HexSegmentedAperture.segment_count
+#: lumos.elements.apertures._transfer.<locals>.transfer
+#: lumos.elements.apertures.elt lumos.elements.apertures.jwst
+#: lumos.elements.apertures.vlt lumos.elements.atmosphere.Atmosphere.opd
+#: lumos.elements.atmosphere.Atmosphere.transfer
+#: lumos.elements.atmosphere.DeformableMirror.actuator_positions
+#: lumos.elements.atmosphere.DeformableMirror.fit
+#: lumos.elements.atmosphere.DeformableMirror.opd
+#: lumos.elements.atmosphere.DeformableMirror.transfer
+#: lumos.elements.coronagraphs.FourQuadrantPhaseMask.transfer
+#: lumos.elements.coronagraphs.LyotCoronagraph.transfer
+#: lumos.elements.coronagraphs.VortexCoronagraph.transfer
+#: lumos.elements.detectors.Camera.expose
+#: lumos.elements.detectors.Camera.transfer
+#: lumos.elements.detectors.Photodiode.acquire
+#: lumos.elements.detectors.Photodiode.transfer
+#: lumos.elements.detectors.PowerMeter.transfer
+#: lumos.elements.fibers.Fiber.effective_indices
+#: lumos.elements.fibers.Fiber.mode_fields
+#: lumos.elements.fibers.Fiber.mode_labels lumos.elements.fibers.Fiber.transfer
+#: lumos.elements.fibers.Fiber.v_number
+#: lumos.elements.optics.BeamSplitter.transfer
+#: lumos.elements.optics.DelayLine.transfer
+#: lumos.elements.optics.FreeSpace.transfer
+#: lumos.elements.optics.PhasePlate.opd
+#: lumos.elements.optics.PhasePlate.transfer
+#: lumos.elements.optics.Polarizer.transfer
+#: lumos.elements.optics.SpectralFilter.transfer
+#: lumos.elements.optics.ThinLens.transfer
+#: lumos.elements.optics.ThinMirror.transfer
+#: lumos.elements.optics.WavePlate.transfer
+#: lumos.elements.photonics.Crossing.transfer
+#: lumos.elements.photonics.DirectionalCoupler.transfer
+#: lumos.elements.photonics.MMI.transfer
+#: lumos.elements.photonics.PhaseShifter.transfer
+#: lumos.elements.photonics.Waveguide.transfer
+#: lumos.elements.photonics.YJunction.transfer
+#: lumos.elements.photonics.bracewell lumos.elements.photonics.kernel_nuller
+#: lumos.elements.photonics.kernels
+#: lumos.elements.sources.GaussianLaser.transfer
+#: lumos.elements.sources.IncoherentLamp.transfer
+#: lumos.elements.sources.PlanetarySystem.transfer
+#: lumos.elements.sources.PointSource.transfer
+#: lumos.elements.sources.Star.transfer
+#: lumos.elements.telescopes.Telescope.pupil_grid
+#: lumos.elements.telescopes.Telescope.transfer
+#: lumos.elements.telescopes.TelescopeArray.baselines
+#: lumos.elements.telescopes.TelescopeArray.ground_positions
+#: lumos.elements.telescopes.TelescopeArray.projected_positions
+#: lumos.elements.telescopes.TelescopeArray.transfer
+#: lumos.elements.telescopes.life lumos.elements.telescopes.vlti
 #: lumos.fields.dataproduct.DataProduct.from_fits
 #: lumos.fields.dataproduct.DataProduct.from_grid
 #: lumos.fields.dataproduct.DataProduct.from_hdf5
@@ -251,12 +378,35 @@ msgstr ""
 #: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.codegen.to_python
 #: lumos.io.lumos_format.load lumos.io.lumos_format.save
 #: lumos.io.lumos_format.to_document lumos.io.schema.document_schema
-#: lumos.plotting.plot_data lumos.plotting.plot_field
-#: lumos.plotting.plot_radiance lumos.propagation._common.cache_info
-#: lumos.propagation._common.clear_cache lumos.propagation.api.focus
-#: lumos.propagation.api.methods lumos.propagation.api.plan
-#: lumos.propagation.api.register_method lumos.units.quantity_to_json
-#: lumos.units.si_unit of
+#: lumos.physics.apertures.annulus lumos.physics.apertures.disk
+#: lumos.physics.apertures.hex_centers lumos.physics.apertures.hex_segments
+#: lumos.physics.apertures.regular_polygon lumos.physics.apertures.spiders
+#: lumos.physics.blackbody.planck_lambda
+#: lumos.physics.blackbody.planck_lambda_si
+#: lumos.physics.blackbody.planck_photon_lambda
+#: lumos.physics.coronagraphy.window lumos.physics.fibers.lp_modes
+#: lumos.physics.fibers.lp_radial lumos.physics.fibers.marcuse_waist
+#: lumos.physics.orbits.kepler_position lumos.physics.orbits.kepler_position_3d
+#: lumos.physics.orbits.orbital_period lumos.physics.orbits.orbital_period_si
+#: lumos.physics.orbits.solve_kepler lumos.physics.photometry.ab_magnitude
+#: lumos.physics.photometry.flux_from_magnitude
+#: lumos.physics.photometry.lambert_phase
+#: lumos.physics.photometry.magnitude_from_flux
+#: lumos.physics.photometry.photon_flux_from_fnu_si
+#: lumos.physics.photonics.beat_length lumos.physics.photonics.effective_width
+#: lumos.physics.photonics.mmi_matrix lumos.physics.photonics.port_positions
+#: lumos.physics.photonics.slab_modes
+#: lumos.physics.turbulence.ScreenSpectrum.draw
+#: lumos.physics.turbulence.ScreenSpectrum.evaluate
+#: lumos.physics.turbulence.von_karman_psd
+#: lumos.physics.turbulence.von_karman_psd_si
+#: lumos.physics.zernike.noll_indices lumos.physics.zernike.zernike
+#: lumos.physics.zernike.zernike_basis lumos.plotting.plot_data
+#: lumos.plotting.plot_field lumos.plotting.plot_radiance
+#: lumos.propagation._common.cache_info lumos.propagation._common.clear_cache
+#: lumos.propagation.api.focus lumos.propagation.api.methods
+#: lumos.propagation.api.plan lumos.propagation.api.register_method
+#: lumos.units.quantity_to_json lumos.units.si_unit of
 msgid "Return type"
 msgstr ""
 
@@ -469,10 +619,14 @@ msgstr ""
 
 #: lumos.Context.backend lumos.Context.mode lumos.Context.origin
 #: lumos._config.Config.backend lumos._config.Config.fft_workers
-#: lumos._config.Config.precision lumos.fields.wavecube.Wavecube.intensity_unit
+#: lumos._config.Config.precision lumos.elements.photonics.Crossing.n_inputs
+#: lumos.elements.photonics.DirectionalCoupler.n_inputs
+#: lumos.elements.photonics.PhotonicComponent.n_inputs
+#: lumos.fields.wavecube.Wavecube.intensity_unit
 #: lumos.fields.wavecube.Wavecube.power_unit
 #: lumos.fields.wavefront.Wavefront.intensity_unit
-#: lumos.fields.wavefront.Wavefront.power_unit of
+#: lumos.fields.wavefront.Wavefront.power_unit lumos.physics.photometry.BANDS
+#: of
 msgid "type"
 msgstr ""
 
@@ -1022,6 +1176,16 @@ msgstr ""
 msgid "Check ``value`` and return it twice (settings have no SI form)."
 msgstr ""
 
+#: lumos.core.param.Setting.encode:1 of
+msgid ""
+"Return the JSON form of ``value`` (settings are JSON values; subclasses "
+"may override)."
+msgstr ""
+
+#: lumos.core.param.Setting.decode:1 of
+msgid "Return the value of the JSON form ``data`` (inverse of :meth:`encode`)."
+msgstr ""
+
 #: lumos.core.param.State:1 of
 msgid ""
 "A physical quantity describing the current state of an equipment (changed"
@@ -1255,11 +1419,36 @@ msgid ""
 "required."
 msgstr ""
 
-#: lumos.core.element.Element.time_dependent:1 of
+#: lumos.core.element.Element.time_dependent:1
+#: lumos.elements.atmosphere.Atmosphere.time_dependent:1
+#: lumos.elements.sources.PlanetarySystem.time_dependent:1
+#: lumos.elements.telescopes.TelescopeArray.time_dependent:1 of
 msgid ""
 "Whether the transfer function reads the elapsed time ``values.time`` "
 "(seconds since the start of the context). Time-dependent elements are "
 "recomputed whenever the clock advances."
+msgstr ""
+
+#: lumos.core.element.Element.observation_dependent:1
+#: lumos.elements.sources.IncoherentLamp.observation_dependent:1
+#: lumos.elements.sources.PlanetarySystem.observation_dependent:1
+#: lumos.elements.sources.PointSource.observation_dependent:1
+#: lumos.elements.sources.Star.observation_dependent:1 of
+msgid ""
+"Whether the transfer function reads the spectral sampling of the context,"
+" ``values.wavelengths`` and ``values.bandwidths`` (tuples of SI floats "
+"from ``ctx.observation``)."
+msgstr ""
+
+#: lumos.core.element.Element.stochastic:1
+#: lumos.elements.atmosphere.Atmosphere.stochastic:1
+#: lumos.elements.detectors.Camera.stochastic:1
+#: lumos.elements.detectors.Photodiode.stochastic:1 of
+msgid ""
+"Whether the transfer function draws random numbers. Stochastic elements "
+"get ``values.random_key``, the key of their reproducible context stream "
+"(see :func:`generator`), and are recomputed when the seed of the context "
+"changes."
 msgstr ""
 
 #: lumos.core.element.Element.context:1 of
@@ -1303,7 +1492,9 @@ msgstr ""
 #: lumos.core.element.Element.values:3 of
 msgid ""
 "Time-dependent elements also get ``time``, the elapsed time of their "
-"context in seconds (0 outside a context)."
+"context in seconds (0 outside a context); stochastic elements get "
+"``random_key``, ``(seed, *spawn_key)`` of their context stream (``(0,)`` "
+"outside a context)."
 msgstr ""
 
 #: lumos.core.element.Element.actions:1 of
@@ -1379,6 +1570,19 @@ msgid ""
 "(``values.focal_length``). Physical fields are floats, complex numbers or"
 " read-only arrays in unscaled SI units; settings are returned as they "
 "are."
+msgstr ""
+
+#: lumos.core.element.generator:1 of
+msgid ""
+"Return a new NumPy generator of the random stream of a stochastic element"
+" from its ``values``."
+msgstr ""
+
+#: lumos.core.element.generator:3 of
+msgid ""
+"The stream is ``numpy.random.SeedSequence(seed, spawn_key=...)`` of the "
+"context of the element, as in :meth:`lumos.Context.rng`: identical "
+"between runs with the same seed, independent between elements."
 msgstr ""
 
 #: lumos.core.registry:1 of
@@ -3165,6 +3369,12 @@ msgid ""
 "longest duration."
 msgstr ""
 
+#: lumos.Context.seed:1 of
+msgid ""
+"Seed of the random streams; changing it recomputes the stochastic "
+"elements."
+msgstr ""
+
 #: lumos.core.context.Context.simulate:1 of
 msgid ""
 "Force ``element`` to simulation, even in operation mode (``flag=False`` "
@@ -4378,6 +4588,1731 @@ msgid ""
 msgstr ""
 
 #: ../../api/index.md:151
+msgid "Physical models"
+msgstr ""
+
+#: lumos.physics.blackbody:1 of
+msgid "Thermal emission (Planck's law)."
+msgstr ""
+
+#: lumos.physics.blackbody:3 of
+msgid "The spectral radiance of a blackbody per unit wavelength is"
+msgstr ""
+
+#: lumos.physics.blackbody:5 of
+msgid ""
+"B_\\lambda(T) = \\frac{2 h c^2}{\\lambda^5} \\frac{1}{e^{hc/\\lambda k T}"
+" - 1}\n"
+"\n"
+msgstr ""
+
+#: lumos.physics.blackbody:7 of
+msgid ""
+"in W m⁻² sr⁻¹ m⁻¹, and its photon radiance is :math:`B_\\lambda \\lambda "
+"/ hc` (Rybicki & Lightman, *Radiative Processes in Astrophysics*, §1.5). "
+"Constants are the exact 2019 SI values."
+msgstr ""
+
+#: lumos.physics.blackbody.planck_lambda:1 of
+msgid "Spectral radiance of a blackbody per unit wavelength."
+msgstr ""
+
+#: lumos.physics.blackbody.planck_lambda_si:1 of
+msgid ""
+"Planck spectral radiance in W m⁻² sr⁻¹ m⁻¹ for SI wavelengths (m) and "
+"temperatures (K)."
+msgstr ""
+
+#: lumos.physics.blackbody.planck_photon_lambda:1 of
+msgid ""
+"Photon spectral radiance of a blackbody per unit wavelength (photon s⁻¹ "
+"m⁻² sr⁻¹ m⁻¹)."
+msgstr ""
+
+#: lumos.physics.photometry:1 of
+msgid ""
+"Photometry: magnitude systems, photometric bands and phase functions "
+"(REQ-SCN-5)."
+msgstr ""
+
+#: lumos.physics.photometry:4 of
+msgid "Magnitudes"
+msgstr ""
+
+#: lumos.physics.photometry:5 of
+#, python-brace-format
+msgid ""
+"**AB** magnitudes are defined by :math:`m_\\mathrm{AB} = "
+"-2.5\\log_{10}(F_\\nu / 3631\\ \\mathrm{Jy})` (Oke & Gunn 1983, ApJ 266, "
+"713)."
+msgstr ""
+
+#: lumos.physics.photometry:7 of
+#, python-brace-format
+msgid ""
+"**Vega** magnitudes of the Johnson-Cousins-Glass system use the zero "
+"points of Bessell, Castelli & Plez (1998, A&A 333, 231, table A2): "
+":math:`F_\\nu = F_{\\nu,0} 10^{-0.4 m}` at the effective wavelength of "
+"the band."
+msgstr ""
+
+#: lumos.physics.photometry:11 of
+msgid ""
+"Bands are described by their effective wavelength and an approximate full"
+" width; filter transmission curves come with the catalogue services "
+"(phase 9)."
+msgstr ""
+
+#: lumos.physics.photometry:15 of
+msgid "Phase function"
+msgstr ""
+
+#: lumos.physics.photometry:16 of
+msgid ""
+"A Lambertian sphere seen at phase angle :math:`\\alpha` reflects the "
+"fraction :math:`\\Phi(\\alpha) = [\\sin\\alpha + (\\pi - "
+"\\alpha)\\cos\\alpha] / \\pi` of its full-phase flux (Sobolev 1975)."
+msgstr ""
+
+#: lumos.physics.photometry.AB_ZERO_POINT:1 of
+msgid "Zero point of AB magnitudes."
+msgstr ""
+
+#: lumos.physics.photometry.BANDS:1 of
+msgid ""
+"effective wavelengths and zero points of Bessell, Castelli & Plez (1998, "
+"table A2); widths are approximate full widths of the filters."
+msgstr ""
+
+#: lumos.physics.photometry.BANDS:4 of
+msgid "Johnson-Cousins-Glass bands"
+msgstr ""
+
+#: lumos.physics.photometry.Band:1 of
+msgid ""
+"A photometric band: effective wavelength, approximate width and Vega zero"
+" point (``F_ν`` at m = 0)."
+msgstr ""
+
+#: lumos.physics.photometry.ab_magnitude:1 of
+msgid "AB magnitude of a spectral flux density per unit frequency."
+msgstr ""
+
+#: lumos.physics.photometry.flux_from_magnitude:1 of
+msgid ""
+"Spectral flux density ``F_ν`` of a Vega magnitude in ``band`` (at its "
+"effective wavelength)."
+msgstr ""
+
+#: lumos.physics.photometry.lambert_phase:1 of
+msgid ""
+"Phase function of a Lambertian sphere at ``phase_angle`` (1 at full "
+"phase)."
+msgstr ""
+
+#: lumos.physics.photometry.magnitude_from_flux:1 of
+msgid "Vega magnitude of a spectral flux density ``F_ν`` in ``band``."
+msgstr ""
+
+#: lumos.physics.photometry.photon_flux_from_fnu_si:1 of
+msgid ""
+"Photon flux density per unit wavelength (photon s⁻¹ m⁻² m⁻¹) from "
+":math:`F_\\nu` (W m⁻² Hz⁻¹)."
+msgstr ""
+
+#: lumos.physics.photometry.photon_flux_from_fnu_si:3 of
+msgid ""
+":math:`F_\\lambda = F_\\nu c/\\lambda^2` and one photon carries "
+":math:`hc/\\lambda`, so the photon flux is :math:`F_\\nu / (h \\lambda)`."
+msgstr ""
+
+#: lumos.physics.orbits:1 of
+msgid "Keplerian orbits (REQ-SCN-2, REQ-SCN-7)."
+msgstr ""
+
+#: lumos.physics.orbits:3 of
+#, python-brace-format
+msgid ""
+"A bound orbit of semi-major axis :math:`a` and eccentricity :math:`e` "
+"around a mass :math:`M` has the period :math:`P = 2\\pi\\sqrt{a^3 / GM}` "
+"(Kepler's third law). The position at time :math:`t` follows from the "
+"mean anomaly :math:`M = 2\\pi (t - t_p)/P`, the eccentric anomaly solving"
+" Kepler's equation :math:`E - e \\sin E = M`, the true anomaly "
+":math:`\\nu` and the radius :math:`r = a(1 - e\\cos E)` (Murray & "
+"Dermott, *Solar System Dynamics*, §2.4)."
+msgstr ""
+
+#: lumos.physics.orbits:9 of
+msgid ""
+"Orientation: the orbit lies in a plane inclined by :math:`i` about the "
+"line of nodes (the x axis rotated by the longitude of the ascending node "
+":math:`\\Omega`), with argument of periapsis :math:`\\omega`. The "
+"observer looks down the -z axis (z points towards the observer); :math:`i"
+" = 0` is face-on."
+msgstr ""
+
+#: lumos.physics.orbits.kepler_position:1 of
+msgid ""
+"Projected position ``(x, y)`` on the sky plane (see "
+":func:`kepler_position_3d`)."
+msgstr ""
+
+#: lumos.physics.orbits.kepler_position_3d:1 of
+msgid ""
+"Return the position ``(x, y, z)`` at time ``t`` (unit of ``a``, radians, "
+"z towards the observer)."
+msgstr ""
+
+#: lumos.physics.orbits.orbital_period:1 of
+msgid "Period of an orbit of semi-major axis ``a`` around ``mass``."
+msgstr ""
+
+#: lumos.physics.orbits.orbital_period_si:1 of
+msgid ""
+"Period in seconds of an orbit of semi-major axis ``a`` (m) around "
+"``mass`` (kg)."
+msgstr ""
+
+#: lumos.physics.orbits.solve_kepler:1 of
+msgid ""
+"Solve Kepler's equation ``E - e sin E = M`` for the eccentric anomaly "
+"``E`` (Newton's method)."
+msgstr ""
+
+#: lumos.physics.apertures:1 of
+msgid "Aperture masks on sampling grids (§5.9, step P6.2)."
+msgstr ""
+
+#: lumos.physics.apertures:3 of
+msgid ""
+"Masks are amplitude transmissions between 0 and 1 sampled on a "
+":class:`~lumos.fields.Grid` (in its SI unit: metres for pupils). Edges "
+"are **anti-aliased**: each pixel is split into ``supersample × "
+"supersample`` sub-pixels and its value is the fraction of sub-pixels "
+"inside the shape, which makes the sampled area converge to the exact area"
+" and avoids the aliasing of binary edges in the far field."
+msgstr ""
+
+#: lumos.physics.apertures:8 of
+msgid ""
+"Shapes: disks, annuli, regular polygons, radial spider vanes and "
+"primaries made of hexagonal segments on a hexagonal lattice (ring by ring"
+" around the centre)."
+msgstr ""
+
+#: lumos.physics.apertures.annulus:1 of
+msgid ""
+"Annulus between the diameters ``inner`` and ``outer`` (SI), centred on "
+"the origin."
+msgstr ""
+
+#: lumos.physics.apertures.disk:1 of
+msgid "Disk of ``diameter`` (SI) centred on ``center``."
+msgstr ""
+
+#: lumos.physics.apertures.hex_centers:1 of
+msgid "Centres of hexagonal segments ring by ring on a lattice of ``pitch`` (SI)."
+msgstr ""
+
+#: lumos.physics.apertures.hex_centers:3 of
+msgid ""
+"Segments have two vertices along x; neighbours are at angles 30° + k·60°."
+" With ``outer_radius`` (or ``inner_radius``), only segments lying "
+"entirely inside (outside) the circle are kept."
+msgstr ""
+
+#: lumos.physics.apertures.hex_segments:1 of
+msgid ""
+"Primary made of hexagonal segments of ``flat_to_flat`` width separated by"
+" ``gap`` (SI)."
+msgstr ""
+
+#: lumos.physics.apertures.hex_segments:3 of
+msgid "Returns the mask and the number of segments."
+msgstr ""
+
+#: lumos.physics.apertures.regular_polygon:1 of
+msgid ""
+"Regular ``n``-gon with a vertex at angle ``rotation`` from +x, inscribed "
+"in ``circumradius`` (SI)."
+msgstr ""
+
+#: lumos.physics.apertures.spiders:1 of
+msgid ""
+"Coverage (1 = blocked) of ``n`` radial vanes of ``width`` (SI) starting "
+"at the centre."
+msgstr ""
+
+#: lumos.physics.apertures.spiders:3 of
+msgid "The first vane points at angle ``rotation`` from +x."
+msgstr ""
+
+#: lumos.physics.zernike:1 of
+msgid ""
+"Zernike polynomials in Noll's ordering and normalisation (Noll 1976, JOSA"
+" 66, 207)."
+msgstr ""
+
+#: lumos.physics.zernike:3 of
+msgid ""
+"Mode :math:`j \\ge 1` has the radial order :math:`n` and the azimuthal "
+"frequency :math:`m` given by :func:`noll_indices` (:math:`m > 0` for "
+"cosines, :math:`m < 0` for sines, even :math:`j` for cosines):"
+msgstr ""
+
+#: lumos.physics.zernike:6 of
+msgid ""
+"Z_j = \\sqrt{n + 1}\\, R_n^0(\\rho) \\quad (m = 0), \\qquad\n"
+"Z_j = \\sqrt{2(n + 1)}\\, R_n^{|m|}(\\rho) \\times \\begin{cases} \\cos "
+"m\\theta \\\\ \\sin |m|\\theta \\end{cases},\n"
+"\n"
+"R_n^{m}(\\rho) = \\sum_{s=0}^{(n-m)/2}\n"
+"\\frac{(-1)^s (n - s)!}{s!\\,(\\frac{n+m}{2} - s)!\\,(\\frac{n-m}{2} - "
+"s)!}\\, \\rho^{n - 2s},"
+msgstr ""
+
+#: lumos.physics.zernike:13 of
+#, python-brace-format
+msgid ""
+"so that :math:`\\frac{1}{\\pi}\\int_{\\rho \\le 1} Z_i Z_j = "
+"\\delta_{ij}`: a coefficient is the RMS of its mode over the pupil."
+msgstr ""
+
+#: lumos.physics.zernike.noll_indices:1 of
+msgid ""
+"Return the radial order ``n`` and the signed azimuthal frequency ``m`` of"
+" Noll mode ``j``."
+msgstr ""
+
+#: lumos.physics.zernike.zernike:1 of
+msgid ""
+"Evaluate Noll mode ``j`` at polar coordinates ``rho`` (pupil radius 1) "
+"and ``theta`` (radians)."
+msgstr ""
+
+#: lumos.physics.zernike.zernike_basis:1 of
+msgid ""
+"Sample modes 1 … ``n_modes`` on ``grid`` over a pupil of ``diameter`` "
+"centred on the origin."
+msgstr ""
+
+#: lumos.physics.zernike.zernike_basis:3 of
+msgid ""
+"Returns a NumPy array of shape ``(n_modes, ny, nx)``, zero outside the "
+"pupil (``r > diameter / 2``)."
+msgstr ""
+
+#: lumos.physics.turbulence:1 of
+msgid "Atmospheric turbulence: von Kármán spectrum and random phase screens."
+msgstr ""
+
+#: lumos.physics.turbulence:3 of
+msgid ""
+"The phase of a wave crossing Kolmogorov turbulence of Fried parameter "
+":math:`r_0` has the power spectral density (Noll 1976, JOSA 66, 207; "
+"Roddier 1981, *Progress in Optics* 19, §3.5.2), with the outer scale "
+":math:`L_0` of the von Kármán model,"
+msgstr ""
+
+#: lumos.physics.turbulence:7 of
+#, python-brace-format
+msgid ""
+"\\Phi(f) = 0.023\\, r_0^{-5/3} \\left(f^2 + L_0^{-2}\\right)^{-11/6} "
+"\\quad \\mathrm{rad^2\\,m^2},\n"
+"\n"
+msgstr ""
+
+#: lumos.physics.turbulence:9 of
+#, python-brace-format
+msgid ""
+"and the structure function :math:`D(r) = 6.88\\,(r / r_0)^{5/3}` for "
+":math:`L_0 \\to \\infty`. The Fried parameter scales with wavelength as "
+":math:`r_0 \\propto \\lambda^{6/5}` (the optical path is achromatic), and"
+" layers of fractional :math:`C_n^2` weights :math:`w_i` have "
+":math:`r_{0,i} = r_0\\, w_i^{-3/5}`."
+msgstr ""
+
+#: lumos.physics.turbulence:13 of
+msgid ""
+"Screens are drawn in Fourier space (McGlamery 1976): one random complex "
+"amplitude per frequency cell of a periodic grid, plus levels of "
+"subharmonics that restore the low frequencies the grid misses (Lane, "
+"Glindemann & Dainty 1992, *Waves in Random Media* 2, 209). Because "
+":math:`\\Phi` is steep near the origin, the variance of each cell close "
+"to it is the integral of :math:`\\Phi` over the cell rather than its "
+"value at the centre (Johansson & Gavel 1994, Proc. SPIE 2200), and the "
+"subharmonics go down to the outer scale. Even the smallest lags of the "
+"structure function depend on these large scales: with three levels only, "
+":math:`D(r)` is 10 to 20 % too low. A :class:`ScreenSpectrum` keeps the "
+"amplitudes, so the screen can be evaluated at any translation, exactly "
+"(Taylor's frozen flow)."
+msgstr ""
+
+#: lumos.physics.turbulence.ScreenSpectrum:1 of
+msgid ""
+"Random Fourier amplitudes of a phase screen of ``n × n`` pixels of side "
+"``dx`` (SI units)."
+msgstr ""
+
+#: lumos.physics.turbulence.ScreenSpectrum:3 of
+msgid ""
+"The high frequencies are FFT amplitudes on the periodic grid; the low "
+"frequencies (the cells close to the origin and the subharmonics) are "
+"explicit sinusoids. Build it with :meth:`draw`; :meth:`evaluate` returns "
+"the phase (rad) on the grid, translated by a shift."
+msgstr ""
+
+#: lumos.physics.turbulence.ScreenSpectrum.draw:1 of
+msgid ""
+"Draw the amplitudes of a screen of Fried parameter ``r0`` and outer scale"
+" ``outer_scale``."
+msgstr ""
+
+#: lumos.physics.turbulence.ScreenSpectrum.draw:3 of
+msgid ""
+"``subharmonics`` is the number of subharmonic levels; ``None`` goes down "
+"to the outer scale."
+msgstr ""
+
+#: lumos.physics.turbulence.ScreenSpectrum.evaluate:1 of
+msgid ""
+"Return the phase screen (rad) at the pixel coordinates ``(i - n // 2) "
+"dx``, translated."
+msgstr ""
+
+#: lumos.physics.turbulence.ScreenSpectrum.evaluate:3 of
+#, python-brace-format
+msgid ""
+"The value at :math:`\\mathbf{x}` is the value of the untranslated screen "
+"at :math:`\\mathbf{x} - \\mathbf{s}`, with :math:`\\mathbf{s}` = "
+"``(shift_x, shift_y)``."
+msgstr ""
+
+#: lumos.physics.turbulence.von_karman_psd:1 of
+msgid ""
+"Phase power spectral density of von Kármán turbulence (rad² m², radians "
+"omitted)."
+msgstr ""
+
+#: lumos.physics.turbulence.von_karman_psd_si:1 of
+msgid ""
+"Phase power spectral density in rad² m² at spatial frequencies ``f`` "
+"(m⁻¹); SI floats."
+msgstr ""
+
+#: lumos.physics.coronagraphy:1 of
+msgid ""
+"Focal-plane masks of coronagraphs: pupil → focal plane → mask → Lyot "
+"plane."
+msgstr ""
+
+#: lumos.physics.coronagraphy:3 of
+msgid ""
+"With pupil coordinates :math:`\\tilde{\\mathbf{x}} = \\mathbf{x}/D` and "
+"focal coordinates :math:`\\mathbf{u}` in units of :math:`\\lambda/D`, the"
+" field after a focal-plane mask :math:`M(\\mathbf{u})` is, back in the "
+"pupil (Lyot) plane,"
+msgstr ""
+
+#: lumos.physics.coronagraphy:7 of
+msgid ""
+"P'(\\tilde{\\mathbf{x}}) = \\int M(\\mathbf{u})\\, E(\\mathbf{u})\\,\n"
+"e^{2i\\pi\\,\\tilde{\\mathbf{x}}\\cdot\\mathbf{u}}\\,d^2u, \\qquad\n"
+"E(\\mathbf{u}) = \\int P(\\tilde{\\mathbf{x}})\\, "
+"e^{-2i\\pi\\,\\tilde{\\mathbf{x}}\\cdot\\mathbf{u}}\\,d^2\\tilde{x}.\n"
+"\n"
+msgstr ""
+
+#: lumos.physics.coronagraphy:12 of
+#, python-brace-format
+msgid ""
+"Masks such as vortices and quadrant phase masks cover the whole focal "
+"plane and are singular at its centre, so the integral is split with "
+"smooth radial windows :math:`W_k` (1 inside :math:`a_k`, 0 outside "
+":math:`b_k`, raised cosine between): a zero-padded FFT computes the part "
+":math:`M (1 - W_0)` of the whole plane, and matrix Fourier transforms "
+"(Soummer et al. 2007, Opt. Express 15, 15935) of finer and finer sampling"
+" compute the parts :math:`M (W_{k-1} - W_k)` and :math:`M W_{K}` near the"
+" axis. This multi-scale scheme follows the one used for vortex "
+"coronagraphs by Krist et al. (2012, Proc. SPIE 8151). The residual of "
+"ideal masks is then set by the sampling of the pupil (it decreases as "
+":math:`1/N^2` for :math:`N` samples across the pupil), not by the focal-"
+"plane computation."
+msgstr ""
+
+#: lumos.physics.coronagraphy.DEFAULT_LEVELS:1 of
+msgid ""
+"(inner radius, outer radius, sampling) of the windows of the fine levels,"
+" in λ/D."
+msgstr ""
+
+#: lumos.physics.coronagraphy.lyot_plane:1 of
+msgid "Return the field in the Lyot plane, on the same samples as ``field``."
+msgstr ""
+
+#: lumos.physics.coronagraphy.lyot_plane:3 of
+msgid ""
+"Complex pupil field, shape ``(..., ny, nx)``, on the uniform pupil "
+"coordinates ``x`` and ``y``, in units of the pupil diameter (``x / D``)."
+msgstr ""
+
+#: lumos.physics.coronagraphy.lyot_plane:5 of
+msgid ""
+"Focal-plane transmission ``mask(ux, uy)`` for coordinates in λ/D (arrays "
+"of the same shape)."
+msgstr ""
+
+#: lumos.physics.coronagraphy.lyot_plane:6 of
+msgid ""
+"Zero-padding factor of the coarse FFT (its sampling is ``1 / (pad n dx)``"
+" λ/D)."
+msgstr ""
+
+#: lumos.physics.coronagraphy.lyot_plane:7 of
+msgid ""
+"``(inner, outer, sampling)`` of the windows and of the finer levels, from"
+" the outside in."
+msgstr ""
+
+#: lumos.physics.coronagraphy.window:1 of
+msgid ""
+"Radial window: 1 for ``r <= inner``, 0 for ``r >= outer``, a raised "
+"cosine between."
+msgstr ""
+
+#: lumos.physics.fibers:1 of
+msgid ""
+"Linearly polarised (LP) modes of weakly guiding step-index fibres (Gloge "
+"1971, Appl. Opt. 10, 2252)."
+msgstr ""
+
+#: lumos.physics.fibers:3 of
+msgid ""
+"A fibre of core radius :math:`a`, numerical aperture :math:`\\mathrm{NA} "
+"= \\sqrt{n_\\mathrm{co}^2 - n_\\mathrm{cl}^2}` has the normalised "
+"frequency :math:`V = 2\\pi a\\,\\mathrm{NA}/\\lambda`. Mode "
+":math:`\\mathrm{LP}_{\\ell m}` has the transverse field (with "
+":math:`\\rho = r/a`)"
+msgstr ""
+
+#: lumos.physics.fibers:7 of
+#, python-brace-format
+msgid ""
+"\\psi(\\rho, \\phi) = \\begin{cases} J_\\ell(U\\rho)/J_\\ell(U) & \\rho "
+"\\le 1 \\\\\n"
+"K_\\ell(W\\rho)/K_\\ell(W) & \\rho > 1 \\end{cases} \\times "
+"\\begin{cases} \\cos \\ell\\phi \\\\ \\sin \\ell\\phi\n"
+"\\end{cases},\n"
+"\n"
+msgstr ""
+
+#: lumos.physics.fibers:12 of
+msgid "where :math:`U` is the :math:`m`-th root of the characteristic equation"
+msgstr ""
+
+#: lumos.physics.fibers:14 of
+msgid ""
+"U \\frac{J_{\\ell-1}(U)}{J_\\ell(U)} = -W "
+"\\frac{K_{\\ell-1}(W)}{K_\\ell(W)}, \\qquad U^2 + W^2 = V^2,\n"
+"\n"
+msgstr ""
+
+#: lumos.physics.fibers:16 of
+#, python-brace-format
+msgid ""
+"solved here in the pole-free form :math:`U J_{\\ell-1}(U) K_\\ell(W) + W "
+"K_{\\ell-1}(W) J_\\ell(U) = 0`. The normalised propagation constant "
+":math:`b = W^2/V^2` gives the effective index :math:`n_\\mathrm{eff}^2 = "
+"n_\\mathrm{cl}^2 + b\\,\\mathrm{NA}^2`. A mode is guided above its "
+"cutoff, a zero of :math:`J_{\\ell-1}` (:math:`J_1` for :math:`\\ell = "
+"0`)."
+msgstr ""
+
+#: lumos.physics.fibers:21 of
+#, python-brace-format
+msgid ""
+"The Gaussian approximation of LP01 has the waist :math:`w/a = 0.65 + "
+"1.619 V^{-3/2} + 2.879 V^{-6}` (Marcuse 1977, Bell Syst. Tech. J. 56, "
+"703)."
+msgstr ""
+
+#: lumos.physics.fibers.LPMode:1 of
+msgid ""
+"Guided mode LP(ell, m) at the normalised frequency ``v``, with the roots "
+"``u`` and ``w``."
+msgstr ""
+
+#: lumos.physics.fibers.LPMode.b:1 of
+msgid "Normalised propagation constant ``W² / V²``."
+msgstr ""
+
+#: lumos.physics.fibers.LPMode.label:1 of
+msgid "Name of the mode, e.g. ``\"LP11\"``."
+msgstr ""
+
+#: lumos.physics.fibers.lp_modes:1 of
+msgid ""
+"Return the guided LP modes at the normalised frequency ``v``, by "
+"decreasing propagation constant."
+msgstr ""
+
+#: lumos.physics.fibers.lp_radial:1 of
+msgid ""
+"Radial profile of ``mode`` at ``rho = r / a`` (1 at the core-cladding "
+"interface)."
+msgstr ""
+
+#: lumos.physics.fibers.marcuse_waist:1 of
+msgid ""
+"Waist of the Gaussian approximation of LP01 in units of the core radius "
+"(Marcuse 1977)."
+msgstr ""
+
+#: lumos.physics.photonics:1 of
+msgid "Planar waveguides and multimode interference (MMI) couplers."
+msgstr ""
+
+#: lumos.physics.photonics:4 of
+msgid "Mode solver"
+msgstr ""
+
+#: lumos.physics.photonics:5 of
+#, python-brace-format
+msgid ""
+"Integrated components are reduced to two dimensions with the effective "
+"index method: a slab of width :math:`W` and index :math:`n_\\mathrm{co}` "
+"in a cladding :math:`n_\\mathrm{cl}` guides TE modes "
+":math:`E(x)\\,e^{i\\beta z}` solving"
+msgstr ""
+
+#: lumos.physics.photonics:9 of
+#, python-brace-format
+msgid ""
+"\\frac{d^2 E}{dx^2} + k^2 n(x)^2 E = \\beta^2 E ,\n"
+"\n"
+msgstr ""
+
+#: lumos.physics.photonics:11 of
+#, python-brace-format
+msgid ""
+"discretised here with second-order finite differences on a uniform grid "
+"with zero field at its edges (the window is several times wider than the "
+"guide). Guided modes have :math:`k n_\\mathrm{cl} < \\beta < k "
+"n_\\mathrm{co}`; for a symmetric step-index slab they obey "
+":math:`\\tan(\\kappa W/2) = \\gamma/\\kappa` (even) or "
+":math:`-\\cot(\\kappa W/2) = \\gamma/\\kappa` (odd), with "
+":math:`\\kappa^2 = k^2 n_\\mathrm{co}^2 - \\beta^2` and :math:`\\gamma^2 "
+"= \\beta^2 - k^2 n_\\mathrm{cl}^2` (Marcuse, *Theory of Dielectric "
+"Optical Waveguides*, §1.3)."
+msgstr ""
+
+#: lumos.physics.photonics:18 of
+msgid "Multimode interference"
+msgstr ""
+
+#: lumos.physics.photonics:19 of
+#, python-brace-format
+msgid ""
+"The field launched by an access waveguide into the multimode section is "
+"expanded on the guided modes :math:`\\psi_m` of the section, propagated "
+"as :math:`\\sum_m c_m \\psi_m e^{i\\beta_m L}` and projected on the modes"
+" of the output waveguides (radiation modes are neglected): this gives the"
+" scattering matrix of the component at each wavelength. Self-images form "
+"at multiples of the beat length :math:`L_\\pi = \\pi / (\\beta_0 - "
+"\\beta_1)`; an :math:`N \\times N` coupler with ports at :math:`x_i = W_e"
+" (2i + 1 - N) / 2N` (:func:`effective_width`) makes :math:`N` images of "
+"equal power at :math:`L = 3 L_\\pi / N` (Soldano & Pennings 1995, J. "
+"Lightwave Technol. 13, 615; Bachmann, Besse & Melchior 1994, Appl. Opt. "
+"33, 3905)."
+msgstr ""
+
+#: lumos.physics.photonics.SlabModes:1 of
+msgid ""
+"Guided TE modes of a slab: propagation constants ``beta`` (rad/m) and "
+"fields ``(n_modes, nx)``."
+msgstr ""
+
+#: lumos.physics.photonics.SlabModes:3 of
+msgid "Fields are real and normalised so that ``sum(field**2) * dx = 1``."
+msgstr ""
+
+#: lumos.physics.photonics.SlabModes.dx:1 of
+msgid "Sampling step of the fields."
+msgstr ""
+
+#: lumos.physics.photonics.beat_length:1 of
+msgid ""
+"Beat length ``π / (β0 - β1)`` of the two first modes of the multimode "
+"section."
+msgstr ""
+
+#: lumos.physics.photonics.effective_width:1 of
+msgid ""
+"Return the effective width ``W + (λ/π) (n_co² - n_cl²)^(-1/2)`` of a TE "
+"multimode section."
+msgstr ""
+
+#: lumos.physics.photonics.effective_width:3 of
+msgid ""
+"The Goos-Hänchen penetration of the modes in the cladding widens the "
+"section (Soldano & Pennings 1995)."
+msgstr ""
+
+#: lumos.physics.photonics.mmi_matrix:1 of
+msgid ""
+"Scattering matrix ``(n_out, n_in)`` of a multimode interference coupler "
+"at ``wavelength``."
+msgstr ""
+
+#: lumos.physics.photonics.port_positions:1 of
+msgid ""
+"Positions of ``n`` equally spaced ports of the general-interference "
+"coupler (centre at 0)."
+msgstr ""
+
+#: lumos.physics.photonics.slab_modes:1 of
+msgid ""
+"Return the guided TE modes of the index profile ``index`` sampled on the "
+"uniform grid ``x``."
+msgstr ""
+
+#: ../../api/index.md:182
+msgid "Elements"
+msgstr ""
+
+#: lumos.elements:1 of
+msgid "Library of elements (§5.9)."
+msgstr ""
+
+#: lumos.elements:3 of
+msgid ""
+"Sources, apertures, optics, telescopes, atmosphere, coronagraphs, guided "
+"and integrated optics, detectors."
+msgstr ""
+
+#: lumos.elements:6 of
+msgid ""
+"Importing this package registers every built-in element type in "
+":data:`lumos.core.registry.registry`, so that ``.lumos`` files can refer "
+"to them by their stable identifiers (``lumos.<family>.<Name>``)."
+msgstr ""
+
+#: lumos.elements.sources:1 of
+msgid "Point, astronomical and laboratory sources (REQ-SCN-2, §5.9)."
+msgstr ""
+
+#: lumos.elements.sources:3 of
+msgid ""
+"Sources at infinity (:class:`PointSource`, :class:`Star`, "
+":class:`PlanetarySystem`) produce a :class:`~lumos.fields.SourceList` "
+"sampled at the spectral channels of the context "
+"(``ctx.observation.band``); a telescope then samples their plane waves on"
+" its pupil. Laboratory sources emit fields on their own grid: "
+":class:`GaussianLaser` a coherent :class:`~lumos.fields.Wavefront`, "
+":class:`IncoherentLamp` a :class:`~lumos.fields.RadianceField`."
+msgstr ""
+
+#: lumos.elements.sources:10 of
+msgid "Physics"
+msgstr ""
+
+#: lumos.elements.sources:11 of
+msgid ""
+"A star of radius :math:`R`, temperature :math:`T` and distance :math:`d` "
+"has the flux density :math:`F_\\lambda = \\pi B_\\lambda(T) (R/d)^2` "
+"(Rybicki & Lightman §1.4); given a magnitude, the blackbody shape is "
+"scaled so that :math:`F_\\nu` at the effective wavelength of the band "
+"matches the zero point (:mod:`lumos.physics.photometry`)."
+msgstr ""
+
+#: lumos.elements.sources:15 of
+#, python-brace-format
+msgid ""
+"A planet at distance :math:`r` from its star reflects :math:`F_\\star A_g"
+" \\Phi(\\alpha) (R_p/r)^2` (geometric albedo :math:`A_g`, Lambert phase "
+"function, phase angle :math:`\\alpha`) and emits as a blackbody at its "
+"equilibrium temperature :math:`T_\\mathrm{eq} = T_\\star \\sqrt{R_\\star "
+"/ 2r}\\,(1 - A)^{1/4}` (the albedo is used as the Bond albedo)."
+msgstr ""
+
+#: lumos.elements.sources:19 of
+msgid ""
+"A Lambertian lamp of radiance :math:`L` and area :math:`A` emits :math:`P"
+" = \\pi L A` (Lambert's law)."
+msgstr ""
+
+#: lumos.elements.sources.GaussianLaser:1 of
+msgid "Laser beam with a Gaussian profile at its waist, sampled on its own grid."
+msgstr ""
+
+#: lumos.elements.sources.GaussianLaser.transfer:1 of
+msgid "Return the beam at its waist."
+msgstr ""
+
+#: lumos.elements.sources.IncoherentLamp:1 of
+msgid "Uniform Lambertian disk with a flat spectrum over the band of the context."
+msgstr ""
+
+#: lumos.elements.sources.IncoherentLamp.transfer:1 of
+msgid "Return the radiance of the lamp."
+msgstr ""
+
+#: lumos.elements.sources.PlanetarySystem:1 of
+msgid ""
+"A star and one planet on a Keplerian orbit; the planet moves with the "
+"context clock."
+msgstr ""
+
+#: lumos.elements.sources.PlanetarySystem.transfer:1 of
+msgid "Return the star and the planet at the current time."
+msgstr ""
+
+#: lumos.elements.sources.PointSource:1 of
+msgid "Unresolved source at infinity with a flat spectral flux density ``F_ν``."
+msgstr ""
+
+#: lumos.elements.sources.PointSource.transfer:1 of
+msgid "Return the source list of the point source."
+msgstr ""
+
+#: lumos.elements.sources.Star:1 of
+msgid ""
+"Blackbody star, scaled by its radius and distance or by a magnitude in a "
+"photometric band."
+msgstr ""
+
+#: lumos.elements.sources.Star.transfer:1 of
+msgid "Return the source list of the star."
+msgstr ""
+
+#: lumos.elements.apertures:1 of
+msgid "Apertures and pupils (§5.9, step P6.2)."
+msgstr ""
+
+#: lumos.elements.apertures:3 of
+msgid ""
+"An aperture element multiplies the optical signal it receives by its "
+"amplitude transmission, computed on the grid of the signal with anti-"
+"aliased edges (:mod:`lumos.physics.apertures`): wavefronts, wavecubes and"
+" incoherent bundles are multiplied by the mask, radiance fields by its "
+"square (a power transmission)."
+msgstr ""
+
+#: lumos.elements.apertures:7 of
+msgid "Presets give approximate geometric models of telescope pupils:"
+msgstr ""
+
+#: lumos.elements.apertures:9 of
+msgid ""
+":func:`vlt`: 8.2 m primary, 1.116 m central obstruction, four 5 cm spider"
+" vanes (ESO VLT User Manual);"
+msgstr ""
+
+#: lumos.elements.apertures:10 of
+msgid ""
+":func:`jwst`: 18 hexagonal segments of 1.32 m flat to flat with 7 mm gaps"
+" (Gardner et al. 2023), without the secondary supports;"
+msgstr ""
+
+#: lumos.elements.apertures:12 of
+msgid ""
+":func:`elt`: 798 hexagonal segments of 1.4 m corner to corner with 4 mm "
+"gaps between radii 4.75 m and 19.65 m (39.3 m tip to tip; ESO ELT "
+"Construction Proposal 2011), six 50 cm spider vanes."
+msgstr ""
+
+#: lumos.elements.apertures.Aperture:1 of
+msgid "Base class of apertures: a mask applied to the incoming optical signal."
+msgstr ""
+
+#: lumos.elements.apertures.Aperture.mask:1 of
+msgid ""
+"Amplitude transmission of the aperture sampled on ``grid`` (NumPy array, "
+"values in [0, 1])."
+msgstr ""
+
+#: lumos.elements.apertures.CircularAperture:1 of
+msgid ""
+"Circular pupil with an optional central obstruction and radial spider "
+"vanes."
+msgstr ""
+
+#: lumos.elements.apertures._transfer.<locals>.transfer:1 of
+msgid ""
+"Multiply the incoming signal by the amplitude transmission of the "
+"aperture."
+msgstr ""
+
+#: lumos.elements.apertures.HexSegmentedAperture:1 of
+msgid ""
+"Primary made of hexagonal segments on a hexagonal lattice, ring by ring "
+"around the centre."
+msgstr ""
+
+#: lumos.elements.apertures.HexSegmentedAperture.segment_count:1 of
+msgid ""
+"Return the number of segments of the primary (independent of the sampling"
+" ``grid``)."
+msgstr ""
+
+#: lumos.elements.apertures.HexSegmentedAperture.diameter:1 of
+msgid "Tip-to-tip diameter of the primary."
+msgstr ""
+
+#: lumos.elements.apertures.PolygonAperture:1 of
+msgid "Regular polygon (e.g. a hexagonal segment) inscribed in a circle."
+msgstr ""
+
+#: lumos.elements.apertures.elt:1 of
+msgid "Approximate primary of the Extremely Large Telescope (798 segments)."
+msgstr ""
+
+#: lumos.elements.apertures.jwst:1 of
+msgid "Approximate primary of the James Webb Space Telescope (18 segments)."
+msgstr ""
+
+#: lumos.elements.apertures.vlt:1 of
+msgid "Approximate pupil of a VLT unit telescope."
+msgstr ""
+
+#: lumos.elements.optics:1 of
+msgid "Bulk optics (§5.9, step P6.3)."
+msgstr ""
+
+#: lumos.elements.optics:3 of
+msgid ""
+"Free space, thin lenses and mirrors, beam splitters, filters, delay "
+"lines, polarisers, wave plates and Zernike phase plates. Every element "
+"acts on :class:`~lumos.fields.Wavefront`, :class:`~lumos.fields.Wavecube`"
+" and :class:`~lumos.fields.IncoherentBundle` signals (REQ-EL-8), channel "
+"by channel for polychromatic light and mode by mode for bundles; the "
+"spectral filter also acts on :class:`~lumos.fields.RadianceField` "
+"signals."
+msgstr ""
+
+#: lumos.elements.optics:10 of
+msgid "Conventions and physics"
+msgstr ""
+
+#: lumos.elements.optics:11 of
+msgid ""
+"Fields evolve as :math:`\\exp[i(kz - \\omega t)]`: a vacuum path "
+"difference :math:`d` multiplies the field by :math:`\\exp(2i\\pi d / "
+"\\lambda)` (:class:`DelayLine`)."
+msgstr ""
+
+#: lumos.elements.optics:13 of
+msgid ""
+"A thin lens of focal length :math:`f` multiplies the field by "
+":math:`\\exp(-ik r^2 / 2f)` (Goodman, *Introduction to Fourier Optics*, "
+"§5.1), with :math:`r` measured from the origin of the grid coordinates. A"
+" thin mirror is modelled *unfolded*: a spherical mirror of focal length "
+":math:`f = R/2` acts like the lens of the same focal length on the field "
+"travelling along the folded axis."
+msgstr ""
+
+#: lumos.elements.optics:17 of
+#, python-brace-format
+msgid ""
+"A lossless beam splitter of power reflectance :math:`R` has the amplitude"
+" coefficients :math:`t = \\sqrt{1 - R}` and :math:`r = i\\sqrt{R}`, which"
+" make its scattering matrix unitary (Saleh & Teich, *Fundamentals of "
+"Photonics*, §13.1)."
+msgstr ""
+
+#: lumos.elements.optics:20 of
+#, python-brace-format
+msgid ""
+"A spectral filter has a top-hat power transmission :math:`T` for "
+":math:`|\\lambda - \\lambda_0| \\le \\Delta\\lambda / 2` (amplitude "
+":math:`\\sqrt{T}`) and blocks the other channels."
+msgstr ""
+
+#: lumos.elements.optics:22 of
+msgid ""
+"Polarisers and wave plates apply the Jones matrices of "
+":mod:`lumos.fields.jones` (Hecht, *Optics*, §8)."
+msgstr ""
+
+#: lumos.elements.optics.BeamSplitter:1 of
+#, python-brace-format
+msgid ""
+"Lossless beam splitter: :math:`t = \\sqrt{1 - R}` (transmitted), :math:`r"
+" = i\\sqrt{R}` (reflected)."
+msgstr ""
+
+#: lumos.elements.optics.BeamSplitter.transfer:1 of
+msgid "Split the incoming light in two beams."
+msgstr ""
+
+#: lumos.elements.optics.DelayLine:1 of
+msgid ""
+"Vacuum optical path delay :math:`d`: multiplies each channel by "
+":math:`\\exp(2i\\pi d / \\lambda)`."
+msgstr ""
+
+#: lumos.elements.optics.DelayLine.transfer:1 of
+msgid "Apply the chromatic phase of the delay."
+msgstr ""
+
+#: lumos.elements.optics.FreeSpace:1 of
+msgid ""
+"Propagation in vacuum over a distance, with the methods of "
+":func:`lumos.propagation.propagate`."
+msgstr ""
+
+#: lumos.elements.optics.FreeSpace.transfer:1 of
+msgid "Propagate the incoming field to the output plane."
+msgstr ""
+
+#: lumos.elements.optics.PhasePlate:1 of
+msgid ""
+"Phase plate adding the OPD ``Σ a_j Z_j`` (Noll's Zernike modes, j from 1)"
+" over a disk."
+msgstr ""
+
+#: lumos.elements.optics.PhasePlate.opd:1 of
+msgid ""
+"Return the optical path difference of the plate on ``grid`` (zero outside"
+" the disk)."
+msgstr ""
+
+#: lumos.elements.optics.PhasePlate.transfer:1 of
+msgid "Add the optical path of the plate to every channel and mode."
+msgstr ""
+
+#: lumos.elements.optics.Polarizer:1 of
+msgid "Ideal linear polariser transmitting the polarisation at ``angle`` from +x."
+msgstr ""
+
+#: lumos.elements.optics.Polarizer.transfer:1 of
+msgid "Apply the Jones matrix of the polariser."
+msgstr ""
+
+#: lumos.elements.optics.SpectralFilter:1 of
+msgid ""
+"Top-hat band-pass filter: power transmission inside the band, opaque "
+"outside."
+msgstr ""
+
+#: lumos.elements.optics.SpectralFilter.transfer:1 of
+msgid "Keep the channels inside the band."
+msgstr ""
+
+#: lumos.elements.optics.ThinLens:1 of
+msgid ""
+"Thin lens: multiplies the field by :math:`\\exp(-ik r^2 / 2f)` "
+"(converging for :math:`f > 0`)."
+msgstr ""
+
+#: lumos.elements.optics.ThinLens.transfer:1 of
+msgid "Apply the quadratic phase of the lens."
+msgstr ""
+
+#: lumos.elements.optics.ThinMirror:1 of
+msgid ""
+"Thin spherical mirror of focal length ``R / 2``, modelled unfolded as the"
+" equivalent thin lens."
+msgstr ""
+
+#: lumos.elements.optics.ThinMirror.transfer:1 of
+msgid "Apply the quadratic phase of the mirror."
+msgstr ""
+
+#: lumos.elements.optics.WavePlate:1 of
+msgid ""
+"Linear retarder with its fast axis at ``angle`` (a ``retardance`` of 180°"
+" makes a half-wave plate)."
+msgstr ""
+
+#: lumos.elements.optics.WavePlate.transfer:1 of
+msgid "Apply the Jones matrix of the retarder."
+msgstr ""
+
+#: lumos.elements.optics.chromatic_factor:1 of
+msgid ""
+"Multiply every spectral channel of ``signal`` by ``factor(wavelengths, "
+"xp)``."
+msgstr ""
+
+#: lumos.elements.optics.chromatic_factor:3 of
+msgid "Wavefront, wavecube or bundle."
+msgstr ""
+
+#: lumos.elements.optics.chromatic_factor:4 of
+msgid ""
+"Function of the vacuum wavelengths (a backend array of shape ``(nλ, 1, "
+"1)``, in metres) and of the array namespace, returning a transmission "
+"broadcastable to ``(nλ, ny, nx)``."
+msgstr ""
+
+#: lumos.elements.telescopes:1 of
+msgid "Telescopes and telescope arrays (§5.9, step P6.4)."
+msgstr ""
+
+#: lumos.elements.telescopes:3 of
+msgid ""
+"A :class:`Telescope` turns the sources at infinity it receives "
+"(:class:`~lumos.fields.SourceList`) into the plane waves sampled on its "
+"pupil, one mode of an :class:`~lumos.fields.IncoherentBundle` per source:"
+" channel :math:`k` of source :math:`m` is"
+msgstr ""
+
+#: lumos.elements.telescopes:7 of
+msgid ""
+"U_{mk}(x, y) = \\sqrt{F_{mk} b_k}\\; P(x, y)\\, "
+"\\exp\\!\\left[\\frac{2i\\pi}{\\lambda_k}\n"
+"(x\\,\\theta_{x,m} + y\\,\\theta_{y,m})\\right],\n"
+"\n"
+msgstr ""
+
+#: lumos.elements.telescopes:10 of
+#, python-brace-format
+msgid ""
+"with :math:`P` the anti-aliased pupil transmission, so that the power of "
+"each channel is the photon rate :math:`A F_{mk} b_k` collected by the "
+"pupil area :math:`A` (``photon / s``). Since grey edge pixels transmit "
+"the power :math:`P^2 < P`, the pupil is scaled so that :math:`\\sum P^2 "
+"\\Delta x \\Delta y` equals the anti-aliased area :math:`\\sum P \\Delta "
+"x \\Delta y`, which converges to the exact area."
+msgstr ""
+
+#: lumos.elements.telescopes:15 of
+msgid ""
+"A :class:`TelescopeArray` models an interferometer whose beams are "
+"injected into single-mode guides with an ideal coupling: telescope "
+":math:`j` at the projected position :math:`(u_j, v_j)` delivers the "
+"amplitude"
+msgstr ""
+
+#: lumos.elements.telescopes:18 of
+msgid ""
+"a_{mkj} = \\sqrt{\\eta A F_{mk} b_k}\\; "
+"\\exp\\!\\left[\\frac{2i\\pi}{\\lambda_k}\n"
+"(u_j\\,\\theta_{x,m} + v_j\\,\\theta_{y,m})\\right]\n"
+"\n"
+msgstr ""
+
+#: lumos.elements.telescopes:21 of
+msgid ""
+"(a :class:`~lumos.fields.ModalField` with one channel per telescope, "
+":math:`\\eta` the throughput), the geometric delay of the phase centre "
+"being compensated by the delay lines. Angles are direction cosines on the"
+" sky, :math:`\\theta_x` towards the East (u) and :math:`\\theta_y` "
+"towards the North (v)."
+msgstr ""
+
+#: lumos.elements.telescopes:26 of
+msgid "Projected baselines"
+msgstr ""
+
+#: lumos.elements.telescopes:27 of
+msgid ""
+"In the ``\"ground\"`` frame, station positions are local (East, North, "
+"Up) coordinates at the latitude :math:`\\varphi`. They are expressed in "
+"the equatorial frame and projected on the plane of the sky of a target of"
+" declination :math:`\\delta` at hour angle :math:`H` (Thompson, Moran & "
+"Swenson, *Interferometry and Synthesis in Radio Astronomy*, 3rd ed., eqs."
+" 4.15 and 4.1):"
+msgstr ""
+
+#: lumos.elements.telescopes:32 of
+msgid ""
+"X = -\\sin\\varphi\\,N + \\cos\\varphi\\,U, \\quad Y = E, \\quad Z = "
+"\\cos\\varphi\\,N + \\sin\\varphi\\,U,\n"
+"\n"
+"u = \\sin H\\,X + \\cos H\\,Y, \\qquad v = -\\sin\\delta\\cos H\\,X + "
+"\\sin\\delta\\sin H\\,Y + \\cos\\delta\\,Z ."
+msgstr ""
+
+#: lumos.elements.telescopes:37 of
+msgid ""
+"The hour angle grows with the context clock at the sidereal rate (one "
+"turn per 86164.0905 s, IERS Conventions 2010). In the ``\"sky\"`` frame "
+"(space arrays), positions are given in the plane of the sky and the array"
+" rotates about the line of sight at ``rotation_rate``."
+msgstr ""
+
+#: lumos.elements.telescopes:41 of
+msgid ""
+"Presets: :func:`vlti` (the four 8.2 m unit telescopes of Paranal), "
+":func:`life` (the four 2 m collectors of the LIFE X-array, Quanz et al. "
+"2022, A&A 664, A21)."
+msgstr ""
+
+#: lumos.elements.telescopes.Telescope:1 of
+msgid ""
+"Telescope pupil sampling the plane waves of the sources at infinity (one "
+"bundle mode per source)."
+msgstr ""
+
+#: lumos.elements.telescopes.Telescope.pupil_grid:1 of
+msgid "Return the sampling of the pupil."
+msgstr ""
+
+#: lumos.elements.telescopes.Telescope.transfer:1 of
+msgid "Sample the plane waves of the received sources on the pupil."
+msgstr ""
+
+#: lumos.elements.telescopes.TelescopeArray:1 of
+msgid ""
+"Array of identical telescopes injecting each beam in a single-mode "
+"channel (ideal coupling)."
+msgstr ""
+
+#: lumos.elements.telescopes.TelescopeArray.n_telescopes:1 of
+msgid "Number of telescopes."
+msgstr ""
+
+#: lumos.elements.telescopes.TelescopeArray.area:1 of
+msgid "Collecting area of one telescope."
+msgstr ""
+
+#: lumos.elements.telescopes.TelescopeArray.ground_positions:1 of
+msgid "Station positions as given, shape ``(n, 2)`` or ``(n, 3)``."
+msgstr ""
+
+#: lumos.elements.telescopes.TelescopeArray.projected_positions:1 of
+msgid ""
+"Positions ``(u, v)`` projected on the plane of the sky at the current "
+"time, shape ``(n, 2)``."
+msgstr ""
+
+#: lumos.elements.telescopes.TelescopeArray.baselines:1 of
+msgid ""
+"Projected baselines ``p_j - p_i`` for every pair ``i < j``, shape ``(n (n"
+" - 1) / 2, 2)``."
+msgstr ""
+
+#: lumos.elements.telescopes.TelescopeArray.transfer:1 of
+msgid ""
+"Return the amplitudes injected by every telescope for every source and "
+"channel."
+msgstr ""
+
+#: lumos.elements.telescopes.life:1 of
+msgid ""
+"Return the LIFE X-array: four 2 m collectors on a rectangle of 1 by 6 "
+"nulling baselines."
+msgstr ""
+
+#: lumos.elements.telescopes.life:3 of
+msgid ""
+"LIFE adapts the nulling baseline (10 to 100 m) to each target (Quanz et "
+"al. 2022); 15 m is an example."
+msgstr ""
+
+#: lumos.elements.telescopes.vlti:1 of
+msgid ""
+"Return the four 8.2 m unit telescopes of the VLTI at Paranal (other "
+"fields passed in ``values``)."
+msgstr ""
+
+#: lumos.elements.atmosphere:1 of
+msgid "Turbulent atmosphere and adaptive optics (§5.9, step P6.5)."
+msgstr ""
+
+#: lumos.elements.atmosphere:3 of
+#, python-brace-format
+msgid ""
+":class:`Atmosphere` adds the optical path difference (OPD) of von Kármán "
+"turbulence layers to the light it receives "
+"(:mod:`lumos.physics.turbulence`). Each layer :math:`i` has a fraction "
+":math:`w_i` of the turbulence (:math:`r_{0,i} = r_0 w_i^{-3/5}`) and is "
+"carried by the wind at :math:`\\mathbf{v}_i` (Taylor's frozen flow: "
+":math:`\\mathrm{OPD}_i(\\mathbf{x}, t) = \\mathrm{OPD}_i(\\mathbf{x} - "
+"\\mathbf{v}_i t, 0)`, ``t`` from the context clock). The OPD is "
+"achromatic, so every channel gets the phase "
+":math:`2\\pi\\,\\mathrm{OPD}/\\lambda` and the Fried parameter scales as "
+":math:`\\lambda^{6/5}` (Roddier 1981). Screens are drawn from the "
+"reproducible random stream of the element in its context "
+"(:attr:`~lumos.core.element.Element.stochastic`); the layers act in the "
+"pupil plane (no scintillation)."
+msgstr ""
+
+#: lumos.elements.atmosphere:12 of
+#, python-brace-format
+msgid ""
+"A simple adaptive optics correction is built in: ``corrected_modes = J`` "
+"removes, over the pupil of diameter ``pupil_diameter``, the least-squares"
+" projection of the OPD on Noll's modes 1 … J (an ideal wavefront sensor "
+"and corrector), leaving the residual variance :math:`\\Delta_J "
+"(D/r_0)^{5/3}` of Noll (1976)."
+msgstr ""
+
+#: lumos.elements.atmosphere:16 of
+#, python-brace-format
+msgid ""
+":class:`DeformableMirror` is a grid of actuators with Gaussian influence "
+"functions :math:`w(r) = c^{(r/p)^2}` (coupling :math:`c` at the pitch "
+":math:`p`); its surface :math:`s = \\sum_k a_k w(\\mathbf{x} - "
+"\\mathbf{x}_k)` changes the optical path by :math:`2s` (reflection). "
+":meth:`DeformableMirror.fit` finds the commands whose OPD best fits a map"
+" (least squares)."
+msgstr ""
+
+#: lumos.elements.atmosphere.Atmosphere:1 of
+msgid ""
+"Multi-layer von Kármán turbulence in frozen flow, with an optional ideal "
+"adaptive optics correction."
+msgstr ""
+
+#: lumos.elements.atmosphere.Atmosphere.opd:1 of
+msgid "Return the optical path difference added on ``grid`` at the current time."
+msgstr ""
+
+#: lumos.elements.atmosphere.Atmosphere.transfer:1 of
+msgid "Add the turbulent phase to every channel and mode."
+msgstr ""
+
+#: lumos.elements.atmosphere.DeformableMirror:1 of
+msgid ""
+"Square grid of actuators with Gaussian influence functions; the OPD is "
+"twice the surface."
+msgstr ""
+
+#: lumos.elements.atmosphere.DeformableMirror.actuator_positions:1 of
+msgid ""
+"Positions ``(x, y)`` of the actuators in the order of the commands, shape"
+" ``(n², 2)``."
+msgstr ""
+
+#: lumos.elements.atmosphere.DeformableMirror.opd:1 of
+msgid "Return the optical path difference of the mirror on ``grid``."
+msgstr ""
+
+#: lumos.elements.atmosphere.DeformableMirror.fit:1 of
+msgid ""
+"Return the commands whose OPD fits ``opd`` (sampled on ``grid``) with "
+"least squares."
+msgstr ""
+
+#: lumos.elements.atmosphere.DeformableMirror.transfer:1 of
+msgid "Add the optical path of the mirror to every channel and mode."
+msgstr ""
+
+#: lumos.elements.coronagraphs:1 of
+msgid ""
+"Coronagraphs (§5.9, step P6.6): four-quadrant phase mask, vortex and Lyot"
+" coronagraphs."
+msgstr ""
+
+#: lumos.elements.coronagraphs:3 of
+#, python-brace-format
+msgid ""
+"A coronagraph element receives the field in a pupil plane, where a pupil "
+"of diameter ``pupil_diameter`` is centred on the coordinate origin. It "
+"focuses the field, applies its focal-plane mask :math:`M(\\mathbf{u})` "
+"(coordinates in :math:`\\lambda/D` at the wavelength of each channel), "
+"returns to the next pupil plane and applies a circular Lyot stop of "
+"diameter ``lyot_stop`` × ``pupil_diameter``. The output is the field just"
+" after the Lyot stop, on the input grid "
+"(:func:`lumos.physics.coronagraphy.lyot_plane`)."
+msgstr ""
+
+#: lumos.elements.coronagraphs:10 of
+msgid "Masks"
+msgstr ""
+
+#: lumos.elements.coronagraphs:11 of
+#, python-brace-format
+msgid ""
+":class:`VortexCoronagraph`: :math:`M = e^{il\\theta}` of topological "
+"charge :math:`l`; even charges reject all the light of an on-axis source "
+"in an unobstructed circular pupil (Mawet et al. 2005; Foo et al. 2005)."
+msgstr ""
+
+#: lumos.elements.coronagraphs:13 of
+msgid ""
+":class:`FourQuadrantPhaseMask`: phase 0 in the quadrants where :math:`u_x"
+" u_y > 0` and :math:`\\pi` where :math:`u_x u_y < 0` (Rouan et al. 2000),"
+" with the same perfect rejection."
+msgstr ""
+
+#: lumos.elements.coronagraphs:15 of
+msgid ""
+":class:`LyotCoronagraph`: opaque disk of radius ``mask_radius`` "
+":math:`\\lambda_0/D`, a physical size that becomes "
+":math:`m_0\\lambda_0/\\lambda` in units of :math:`\\lambda/D`; its edge "
+"is anti-aliased."
+msgstr ""
+
+#: lumos.elements.coronagraphs:18 of
+msgid ""
+"Phase masks are achromatic by default (e.g. geometric-phase vector "
+"vortices). With ``achromatic=False``, the phase delays are designed for "
+"``reference_wavelength`` and scale as :math:`\\lambda_0/\\lambda`."
+msgstr ""
+
+#: lumos.elements.coronagraphs.Coronagraph:1 of
+msgid ""
+"Base class: focal-plane mask between two pupil planes, followed by a Lyot"
+" stop."
+msgstr ""
+
+#: lumos.elements.coronagraphs.FourQuadrantPhaseMask:1 of
+msgid ""
+"Four-quadrant phase mask (π phase in two opposite quadrants) followed by "
+"a Lyot stop."
+msgstr ""
+
+#: lumos.elements.coronagraphs.FourQuadrantPhaseMask.transfer:1 of
+msgid "Return the field after the quadrant mask and the Lyot stop."
+msgstr ""
+
+#: lumos.elements.coronagraphs.LyotCoronagraph:1 of
+msgid ""
+"Opaque focal-plane disk (classical Lyot coronagraph) followed by a Lyot "
+"stop."
+msgstr ""
+
+#: lumos.elements.coronagraphs.LyotCoronagraph.transfer:1 of
+msgid "Return the field after the occulting disk and the Lyot stop."
+msgstr ""
+
+#: lumos.elements.coronagraphs.VortexCoronagraph:1 of
+#, python-brace-format
+msgid "Vortex phase mask :math:`e^{il\\theta}` followed by a Lyot stop."
+msgstr ""
+
+#: lumos.elements.coronagraphs.VortexCoronagraph.transfer:1 of
+msgid "Return the field after the vortex mask and the Lyot stop."
+msgstr ""
+
+#: lumos.elements.fibers:1 of
+msgid ""
+"Optical fibres: injection, guided propagation and extraction (§5.9, step "
+"P6.7)."
+msgstr ""
+
+#: lumos.elements.fibers:3 of
+msgid ""
+"A :class:`Fiber` receives the field on its input face (a "
+":class:`~lumos.fields.Wavefront`, :class:`~lumos.fields.Wavecube` or "
+":class:`~lumos.fields.IncoherentBundle`, the fibre axis at the coordinate"
+" origin) and projects it on its guided modes :math:`\\psi_n`, normalised "
+"on the grid (:math:`\\sum |\\psi_n|^2 \\Delta x \\Delta y = 1`):"
+msgstr ""
+
+#: lumos.elements.fibers:8 of
+msgid ""
+"a_n = \\sum E\\,\\psi_n^*\\, \\Delta x\\, \\Delta y,\n"
+"\n"
+msgstr ""
+
+#: lumos.elements.fibers:10 of
+msgid ""
+"so :math:`|a_n|^2` is the power coupled into mode :math:`n` (the overlap-"
+"integral efficiency of Shaklan & Roddier 1988 for a single mode). Over "
+"the length :math:`L` every mode gets the phase :math:`\\beta_n L`, "
+":math:`\\beta_n = 2\\pi n_{\\mathrm{eff},n}/\\lambda`, and the power "
+"transmission :math:`10^{-\\alpha L/10}` of the attenuation "
+":math:`\\alpha`. Outputs: ``modes``, the amplitudes at the output end (a "
+":class:`~lumos.fields.ModalField`, one channel per mode and "
+"polarisation), and ``out``, the near field :math:`\\sum_n a_n \\psi_n` on"
+" the output face, sampled on the input grid."
+msgstr ""
+
+#: lumos.elements.fibers:17 of
+msgid ""
+"Modes come from :mod:`lumos.physics.fibers`: exact LP modes "
+"(``mode_model=\"lp\"``; modes with :math:`\\ell \\ge 1` have a cosine "
+"``a`` and a sine ``b`` orientation), or the Gaussian approximation of "
+"LP01 (``\"gaussian\"``) with the given mode field diameter or Marcuse's "
+"waist. The channels are the modes guided at the shortest wavelength; at "
+"longer wavelengths the modes beyond cutoff carry no light. Material "
+"dispersion is not modelled (constant ``cladding_index`` and numerical "
+"aperture)."
+msgstr ""
+
+#: lumos.elements.fibers.Fiber:1 of
+msgid ""
+"Step-index fibre: injection into LP modes, propagation over its length, "
+"near field at its output."
+msgstr ""
+
+#: lumos.elements.fibers.Fiber.v_number:1 of
+msgid "Normalised frequency ``V = 2π a NA / λ``."
+msgstr ""
+
+#: lumos.elements.fibers.Fiber.mode_labels:1 of
+msgid "Names of the scalar modes guided at ``wavelength``."
+msgstr ""
+
+#: lumos.elements.fibers.Fiber.mode_fields:1 of
+msgid ""
+"Normalised mode fields at ``wavelength`` sampled on ``grid``, shape ``(n,"
+" ny, nx)``."
+msgstr ""
+
+#: lumos.elements.fibers.Fiber.effective_indices:1 of
+msgid "Effective indices of the modes guided at ``wavelength``."
+msgstr ""
+
+#: lumos.elements.fibers.Fiber.transfer:1 of
+msgid ""
+"Couple the light into the modes, propagate it and rebuild the output near"
+" field."
+msgstr ""
+
+#: lumos.elements.photonics:1 of
+msgid ""
+"Integrated photonics (§5.9, step P6.8): components, chips and recombiner "
+"presets."
+msgstr ""
+
+#: lumos.elements.photonics:3 of
+msgid ""
+"Every component maps a :class:`~lumos.fields.ModalField` to a new one "
+"through its scattering matrix :math:`S(\\lambda)` "
+"(:mod:`lumos.fields.smatrix`), acting on the channels listed in its "
+"``channels`` setting (all channels when empty) and leaving the others "
+"unchanged. Components with as many outputs as inputs write their outputs "
+"on the same channels; the others (Y-junctions) put their outputs where "
+"their first input was. A chip is an "
+":class:`~lumos.core.group.ElementGroup` chaining components; "
+":func:`bracewell` and :func:`kernel_nuller` build the recombiners of "
+"Bracewell (1978) and Martinache & Ireland (2018)."
+msgstr ""
+
+#: lumos.elements.photonics:11 of
+msgid "Components"
+msgstr ""
+
+#: lumos.elements.photonics:12 of
+msgid ""
+":class:`Waveguide`: :math:`10^{-\\alpha L/20} e^{2i\\pi n_\\mathrm{eff} "
+"L/\\lambda}` on each channel."
+msgstr ""
+
+#: lumos.elements.photonics:13 of
+#, python-brace-format
+msgid ""
+":class:`PhaseShifter`: :math:`e^{i\\phi}`, with :math:`\\phi = "
+"\\phi_0\\lambda_0/\\lambda` for a thermo-optic shifter (an optical path) "
+"or :math:`\\phi_0` if achromatic."
+msgstr ""
+
+#: lumos.elements.photonics:15 of
+#, python-brace-format
+msgid ""
+":class:`DirectionalCoupler`: :math:`\\begin{pmatrix} t & i\\kappa \\\\ "
+"i\\kappa & t\\end{pmatrix}`, :math:`\\kappa^2` the power coupling ratio."
+msgstr ""
+
+#: lumos.elements.photonics:17 of
+#, python-brace-format
+msgid ""
+":class:`YJunction`: splitter :math:`(1, 1)^T/\\sqrt{2}` or combiner "
+":math:`(1, 1)/\\sqrt{2}`, which radiates the antisymmetric part of its "
+"inputs."
+msgstr ""
+
+#: lumos.elements.photonics:19 of
+#, python-brace-format
+msgid ""
+":class:`Crossing`: transmission :math:`\\sqrt{1 - x}` across and "
+"crosstalk :math:`i\\sqrt{x}`."
+msgstr ""
+
+#: lumos.elements.photonics:20 of
+msgid ""
+":class:`MMI`: :math:`N \\times N` multimode interference coupler computed"
+" with the slab mode solver of :mod:`lumos.physics.photonics`; with "
+"``length = 0`` it is the general-interference coupler of length :math:`3 "
+"L_\\pi / N` at the reference wavelength (Soldano & Pennings 1995)."
+msgstr ""
+
+#: lumos.elements.photonics.KERNEL_PAIRS:1 of
+msgid ""
+"Pairs of outputs of :func:`kernel_nuller` whose differences are the "
+"kernels."
+msgstr ""
+
+#: lumos.elements.photonics.MMI:1 of
+msgid "N × N multimode interference coupler computed with a slab mode solver."
+msgstr ""
+
+#: lumos.elements.photonics.MMI.transfer:1 of
+msgid "Mix the selected channels."
+msgstr ""
+
+#: lumos.elements.photonics.Crossing:1 of
+msgid "Waveguide crossing with a power crosstalk."
+msgstr ""
+
+#: lumos.elements.photonics.Crossing.n_inputs:1
+#: lumos.elements.photonics.DirectionalCoupler.n_inputs:1
+#: lumos.elements.photonics.PhotonicComponent.n_inputs:1 of
+msgid "any number, the matrix is diagonal)."
+msgstr ""
+
+#: lumos.elements.photonics.Crossing.n_inputs:3
+#: lumos.elements.photonics.DirectionalCoupler.n_inputs:3
+#: lumos.elements.photonics.PhotonicComponent.n_inputs:3 of
+msgid "Number of input channels (None"
+msgstr ""
+
+#: lumos.elements.photonics.Crossing.transfer:1 of
+msgid "Cross the two selected channels."
+msgstr ""
+
+#: lumos.elements.photonics.DirectionalCoupler:1 of
+msgid "Lossless symmetric directional coupler between two channels."
+msgstr ""
+
+#: lumos.elements.photonics.DirectionalCoupler.transfer:1 of
+msgid "Couple the two selected channels."
+msgstr ""
+
+#: lumos.elements.photonics.PhaseShifter:1 of
+msgid ""
+"Phase shifter (thermo-optic: the phase is an optical path, set at the "
+"reference wavelength)."
+msgstr ""
+
+#: lumos.elements.photonics.PhaseShifter.transfer:1 of
+msgid "Shift the phase of the selected channels."
+msgstr ""
+
+#: lumos.elements.photonics.PhotonicComponent:1 of
+msgid "Base class: a scattering matrix applied to some channels of a modal field."
+msgstr ""
+
+#: lumos.elements.photonics.Waveguide:1 of
+msgid "Straight waveguide: propagation phase and loss."
+msgstr ""
+
+#: lumos.elements.photonics.Waveguide.transfer:1 of
+msgid "Propagate the selected channels."
+msgstr ""
+
+#: lumos.elements.photonics.YJunction:1 of
+msgid ""
+"Symmetric Y-junction: splits one channel in two, or combines two channels"
+" into one."
+msgstr ""
+
+#: lumos.elements.photonics.YJunction.transfer:1 of
+msgid "Split or combine the selected channels."
+msgstr ""
+
+#: lumos.elements.photonics.bracewell:1 of
+msgid ""
+"Two-input Bracewell nuller: output 0 is the dark (null) output, output 1 "
+"the bright one."
+msgstr ""
+
+#: lumos.elements.photonics.kernel_nuller:1 of
+msgid ""
+"Four-input kernel nuller (Martinache & Ireland 2018): output 0 is bright,"
+" outputs 1-6 are dark."
+msgstr ""
+
+#: lumos.elements.photonics.kernel_nuller:3 of
+msgid ""
+"A real Hadamard nuller sends the on-axis light to output 0 and makes "
+"three dark outputs; each dark output is split in two and the copies are "
+"combined pairwise in quadrature by 50/50 couplers. The kernels are the "
+"differences of the outputs of each coupler, listed in "
+":data:`KERNEL_PAIRS` (:func:`kernels`)."
+msgstr ""
+
+#: lumos.elements.photonics.kernels:1 of
+msgid ""
+"Return the kernels, differences of the paired output powers of "
+":func:`kernel_nuller`, ``(..., 3)``."
+msgstr ""
+
+#: lumos.elements.detectors:1 of
+msgid "Detectors (§5.9, step P6.9): camera, photodiode and power meter."
+msgstr ""
+
+#: lumos.elements.detectors:3 of
+msgid ""
+"Detectors turn light into :class:`~lumos.fields.DataProduct` "
+"measurements. Every spectral channel :math:`k` of weight :math:`w_k` "
+"(spectral quadrature weights of wavecubes) is converted to a photon rate "
+":math:`N_k = P_k \\lambda_k / (hc)` when its power is in watts; "
+"incoherent modes add with their weights."
+msgstr ""
+
+#: lumos.elements.detectors:8 of
+msgid "Camera"
+msgstr ""
+
+#: lumos.elements.detectors:9 of
+msgid ""
+"The pixels are the samples of the incoming field (propagate it to the "
+"detector grid first, e.g. with :class:`~lumos.elements.optics.FreeSpace` "
+"and an ``output_grid``). During an exposure :math:`t`, a pixel collects "
+"on average :math:`\\bar n = t\\,(\\sum_k w_k \\eta(\\lambda_k) N_k + D)` "
+"electrons (quantum efficiency :math:`\\eta`, dark current :math:`D`). "
+"With ``noise=True`` the charge is a Poisson draw, clipped at the full "
+"well, summed over ``binning`` × ``binning`` pixels (charge binning), read"
+" once with a Gaussian read noise, converted with the gain :math:`g` "
+"(e⁻/ADU), offset by the bias, rounded and clipped to the range of the "
+"``bits``-bit converter (Janesick, *Photon Transfer*, 2007). With "
+"``noise=False`` the camera returns the expected value, clipped the same "
+"way but not rounded. :meth:`Camera.expose` is a timed action lasting the "
+"exposure time; each exposure draws a new frame from the reproducible "
+"random stream of the camera."
+msgstr ""
+
+#: lumos.elements.detectors:20 of
+msgid "Photodiode and power meter"
+msgstr ""
+
+#: lumos.elements.detectors:21 of
+#, python-brace-format
+msgid ""
+"A photodiode delivers the current :math:`I = q \\sum_k w_k \\eta N_k + "
+"I_\\mathrm{dark}` (responsivity :math:`\\eta q \\lambda / hc`) with the "
+"shot noise :math:`\\sigma_I = \\sqrt{2 q I \\Delta f}` over its bandwidth"
+" (Schottky 1918); :meth:`Photodiode.acquire` takes a new sample. A power "
+"meter reads the power in watts. Both give one value per guided channel "
+"when they receive a :class:`~lumos.fields.ModalField`."
+msgstr ""
+
+#: lumos.elements.detectors.Camera:1 of
+msgid ""
+"Pixel detector: quantum efficiency, photon, dark and read noises, gain, "
+"saturation and binning."
+msgstr ""
+
+#: lumos.elements.detectors.Camera.expose:1 of
+msgid ""
+"Take an exposure: the clock advances by the exposure time and a new frame"
+" is drawn."
+msgstr ""
+
+#: lumos.elements.detectors.Camera.transfer:1 of
+msgid "Return the image in ADU."
+msgstr ""
+
+#: lumos.elements.detectors.Photodiode:1 of
+msgid "Photodiode: photocurrent with shot noise over its bandwidth."
+msgstr ""
+
+#: lumos.elements.detectors.Photodiode.acquire:1 of
+msgid "Acquire a new sample (lasting half the inverse bandwidth)."
+msgstr ""
+
+#: lumos.elements.detectors.Photodiode.transfer:1 of
+msgid ""
+"Return the photocurrent in A (one value per guided channel for modal "
+"fields)."
+msgstr ""
+
+#: lumos.elements.detectors.PowerMeter:1 of
+msgid "Ideal power meter reading the optical power in watts."
+msgstr ""
+
+#: lumos.elements.detectors.PowerMeter.transfer:1 of
+msgid "Return the power in W (one value per guided channel for modal fields)."
+msgstr ""
+
+#: ../../api/index.md:215
 msgid "Plotting"
 msgstr ""
 
@@ -4491,4 +6426,11 @@ msgstr ""
 #~ "Return the ``.lumos`` document (a "
 #~ "JSON-compatible dictionary) describing "
 #~ "``element``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Time-dependent elements also get "
+#~ "``time``, the elapsed time of their "
+#~ "context in seconds (0 outside a "
+#~ "context)."
 #~ msgstr ""

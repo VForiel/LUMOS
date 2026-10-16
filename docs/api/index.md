@@ -148,6 +148,70 @@
 .. automodule:: lumos.propagation.asm
 ```
 
+## Physical models
+
+```{eval-rst}
+.. automodule:: lumos.physics.blackbody
+   :members:
+
+.. automodule:: lumos.physics.photometry
+   :members:
+
+.. automodule:: lumos.physics.orbits
+   :members:
+
+.. automodule:: lumos.physics.apertures
+   :members:
+
+.. automodule:: lumos.physics.zernike
+   :members:
+
+.. automodule:: lumos.physics.turbulence
+   :members:
+
+.. automodule:: lumos.physics.coronagraphy
+   :members:
+
+.. automodule:: lumos.physics.fibers
+   :members:
+
+.. automodule:: lumos.physics.photonics
+   :members:
+```
+
+## Elements
+
+```{eval-rst}
+.. automodule:: lumos.elements
+
+.. automodule:: lumos.elements.sources
+   :members:
+
+.. automodule:: lumos.elements.apertures
+   :members:
+
+.. automodule:: lumos.elements.optics
+   :members:
+
+.. automodule:: lumos.elements.telescopes
+   :members:
+
+.. automodule:: lumos.elements.atmosphere
+   :members:
+
+.. automodule:: lumos.elements.coronagraphs
+   :members:
+
+.. automodule:: lumos.elements.fibers
+   :members:
+
+.. automodule:: lumos.elements.photonics
+   :members:
+
+.. automodule:: lumos.elements.detectors
+   :members:
+```
+
 ## Plotting
 
 ```{eval-rst}

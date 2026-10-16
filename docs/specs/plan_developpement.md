@@ -169,7 +169,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P6.7 Optique guidée** — modes LP, injection, fibres.
 - [x] **P6.8 Photonique** — guide, déphaseur, Y-splitter, coupleur, MMI (solveur de modes), croisement ; puce comme groupe ; préréglages Bracewell et nulleur à noyaux.
 - [x] **P6.9 Détecteurs** — caméra (bruits, pose temporisée), photodiode, puissance-mètre.
-- [ ] **P6.10 Tests d'intégration de référence** — PSF chromatique, coronographie idéale, turbulence (fonction de structure de Kolmogorov), réponse d'un nulleur à noyaux comparée à la littérature (Martinache & Ireland 2018), carte de transmission d'un Bracewell (analytique).
+- [x] **P6.10 Tests d'intégration de référence** — PSF chromatique, coronographie idéale, turbulence (fonction de structure de Kolmogorov), réponse d'un nulleur à noyaux comparée à la littérature (Martinache & Ireland 2018), carte de transmission d'un Bracewell (analytique).
 
 **Critères d'acceptation :** UC1 et UC8 réalisables en Python ; tests d'intégration au vert.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 6** (P6.1).
+Lancer la **phase 7** (P7.1).

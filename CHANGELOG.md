@@ -50,6 +50,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Structured journal with action origins (Python, web, MCP) and a JSON-lines formatter.
 - `.lumos` documents of kind `group` and `context`, `.npz` sidecar for large arrays, published JSON Schema.
 - `ctx.to_python()`: equivalent Python script; `ctx.sweep` and `ctx.sample` (Monte-Carlo from priors).
+- `lumos.elements.sources`: point sources, blackbody stars scaled by radius and distance or by magnitude,
+  planetary systems on Keplerian orbits, Gaussian lasers and incoherent lamps; `lumos.physics` (Planck's law,
+  photometric bands, Lambert phase function, orbits).
+- `lumos.elements.apertures`: anti-aliased circular, polygonal and hexagonal segmented pupils with spiders;
+  VLT, JWST and ELT presets.
+- `lumos.elements.optics`: free space, thin lens and mirror, beam splitter, delay line, spectral filter,
+  polariser, wave plate and Zernike phase plate; `GridSetting` for grids saved in `.lumos` files.
+- `lumos.elements.telescopes`: telescopes, interferometric arrays with projected baselines (ground or sky
+  frame), VLTI and LIFE presets.
+- `lumos.elements.atmosphere`: multi-layer von Kármán turbulence in frozen flow with ideal adaptive optics
+  correction, deformable mirrors; `lumos.physics.zernike` and `lumos.physics.turbulence`.
+- Stochastic elements drawing from reproducible context streams (`Element.stochastic`,
+  `lumos.core.element.generator`, ADR-0007); changing `ctx.seed` recomputes them.
+- `lumos.elements.coronagraphs`: vortex, four-quadrant phase mask and Lyot coronagraphs with a multi-scale
+  focal-plane computation (`lumos.physics.coronagraphy`).
+- `lumos.elements.fibers`: step-index fibres with exact LP modes or a Gaussian mode, injection, propagation
+  and exit field (`lumos.physics.fibers`).
+- `lumos.elements.photonics`: waveguides, phase shifters, directional couplers, Y-junctions, crossings and
+  MMI couplers from a slab mode solver (`lumos.physics.photonics`); Bracewell and kernel-nuller chips.
+- `lumos.elements.detectors`: camera (QE curve, photon, dark and read noises, saturation, binning, timed
+  exposures), photodiode with shot noise, power meter.
 
 ### Fixed
 
