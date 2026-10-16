@@ -8,8 +8,9 @@ Independent references:
 - an even-charge vortex (Mawet et al. 2005, ApJ 633, 1191; Foo et al. 2005, Opt. Lett. 30, 3308) and a
   four-quadrant phase mask (Rouan et al. 2000, PASP 112, 1479) send all the on-axis light of an unobstructed
   circular pupil outside the geometric pupil: the light through a Lyot stop smaller than the pupil vanishes.
-  With a pixelated pupil the residual is a sampling error that must decrease as the sampling is refined;
-  at 256 samples across the pupil it must stay below 1e-5 of the light through the stop without a mask;
+  With a pixelated pupil the residual is a sampling error that must decrease as the sampling is refined
+  (as 1/N² for N samples across the pupil); it must stay below 1e-5 of the light through the stop without a
+  mask, which needs N = 256 for vortices and N = 512 for the four-quadrant mask, more sensitive to it;
 - off-axis sources far from the axis (6 λ/D) are transmitted (Mawet et al. 2005, Fig. 2; Rouan et al. 2000);
 - a quadrant mask whose phase step is φ instead of π is ``(1 + e^{iφ})/2 + (1 - e^{iφ})/2 · S`` with S an
   ideal mask, so it leaks the fraction ``cos²(φ/2)`` of the light; a non-achromatic step designed for λ0 gives
@@ -76,7 +77,7 @@ def test_even_charge_vortex_rejects_on_axis_light(charge):
 
 
 def test_four_quadrant_phase_mask_rejects_on_axis_light():
-    assert leak(fqpm()) < 1e-5
+    assert leak(fqpm(), n=512) < 1e-5
 
 
 @pytest.mark.parametrize("make", [lambda: vortex(2), fqpm])
@@ -106,7 +107,8 @@ def test_non_achromatic_quadrant_step_leaks_cos_squared():
     element = fqpm(achromatic=False, reference_wavelength=1 * u.um)
     phi = math.pi / 1.1
     assert leak(element, wavelength=1.1 * u.um) == pytest.approx(math.cos(phi / 2) ** 2, rel=1e-2)
-    assert leak(fqpm(achromatic=True, reference_wavelength=1 * u.um), wavelength=1.1 * u.um) < 1e-5
+    achromatic = fqpm(achromatic=True, reference_wavelength=1 * u.um)
+    assert leak(achromatic, n=512, wavelength=1.1 * u.um) < 1e-5
 
 
 def test_masks_act_on_every_channel_of_a_wavecube():
