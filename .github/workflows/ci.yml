@@ -33,7 +33,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - run: python -m venv .venv && .venv/bin/python -m pip install -e ".[dev]"
+      - run: python -m venv .venv && .venv/bin/python -m pip install -e ".[dev,jax]"
       - run: .venv/bin/python -m pyright
 
   tests:
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install -e ".[dev]"
+      - run: python -m pip install -e ".[dev,jax]"
       - run: python -m pytest --cov --cov-report=term
 
   docs:
