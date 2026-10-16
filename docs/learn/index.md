@@ -7,4 +7,5 @@ extended scenes, guided and integrated optics, detectors and noise, radiometry.
 :maxdepth: 1
 
 propagation
+performance
 ```

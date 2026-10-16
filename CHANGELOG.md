@@ -36,6 +36,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `lumos.fields.ModalField` and `lumos.fields.smatrix`: guided amplitudes and scattering matrices.
 - `lumos.fields.DataProduct`: detected data with axes, mask, uncertainties; FITS, NPZ and HDF5 files.
 - `lumos.plotting`: intensity, phase (cyclic colour map), radiance and data plots with physical axes.
+- `lumos.propagation`: `propagate`, `focus` and `plan` between arbitrary grids with direct Rayleigh-Sommerfeld,
+  Fraunhofer (matrix Fourier transform), Fresnel (transfer function, impulse response, one-step MFT) and
+  band-limited angular spectrum methods; automatic, logged choice of the method (ADR-0005); vectorised over
+  polarisation, wavelengths and modes; kernel cache; chunking under a memory budget; differentiable with JAX.
+- Validation suite of the propagation methods against analytic solutions, POPPY and HCIPy (`[validation]`).
 
 ### Fixed
 

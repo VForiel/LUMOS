@@ -1,0 +1,164 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 16:06+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../learn/performance.md:1
+msgid "Performance"
+msgstr "Performances"
+
+#: ../../learn/performance.md:3
+msgid "LUMOS measures its numerical kernels with `pytest-benchmark`:"
+msgstr "LUMOS mesure ses noyaux numériques avec `pytest-benchmark` :"
+
+#: ../../learn/performance.md:9
+msgid "Propagation (CPU)"
+msgstr "Propagation (CPU)"
+
+#: ../../learn/performance.md:11
+msgid ""
+"Mean time of one propagation of a Gaussian beam (milliseconds), on an AMD Ryzen 7 2700X (8 cores), NumPy "
+"2.x with SciPy FFTs and JAX on the CPU, double precision. The FFT methods zero-pad by a factor 2, so an `N "
+"× N` grid is transformed as `2N × 2N`."
+msgstr ""
+"Temps moyen d'une propagation d'un faisceau gaussien (millisecondes), sur un AMD Ryzen 7 2700X (8 cœurs), "
+"NumPy 2.x avec les FFT de SciPy et JAX sur le CPU, en double précision. Les méthodes FFT complètent par des"
+" zéros d'un facteur 2 : une grille `N × N` est transformée en `2N × 2N`."
+
+#: ../../learn/performance.md
+msgid "Method"
+msgstr "Méthode"
+
+#: ../../learn/performance.md
+msgid "N = 256, NumPy"
+msgstr "N = 256, NumPy"
+
+#: ../../learn/performance.md
+msgid "N = 256, JAX"
+msgstr "N = 256, JAX"
+
+#: ../../learn/performance.md
+msgid "N = 1024, NumPy"
+msgstr "N = 1024, NumPy"
+
+#: ../../learn/performance.md
+msgid "N = 1024, JAX"
+msgstr "N = 1024, JAX"
+
+#: ../../learn/performance.md
+msgid "`asm`"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "9.0"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "21.3"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "340"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "254"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "`fresnel_tf`"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "9.6"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "20.9"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "352"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "241"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "`fresnel_mft` (256² output)"
+msgstr "`fresnel_mft` (sortie 256²)"
+
+#: ../../learn/performance.md
+msgid "10.7"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "8.9"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "93"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "51"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "`fraunhofer` (256² output)"
+msgstr "`fraunhofer` (sortie 256²)"
+
+#: ../../learn/performance.md
+msgid "5.7"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "5.8"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "36"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "28"
+msgstr ""
+
+#: ../../learn/performance.md:22
+msgid ""
+"NumPy is faster on small grids, where the overhead of dispatching to JAX dominates; JAX is faster on large "
+"grids. Matrix Fourier transforms are much cheaper than padded FFTs when the output grid is smaller than the"
+" input grid."
+msgstr ""
+"NumPy est plus rapide sur les petites grilles, où le coût d'appel de JAX domine ; JAX est plus rapide sur "
+"les grandes grilles. Les transformées de Fourier matricielles coûtent bien moins que les FFT complétées "
+"quand la grille de sortie est plus petite que la grille d'entrée."
+
+#: ../../learn/performance.md:26
+msgid "GPU"
+msgstr "GPU"
+
+#: ../../learn/performance.md:28
+msgid ""
+"The GPU speed-up is measured with the same benchmark on a machine with a CUDA GPU (CuPy, or JAX with a GPU "
+"device). The measurements will be added here."
+msgstr ""
+"Le gain sur GPU se mesure avec le même benchmark sur une machine équipée d'un GPU CUDA (CuPy, ou JAX avec "
+"un périphérique GPU). Les mesures seront ajoutées ici."
