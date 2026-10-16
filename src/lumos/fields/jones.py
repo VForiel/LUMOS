@@ -23,13 +23,14 @@ Conventions
 from __future__ import annotations
 
 import math
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
 
 from lumos.backend._core import get
 from lumos.backend.memory import dtypes
+from lumos.fields.wavecube import Wavecube
 from lumos.fields.wavefront import Wavefront
 from lumos.units import require_unit, to_si
 
@@ -128,45 +129,46 @@ def rotator(angle: u.Quantity) -> np.ndarray:
     return np.array([[c, -s], [s, c]], dtype=complex)
 
 
-def apply(matrix: Any, wavefront: Wavefront) -> Wavefront:
-    """Apply a Jones matrix to a polarised wavefront.
+def apply[F: Wavefront | Wavecube](matrix: Any, wavefront: F) -> F:
+    """Apply a Jones matrix to a polarised wavefront or wavecube (every channel).
 
     Parameters
     ----------
     matrix
         Shape ``(2, 2)`` (uniform) or ``(2, 2, ny, nx)`` (varying across the grid), any backend.
     wavefront
-        Polarised wavefront (field of shape ``(2, ny, nx)``).
+        Polarised :class:`~lumos.fields.Wavefront` (field ``(2, ny, nx)``) or
+        :class:`~lumos.fields.Wavecube` (field ``(nλ, 2, ny, nx)``).
     """
     if not wavefront.polarized:
-        raise ValueError("Jones matrices act on polarised wavefronts; use with_polarization() first")
+        raise ValueError("Jones matrices act on polarised fields; use with_polarization() first")
     shape = tuple(np.shape(matrix)) if not hasattr(matrix, "shape") else tuple(matrix.shape)
     if shape not in ((2, 2), (2, 2, *wavefront.grid.shape)):
         raise ValueError(f"a Jones matrix has shape (2, 2) or (2, 2, ny, nx), got {shape}")
     target = get(wavefront.backend)
     _, complex_dtype = dtypes(backend=target.name)
     m = target.asarray(matrix if target.is_array(matrix) else np.asarray(matrix), dtype=complex_dtype)
-    ex, ey = wavefront.field[0], wavefront.field[1]
-    out = target.xp.stack([m[0, 0] * ex + m[0, 1] * ey, m[1, 0] * ex + m[1, 1] * ey])
-    return wavefront._with_field(out)
+    ex, ey = wavefront.field[..., 0, :, :], wavefront.field[..., 1, :, :]
+    out = target.xp.stack([m[0, 0] * ex + m[0, 1] * ey, m[1, 0] * ex + m[1, 1] * ey], axis=-3)
+    return cast(F, wavefront._with_field(out))
 
 
 # --- Stokes parameters ----------------------------------------------------------------------------------
 
 
-def stokes(wavefront: Wavefront) -> Any:
-    """Return the Stokes parameters ``(S0, S1, S2, S3)`` of a polarised wavefront, shape ``(4, ny, nx)``.
+def stokes(wavefront: Wavefront | Wavecube) -> Any:
+    """Return the Stokes parameters ``(S0, S1, S2, S3)``, shape ``(4, ny, nx)`` or ``(nλ, 4, ny, nx)``.
 
     They are in the intensity unit of the wavefront (:attr:`Wavefront.intensity_unit`).
     """
     if not wavefront.polarized:
         raise ValueError("Stokes parameters need a polarised wavefront")
     xp = get(wavefront.backend).xp
-    ex, ey = wavefront.field[0], wavefront.field[1]
+    ex, ey = wavefront.field[..., 0, :, :], wavefront.field[..., 1, :, :]
     ix = xp.real(ex * xp.conj(ex))
     iy = xp.real(ey * xp.conj(ey))
     cross = xp.conj(ex) * ey
-    return xp.stack([ix + iy, ix - iy, 2 * xp.real(cross), 2 * xp.imag(cross)])
+    return xp.stack([ix + iy, ix - iy, 2 * xp.real(cross), 2 * xp.imag(cross)], axis=-3)
 
 
 def degree_of_polarization(stokes_vector: Any) -> Any:

@@ -67,6 +67,12 @@
 .. automodule:: lumos.fields.wavefront
    :members: Wavefront
 
+.. automodule:: lumos.fields.wavecube
+   :members: Wavecube
+
+.. automodule:: lumos.fields.spectral
+   :members:
+
 .. automodule:: lumos.fields.jones
    :members:
 ```
