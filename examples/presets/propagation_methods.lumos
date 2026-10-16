@@ -1,0 +1,107 @@
+{
+  "lumos_format": "1.0",
+  "kind": "context",
+  "lumos_version": "0.0.2.dev16",
+  "created_at": "2026-10-16T23:03:32Z",
+  "meta": {
+    "name": "Propagation methods",
+    "description": "A Gaussian beam propagated over 2 m: the planner chooses the method (see the journal).",
+    "outputs": [
+      "far.out",
+      "meter.out"
+    ],
+    "author": "LUMOS"
+  },
+  "context": {
+    "mode": "simulation",
+    "twin": true,
+    "seed": 1,
+    "backend": {
+      "preferred": "auto"
+    },
+    "clock": {
+      "start": "2026-01-01T00:00:00.000",
+      "elapsed": {
+        "value": 0.0,
+        "unit": "s"
+      }
+    },
+    "observation": {
+      "band": null,
+      "n": 1,
+      "rule": "midpoint",
+      "extra": {}
+    },
+    "simulate": []
+  },
+  "elements": [
+    {
+      "id": "laser",
+      "type": "lumos.sources.GaussianLaser",
+      "type_version": 1,
+      "name": "laser",
+      "params": {
+        "wavelength": {
+          "value": 633.0,
+          "unit": "nm"
+        },
+        "power": {
+          "value": 1.0,
+          "unit": "mW"
+        },
+        "waist": {
+          "value": 0.5,
+          "unit": "mm"
+        },
+        "pixel_scale": {
+          "value": 20.0,
+          "unit": "um"
+        }
+      },
+      "settings": {
+        "n_pixels": 256
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "far",
+      "type": "lumos.optics.FreeSpace",
+      "type_version": 1,
+      "name": "far",
+      "params": {
+        "distance": {
+          "value": 2.0,
+          "unit": "m"
+        }
+      },
+      "settings": {
+        "method": "auto",
+        "output_grid": null
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "meter",
+      "type": "lumos.detectors.PowerMeter",
+      "type_version": 1,
+      "name": "meter",
+      "params": {},
+      "settings": {},
+      "state": {},
+      "free": {}
+    }
+  ],
+  "connections": [
+    {
+      "from": "laser.out",
+      "to": "far.in"
+    },
+    {
+      "from": "far.out",
+      "to": "meter.in"
+    }
+  ],
+  "ui": {}
+}

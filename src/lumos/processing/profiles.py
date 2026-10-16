@@ -7,6 +7,7 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 
+from lumos.backend import to_numpy
 from lumos.fields.grid import Grid
 from lumos.units import require_unit, to_si
 
@@ -30,7 +31,7 @@ def radial_profile(
     Parameters
     ----------
     image
-        Map of shape ``grid.shape`` (``(ny, nx)``), any array convertible to NumPy.
+        Map of shape ``grid.shape`` (``(ny, nx)``), an array of any backend.
     grid
         Sampling of the map.
     center
@@ -45,7 +46,7 @@ def radial_profile(
     profile : numpy.ndarray
         Mean value of ``image`` in each ring.
     """
-    values = np.asarray(image)
+    values = np.asarray(to_numpy(image))
     if values.shape != grid.shape:
         raise ValueError(f"image shape {values.shape} does not match the grid shape {grid.shape}")
     unit = grid.unit

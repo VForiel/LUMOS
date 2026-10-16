@@ -1,0 +1,238 @@
+{
+  "lumos_format": "1.0",
+  "kind": "context",
+  "lumos_version": "0.0.2.dev16",
+  "created_at": "2026-10-16T23:03:33Z",
+  "meta": {
+    "name": "VLT point-spread function",
+    "description": "A star seen in the H band by an 8.2 m telescope with a central obstruction and four spiders.",
+    "outputs": [
+      "image.out",
+      "camera.out"
+    ],
+    "author": "LUMOS"
+  },
+  "context": {
+    "mode": "simulation",
+    "twin": true,
+    "seed": 1,
+    "backend": {
+      "preferred": "auto"
+    },
+    "clock": {
+      "start": "2026-01-01T00:00:00.000",
+      "elapsed": {
+        "value": 0.0,
+        "unit": "s"
+      }
+    },
+    "observation": {
+      "band": {
+        "min": {
+          "value": 1.5,
+          "unit": "um"
+        },
+        "max": {
+          "value": 1.8,
+          "unit": "um"
+        }
+      },
+      "n": 3,
+      "rule": "midpoint",
+      "extra": {}
+    },
+    "simulate": []
+  },
+  "elements": [
+    {
+      "id": "star",
+      "type": "lumos.sources.PointSource",
+      "type_version": 1,
+      "name": "star",
+      "params": {
+        "flux_density": {
+          "value": 1.0,
+          "unit": "Jy"
+        },
+        "theta_x": {
+          "value": 0.0,
+          "unit": "rad"
+        },
+        "theta_y": {
+          "value": 0.0,
+          "unit": "rad"
+        }
+      },
+      "settings": {},
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "telescope",
+      "type": "lumos.telescopes.Telescope",
+      "type_version": 1,
+      "name": "telescope",
+      "params": {
+        "diameter": {
+          "value": 8.2,
+          "unit": "m"
+        },
+        "obstruction": {
+          "value": 1.116,
+          "unit": "m"
+        },
+        "spider_width": {
+          "value": 5.0,
+          "unit": "cm"
+        },
+        "spider_rotation": {
+          "value": 45.0,
+          "unit": "deg"
+        }
+      },
+      "settings": {
+        "n_spiders": 4,
+        "n_pixels": 256,
+        "oversize": 1.05,
+        "supersample": 4
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "lens",
+      "type": "lumos.optics.ThinLens",
+      "type_version": 1,
+      "name": "lens",
+      "params": {
+        "focal_length": {
+          "value": 120.0,
+          "unit": "m"
+        }
+      },
+      "settings": {},
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "image",
+      "type": "lumos.optics.FreeSpace",
+      "type_version": 1,
+      "name": "image",
+      "params": {
+        "distance": {
+          "value": 120.0,
+          "unit": "m"
+        }
+      },
+      "settings": {
+        "method": "fresnel_mft",
+        "output_grid": {
+          "nx": 96,
+          "ny": 96,
+          "dx": {
+            "value": 7.317073170731708e-06,
+            "unit": "m"
+          },
+          "dy": {
+            "value": 7.317073170731708e-06,
+            "unit": "m"
+          },
+          "x0": {
+            "value": 0.0,
+            "unit": "m"
+          },
+          "y0": {
+            "value": 0.0,
+            "unit": "m"
+          }
+        }
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "camera",
+      "type": "lumos.detectors.Camera",
+      "type_version": 1,
+      "name": "camera",
+      "params": {
+        "quantum_efficiency": {
+          "value": {
+            "dtype": "<f8",
+            "shape": [
+              1
+            ],
+            "data": "mpmZmZmZ6T8="
+          },
+          "unit": ""
+        },
+        "qe_wavelengths": {
+          "value": {
+            "dtype": "<f8",
+            "shape": [
+              0
+            ],
+            "data": ""
+          },
+          "unit": "nm"
+        },
+        "exposure": {
+          "value": 1.0,
+          "unit": "s"
+        },
+        "dark_current": {
+          "value": 0.0,
+          "unit": "electron / s"
+        },
+        "read_noise": {
+          "value": 0.0,
+          "unit": "electron"
+        },
+        "gain": {
+          "value": 1.0,
+          "unit": "electron / adu"
+        },
+        "bias": {
+          "value": 0.0,
+          "unit": "adu"
+        },
+        "full_well": {
+          "value": 100000.0,
+          "unit": "electron"
+        }
+      },
+      "settings": {
+        "bits": 16,
+        "binning": 1,
+        "noise": false
+      },
+      "state": {
+        "frame": {
+          "value": 0.0,
+          "unit": ""
+        }
+      },
+      "free": {}
+    }
+  ],
+  "connections": [
+    {
+      "from": "star.out",
+      "to": "telescope.in"
+    },
+    {
+      "from": "telescope.out",
+      "to": "lens.in"
+    },
+    {
+      "from": "lens.out",
+      "to": "image.in"
+    },
+    {
+      "from": "image.out",
+      "to": "camera.in"
+    }
+  ],
+  "ui": {}
+}

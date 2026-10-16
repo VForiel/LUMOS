@@ -1,0 +1,636 @@
+{
+  "lumos_format": "1.0",
+  "kind": "context",
+  "lumos_version": "0.0.2.dev16",
+  "created_at": "2026-10-16T23:03:33Z",
+  "meta": {
+    "name": "Kernel nuller",
+    "description": "Four 2 m telescopes recombined by a kernel-nuller chip (Martinache & Ireland 2018).",
+    "outputs": [
+      "meter.out"
+    ],
+    "author": "LUMOS"
+  },
+  "context": {
+    "mode": "simulation",
+    "twin": true,
+    "seed": 1,
+    "backend": {
+      "preferred": "auto"
+    },
+    "clock": {
+      "start": "2026-01-01T00:00:00.000",
+      "elapsed": {
+        "value": 0.0,
+        "unit": "s"
+      }
+    },
+    "observation": {
+      "band": {
+        "min": {
+          "value": 3.5,
+          "unit": "um"
+        },
+        "max": {
+          "value": 4.0,
+          "unit": "um"
+        }
+      },
+      "n": 4,
+      "rule": "midpoint",
+      "extra": {}
+    },
+    "simulate": []
+  },
+  "elements": [
+    {
+      "id": "star",
+      "type": "lumos.sources.PointSource",
+      "type_version": 1,
+      "name": "star",
+      "params": {
+        "flux_density": {
+          "value": 1.0,
+          "unit": "Jy"
+        },
+        "theta_x": {
+          "value": 0.0,
+          "unit": "rad"
+        },
+        "theta_y": {
+          "value": 0.0,
+          "unit": "rad"
+        }
+      },
+      "settings": {},
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "planet",
+      "type": "lumos.sources.PointSource",
+      "type_version": 1,
+      "name": "planet",
+      "params": {
+        "flux_density": {
+          "value": 0.01,
+          "unit": "Jy"
+        },
+        "theta_x": {
+          "value": 4e-08,
+          "unit": "rad"
+        },
+        "theta_y": {
+          "value": -1.5e-08,
+          "unit": "rad"
+        }
+      },
+      "settings": {},
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "array",
+      "type": "lumos.telescopes.TelescopeArray",
+      "type_version": 1,
+      "name": "array",
+      "params": {
+        "positions": {
+          "value": {
+            "dtype": "<f8",
+            "shape": [
+              4,
+              2
+            ],
+            "data": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAD5AAAAAAAAAJEAAAAAAAIBLQAAAAAAAADTAAAAAAAAAVEAAAAAAAAA5QA=="
+          },
+          "unit": "m"
+        },
+        "diameter": {
+          "value": 2.0,
+          "unit": "m"
+        },
+        "obstruction": {
+          "value": 0.0,
+          "unit": "m"
+        },
+        "throughput": {
+          "value": 1.0,
+          "unit": ""
+        },
+        "latitude": {
+          "value": 0.0,
+          "unit": "deg"
+        },
+        "declination": {
+          "value": 0.0,
+          "unit": "deg"
+        },
+        "hour_angle": {
+          "value": 0.0,
+          "unit": "hourangle"
+        },
+        "rotation": {
+          "value": 0.0,
+          "unit": "deg"
+        },
+        "rotation_rate": {
+          "value": 0.0,
+          "unit": "deg / h"
+        }
+      },
+      "settings": {
+        "frame": "sky"
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "chip",
+      "type": "lumos.group",
+      "name": "chip",
+      "children": [
+        {
+          "id": "phaseshifter1",
+          "type": "lumos.photonics.PhaseShifter",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "phase": {
+              "value": -1.5707963267948966,
+              "unit": "rad"
+            },
+            "reference_wavelength": {
+              "value": 1550.0,
+              "unit": "nm"
+            }
+          },
+          "settings": {
+            "channels": [
+              1
+            ],
+            "achromatic": true
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "directionalcoupler1",
+          "type": "lumos.photonics.DirectionalCoupler",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "ratio": {
+              "value": 0.5,
+              "unit": ""
+            }
+          },
+          "settings": {
+            "channels": [
+              0,
+              1
+            ]
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "phaseshifter2",
+          "type": "lumos.photonics.PhaseShifter",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "phase": {
+              "value": -1.5707963267948966,
+              "unit": "rad"
+            },
+            "reference_wavelength": {
+              "value": 1550.0,
+              "unit": "nm"
+            }
+          },
+          "settings": {
+            "channels": [
+              1
+            ],
+            "achromatic": true
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "phaseshifter3",
+          "type": "lumos.photonics.PhaseShifter",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "phase": {
+              "value": -1.5707963267948966,
+              "unit": "rad"
+            },
+            "reference_wavelength": {
+              "value": 1550.0,
+              "unit": "nm"
+            }
+          },
+          "settings": {
+            "channels": [
+              3
+            ],
+            "achromatic": true
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "directionalcoupler2",
+          "type": "lumos.photonics.DirectionalCoupler",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "ratio": {
+              "value": 0.5,
+              "unit": ""
+            }
+          },
+          "settings": {
+            "channels": [
+              2,
+              3
+            ]
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "phaseshifter4",
+          "type": "lumos.photonics.PhaseShifter",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "phase": {
+              "value": -1.5707963267948966,
+              "unit": "rad"
+            },
+            "reference_wavelength": {
+              "value": 1550.0,
+              "unit": "nm"
+            }
+          },
+          "settings": {
+            "channels": [
+              3
+            ],
+            "achromatic": true
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "phaseshifter5",
+          "type": "lumos.photonics.PhaseShifter",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "phase": {
+              "value": -1.5707963267948966,
+              "unit": "rad"
+            },
+            "reference_wavelength": {
+              "value": 1550.0,
+              "unit": "nm"
+            }
+          },
+          "settings": {
+            "channels": [
+              2
+            ],
+            "achromatic": true
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "directionalcoupler3",
+          "type": "lumos.photonics.DirectionalCoupler",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "ratio": {
+              "value": 0.5,
+              "unit": ""
+            }
+          },
+          "settings": {
+            "channels": [
+              0,
+              2
+            ]
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "phaseshifter6",
+          "type": "lumos.photonics.PhaseShifter",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "phase": {
+              "value": -1.5707963267948966,
+              "unit": "rad"
+            },
+            "reference_wavelength": {
+              "value": 1550.0,
+              "unit": "nm"
+            }
+          },
+          "settings": {
+            "channels": [
+              2
+            ],
+            "achromatic": true
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "phaseshifter7",
+          "type": "lumos.photonics.PhaseShifter",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "phase": {
+              "value": -1.5707963267948966,
+              "unit": "rad"
+            },
+            "reference_wavelength": {
+              "value": 1550.0,
+              "unit": "nm"
+            }
+          },
+          "settings": {
+            "channels": [
+              3
+            ],
+            "achromatic": true
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "directionalcoupler4",
+          "type": "lumos.photonics.DirectionalCoupler",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "ratio": {
+              "value": 0.5,
+              "unit": ""
+            }
+          },
+          "settings": {
+            "channels": [
+              1,
+              3
+            ]
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "phaseshifter8",
+          "type": "lumos.photonics.PhaseShifter",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "phase": {
+              "value": -1.5707963267948966,
+              "unit": "rad"
+            },
+            "reference_wavelength": {
+              "value": 1550.0,
+              "unit": "nm"
+            }
+          },
+          "settings": {
+            "channels": [
+              3
+            ],
+            "achromatic": true
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "yjunction1",
+          "type": "lumos.photonics.YJunction",
+          "type_version": 1,
+          "name": null,
+          "params": {},
+          "settings": {
+            "channels": [
+              1
+            ],
+            "mode": "split"
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "yjunction2",
+          "type": "lumos.photonics.YJunction",
+          "type_version": 1,
+          "name": null,
+          "params": {},
+          "settings": {
+            "channels": [
+              3
+            ],
+            "mode": "split"
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "yjunction3",
+          "type": "lumos.photonics.YJunction",
+          "type_version": 1,
+          "name": null,
+          "params": {},
+          "settings": {
+            "channels": [
+              5
+            ],
+            "mode": "split"
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "directionalcoupler5",
+          "type": "lumos.photonics.DirectionalCoupler",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "ratio": {
+              "value": 0.5,
+              "unit": ""
+            }
+          },
+          "settings": {
+            "channels": [
+              1,
+              3
+            ]
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "directionalcoupler6",
+          "type": "lumos.photonics.DirectionalCoupler",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "ratio": {
+              "value": 0.5,
+              "unit": ""
+            }
+          },
+          "settings": {
+            "channels": [
+              2,
+              5
+            ]
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "directionalcoupler7",
+          "type": "lumos.photonics.DirectionalCoupler",
+          "type_version": 1,
+          "name": null,
+          "params": {
+            "ratio": {
+              "value": 0.5,
+              "unit": ""
+            }
+          },
+          "settings": {
+            "channels": [
+              4,
+              6
+            ]
+          },
+          "state": {},
+          "free": {}
+        }
+      ],
+      "connections": [
+        {
+          "from": "phaseshifter1.out",
+          "to": "directionalcoupler1.in"
+        },
+        {
+          "from": "directionalcoupler1.out",
+          "to": "phaseshifter2.in"
+        },
+        {
+          "from": "phaseshifter2.out",
+          "to": "phaseshifter3.in"
+        },
+        {
+          "from": "phaseshifter3.out",
+          "to": "directionalcoupler2.in"
+        },
+        {
+          "from": "directionalcoupler2.out",
+          "to": "phaseshifter4.in"
+        },
+        {
+          "from": "phaseshifter4.out",
+          "to": "phaseshifter5.in"
+        },
+        {
+          "from": "phaseshifter5.out",
+          "to": "directionalcoupler3.in"
+        },
+        {
+          "from": "directionalcoupler3.out",
+          "to": "phaseshifter6.in"
+        },
+        {
+          "from": "phaseshifter6.out",
+          "to": "phaseshifter7.in"
+        },
+        {
+          "from": "phaseshifter7.out",
+          "to": "directionalcoupler4.in"
+        },
+        {
+          "from": "directionalcoupler4.out",
+          "to": "phaseshifter8.in"
+        },
+        {
+          "from": "phaseshifter8.out",
+          "to": "yjunction1.in"
+        },
+        {
+          "from": "yjunction1.out",
+          "to": "yjunction2.in"
+        },
+        {
+          "from": "yjunction2.out",
+          "to": "yjunction3.in"
+        },
+        {
+          "from": "yjunction3.out",
+          "to": "directionalcoupler5.in"
+        },
+        {
+          "from": "directionalcoupler5.out",
+          "to": "directionalcoupler6.in"
+        },
+        {
+          "from": "directionalcoupler6.out",
+          "to": "directionalcoupler7.in"
+        }
+      ],
+      "exposed_ports": {
+        "in": "phaseshifter1.in",
+        "out": "directionalcoupler7.out"
+      }
+    },
+    {
+      "id": "meter",
+      "type": "lumos.detectors.PowerMeter",
+      "type_version": 1,
+      "name": "meter",
+      "params": {},
+      "settings": {},
+      "state": {},
+      "free": {}
+    }
+  ],
+  "connections": [
+    {
+      "from": "star.out",
+      "to": "array.in"
+    },
+    {
+      "from": "planet.out",
+      "to": "array.in"
+    },
+    {
+      "from": "array.out",
+      "to": "chip.in"
+    },
+    {
+      "from": "chip.out",
+      "to": "meter.in"
+    }
+  ],
+  "ui": {}
+}

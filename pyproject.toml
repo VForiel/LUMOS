@@ -71,6 +71,9 @@ dev = [
     "pre-commit>=3.8",
     "build>=1.2",
     "h5py>=3.10",
+    "nbclient>=0.10",
+    "nbformat>=5.10",
+    "ipykernel>=6.29",
 ]
 all = ["lumos-maxima[jax,catalogs,hardware,web,mcp]"]
 
@@ -136,6 +139,7 @@ convention = "numpy"
 # unpacking; SIM300: "CALLS == Counter(...)" is not a Yoda condition
 "tools/**" = ["D100", "D103", "T20", "ANN"]
 "docs/**" = ["D", "ANN"]
+"examples/**" = ["T20"]  # notebooks display results with print
 
 # --- Type checking -----------------------------------------------------------
 

@@ -21,4 +21,36 @@ def load_archive(path: Any) -> Any:
     return _load(path)
 
 
+#: Subpackages imported on first access (``lumos.io``, ``lumos.plotting``...), to keep ``import lumos`` fast.
+_LAZY_SUBMODULES = frozenset(
+    {
+        "backend",
+        "catalogs",
+        "core",
+        "elements",
+        "fields",
+        "hardware",
+        "io",
+        "physics",
+        "plotting",
+        "processing",
+        "propagation",
+        "results",
+        "scenes",
+        "service",
+        "symbolic",
+        "units",
+    }
+)
+
+
+def __getattr__(name: str) -> Any:
+    """Import the subpackages of LUMOS on first access."""
+    if name in _LAZY_SUBMODULES:
+        import importlib
+
+        return importlib.import_module(f"lumos.{name}")
+    raise AttributeError(f"module 'lumos' has no attribute {name!r}")
+
+
 __all__ = ["Context", "__version__", "config", "hardware_report", "jit", "load_archive"]
