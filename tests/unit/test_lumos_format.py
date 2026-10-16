@@ -5,6 +5,7 @@ Requirements: REQ-EL-12 (import/export of an element), §10 of the specs (envelo
 parameters and priors are part of the description), NF-7 (safe loading).
 """
 
+import builtins
 import importlib
 import json
 import math
@@ -183,12 +184,20 @@ def test_loading_never_imports_modules(reg, monkeypatch):
     def forbidden(*args, **kwargs):
         raise AssertionError("loading a document must not import modules")
 
-    monkeypatch.setattr(importlib, "import_module", forbidden)
-    monkeypatch.setattr("builtins.__import__", forbidden)
     document = valid_document(reg)
     document["element"]["type"] = "os.system"
-    with pytest.raises(UnknownTypeError):
-        from_document(document, registry=reg)
+    # Imports are forbidden only during the call, so that pytest can import what it needs to report.
+    with monkeypatch.context() as patch:
+        patch.setattr(importlib, "import_module", forbidden)
+        patch.setattr(builtins, "__import__", forbidden)
+        try:
+            from_document(document, registry=reg)
+            outcome = "loaded"
+        except UnknownTypeError:
+            outcome = "unknown type"
+        except AssertionError as error:
+            outcome = str(error)
+    assert outcome == "unknown type"
 
 
 def test_unknown_parameter_is_reported(reg):
