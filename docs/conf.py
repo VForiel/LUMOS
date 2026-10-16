@@ -59,6 +59,8 @@ gettext_uuid = False
 
 html_theme = "breeze"
 html_title = "LUMOS"
+# Publish the JSON Schema of .lumos documents at the root of the site (its $id).
+html_extra_path = ["../src/lumos/io/schemas"]
 
 _rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
 _docs_root = os.environ.get("LUMOS_DOCS_ROOT", "https://lumos-maxima.readthedocs.io")

@@ -147,6 +147,8 @@ class Context:
         self.backend = backend
         self.seed = int(np.random.SeedSequence().entropy) if seed is None else int(seed)  # type: ignore[arg-type]
         self.name = name
+        self.meta: dict[str, Any] = {}
+        self.ui: dict[str, Any] = {}
         self.observation = Observation()
 
     # --- Settings -----------------------------------------------------------------------------

@@ -1,0 +1,133 @@
+"""JSON Schema of ``.lumos`` documents, format 1.x (specs §10, ADR-0003).
+
+The schema describes the envelope and the structure of element, group and context documents. The values of
+the parameters of each element type are described by :meth:`lumos.core.element.Element.schema` and checked
+when the element is loaded. The same schema is shipped as ``lumos/io/schemas/lumos-1.0.schema.json``.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+__all__ = ["SCHEMA_ID", "document_schema"]
+
+SCHEMA_ID = "https://lumos-maxima.readthedocs.io/en/latest/lumos-1.0.schema.json"
+
+
+def document_schema() -> dict[str, Any]:
+    """Return the JSON Schema (draft 2020-12) of ``.lumos`` documents."""
+    port_path = {"type": "string", "pattern": r"^[A-Za-z_][A-Za-z0-9_\-]*(\.[A-Za-z_][A-Za-z0-9_\-]*)+$"}
+    identifier = {"type": "string", "pattern": r"^[A-Za-z_][A-Za-z0-9_\-]*$"}
+    quantity = {
+        "type": "object",
+        "properties": {"value": {}, "unit": {"type": "string"}},
+        "required": ["value", "unit"],
+        "additionalProperties": False,
+    }
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": SCHEMA_ID,
+        "title": "LUMOS document",
+        "description": "A .lumos file: an element, an element group or a whole context.",
+        "type": "object",
+        "required": ["lumos_format", "kind"],
+        "properties": {
+            "lumos_format": {"type": "string", "pattern": r"^1\.[0-9]+$"},
+            "kind": {"enum": ["element", "group", "context"]},
+            "lumos_version": {"type": "string"},
+            "created_at": {"type": "string"},
+            "meta": {"type": "object"},
+            "element": {"$ref": "#/$defs/element"},
+            "group": {"$ref": "#/$defs/group"},
+            "context": {"$ref": "#/$defs/settings"},
+            "elements": {"type": "array", "items": {"$ref": "#/$defs/child"}},
+            "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
+            "ui": {"type": "object"},
+        },
+        "additionalProperties": False,
+        "allOf": [
+            {"if": {"properties": {"kind": {"const": "element"}}}, "then": {"required": ["element"]}},
+            {"if": {"properties": {"kind": {"const": "group"}}}, "then": {"required": ["group"]}},
+            {
+                "if": {"properties": {"kind": {"const": "context"}}},
+                "then": {"required": ["context", "elements", "connections"]},
+            },
+        ],
+        "$defs": {
+            "quantity": quantity,
+            "element": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string"},
+                    "type_version": {"type": "integer", "minimum": 1},
+                    "name": {"type": ["string", "null"]},
+                    "params": {"type": "object", "additionalProperties": {"$ref": "#/$defs/quantity"}},
+                    "settings": {"type": "object"},
+                    "state": {"type": "object", "additionalProperties": {"$ref": "#/$defs/quantity"}},
+                    "free": {"type": "object"},
+                    "driver": {"type": "object"},
+                },
+                "required": ["type", "type_version"],
+            },
+            "group": {
+                "type": "object",
+                "properties": {
+                    "type": {"const": "lumos.group"},
+                    "name": {"type": ["string", "null"]},
+                    "children": {"type": "array", "items": {"$ref": "#/$defs/child"}},
+                    "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
+                    "exposed_ports": {"type": "object", "additionalProperties": port_path},
+                },
+                "required": ["type", "children"],
+            },
+            "child": {
+                "type": "object",
+                "properties": {"id": identifier},
+                "required": ["id", "type"],
+                "anyOf": [{"$ref": "#/$defs/element"}, {"$ref": "#/$defs/group"}],
+            },
+            "connection": {
+                "type": "object",
+                "properties": {"from": port_path, "to": port_path},
+                "required": ["from", "to"],
+                "additionalProperties": False,
+            },
+            "settings": {
+                "type": "object",
+                "properties": {
+                    "mode": {"enum": ["simulation", "operation"]},
+                    "twin": {"type": "boolean"},
+                    "seed": {"type": "integer"},
+                    "backend": {"type": "object", "properties": {"preferred": {"type": "string"}}},
+                    "clock": {
+                        "type": "object",
+                        "properties": {"start": {"type": "string"}, "elapsed": {"$ref": "#/$defs/quantity"}},
+                        "required": ["start", "elapsed"],
+                    },
+                    "observation": {
+                        "type": "object",
+                        "properties": {
+                            "band": {
+                                "oneOf": [
+                                    {"type": "null"},
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "min": {"$ref": "#/$defs/quantity"},
+                                            "max": {"$ref": "#/$defs/quantity"},
+                                        },
+                                        "required": ["min", "max"],
+                                    },
+                                ]
+                            },
+                            "n": {"type": "integer", "minimum": 1},
+                            "rule": {"enum": ["midpoint", "gauss"]},
+                            "extra": {"type": "object"},
+                        },
+                    },
+                    "simulate": {"type": "array", "items": {"type": "string"}},
+                },
+                "required": ["mode", "twin", "seed", "clock"],
+            },
+        },
+    }

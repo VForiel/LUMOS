@@ -27,6 +27,7 @@ reading a document. Older type versions are upgraded with the registered migrati
 
 from __future__ import annotations
 
+import base64
 import json
 import re
 from collections.abc import Mapping
@@ -35,10 +36,13 @@ from pathlib import Path
 from typing import Any
 
 import jsonschema
+import numpy as np
 from astropy import units as u
+from astropy.time import Time
 
 import lumos
 from lumos.core import registry as _registry_module
+from lumos.core.context import Context
 from lumos.core.element import Element
 from lumos.core.group import GROUP_TYPE, ElementGroup
 from lumos.core.param import Param, Setting
@@ -47,7 +51,16 @@ from lumos.core.registry import Registry
 from lumos.errors import FormatVersionError, LumosFormatError
 from lumos.units import quantity_from_json, quantity_to_json
 
-__all__ = ["FORMAT_VERSION", "entry_of", "from_document", "from_entry", "load", "save", "to_document"]
+__all__ = [
+    "FORMAT_VERSION",
+    "SIDECAR_THRESHOLD",
+    "entry_of",
+    "from_document",
+    "from_entry",
+    "load",
+    "save",
+    "to_document",
+]
 
 FORMAT_VERSION = "1.0"
 _SUPPORTED = (1, 0)
@@ -59,16 +72,66 @@ def _registry(registry: Registry | None) -> Registry:
     return _registry_module.registry if registry is None else registry
 
 
-def to_document(element: Element, *, registry: Registry | None = None) -> dict[str, Any]:
-    """Return the ``.lumos`` document (a JSON-compatible dictionary) describing an element or a group."""
-    reg = _registry(registry)
-    kind = "group" if isinstance(element, ElementGroup) else "element"
+def _envelope(kind: str) -> dict[str, Any]:
     return {
         "lumos_format": FORMAT_VERSION,
         "kind": kind,
         "lumos_version": lumos.__version__,
         "created_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
-        kind: entry_of(element, reg),
+    }
+
+
+def to_document(obj: Element | Context, *, registry: Registry | None = None) -> dict[str, Any]:
+    """Return the ``.lumos`` document (a JSON-compatible dictionary) of an element, a group or a context."""
+    reg = _registry(registry)
+    if isinstance(obj, Context):
+        return _context_document(obj, reg)
+    kind = "group" if isinstance(obj, ElementGroup) else "element"
+    return {**_envelope(kind), kind: entry_of(obj, reg)}
+
+
+def _connections_of(graph: Any) -> list[dict[str, str]]:
+    return [
+        {
+            "from": f"{graph.id_of(c.source.owner)}.{c.source.name}",
+            "to": f"{graph.id_of(c.target.owner)}.{c.target.name}",
+        }
+        for c in graph.connections
+    ]
+
+
+def _context_document(ctx: Context, reg: Registry) -> dict[str, Any]:
+    observation = ctx.observation
+    band = None
+    if observation.band is not None:
+        band = {"min": quantity_to_json(observation.band[0]), "max": quantity_to_json(observation.band[1])}
+    simulate = [
+        identifier
+        for identifier, element in ctx.elements.items()
+        if ctx.mode == "operation" and ctx.mode_of(element) == "simulation"
+    ]
+    return {
+        **_envelope("context"),
+        "meta": {"name": ctx.name, **ctx.meta},
+        "context": {
+            "mode": ctx.mode,
+            "twin": ctx.twin,
+            "seed": ctx.seed,
+            "backend": {"preferred": ctx.backend},
+            "clock": {"start": str(ctx.clock.start.isot), "elapsed": quantity_to_json(ctx.clock.elapsed)},
+            "observation": {
+                "band": band,
+                "n": int(observation.n_wavelengths),
+                "rule": observation.rule,
+                "extra": dict(observation.extra),
+            },
+            "simulate": simulate,
+        },
+        "elements": [
+            {"id": identifier, **entry_of(element, reg)} for identifier, element in ctx.elements.items()
+        ],
+        "connections": _connections_of(ctx.graph),
+        "ui": dict(ctx.ui),
     }
 
 
@@ -77,16 +140,8 @@ def entry_of(element: Element, registry: Registry | None = None) -> dict[str, An
     reg = _registry(registry)
     if isinstance(element, ElementGroup):
         graph = element.graph
-        children = []
-        for child_id, child in graph.elements.items():
-            children.append({"id": child_id, **entry_of(child, reg)})
-        connections = [
-            {
-                "from": f"{graph.id_of(c.source.owner)}.{c.source.name}",
-                "to": f"{graph.id_of(c.target.owner)}.{c.target.name}",
-            }
-            for c in graph.connections
-        ]
+        children = [{"id": child_id, **entry_of(child, reg)} for child_id, child in graph.elements.items()]
+        connections = _connections_of(graph)
         exposed = {name: f"{graph.id_of(ref.owner)}.{ref.name}" for name, ref in element.exposed().items()}
         return {
             "type": GROUP_TYPE,
@@ -127,8 +182,8 @@ def _check_format_version(version: Any) -> None:
         )
 
 
-def from_document(document: Mapping[str, Any], *, registry: Registry | None = None) -> Element:
-    """Create the element described by a ``.lumos`` document.
+def from_document(document: Mapping[str, Any], *, registry: Registry | None = None) -> Any:
+    """Create the element, group or context described by a ``.lumos`` document.
 
     Raises
     ------
@@ -147,11 +202,62 @@ def from_document(document: Mapping[str, Any], *, registry: Registry | None = No
         raise LumosFormatError(f"missing key(s) in the document: {missing}")
     _check_format_version(document["lumos_format"])
     kind = document["kind"]
-    if kind not in ("element", "group"):
+    if kind not in ("element", "group", "context"):
         raise LumosFormatError(f"unsupported document kind {kind!r}")
     if kind not in document:
         raise LumosFormatError(f"missing key {kind!r} in the document")
+    if kind == "context":
+        return _context_from_document(document, reg)
     return from_entry(document[kind], registry=reg)
+
+
+_CONTEXT_KEYS = {"mode", "twin", "seed", "backend", "clock", "observation", "simulate"}
+
+
+def _context_from_document(document: Mapping[str, Any], reg: Registry) -> Context:
+    settings = document["context"]
+    if not isinstance(settings, Mapping):
+        raise LumosFormatError("'context' must be an object")
+    unknown = sorted(set(settings) - _CONTEXT_KEYS)
+    if unknown:
+        raise LumosFormatError(f"unknown context setting(s) {unknown}")
+    meta = dict(document.get("meta") or {})
+    try:
+        clock = settings["clock"]
+        ctx = Context(
+            mode=settings["mode"],
+            twin=bool(settings["twin"]),
+            backend=settings.get("backend", {}).get("preferred", "auto"),
+            seed=int(settings["seed"]),
+            start=Time(clock["start"], scale="utc"),
+            name=meta.pop("name", None),
+        )
+        ctx.clock.reset(elapsed=quantity_from_json(clock["elapsed"]))
+        ctx.meta = meta
+        observation = settings.get("observation") or {}
+        band = observation.get("band")
+        if band is not None:
+            ctx.observation.band = (quantity_from_json(band["min"]), quantity_from_json(band["max"]))
+        ctx.observation.n_wavelengths = int(observation.get("n", 1))
+        ctx.observation.rule = observation.get("rule", "midpoint")
+        ctx.observation.extra = dict(observation.get("extra", {}))
+        for entry in document.get("elements", []):
+            if not isinstance(entry, Mapping) or not isinstance(entry.get("id"), str):
+                raise LumosFormatError("every element of a context needs a string 'id'")
+            body = {key: value for key, value in entry.items() if key != "id"}
+            element = from_entry(body, registry=reg)
+            ctx.graph.add(element, id=entry["id"])
+            element._lumos_container = ctx
+        for connection in document.get("connections", []):
+            ctx.connect(ctx.port(connection["from"]), ctx.port(connection["to"]))
+        for identifier in settings.get("simulate", []):
+            ctx.simulate(ctx[identifier])
+    except LumosFormatError:
+        raise
+    except (KeyError, TypeError, ValueError) as error:
+        raise LumosFormatError(f"invalid context document: {error}") from error
+    ctx.ui = dict(document.get("ui") or {})
+    return ctx
 
 
 def from_entry(entry: Any, *, registry: Registry | None = None) -> Element:
@@ -239,16 +345,80 @@ def _reject_constant(constant: str) -> Any:
     raise LumosFormatError(f"non-standard JSON constant {constant!r} (use the strings 'nan', 'inf', '-inf')")
 
 
-def save(element: Element, path: str | Path, *, registry: Registry | None = None) -> None:
-    """Write ``element`` to a ``.lumos`` file (UTF-8, indented strict JSON)."""
-    text = json.dumps(to_document(element, registry=registry), indent=2, ensure_ascii=False, allow_nan=False)
-    Path(path).write_text(text + "\n", encoding="utf-8")
+#: Arrays larger than this (raw bytes) are written to the ``.npz`` sidecar of a file.
+SIDECAR_THRESHOLD = 64 * 1024
 
 
-def load(path: str | Path, *, registry: Registry | None = None) -> Element:
-    """Read an element from a ``.lumos`` file."""
+def _is_array(node: Any) -> bool:
+    return isinstance(node, dict) and set(node) == {"dtype", "shape", "data"}
+
+
+def _extract_arrays(node: Any, arrays: dict[str, np.ndarray], sidecar: str) -> Any:
+    if _is_array(node):
+        dtype = np.dtype(node["dtype"])
+        size = int(np.prod(node["shape"])) * dtype.itemsize
+        if size <= SIDECAR_THRESHOLD:
+            return node
+        key = f"a{len(arrays)}"
+        raw = base64.b64decode(node["data"])
+        arrays[key] = np.frombuffer(raw, dtype=dtype).reshape(node["shape"])
+        return {"$ref": f"{sidecar}#{key}", "dtype": node["dtype"], "shape": node["shape"]}
+    if isinstance(node, dict):
+        return {k: _extract_arrays(v, arrays, sidecar) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_extract_arrays(v, arrays, sidecar) for v in node]
+    return node
+
+
+def _resolve_arrays(node: Any, path: Path, cache: dict[str, Any]) -> Any:
+    if isinstance(node, dict) and "$ref" in node:
+        reference = node["$ref"]
+        if not isinstance(reference, str) or "#" not in reference:
+            raise LumosFormatError(f"invalid array reference {reference!r}")
+        name, _, key = reference.partition("#")
+        if name != Path(name).name or name.startswith(".") or not name.endswith(".npz"):
+            raise LumosFormatError(
+                f"array references must name a .npz file next to the document, got {name!r}"
+            )
+        if name not in cache:
+            sidecar = path.parent / name
+            if not sidecar.exists():
+                raise LumosFormatError(f"missing sidecar file {sidecar} referenced by {path}")
+            with np.load(sidecar, allow_pickle=False) as archive:
+                cache[name] = {k: archive[k] for k in archive.files}
+        if key not in cache[name]:
+            raise LumosFormatError(f"array {key!r} is not in the sidecar {name}")
+        array = np.ascontiguousarray(cache[name][key])
+        little = array.astype(array.dtype.newbyteorder("<"), copy=False)
+        encoded = base64.b64encode(little.tobytes()).decode("ascii")
+        return {"dtype": little.dtype.str, "shape": list(little.shape), "data": encoded}
+    if isinstance(node, dict):
+        return {k: _resolve_arrays(v, path, cache) for k, v in node.items()}
+    if isinstance(node, list):
+        return [_resolve_arrays(v, path, cache) for v in node]
+    return node
+
+
+def save(obj: Element | Context, path: str | Path, *, registry: Registry | None = None) -> None:
+    """Write an element, group or context to a ``.lumos`` file (UTF-8, indented strict JSON).
+
+    Arrays larger than :data:`SIDECAR_THRESHOLD` are stored in a ``.npz`` file next to it (same name).
+    """
+    path = Path(path)
+    sidecar = path.with_suffix(".npz")
+    arrays: dict[str, np.ndarray] = {}
+    document = _extract_arrays(to_document(obj, registry=registry), arrays, sidecar.name)
+    text = json.dumps(document, indent=2, ensure_ascii=False, allow_nan=False)
+    path.write_text(text + "\n", encoding="utf-8")
+    if arrays:
+        np.savez(sidecar, allow_pickle=False, **arrays)
+
+
+def load(path: str | Path, *, registry: Registry | None = None) -> Any:
+    """Read an element, group or context from a ``.lumos`` file (and its ``.npz`` sidecar if any)."""
+    path = Path(path)
     try:
-        document = json.loads(Path(path).read_text(encoding="utf-8"), parse_constant=_reject_constant)
+        document = json.loads(path.read_text(encoding="utf-8"), parse_constant=_reject_constant)
     except json.JSONDecodeError as error:
         raise LumosFormatError(f"{path}: invalid JSON ({error})") from error
-    return from_document(document, registry=registry)
+    return from_document(_resolve_arrays(document, path, {}), registry=registry)
