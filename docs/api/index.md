@@ -76,6 +76,12 @@
 .. automodule:: lumos.fields.radiance
    :members: RadianceField, CANONICAL_RADIANCE
 
+.. automodule:: lumos.fields.modal
+   :members: ModalField
+
+.. automodule:: lumos.fields.smatrix
+   :members:
+
 .. automodule:: lumos.fields.spectral
    :members:
 

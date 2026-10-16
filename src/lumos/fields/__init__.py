@@ -5,15 +5,17 @@
 - :class:`Wavecube`: stack of wavefronts on a spectral axis, integrated incoherently.
 - :class:`IncoherentBundle`: mutually incoherent modes (point sources, natural light...).
 - :class:`RadianceField`: spectral radiance maps of incoherent scenes.
+- :class:`ModalField`: modal amplitudes of guided channels; :mod:`~lumos.fields.smatrix` scattering matrices.
 - :mod:`~lumos.fields.jones`: Jones vectors and matrices, Stokes parameters.
 - :func:`spectral_samples`: quadrature of a spectral band.
 """
 
 from typing import Any
 
-from lumos.fields import jones
+from lumos.fields import jones, smatrix
 from lumos.fields.grid import Grid, Plane
 from lumos.fields.incoherent import IncoherentBundle
+from lumos.fields.modal import ModalField
 from lumos.fields.radiance import RadianceField
 from lumos.fields.spectral import spectral_samples
 from lumos.fields.wavecube import Wavecube
@@ -22,16 +24,18 @@ from lumos.fields.wavefront import Wavefront
 __all__ = [
     "Grid",
     "IncoherentBundle",
+    "ModalField",
     "Plane",
     "RadianceField",
     "Wavecube",
     "Wavefront",
     "jones",
     "pytree_classes",
+    "smatrix",
     "spectral_samples",
 ]
 
 
 def pytree_classes() -> tuple[type[Any], ...]:
     """Signal classes registered as JAX pytrees (each defines ``_tree_flatten`` and ``_tree_unflatten``)."""
-    return (Wavefront, Wavecube, IncoherentBundle, RadianceField)
+    return (Wavefront, Wavecube, IncoherentBundle, RadianceField, ModalField)

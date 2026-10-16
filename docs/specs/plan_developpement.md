@@ -113,7 +113,7 @@ flowchart LR
 - [x] **P3.4 `Wavecube`** — axe spectral, poids, intégration.
 - [x] **P3.5 `IncoherentBundle`** — axe de modes, somme en intensité, rampes de phase pour les sources hors axe.
 - [x] **P3.6 `RadianceField`** — radiance spectrale sur grille, unités radiométriques, rééchantillonnage conservatif.
-- [ ] **P3.7 `ModalField`** — amplitudes modales, application de S-matrices.
+- [x] **P3.7 `ModalField`** — amplitudes modales, application de S-matrices.
 - [ ] **P3.8 `DataProduct`** — axes, unités, masque, incertitudes ; FITS et NPZ.
 - [ ] **P3.9 Tracés de base** — axes physiques, phase en carte cyclique.
 
