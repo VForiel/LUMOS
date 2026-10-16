@@ -79,9 +79,10 @@ class _JaxImportHook(importlib.abc.MetaPathFinder):
         self, fullname: str, path: Any, target: Any = None
     ) -> importlib.machinery.ModuleSpec | None:
         """Wrap the spec of the top-level ``jax`` package only."""
-        if fullname != "jax":
+        if fullname != "jax" or _registered:
             return None
-        sys.meta_path.remove(self)  # one-shot: let the normal finders locate JAX
+        # The hook stays installed until JAX is executed: importlib.util.find_spec("jax") (used to check
+        # whether a backend is available) also calls this method without importing JAX.
         spec = importlib.machinery.PathFinder.find_spec(fullname, path)
         if spec is not None and spec.loader is not None:
             spec.loader = _RegisteringLoader(spec.loader)
