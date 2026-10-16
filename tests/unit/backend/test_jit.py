@@ -188,3 +188,20 @@ def test_transfer_functions_can_be_compiled_and_differentiated():
 
     # P = T * sum(A²) so dP/dT = sum(A²) = 4 + 16
     assert float(jax.grad(power)(attenuator.values()).transmission) == pytest.approx(20.0)
+
+
+@requires_jax
+def test_values_are_registered_when_jax_is_probed_before_being_imported():
+    # Regression: lumos.backend.available() probes JAX with importlib.util.find_spec("jax") without importing
+    # it; registration must still happen when JAX is imported later (here through the backend).
+    code = (
+        "import importlib.util, lumos\n"
+        "from lumos import backend\n"
+        "from lumos.core.element import Values\n"
+        "assert importlib.util.find_spec('jax') is not None\n"
+        "backend.get('jax')\n"
+        "import jax\n"
+        "print(jax.tree_util.tree_leaves(Values({'a': 1.5, 'mode': 'x'})))"
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
+    assert result.stdout.strip() == "[1.5]"
