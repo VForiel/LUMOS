@@ -213,10 +213,11 @@ def test_scene_to_sources_element_in_a_graph():
     alone = instrument()
     system = ImagingSystem(alone, entrance="telescope.in", exit="image.out")
     reference = image_scene(radiance, system, strategy="decomposition")
-    intensity = (
-        np.asarray(graph_image.intensity).sum(axis=0) * graph_image.grid.dx_si * graph_image.grid.dy_si
-    )
-    np.testing.assert_allclose(intensity, reference.power[0], rtol=1e-6, atol=1e-6 * reference.power.max())
+    # the intensity of a bundle of wavecubes is already summed over the channels with their weights
+    pixel = graph_image.grid.dx_si * graph_image.grid.dy_si
+    intensity = np.asarray(graph_image.intensity) * pixel
+    expected = np.tensordot(reference.weights, reference.power, axes=1)
+    np.testing.assert_allclose(intensity, expected, rtol=1e-6, atol=1e-6 * expected.max())
 
 
 def test_image_as_a_wavecube_for_detectors():
