@@ -243,6 +243,24 @@ class Element(ParamHost):
                 )
         return outputs
 
+    # --- Serialisation -----------------------------------------------------------------------------
+
+    def to_lumos(self, *, registry: Any = None) -> dict[str, Any]:
+        """Return the ``.lumos`` document describing this element (see :mod:`lumos.io`)."""
+        from lumos.io import to_document  # deferred: lumos.io depends on this module
+
+        return to_document(self, registry=registry)
+
+    @classmethod
+    def from_lumos(cls, document: Mapping[str, Any], *, registry: Any = None) -> Element:
+        """Create an element from a ``.lumos`` document, checking that it is an instance of ``cls``."""
+        from lumos.io import from_document  # deferred: lumos.io depends on this module
+
+        element = from_document(document, registry=registry)
+        if not isinstance(element, cls):
+            raise TypeError(f"the document describes a {type(element).__name__}, not a {cls.__name__}")
+        return element
+
     # --- Introspection ----------------------------------------------------------------------------
 
     def __repr__(self) -> str:

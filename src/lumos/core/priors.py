@@ -7,14 +7,15 @@ dimensionless parameters. Sampling and log-densities are added with the inferenc
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
 from astropy import units as u
 
-from lumos.units import require_unit
+from lumos.units import quantity_from_json, quantity_to_json, require_unit
 
-__all__ = ["LogUniform", "Normal", "Prior", "Uniform"]
+__all__ = ["LogUniform", "Normal", "Prior", "Uniform", "prior_from_json", "prior_to_json"]
 
 
 def _as_quantity(value: Any, name: str) -> u.Quantity:
@@ -86,3 +87,30 @@ class Normal(Prior):
         _, std = self._normalise("mean", "std")
         if not std.value > 0:
             raise ValueError(f"Normal prior needs std > 0, got {std}")
+
+
+_PRIOR_KINDS: dict[str, type[Prior]] = {"uniform": Uniform, "loguniform": LogUniform, "normal": Normal}
+
+
+def prior_to_json(prior: Prior) -> dict[str, Any]:
+    """Encode a prior as ``{"kind": ..., <field>: <quantity JSON>, ...}``."""
+    kind = next(name for name, cls in _PRIOR_KINDS.items() if type(prior) is cls)
+    fields = prior.__dataclass_fields__  # type: ignore[attr-defined]
+    return {"kind": kind, **{name: quantity_to_json(getattr(prior, name)) for name in fields}}
+
+
+def prior_from_json(data: Mapping[str, Any]) -> Prior:
+    """Decode a prior encoded by :func:`prior_to_json`.
+
+    Raises
+    ------
+    ValueError
+        If the encoding is malformed or the prior is invalid.
+    """
+    if not isinstance(data, Mapping) or data.get("kind") not in _PRIOR_KINDS:
+        raise ValueError(f"invalid prior {data!r}: 'kind' must be one of {sorted(_PRIOR_KINDS)}")
+    cls = _PRIOR_KINDS[data["kind"]]
+    names = list(cls.__dataclass_fields__)  # type: ignore[attr-defined]
+    if set(data) != {"kind", *names}:
+        raise ValueError(f"invalid {data['kind']} prior: expected the fields {names}")
+    return cls(*(quantity_from_json(data[name]) for name in names))

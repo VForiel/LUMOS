@@ -23,9 +23,10 @@ import re
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from importlib import metadata
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from lumos.core.element import Element
+from lumos.errors import FormatVersionError
 
 __all__ = ["Registry", "UnknownTypeError", "register", "registry"]
 
@@ -36,6 +37,7 @@ _RESERVED_PREFIX = "lumos."
 PLUGIN_GROUP = "lumos.elements"
 
 E = TypeVar("E", bound=type[Element])
+Migration = Callable[[dict[str, Any]], dict[str, Any]]
 
 
 class UnknownTypeError(LookupError):
@@ -57,6 +59,7 @@ class Registry:
     def __init__(self) -> None:
         self._by_id: dict[str, RegistryEntry] = {}
         self._by_class: dict[type[Element], RegistryEntry] = {}
+        self._migrations: dict[tuple[str, int], Migration] = {}
 
     def register(self, type_id: str, version: int = 1) -> Callable[[E], E]:
         """Return a class decorator registering an element class under ``type_id``.
@@ -128,6 +131,46 @@ class Registry:
             return self._by_class[cls].type_id
         except KeyError:
             raise UnknownTypeError(f"{cls.__qualname__} is not registered") from None
+
+    def add_migration(self, type_id: str, from_version: int) -> Callable[[Migration], Migration]:
+        """Return a decorator registering the migration of ``type_id`` from ``from_version`` to the next one.
+
+        A migration receives the serialised body of an element (``name``, ``params``, ``settings``,
+        ``state``) written with type version ``from_version`` and returns the body for version
+        ``from_version + 1``. Loading an old document applies the migrations one version at a time.
+        """
+        current = self.version(type_id)
+        if isinstance(from_version, bool) or not isinstance(from_version, int):
+            raise TypeError(f"from_version must be an integer, got {from_version!r}")
+        if not 1 <= from_version < current:
+            raise ValueError(
+                f"{type_id!r} is at version {current}: migrations start from versions 1 to {current - 1}"
+            )
+        if (type_id, from_version) in self._migrations:
+            raise ValueError(f"a migration of {type_id!r} from version {from_version} already exists")
+
+        def decorator(function: Migration) -> Migration:
+            self._migrations[(type_id, from_version)] = function
+            return function
+
+        return decorator
+
+    def migrate(self, type_id: str, body: dict[str, Any], from_version: int) -> dict[str, Any]:
+        """Upgrade ``body`` from ``from_version`` to the current version of ``type_id``."""
+        current = self.version(type_id)
+        if from_version > current:
+            raise FormatVersionError(
+                f"{type_id!r} version {from_version} is newer than the supported version {current}; "
+                "upgrade LUMOS to read this document"
+            )
+        for version in range(from_version, current):
+            migration = self._migrations.get((type_id, version))
+            if migration is None:
+                raise FormatVersionError(
+                    f"no migration of {type_id!r} from version {version} to {version + 1}"
+                )
+            body = migration(body)
+        return body
 
     def __contains__(self, type_id: object) -> bool:
         """Whether ``type_id`` is registered."""
