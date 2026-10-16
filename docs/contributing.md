@@ -30,6 +30,15 @@ The `tools/check_test_integrity.py` script enforces these rules in continuous in
 - Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
 - Structural decisions are recorded as [architecture decision records](adr/index.md).
 
+## Performance-critical code
+
+- Write numerical code once against the Array API (`lumos.backend.current().xp`), so that it runs on every
+  backend; decorate pure kernels with `lumos.jit` so that JAX compiles them.
+- Use `numba` only for CPU loops that cannot be vectorised, in private `_kernels` modules working on NumPy
+  arrays.
+- Write a native extension only when profiling shows a need, and record the decision in an ADR.
+- Benchmarks live in `tests/benchmarks/` and run with `pytest -m benchmark tests/benchmarks`.
+
 ## Translating the documentation
 
 ```bash

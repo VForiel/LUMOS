@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 14:12+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0004-backend-selection.md:1
+msgid "ADR-0004: Automatic backend selection"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:4
+msgid "**Date**: 2026-10-16"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:5
+msgid "**Plan step**: P2.3"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:9
+msgid ""
+"REQ-HPC-2 asks LUMOS to detect the hardware it runs on and to pick the "
+"array backend that exploits it best, while letting the user force a "
+"choice. Several backends may be installed at once (NumPy always, JAX, "
+"CuPy, PyTorch), with or without a GPU."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:13
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:15
+msgid ""
+"`lumos.config.backend` is `\"auto\"` by default; it can be set to any "
+"backend name. `lumos.backend.use()` overrides it locally (per thread or "
+"task)."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:17
+msgid ""
+"With `\"auto\"`, the backend is chosen once per process, the first time "
+"an array is needed, from `hardware_report(probe_gpus=True)` by the pure "
+"function `select_backend`:"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:19
+msgid "**JAX** if it sees a GPU (or TPU);"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:20
+msgid "otherwise **CuPy** if it sees a GPU;"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:21
+msgid "otherwise **PyTorch** if it sees a GPU (CUDA, ROCm or Apple Metal);"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:22
+msgid "otherwise **NumPy**."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:23
+msgid "The choice is logged (`INFO` level on the `lumos.backend._core` logger)."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:25
+msgid "Rationale"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:27
+msgid ""
+"JAX is the differentiable reference of LUMOS (decision D3): preferring it"
+" on GPUs gives the same results, gradients included, as on a GPU-less "
+"development machine running JAX on CPU."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:29
+msgid ""
+"Without a GPU, NumPy (with multi-threaded `scipy.fft`) is the reference "
+"implementation, has no compilation overhead and no device transfer; JAX "
+"on CPU stays available on request (`use(\"jax\")`)."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:32
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:34
+msgid ""
+"**Benchmark at start-up**: more accurate but slow and non-deterministic; "
+"it may come later as an opt-in helper."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:36
+msgid "**Always NumPy unless asked**: simpler, but contradicts REQ-HPC-2."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:38
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:40
+msgid ""
+"The first array operation of a process with `\"auto\"` imports the "
+"installed GPU-capable libraries to list their devices (one-off cost of "
+"about a second); importing `lumos` itself stays light."
+msgstr ""
+
+#: ../../adr/0004-backend-selection.md:42
+msgid ""
+"Results must not depend on the backend beyond floating-point tolerances; "
+"the test suite is parametrised by backend to enforce it."
+msgstr ""

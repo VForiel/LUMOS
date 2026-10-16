@@ -1,0 +1,140 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 14:12+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0002-state-and-pure-transfers.md:1
+msgid "ADR-0002: Element state and pure transfer functions"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:4
+msgid "**Date**: 2026-10-16"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:5
+msgid "**Plan step**: P1.4"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:9
+msgid ""
+"Elements carry configuration (focal length, velocity...) and a mutable "
+"state changed by actions (stage position, shutter open...). They must "
+"also compute how they act on light. Requirements REQ-EL-8 and REQ-EL-10 "
+"ask for pure numerical transfer functions, so that they can be JIT-"
+"compiled, vectorised (`vmap`), differentiated (JAX) and run in parallel; "
+"REQ-EL-5 and REQ-EL-7 ask for actions that change the state, in "
+"simulation as well as in operation."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:15
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:17
+msgid ""
+"**Fields** are declared on the class: `Param` (configuration), `State` "
+"(changed by actions) and `Setting` (non-physical). Each assignment "
+"validates the value, stores the user value and its SI form, and calls "
+"`_on_field_changed` (cache invalidation)."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:20
+msgid ""
+"**Transfer functions are `staticmethod`s** with the signature "
+"`transfer(values, inputs) -> outputs`."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:21
+msgid ""
+"`values` is an immutable `Values` snapshot of the SI values of every "
+"field (params, state, settings);"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:22
+msgid "`inputs` and `outputs` map port names to signals."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:24
+msgid ""
+"Being static, a transfer function cannot read or modify the element: "
+"everything it depends on is in its arguments. Declaring a non-static "
+"`transfer` raises `TypeError` when the class is created."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:26
+msgid ""
+"**State changes only through assignments** (and later actions), never "
+"inside a transfer function."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:27
+msgid ""
+"`Element.apply(**inputs)` runs the transfer on the current values and "
+"checks port names and signal types. The execution engine (phase 5) calls "
+"`transfer` directly with snapshots it caches."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:29
+msgid ""
+"Elements refuse unknown public attributes (typos raise `AttributeError` "
+"with a suggestion); private attributes (leading underscore) remain free "
+"for implementation details."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:32
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:34
+msgid ""
+"**Methods reading `self`**: simpler to write, but the purity would rest "
+"on discipline only, and JAX transformations would capture the mutable "
+"object."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:36
+msgid ""
+"**Pure functions defined outside the class**: equivalent purity, but "
+"scattered code and no natural link between an element and its behaviour."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:39
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:41
+msgid ""
+"`Values` must become a JAX pytree in phase 2 (P2.5), so that snapshots "
+"can be traced and differentiated."
+msgstr ""
+
+#: ../../adr/0002-state-and-pure-transfers.md:42
+msgid ""
+"Elements needing pre-computed data (masks, mode profiles) must expose it "
+"through fields or through cached helpers computed from `values`, not "
+"through hidden attributes read by `transfer`."
+msgstr ""

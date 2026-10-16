@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 12:52+0200\n"
+"POT-Creation-Date: 2026-10-16 14:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -26,3 +26,1093 @@ msgstr "Référence de l'API"
 #: lumos:1 of
 msgid "LUMOS: Lumos is a Universal and Modular Optical Simulator & Operating System."
 msgstr "LUMOS: Lumos is a Universal and Modular Optical Simulator & Operating System."
+
+#: lumos.backend.hardware.hardware_report:1 of
+msgid "Describe the machine and the software environment."
+msgstr ""
+
+#: ../../api/index.md lumos.backend._core.Backend.asarray lumos.backend._core.Backend.is_array
+#: lumos.backend._core.Backend.to_numpy lumos.backend._core.convert lumos.backend._core.set_default
+#: lumos.backend._core.to_numpy lumos.backend._core.use lumos.backend.fft.fft2 lumos.backend.fft.fft2c
+#: lumos.backend.fft.fftfreq lumos.backend.fft.fftshift lumos.backend.fft.ifft2 lumos.backend.fft.ifft2c
+#: lumos.backend.fft.ifftshift lumos.backend.hardware.GPUInfo lumos.backend.hardware.select_backend
+#: lumos.backend.jit.jit lumos.backend.memory.available_memory lumos.backend.memory.chunk_slices
+#: lumos.backend.memory.estimate_bytes lumos.core.element.Element.apply lumos.core.element.Element.from_lumos
+#: lumos.core.element.Element.to_lumos lumos.core.element.Values lumos.core.param.Param.check_prior
+#: lumos.core.param.Param.validate lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
+#: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si lumos.core.param.Setting.validate
+#: lumos.core.param.State lumos.core.port.Output lumos.core.port.Port lumos.core.port.check_compatible
+#: lumos.core.port.compatible lumos.core.port.ports_of lumos.core.priors.LogUniform lumos.core.priors.Normal
+#: lumos.core.priors.Uniform lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration
+#: lumos.core.registry.Registry.get lumos.core.registry.Registry.load_plugins
+#: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
+#: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.version lumos.io.lumos_format.load
+#: lumos.io.lumos_format.save lumos.io.lumos_format.to_document lumos.units.quantity_to_json lumos.units.si_unit
+#: of
+msgid "Parameters"
+msgstr ""
+
+#: lumos.backend.hardware.hardware_report:3 of
+msgid ""
+"Whether to ask the installed GPU-capable backends (JAX, CuPy, PyTorch) for their devices. This imports "
+"those libraries, which can take a few seconds."
+msgstr ""
+
+#: ../../api/index.md lumos.backend._core.Backend.asarray lumos.backend._core.Backend.is_array
+#: lumos.backend._core.Backend.to_numpy lumos.backend._core.available lumos.backend._core.convert
+#: lumos.backend._core.current lumos.backend._core.get_default lumos.backend._core.known
+#: lumos.backend._core.set_default lumos.backend._core.to_numpy lumos.backend._core.use lumos.backend.fft.fft2
+#: lumos.backend.fft.fft2c lumos.backend.fft.fftfreq lumos.backend.fft.fftshift lumos.backend.fft.ifft2
+#: lumos.backend.fft.ifft2c lumos.backend.fft.ifftshift lumos.backend.hardware.HardwareReport.summary
+#: lumos.backend.hardware.HardwareReport.to_dict lumos.backend.hardware.select_backend lumos.backend.jit.jit
+#: lumos.backend.memory.available_memory lumos.backend.memory.chunk_slices lumos.backend.memory.estimate_bytes
+#: lumos.core.element.Element.apply lumos.core.element.Element.describe lumos.core.element.Element.from_lumos
+#: lumos.core.element.Element.ports lumos.core.element.Element.schema lumos.core.element.Element.to_lumos
+#: lumos.core.element.Element.values lumos.core.param.Param.check_prior lumos.core.param.Param.validate
+#: lumos.core.param.ParamHost.declared lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
+#: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si lumos.core.param.Setting.validate
+#: lumos.core.port.check_compatible lumos.core.port.compatible lumos.core.port.ports_of
+#: lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
+#: lumos.core.registry.Registry.load_plugins lumos.core.registry.Registry.migrate
+#: lumos.core.registry.Registry.register lumos.core.registry.Registry.type_id
+#: lumos.core.registry.Registry.version lumos.io.lumos_format.load lumos.io.lumos_format.save
+#: lumos.io.lumos_format.to_document lumos.units.quantity_to_json lumos.units.si_unit of
+msgid "Return type"
+msgstr ""
+
+#: lumos.backend.jit.jit:1 of
+msgid "Compile ``function`` with JAX when it is called on JAX arrays."
+msgstr ""
+
+#: lumos.backend.jit.jit:3 of
+msgid ""
+"Usable as ``@jit`` or ``@jit(static_argnames=(\"n\",))``. Static arguments must be hashable; a new value "
+"triggers a new compilation (use them for values determining shapes)."
+msgstr ""
+
+#: ../../api/index.md:8
+msgid "Units"
+msgstr "Unités"
+
+#: lumos.units:1 of
+msgid "Physical units at the boundary of LUMOS."
+msgstr ""
+
+#: lumos.units:3 of
+msgid ""
+"Users always give and receive :class:`astropy.units.Quantity` objects. Inside LUMOS, performance-critical "
+"code works on plain floats or arrays expressed in **unscaled SI units** (metres, seconds, radians...). This"
+" module provides the conversions between both worlds and the JSON encoding of quantities used by the "
+"``.lumos`` file format."
+msgstr ""
+
+#: lumos.units:9 of
+msgid "JSON encoding"
+msgstr ""
+
+#: lumos.units:10 of
+#, python-brace-format
+msgid ""
+"A quantity is encoded as ``{\"value\": <value>, \"unit\": \"<astropy unit string>\"}``, keeping the user's "
+"unit. ``<value>`` is:"
+msgstr ""
+
+#: lumos.units:13 of
+msgid ""
+"a JSON number for a finite real scalar, or one of the strings ``\"nan\"``, ``\"inf\"``, ``\"-inf\"`` "
+"(strict JSON has no non-finite numbers);"
+msgstr ""
+
+#: lumos.units:15 of
+#, python-brace-format
+msgid "``{\"re\": <number|string>, \"im\": <number|string>}`` for a complex scalar;"
+msgstr ""
+
+#: lumos.units:16 of
+#, python-brace-format
+msgid ""
+"``{\"dtype\": \"<f8\", \"shape\": [n, ...], \"data\": \"<base64>\"}`` for an array: little-endian, C-order "
+"raw bytes encoded in base64, which preserves the exact values and the dtype."
+msgstr ""
+
+#: lumos.units.quantity_from_json:1 of
+msgid "Decode a dictionary produced by :func:`quantity_to_json`."
+msgstr ""
+
+#: ../../api/index.md
+msgid "Raises"
+msgstr ""
+
+#: lumos.units.quantity_from_json:3 of
+msgid "If the dictionary is malformed or the unit string cannot be parsed."
+msgstr ""
+
+#: lumos.units.quantity_to_json:1 of
+msgid "Encode a quantity as a strict-JSON-compatible dictionary (see the module docstring)."
+msgstr ""
+
+#: lumos.units.require_unit:1 of
+msgid "Check that ``value`` is a quantity convertible to ``unit`` and return it."
+msgstr ""
+
+#: lumos.units.require_unit:3 of
+msgid ""
+"The quantity is returned unchanged (same object, same unit), so the user's unit is preserved. Plain numbers"
+" are only accepted when ``unit`` is dimensionless; they are then wrapped in a dimensionless quantity."
+msgstr ""
+
+#: lumos.units.require_unit:7 of
+msgid "The value to check."
+msgstr ""
+
+#: lumos.units.require_unit:8 of
+msgid "Expected unit, or any unit with the same physical dimension."
+msgstr ""
+
+#: lumos.units.require_unit:9 of
+msgid "Name of the checked value, used in error messages."
+msgstr ""
+
+#: lumos.units.require_unit:10 of
+msgid "Optional astropy equivalencies, e.g. ``u.spectral()`` to accept a frequency for a wavelength."
+msgstr ""
+
+#: ../../api/index.md
+msgid "Returns"
+msgstr ""
+
+#: lumos.units.require_unit:12 of
+msgid "The validated quantity."
+msgstr ""
+
+#: lumos.units.require_unit:15 of
+msgid "If ``value`` is not a quantity (or not numeric) while a dimensional unit is expected."
+msgstr ""
+
+#: lumos.units.require_unit:16 of
+msgid "If the unit of ``value`` cannot be converted to ``unit``."
+msgstr ""
+
+#: lumos.units.si_unit:1 of
+msgid "Return the unscaled SI unit with the same dimension as ``unit``."
+msgstr ""
+
+#: lumos.units.si_unit:3 of
+msgid ""
+"For example ``nm`` gives ``m``, ``deg`` gives ``rad``, ``Jy`` gives ``kg / s2`` and ``%`` gives the "
+"dimensionless unit. Irreducible non-SI units (such as ``ph``) are kept."
+msgstr ""
+
+#: lumos.units.to_si:1 of
+msgid "Return the numerical value of ``quantity`` in unscaled SI units."
+msgstr ""
+
+#: lumos.units.to_si:3 of
+msgid "The quantity to convert."
+msgstr ""
+
+#: lumos.units.to_si:4 of
+msgid ""
+"Optional target dimension; defaults to the dimension of ``quantity``. Use it with ``equivalencies`` to "
+"convert across dimensions (e.g. frequency to wavelength)."
+msgstr ""
+
+#: lumos.units.to_si:6 of
+msgid "Optional astropy equivalencies."
+msgstr ""
+
+#: lumos.units.to_si:8 of
+msgid "A Python scalar for scalar quantities, an array otherwise."
+msgstr ""
+
+#: ../../api/index.md:15
+msgid "Configuration and backends"
+msgstr "Configuration et backends"
+
+#: lumos._config.Config:1 lumos.config:1 of
+msgid "Process-wide settings of LUMOS."
+msgstr ""
+
+#: lumos._config.Config:3 lumos.config:3 of
+msgid "Every setting is validated on assignment, and unknown settings are refused (to catch typos)."
+msgstr ""
+
+#: lumos._config.Config:7 lumos.config:7 of
+msgid ""
+"Default array backend: ``\"auto\"`` (chosen from the hardware, ADR-0004) or a backend name (``\"numpy\"``, "
+"``\"jax\"``, ``\"cupy\"``, ``\"torch\"``)."
+msgstr ""
+
+#: lumos._config.Config:12 lumos.config:12 of
+msgid ""
+"Floating-point precision of new arrays: ``\"double\"`` (float64 / complex128, default) or ``\"single\"`` "
+"(float32 / complex64)."
+msgstr ""
+
+#: lumos._config.Config:17 lumos.config:17 of
+msgid "Number of CPU threads used by FFTs on the NumPy backend; ``-1`` uses every core."
+msgstr ""
+
+#: lumos._config.Config.precision:1 of
+msgid "``\"double\"`` or ``\"single\"``."
+msgstr ""
+
+#: lumos._config.Config.backend lumos._config.Config.fft_workers lumos._config.Config.precision
+#: lumos.backend._core.Backend of
+msgid "type"
+msgstr ""
+
+#: lumos._config.Config.precision:3 of
+msgid "Floating-point precision of new arrays"
+msgstr ""
+
+#: lumos._config.Config.backend:1 of
+msgid "``\"auto\"`` or a backend name."
+msgstr ""
+
+#: lumos._config.Config.backend:3 of
+msgid "Default array backend"
+msgstr ""
+
+#: lumos._config.Config.fft_workers:1 of
+msgid "every core)."
+msgstr ""
+
+#: lumos._config.Config.fft_workers:3 of
+msgid "Number of CPU threads used by FFTs on the NumPy backend (``-1``"
+msgstr ""
+
+#: lumos.backend:1 of
+msgid "Array backends of LUMOS (REQ-HPC-1)."
+msgstr ""
+
+#: lumos.backend:3 of
+msgid ""
+"LUMOS stores its data in arrays of a **backend** and writes numerical code once, against the `Python Array "
+"API standard <https://data-apis.org/array-api/>`_:"
+msgstr ""
+
+#: lumos.backend:6 of
+msgid "``numpy``: the CPU reference, always available;"
+msgstr ""
+
+#: lumos.backend:7 of
+msgid "``jax``: JIT compilation, vectorisation, automatic differentiation, CPU/GPU/TPU (differentiable reference);"
+msgstr ""
+
+#: lumos.backend:8 of
+msgid "``cupy`` and ``torch``: optional GPU backends."
+msgstr ""
+
+#: lumos.backend:10 of
+msgid ""
+"Backends are imported only when first used. The **current** backend is local to the running thread or task "
+"and changed with :func:`use`::"
+msgstr ""
+
+#: lumos.backend:17 of
+msgid ""
+"Loading the JAX backend enables JAX's 64-bit mode (``jax_enable_x64``), because LUMOS computes in double "
+"precision by default (REQ-HPC-5)."
+msgstr ""
+
+#: lumos.backend._core.Backend:1 of
+msgid "An array backend."
+msgstr ""
+
+#: lumos.backend._core.Backend:5 of
+msgid "Backend name (``\"numpy\"``, ``\"jax\"``, ``\"cupy\"`` or ``\"torch\"``)."
+msgstr ""
+
+#: lumos.backend._core.Backend:7 of
+msgid "str"
+msgstr ""
+
+#: lumos.backend._core.Backend:11 of
+msgid "Array API namespace of the backend (use it like ``numpy``: ``xp.exp``, ``xp.sum``...)."
+msgstr ""
+
+#: lumos.backend._core.Backend:13 of
+msgid "Any"
+msgstr ""
+
+#: lumos.backend._core.Backend.asarray:1 of
+msgid "Create a backend array from ``obj`` (keeping its dtype unless ``dtype`` is given)."
+msgstr ""
+
+#: lumos.backend._core.Backend.is_array:1 of
+msgid "Whether ``obj`` is an array of this backend."
+msgstr ""
+
+#: lumos.backend._core.Backend.to_numpy:1 of
+msgid "Copy an array of this backend to a NumPy array (on the host)."
+msgstr ""
+
+#: lumos.backend._core.BackendUnavailableError:1 of
+msgid "Raised when a known backend is requested but its library is not installed."
+msgstr ""
+
+#: lumos.backend._core.available:1 of
+msgid "Return the names of the installed backends, ``\"numpy\"`` first (nothing is imported)."
+msgstr ""
+
+#: lumos.backend._core.backend_of:1 of
+msgid "Return the name of the backend owning ``array``."
+msgstr ""
+
+#: lumos.backend._core.backend_of:3 of
+msgid "If ``array`` is not an array of a known, installed backend."
+msgstr ""
+
+#: lumos.backend._core.convert:1 of
+msgid "Convert ``array`` to an array of backend ``name``, keeping its dtype."
+msgstr ""
+
+#: lumos.backend._core.current:1 of
+msgid "Return the backend active in the current thread or task."
+msgstr ""
+
+#: lumos.backend._core.get:1 of
+msgid "Return the backend ``name`` (the current backend if ``name`` is ``None``)."
+msgstr ""
+
+#: lumos.backend._core.get:3 of
+msgid "If the name is unknown."
+msgstr ""
+
+#: lumos.backend._core.get:4 of
+msgid "If the backend library is not installed."
+msgstr ""
+
+#: lumos.backend._core.get_default:1 of
+msgid "Return the default backend setting: ``\"auto\"`` or a backend name (same as ``lumos.config.backend``)."
+msgstr ""
+
+#: lumos.backend._core.known:1 of
+msgid "Return the names of the backends LUMOS knows about."
+msgstr ""
+
+#: lumos.backend._core.set_default:1 of
+msgid "Set the default backend for the whole process (``\"auto\"`` or a backend name)."
+msgstr ""
+
+#: lumos.backend._core.to_numpy:1 of
+msgid "Return ``array`` as a NumPy array (a copy on the host for device arrays)."
+msgstr ""
+
+#: lumos.backend._core.use:1 of
+msgid "Use backend ``name`` inside a ``with`` block (local to the current thread or task)."
+msgstr ""
+
+#: lumos.backend.fft:1 of
+msgid "Two-dimensional FFTs on any backend."
+msgstr ""
+
+#: lumos.backend.fft:3 of
+msgid ""
+"Every function works on the backend of its input array: JAX arrays are transformed by JAX, CuPy arrays on "
+"the GPU, and NumPy arrays by :mod:`scipy.fft`, which keeps single precision and uses "
+"``lumos.config.fft_workers`` CPU threads."
+msgstr ""
+
+#: lumos.backend.fft:7 of
+msgid ""
+"The *centred* transforms :func:`fft2c` and :func:`ifft2c` assume that the origin of both the input and the "
+"output grids is the pixel of index ``N // 2`` along each axis (convention of LUMOS, §9 of the specs). They "
+"are the natural transforms for optics, where fields are centred on the optical axis."
+msgstr ""
+
+#: lumos.backend.fft.fft2:1 of
+msgid "Return the discrete Fourier transform of ``array`` over ``axes`` (origin at index 0)."
+msgstr ""
+
+#: lumos.backend.fft.fft2c:1 of
+msgid "Return the centred Fourier transform of ``array`` (origins of both grids at index ``N // 2``)."
+msgstr ""
+
+#: lumos.backend.fft.fftfreq:1 of
+msgid "Return the sample frequencies of an ``n``-point FFT with sample spacing ``d``."
+msgstr ""
+
+#: lumos.backend.fft.fftfreq:3 of
+msgid "The array is created with ``backend`` (the current backend by default), in FFT order (zero first)."
+msgstr ""
+
+#: lumos.backend.fft.fftshift:1 of
+msgid "Move the zero-frequency sample from index 0 to index ``N // 2`` along ``axes``."
+msgstr ""
+
+#: lumos.backend.fft.ifft2:1 of
+msgid "Return the inverse discrete Fourier transform of ``array`` over ``axes`` (origin at index 0)."
+msgstr ""
+
+#: lumos.backend.fft.ifft2c:1 of
+msgid "Return the centred inverse Fourier transform of ``array`` (inverse of :func:`fft2c`)."
+msgstr ""
+
+#: lumos.backend.fft.ifftshift:1 of
+msgid "Inverse of :func:`fftshift`: move the sample at index ``N // 2`` to index 0 along ``axes``."
+msgstr ""
+
+#: lumos.backend.hardware:1 of
+msgid "Hardware detection and automatic backend selection (REQ-HPC-2, ADR-0004)."
+msgstr ""
+
+#: lumos.backend.hardware:3 of
+msgid ""
+":func:`hardware_report` describes the machine LUMOS runs on: operating system, CPU, memory, GPUs seen by "
+"the installed backends and versions of the main libraries. The report is stored in archive metadata (REQ-"
+"RES-2) and drives :func:`select_backend`, used when ``lumos.config.backend`` is ``\"auto\"``."
+msgstr ""
+
+#: lumos.backend.hardware.GPUInfo:1 of
+msgid "A GPU (or other accelerator) seen by a backend."
+msgstr ""
+
+#: lumos.backend.hardware.HardwareReport:1 of
+msgid "Description of the machine and software environment."
+msgstr ""
+
+#: lumos.backend.hardware.HardwareReport.to_dict:1 of
+msgid "Return the report as plain data (YAML and JSON serialisable)."
+msgstr ""
+
+#: lumos.backend.hardware.HardwareReport.summary:1 of
+msgid "Return a short human-readable description."
+msgstr ""
+
+#: lumos.backend.hardware.select_backend:1 of
+msgid "Choose the backend to use on the machine described by ``report`` (policy of ADR-0004)."
+msgstr ""
+
+#: lumos.backend.hardware.select_backend:3 of
+msgid ""
+"A GPU backend is chosen when it sees a GPU, JAX first, then CuPy, then PyTorch; otherwise NumPy, the CPU "
+"reference."
+msgstr ""
+
+#: lumos.backend.memory:1 of
+msgid "Numerical precision, memory estimates and chunked computation (REQ-HPC-4, REQ-HPC-5)."
+msgstr ""
+
+#: lumos.backend.memory:3 of
+msgid ""
+"Large computations (a wavecube of hundreds of wavelengths, thousands of incoherent modes...) may not fit in"
+" memory at once. Most of them are independent along one axis, so :func:`map_chunked` cuts the input along "
+"that axis into chunks that fit a memory budget, applies the computation to each chunk and concatenates the "
+"results, which are identical to those of a single computation."
+msgstr ""
+
+#: lumos.backend.memory.available_memory:1 of
+msgid "Return the memory in bytes currently available to ``backend`` (the current backend by default)."
+msgstr ""
+
+#: lumos.backend.memory.available_memory:3 of
+msgid "CPU backends report the available RAM; GPU backends report the free memory of their first device."
+msgstr ""
+
+#: lumos.backend.memory.chunk_slices:1 of
+msgid "Split ``range(n)`` into consecutive slices of at most ``budget_bytes // item_bytes`` items."
+msgstr ""
+
+#: lumos.backend.memory.chunk_slices:3 of
+msgid "Every chunk holds at least one item, even when a single item exceeds the budget."
+msgstr ""
+
+#: lumos.backend.memory.dtypes:1 of
+msgid "Return the ``(real, complex)`` dtypes of ``backend`` for ``precision``."
+msgstr ""
+
+#: lumos.backend.memory.dtypes:3 of
+msgid ""
+"``\"double\"`` (float64 / complex128) or ``\"single\"`` (float32 / complex64); defaults to "
+"``lumos.config.precision``."
+msgstr ""
+
+#: lumos.backend.memory.dtypes:5 of
+msgid "Backend name; defaults to the current backend."
+msgstr ""
+
+#: lumos.backend.memory.estimate_bytes:1 of
+msgid "Return the size in bytes of an array of ``shape`` and ``dtype``."
+msgstr ""
+
+#: lumos.backend.memory.map_chunked:1 of
+msgid "Apply ``function`` to chunks of ``array`` along ``axis`` and concatenate the results."
+msgstr ""
+
+#: lumos.backend.memory.map_chunked:3 of
+msgid ""
+"``function`` must treat the elements along ``axis`` independently and keep their number (for example a 2-D "
+"FFT applied to every wavelength of a cube). The result equals ``function(array)``."
+msgstr ""
+
+#: lumos.backend.memory.map_chunked:6 of
+msgid "Computation to apply; it receives and returns arrays of the same backend."
+msgstr ""
+
+#: lumos.backend.memory.map_chunked:7 of
+msgid "Input array."
+msgstr ""
+
+#: lumos.backend.memory.map_chunked:8 of
+msgid "Axis along which the input is cut."
+msgstr ""
+
+#: lumos.backend.memory.map_chunked:9 of
+msgid "Maximum size of the input of one chunk; defaults to a quarter of the memory available to the backend."
+msgstr ""
+
+#: ../../api/index.md:37
+msgid "Core"
+msgstr "Cœur"
+
+#: lumos.core.param:1 of
+msgid "Declarative fields of LUMOS objects: physical parameters, settings and state (REQ-EL-1 to REQ-EL-3)."
+msgstr ""
+
+#: lumos.core.param:3 of
+msgid "A class derived from :class:`ParamHost` declares its fields as class attributes::"
+msgstr ""
+
+#: lumos.core.param:10 of
+msgid "Three kinds of fields exist:"
+msgstr ""
+
+#: lumos.core.param:12 of
+msgid ""
+":class:`Param`: a physical quantity (always an :class:`astropy.units.Quantity`) describing the "
+"configuration of an object, such as a focal length;"
+msgstr ""
+
+#: lumos.core.param:14 of
+msgid ":class:`State`: a physical quantity changed by the actions of an equipment, such as a stage position;"
+msgstr ""
+
+#: lumos.core.param:15 of
+msgid ":class:`Setting`: a non-physical value (integer, string, boolean, choice), such as a method name."
+msgstr ""
+
+#: lumos.core.param:17 of
+msgid "For every physical field the host keeps two values:"
+msgstr ""
+
+#: lumos.core.param:19 of
+msgid ""
+"the **user value**, exactly as given (same number, same unit), returned when the attribute is read, so that"
+" ``550 nm`` is never displayed as ``550.0000000001 nm``;"
+msgstr ""
+
+#: lumos.core.param:21 of
+msgid ""
+"the **SI value**, a float, complex or read-only array in unscaled SI units, returned by "
+":meth:`ParamHost.si` for the numerical kernels."
+msgstr ""
+
+#: lumos.core.param:24 of
+msgid ""
+"Arrays are copied on assignment and stored read-only, so they cannot be modified behind the host's back: "
+"every change goes through an assignment, which calls :meth:`ParamHost._on_field_changed` (used to "
+"invalidate cached results)."
+msgstr ""
+
+#: lumos.core.param.Param:1 of
+msgid "A physical parameter of a LUMOS object."
+msgstr ""
+
+#: lumos.core.param.Param:3 of
+msgid "Unit (or any unit of the same dimension) of the parameter; ``None`` for a dimensionless parameter."
+msgstr ""
+
+#: lumos.core.param.Param:4 of
+msgid "Default value. It is validated when the parameter is declared."
+msgstr ""
+
+#: lumos.core.param.Param:5 of
+msgid "``(low, high)`` limits, each a quantity or ``None``. They apply to every element of an array."
+msgstr ""
+
+#: lumos.core.param.Param:6 of
+msgid "Whether ``low`` and ``high`` are allowed values."
+msgstr ""
+
+#: lumos.core.param.Param:7 of
+msgid "Required shape: ``()`` for a scalar (default), a tuple for a fixed shape, ``None`` for any shape."
+msgstr ""
+
+#: lumos.core.param.Param:8 of
+msgid "``\"real\"`` (default) or ``\"complex\"``."
+msgstr ""
+
+#: lumos.core.param.Param:9 of
+msgid "Description of the parameter (shown in the documentation, the web interface and the MCP server)."
+msgstr ""
+
+#: lumos.core.param.Param:10 of
+msgid "Whether the parameter is free (fitted by calibration or inference) by default."
+msgstr ""
+
+#: lumos.core.param.Param:11 of
+msgid "Default prior distribution of the parameter when it is free."
+msgstr ""
+
+#: lumos.core.param.Param:12 of
+msgid "Whether gradients with respect to this parameter are meaningful."
+msgstr ""
+
+#: lumos.core.param.Param:13 of
+msgid "Astropy equivalencies accepted for this parameter, e.g. ``u.spectral()`` for a wavelength."
+msgstr ""
+
+#: lumos.core.param.Param.check_prior:1 of
+msgid "Check that ``prior`` describes values of this parameter's dimension."
+msgstr ""
+
+#: lumos.core.param.Param.validate:1 of
+msgid "Check ``value`` and return ``(user_value, si_value)``."
+msgstr ""
+
+#: lumos.core.param.ParamHost:1 of
+msgid "Base class of objects declaring :class:`Param`, :class:`State` and :class:`Setting` fields."
+msgstr ""
+
+#: lumos.core.param.ParamHost:3 of
+msgid "Keyword arguments of the constructor set the fields; fields without a default are required."
+msgstr ""
+
+#: lumos.core.param.ParamHost.declared:1 of
+msgid "Return the declared fields, in definition order (inherited fields first)."
+msgstr ""
+
+#: lumos.core.param.ParamHost.si:1 of
+msgid "Return the value of field ``name`` in unscaled SI units (settings are returned as is)."
+msgstr ""
+
+#: lumos.core.param.ParamHost.is_free:1 of
+msgid "Whether parameter ``name`` is free (fitted by calibration or inference)."
+msgstr ""
+
+#: lumos.core.param.ParamHost.prior:1 of
+msgid "Return the prior of parameter ``name`` (``None`` if fixed or without prior)."
+msgstr ""
+
+#: lumos.core.param.ParamHost.set_free:1 of
+msgid "Mark parameter ``name`` as free (with an optional prior) or fixed, for this object only."
+msgstr ""
+
+#: lumos.core.param.Setting:1 of
+msgid "A non-physical setting: an integer, a float without unit, a string or a boolean."
+msgstr ""
+
+#: lumos.core.param.Setting:3 of
+msgid "Expected Python type. Booleans are not accepted for ``int`` or ``float`` settings."
+msgstr ""
+
+#: lumos.core.param.Setting:4 of
+msgid "Default value, validated when the setting is declared."
+msgstr ""
+
+#: lumos.core.param.Setting:5 of
+msgid "Optional collection of allowed values."
+msgstr ""
+
+#: lumos.core.param.Setting:6 of
+msgid "Description of the setting."
+msgstr ""
+
+#: lumos.core.param.Setting.validate:1 of
+msgid "Check ``value`` and return it twice (settings have no SI form)."
+msgstr ""
+
+#: lumos.core.param.State:1 of
+msgid "A physical quantity describing the current state of an equipment (changed by its actions)."
+msgstr ""
+
+#: lumos.core.priors:1 of
+msgid "Prior distributions attached to free parameters (REQ-EL-3)."
+msgstr ""
+
+#: lumos.core.priors:3 of
+msgid ""
+"Priors describe what is known about a free parameter before calibration or inference. They carry physical "
+"units, so they can be checked against the parameter they are attached to. Plain numbers are accepted for "
+"dimensionless parameters. Sampling and log-densities are added with the inference blocks (phase 17)."
+msgstr ""
+
+#: lumos.core.priors.LogUniform:1 of
+msgid "Log-uniform distribution between ``low`` and ``high`` (``0 < low < high``)."
+msgstr ""
+
+#: lumos.core.priors.LogUniform:3 of
+msgid "Suited to scale parameters known only to an order of magnitude (fluxes, contrasts...)."
+msgstr ""
+
+#: lumos.core.priors.Normal:1 of
+msgid "Normal (Gaussian) distribution of mean ``mean`` and standard deviation ``std > 0``."
+msgstr ""
+
+#: lumos.core.priors.Prior:1 of
+msgid "Base class of prior distributions."
+msgstr ""
+
+#: lumos.core.priors.Prior:3 of
+msgid "Subclasses are frozen dataclasses whose first field fixes the unit of the distribution."
+msgstr ""
+
+#: lumos.core.priors.Prior.unit:1 of
+msgid "Unit of the values described by the prior."
+msgstr ""
+
+#: lumos.core.priors.Uniform:1 of
+msgid "Uniform distribution between ``low`` and ``high`` (``low < high``)."
+msgstr ""
+
+#: lumos.core.priors.prior_from_json:1 of
+msgid "Decode a prior encoded by :func:`prior_to_json`."
+msgstr ""
+
+#: lumos.core.priors.prior_from_json:3 of
+msgid "If the encoding is malformed or the prior is invalid."
+msgstr ""
+
+#: lumos.core.priors.prior_to_json:1 of
+#, python-brace-format
+msgid "Encode a prior as ``{\"kind\": ..., <field>: <quantity JSON>, ...}``."
+msgstr ""
+
+#: lumos.core.signal:1 of
+msgid "Abstract signal types flowing between elements (``REQ-SIG-*``)."
+msgstr ""
+
+#: lumos.core.signal:3 of
+msgid ""
+"The hierarchy of signal classes defines which ports can be connected: an output producing a signal of type "
+"``T`` can feed an input expecting ``S`` when ``T`` is ``S`` or a subclass of ``S``. Concrete signals "
+"(``Wavefront``, ``Wavecube``, ``DataProduct``...) derive from these classes; they arrive in phase 3."
+msgstr ""
+
+#: lumos.core.signal.DataSignal:1 of
+msgid "Detected or processed data: images, cubes, time series, scalars..."
+msgstr ""
+
+#: lumos.core.signal.OpticalSignal:1 of
+msgid "Light: coherent fields, incoherent bundles, radiance fields, modal amplitudes..."
+msgstr ""
+
+#: lumos.core.signal.Signal:1 of
+msgid "Anything that flows along a connection. An input of type ``Signal`` accepts every signal."
+msgstr ""
+
+#: lumos.core.port:1 of
+msgid "Typed input and output ports of elements (REQ-SIG-11)."
+msgstr ""
+
+#: lumos.core.port:3 of
+msgid "Ports are declared as class attributes::"
+msgstr ""
+
+#: lumos.core.port:10 of
+msgid ""
+"Reading a port on an instance returns a :class:`PortRef`, which identifies \"this port of this object\" and"
+" is what connections are made of (``ctx.connect(source.out, splitter.in_)``)."
+msgstr ""
+
+#: lumos.core.port.Input:1 of
+msgid "An input port."
+msgstr ""
+
+#: lumos.core.port.Input:3 of
+msgid "Accepted signal type (subtypes are accepted too)."
+msgstr ""
+
+#: lumos.core.port.Input:4 of
+msgid "Port name; defaults to the attribute name without its trailing underscore."
+msgstr ""
+
+#: lumos.core.port.Input:5 of
+msgid "Whether several connections may feed this input (fan-in). By default an input takes one connection."
+msgstr ""
+
+#: lumos.core.port.Input:7 of
+msgid "Description of the port."
+msgstr ""
+
+#: lumos.core.port.Output:1 of
+msgid "An output port. An output can feed any number of inputs (fan-out)."
+msgstr ""
+
+#: lumos.core.port.Port:1 of
+msgid "Declaration of a port: its name, direction and signal type."
+msgstr ""
+
+#: lumos.core.port.PortCompatibilityError:1 of
+msgid "Raised when two ports cannot be connected."
+msgstr ""
+
+#: lumos.core.port.PortRef:1 of
+msgid "A port bound to the object owning it."
+msgstr ""
+
+#: lumos.core.port.PortRef.name:1 of
+msgid "Name of the port."
+msgstr ""
+
+#: lumos.core.port.PortRef.direction:1 of
+msgid "``\"in\"`` or ``\"out\"``."
+msgstr ""
+
+#: lumos.core.port.PortRef.signal_type:1 of
+msgid "Signal type of the port."
+msgstr ""
+
+#: lumos.core.port.check_compatible:1 of
+msgid "Raise :class:`PortCompatibilityError` if ``source`` cannot feed ``target``."
+msgstr ""
+
+#: lumos.core.port.compatible:1 of
+msgid "Whether ``source`` (an output) can feed ``target`` (an input)."
+msgstr ""
+
+#: lumos.core.port.ports_of:1 of
+msgid "Return the ports declared by ``cls`` and its bases, by port name, base classes first."
+msgstr ""
+
+#: lumos.core.element:1 of
+msgid "Base class of every LUMOS element: equipment, optical component, detector or processing block."
+msgstr ""
+
+#: lumos.core.element:3 of
+msgid ""
+"An element declares its fields (:class:`~lumos.core.param.Param`, :class:`~lumos.core.param.State`, "
+":class:`~lumos.core.param.Setting`) and its ports (:class:`~lumos.core.port.Input`, "
+":class:`~lumos.core.port.Output`) as class attributes, and implements its behaviour as a **pure** transfer "
+"function::"
+msgstr ""
+
+#: lumos.core.element:19 of
+msgid ""
+"``transfer`` must be a ``staticmethod``: it cannot read or modify the element itself. It receives an "
+"immutable snapshot of the SI values of all fields (:class:`Values`) and the input signals by port name, and"
+" returns the output signals by port name. This separation between the element's state and its computation "
+"is what allows JIT compilation, vectorisation and automatic differentiation (ADR-0002)."
+msgstr ""
+
+#: lumos.core.element.Element:1 of
+msgid "Base class of all LUMOS elements."
+msgstr ""
+
+#: lumos.core.element.Element:3 of
+msgid "Optional human-readable name of the element."
+msgstr ""
+
+#: lumos.core.element.Element:4 of
+msgid "Values of the declared fields; fields without a default value are required."
+msgstr ""
+
+#: lumos.core.element.Element.name:1 of
+msgid "Human-readable name of the element (or ``None``)."
+msgstr ""
+
+#: lumos.core.element.Element.ports:1 of
+msgid "Return the declared ports by name, inputs and outputs in definition order."
+msgstr ""
+
+#: lumos.core.element.Element.values:1 of
+msgid "Return an immutable snapshot of the SI values of all fields."
+msgstr ""
+
+#: lumos.core.element.Element.transfer:1 of
+msgid "Compute the output signals from the field values and the input signals."
+msgstr ""
+
+#: lumos.core.element.Element.transfer:3 of
+msgid "SI values of the element's fields."
+msgstr ""
+
+#: lumos.core.element.Element.transfer:4 of
+msgid "Input signals by port name (a sequence of signals for ports accepting several connections)."
+msgstr ""
+
+#: lumos.core.element.Element.transfer:6 of
+msgid "Output signals by port name."
+msgstr ""
+
+#: lumos.core.element.Element.apply:1 of
+msgid "Run the transfer function on ``inputs``, checking port names and signal types."
+msgstr ""
+
+#: lumos.core.element.Element.to_lumos:1 of
+msgid "Return the ``.lumos`` document describing this element (see :mod:`lumos.io`)."
+msgstr ""
+
+#: lumos.core.element.Element.from_lumos:1 of
+msgid "Create an element from a ``.lumos`` document, checking that it is an instance of ``cls``."
+msgstr ""
+
+#: lumos.core.element.Element.describe:1 of
+msgid "Return a readable description of the element: fields, values and ports."
+msgstr ""
+
+#: lumos.core.element.Element.schema:1 of
+msgid "Return the JSON Schema (draft 2020-12) of the serialised form of this element."
+msgstr ""
+
+#: lumos.core.element.Element.schema:3 of
+#, python-brace-format
+msgid ""
+"The serialised body is ``{\"name\": ..., \"params\": {...}, \"settings\": {...}, \"state\": {...}}``, where"
+" physical values are encoded with :func:`lumos.units.quantity_to_json`. Information that JSON Schema cannot"
+" express (units, bounds, dimension...) is given in ``x-lumos-*`` keywords; unit compatibility and bounds "
+"are checked when the element is loaded."
+msgstr ""
+
+#: lumos.core.element.Values:1 of
+msgid "Immutable snapshot of the SI values of an element's fields."
+msgstr ""
+
+#: lumos.core.element.Values:3 of
+msgid ""
+"Values are reachable by key (``values[\"focal_length\"]``) or attribute (``values.focal_length``). Physical"
+" fields are floats, complex numbers or read-only arrays in unscaled SI units; settings are returned as they"
+" are."
+msgstr ""
+
+#: lumos.core.registry:1 of
+msgid "Registry of element types (specs §10, NF-7)."
+msgstr ""
+
+#: lumos.core.registry:3 of
+msgid ""
+"Every element class that can be saved to or loaded from a ``.lumos`` file is registered under a **stable "
+"identifier** and a **type version**::"
+msgstr ""
+
+#: lumos.core.registry:9 of
+msgid ""
+"Loading a file only instantiates registered classes: the identifier is looked up in the registry, never "
+"imported. Identifiers starting with ``lumos.`` are reserved for classes defined in the ``lumos`` package; "
+"third-party packages use their own prefix and declare a module to import in the ``lumos.elements`` entry-"
+"point group, loaded by :meth:`Registry.load_plugins`."
+msgstr ""
+
+#: lumos.core.registry:14 of
+msgid ""
+"The type version is incremented when the serialised form of an element changes; migrations from older "
+"versions are registered with the ``.lumos`` file format (step P1.6)."
+msgstr ""
+
+#: lumos.core.registry.Registry:1 of
+msgid "Mapping between stable type identifiers and element classes."
+msgstr ""
+
+#: lumos.core.registry.Registry.register:1 of
+msgid "Return a class decorator registering an element class under ``type_id``."
+msgstr ""
+
+#: lumos.core.registry.Registry.register:3 of
+msgid ""
+"Dotted identifier: lowercase package segments followed by a class name, for example "
+"``\"mylab.optics.ThinLens\"``. The ``lumos.`` prefix is reserved for classes of LUMOS."
+msgstr ""
+
+#: lumos.core.registry.Registry.register:5 of
+msgid "Version of the serialised form (an integer >= 1)."
+msgstr ""
+
+#: lumos.core.registry.Registry.get:1 of
+msgid "Return the class registered under ``type_id``."
+msgstr ""
+
+#: lumos.core.registry.Registry.version:1 of
+msgid "Return the current type version of ``type_id``."
+msgstr ""
+
+#: lumos.core.registry.Registry.type_id:1 of
+msgid "Return the identifier under which ``cls`` is registered."
+msgstr ""
+
+#: lumos.core.registry.Registry.add_migration:1 of
+msgid "Return a decorator registering the migration of ``type_id`` from ``from_version`` to the next one."
+msgstr ""
+
+#: lumos.core.registry.Registry.add_migration:3 of
+msgid ""
+"A migration receives the serialised body of an element (``name``, ``params``, ``settings``, ``state``) "
+"written with type version ``from_version`` and returns the body for version ``from_version + 1``. Loading "
+"an old document applies the migrations one version at a time."
+msgstr ""
+
+#: lumos.core.registry.Registry.migrate:1 of
+msgid "Upgrade ``body`` from ``from_version`` to the current version of ``type_id``."
+msgstr ""
+
+#: lumos.core.registry.Registry.load_plugins:1 of
+msgid "Load the plugins declared in the entry-point ``group`` and return the names of those loaded."
+msgstr ""
+
+#: lumos.core.registry.Registry.load_plugins:3 of
+msgid ""
+"A plugin entry point designates a module (or object) whose import registers element types. A plugin that "
+"fails to load is logged as a warning and skipped, so that one broken plugin does not prevent LUMOS from "
+"working."
+msgstr ""
+
+#: lumos.core.registry.UnknownTypeError:1 of
+msgid "Raised when an element type identifier or class is not registered."
+msgstr ""
+
+#: lumos.core.registry.Registry.register:1 of
+msgid "Register an element class in the global registry (see :meth:`Registry.register`)."
+msgstr ""
+
+#: lumos.core.registry.registry:1 of
+msgid "The global registry used by LUMOS."
+msgstr ""
+
+#: ../../api/index.md:59
+msgid "Files"
+msgstr "Fichiers"
+
+#: lumos.io:1 of
+msgid "Reading and writing LUMOS documents (``.lumos`` files)."
+msgstr ""
+
+#: lumos.errors.FormatVersionError:1 of
+msgid "A ``.lumos`` document uses a format or type version this version of LUMOS cannot read."
+msgstr ""
+
+#: lumos.errors.LumosFormatError:1 of
+msgid "A ``.lumos`` document is malformed or describes invalid values."
+msgstr ""
+
+#: lumos.io.lumos_format.from_document:1 of
+msgid "Create the element described by a ``.lumos`` document."
+msgstr ""
+
+#: lumos.io.lumos_format.from_document:3 of
+msgid "If the document is malformed or describes invalid values."
+msgstr ""
+
+#: lumos.io.lumos_format.from_document:4 of
+msgid "If the format or type version cannot be read by this version of LUMOS."
+msgstr ""
+
+#: lumos.io.lumos_format.from_document:5 of
+msgid "If the element type is not registered."
+msgstr ""
+
+#: lumos.io.lumos_format.load:1 of
+msgid "Read an element from a ``.lumos`` file."
+msgstr ""
+
+#: lumos.io.lumos_format.save:1 of
+msgid "Write ``element`` to a ``.lumos`` file (UTF-8, indented strict JSON)."
+msgstr ""
+
+#: lumos.io.lumos_format.to_document:1 of
+msgid "Return the ``.lumos`` document (a JSON-compatible dictionary) describing ``element``."
+msgstr ""
+
+#: lumos.errors:1 of
+msgid "Exceptions shared by several LUMOS modules."
+msgstr ""

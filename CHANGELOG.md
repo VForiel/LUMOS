@@ -20,3 +20,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   Jupyter representation and JSON Schema.
 - `lumos.core.registry`: element type registry with stable identifiers, versions, migrations and plugins.
 - `lumos.io`: `.lumos` documents for single elements (save/load, version checks, migrations).
+- `lumos.backend`: NumPy, JAX, CuPy and PyTorch backends through the Array API, loaded lazily, with a
+  thread-local current backend and conversions keeping dtypes.
+- `lumos.backend.fft`: 2-D FFTs on any backend, centred transforms (origin at `N // 2`), multi-threaded on CPU.
+- `lumos.hardware_report()` and automatic backend selection (`lumos.config.backend = "auto"`).
+- `lumos.config`: validated settings (`backend`, `precision`, `fft_workers`).
+- `lumos.backend.memory`: dtypes per precision, memory estimates and chunked computation.
+- `lumos.jit`: JAX compilation on JAX inputs; `Values` snapshots are JAX pytrees.

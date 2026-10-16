@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 12:52+0200\n"
+"POT-Creation-Date: 2026-10-16 14:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -86,5 +86,35 @@ msgstr ""
 "(ADR)."
 
 #: ../../contributing.md:33
+msgid "Performance-critical code"
+msgstr "Code critique pour les performances"
+
+#: ../../contributing.md:35
+msgid ""
+"Write numerical code once against the Array API (`lumos.backend.current().xp`), so that it runs on every "
+"backend; decorate pure kernels with `lumos.jit` so that JAX compiles them."
+msgstr ""
+"Écrire le code numérique une seule fois avec l'Array API (`lumos.backend.current().xp`), pour qu'il "
+"fonctionne sur tous les backends ; décorer les noyaux purs avec `lumos.jit` pour que JAX les compile."
+
+#: ../../contributing.md:37
+msgid ""
+"Use `numba` only for CPU loops that cannot be vectorised, in private `_kernels` modules working on NumPy "
+"arrays."
+msgstr ""
+"N'utiliser `numba` que pour les boucles CPU impossibles à vectoriser, dans des modules privés `_kernels` "
+"travaillant sur des tableaux NumPy."
+
+#: ../../contributing.md:39
+msgid "Write a native extension only when profiling shows a need, and record the decision in an ADR."
+msgstr "N'écrire une extension native que si le profilage en montre le besoin, et consigner la décision dans un ADR."
+
+#: ../../contributing.md:40
+msgid "Benchmarks live in `tests/benchmarks/` and run with `pytest -m benchmark tests/benchmarks`."
+msgstr ""
+"Les benchmarks se trouvent dans `tests/benchmarks/` et se lancent avec `pytest -m benchmark "
+"tests/benchmarks`."
+
+#: ../../contributing.md:42
 msgid "Translating the documentation"
 msgstr "Traduire la documentation"

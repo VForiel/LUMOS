@@ -1,0 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 14:12+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0003-lumos-format.md:1
+msgid "ADR-0003: The `.lumos` document format"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:4
+msgid "**Date**: 2026-10-16"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:5
+msgid "**Plan step**: P1.6"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:9
+msgid ""
+"Contexts, element groups and single elements must be exchanged between "
+"the Python API, the web interface, the MCP server and users (REQ-EL-12, "
+"REQ-CTX-8, §10 of the specs). Documents must be readable by humans, safe "
+"to open (NF-7), and survive the evolution of LUMOS (versions, "
+"migrations)."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:13
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:15
+msgid ""
+"A `.lumos` file is a **UTF-8 strict-JSON** document (no `NaN`/`Infinity` "
+"literals) with an envelope: `lumos_format` (`\"major.minor\"`, currently "
+"`\"1.0\"`), `kind` (`\"element\"` now; `\"group\"` and `\"context\"` with"
+" phase 5), `lumos_version` and `created_at` (UTC, ISO 8601)."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:18
+msgid ""
+"A document of kind `element` holds one `element` entry: `type` (registry "
+"identifier), `type_version`, `name`, `params`, `settings`, `state` and "
+"`free` (free parameters and their priors)."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:20
+msgid ""
+"**Quantities keep the user's unit** and use the encoding of "
+"`lumos.units.quantity_to_json`; arrays are inline base64 with an allow-"
+"list of dtypes. (Large arrays will move to a sidecar file in step P5.8.)"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:22
+msgid ""
+"Element classes are found in the **registry** from `type`; reading a "
+"document never imports anything. The body is validated with the JSON "
+"Schema of the class, then values are checked by the class itself (units, "
+"bounds, shapes)."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:25
+msgid "**Versions**:"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:26
+msgid ""
+"a newer `lumos_format` (major or minor) is refused with "
+"`FormatVersionError`;"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:27
+msgid ""
+"a newer `type_version` is refused; an older one is upgraded by the "
+"migrations registered with `Registry.add_migration(type_id, "
+"from_version)`, applied one version at a time."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:29
+msgid ""
+"Every reading error is a `LumosFormatError` (a `ValueError`), except "
+"unknown types (`UnknownTypeError`)."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:31
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:33
+msgid ""
+"**YAML or TOML**: friendlier to edit by hand, but JSON is native to the "
+"web interface and the MCP server, and its schema tooling is standard."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:35
+msgid ""
+"**Pickle**: refused for security reasons (arbitrary code execution) and "
+"because it is not portable."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:36
+msgid ""
+"**Storing SI values only**: simpler, but users would lose their units "
+"when reopening a file."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:38
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:40
+msgid ""
+"Each change of the serialised form of an element class requires "
+"incrementing its `type_version` and registering a migration."
+msgstr ""
+
+#: ../../adr/0003-lumos-format.md:42
+msgid ""
+"The document schema (envelope + element bodies) must be published in the "
+"documentation (step P5.8)."
+msgstr ""

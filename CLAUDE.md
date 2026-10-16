@@ -34,7 +34,7 @@ Only allowed when the objective changed (recorded in the specs or an ADR) or the
 
 - **Language**: code, identifiers, docstrings, comments, notebooks, log and error messages in **English**. User docs and web UI are written in English and translated to French (gettext).
 - **Units**: every user-facing physical quantity is an `astropy.units.Quantity`; internal storage is SI floats/arrays. Never accept raw floats for physical quantities in public APIs.
-- **Arrays**: backend arrays (NumPy, JAX, …) through the Array API; no units inside performance-critical arrays.
+- **Arrays**: backend arrays (NumPy, JAX, …) through the Array API (`lumos.backend.current().xp`); no units inside performance-critical arrays; compile pure kernels with `lumos.jit`.
 - **Pure transfers**: element transfer functions are pure (state passed explicitly) so they can be JIT-compiled and differentiated.
 - **No** `print` (use `logging`), **no** `pickle` for user files, **no** disabling TLS verification, **no** arbitrary imports when loading `.lumos` files.
 - **Layout**: `src/lumos/` source only, `tests/` tests only, `examples/` notebooks and presets, `tools/` dev scripts, `docs/` documentation. Do not create files at the repository root; use `tmp/` (git-ignored) as a scratchpad.
@@ -45,6 +45,7 @@ Only allowed when the objective changed (recorded in the specs or an ADR) or the
 ```
 .venv\Scripts\python.exe -m pip install -e ".[dev,docs]"
 .venv\Scripts\python.exe -m pytest
+.venv\Scripts\python.exe -m pytest -m benchmark tests/benchmarks
 .venv\Scripts\python.exe -m ruff check . ; .venv\Scripts\python.exe -m ruff format .
 .venv\Scripts\python.exe -m pyright
 .venv\Scripts\python.exe -m sphinx -W -b html docs docs/_build/html/en

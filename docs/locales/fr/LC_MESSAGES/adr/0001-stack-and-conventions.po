@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 12:52+0200\n"
+"POT-Creation-Date: 2026-10-16 14:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -107,8 +107,8 @@ msgstr ""
 
 #: ../../adr/0001-stack-and-conventions.md
 msgid ""
-"`pyright` (standard mode for the whole package, strict mode for the core "
-"packages as they are created)"
+"`pyright` in standard mode; annotations of public code enforced by ruff "
+"(`ANN` rules) in `src/`"
 msgstr ""
 
 #: ../../adr/0001-stack-and-conventions.md
@@ -190,37 +190,57 @@ msgid ""
 msgstr ""
 
 #: ../../adr/0001-stack-and-conventions.md:36
-msgid "Alternatives considered"
+msgid "Amendment (2026-10-16, step P1.1): no pyright strict mode"
 msgstr ""
 
 #: ../../adr/0001-stack-and-conventions.md:38
+msgid ""
+"Strict mode was tried on `lumos.units`: it reported 17 errors, almost all"
+" caused by the incomplete typing of astropy (`Quantity.unit` may be "
+"`None`, unknown members) and by NumPy dtype unions, not by actual "
+"defects. Silencing them would have required casts everywhere in physics "
+"code. Pyright stays in standard mode, and ruff enforces type annotations "
+"on every public function of `src/`."
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:43
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:45
 msgid ""
 "**setuptools + setuptools-scm**: equivalent, but more configuration for "
 "the same result."
 msgstr ""
 
-#: ../../adr/0001-stack-and-conventions.md:39
+#: ../../adr/0001-stack-and-conventions.md:46
 msgid ""
 "**mypy**: slower, and its NumPy/JAX stub ecosystem is less convenient "
 "than pyright's."
 msgstr ""
 
-#: ../../adr/0001-stack-and-conventions.md:40
+#: ../../adr/0001-stack-and-conventions.md:47
 msgid ""
 "**Python ≥ 3.11** for a wider audience: impossible without giving up the "
 "latest NumPy, SciPy and JAX releases."
 msgstr ""
 
-#: ../../adr/0001-stack-and-conventions.md:42
+#: ../../adr/0001-stack-and-conventions.md:49
 msgid "Consequences"
 msgstr ""
 
-#: ../../adr/0001-stack-and-conventions.md:44
+#: ../../adr/0001-stack-and-conventions.md:51
 msgid ""
 "Version numbers come from git tags (`v0.1.0`). Untagged commits get "
 "`0.1.devN` versions."
 msgstr ""
 
-#: ../../adr/0001-stack-and-conventions.md:45
+#: ../../adr/0001-stack-and-conventions.md:52
 msgid "`vfscitools` must be released on PyPI before P7.3."
 msgstr ""
+
+#~ msgid ""
+#~ "`pyright` (standard mode for the whole"
+#~ " package, strict mode for the core"
+#~ " packages as they are created)"
+#~ msgstr ""

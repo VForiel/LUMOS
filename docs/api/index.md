@@ -2,13 +2,37 @@
 
 ```{eval-rst}
 .. automodule:: lumos
-   :members:
+
+.. autofunction:: lumos.hardware_report
+
+.. autofunction:: lumos.jit
 ```
 
 ## Units
 
 ```{eval-rst}
 .. automodule:: lumos.units
+   :members:
+```
+
+## Configuration and backends
+
+```{eval-rst}
+``lumos.config`` is the instance of :class:`lumos._config.Config` holding the settings of the process.
+
+.. autoclass:: lumos._config.Config
+   :members:
+
+.. automodule:: lumos.backend
+   :members: Backend, BackendUnavailableError, available, known, get, current, use, get_default, set_default, backend_of, to_numpy, convert
+
+.. automodule:: lumos.backend.fft
+   :members:
+
+.. automodule:: lumos.backend.hardware
+   :members:
+
+.. automodule:: lumos.backend.memory
    :members:
 ```
 

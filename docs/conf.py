@@ -44,6 +44,7 @@ autodoc_typehints = "description"
 autodoc_member_order = "bysource"
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
+napoleon_use_ivar = True  # "Attributes" sections as fields, so properties are not documented twice
 
 # -- Internationalisation ----------------------------------------------------
 # English is the source language; translations live in docs/locales/<lang>/LC_MESSAGES/*.po.

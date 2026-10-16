@@ -95,11 +95,11 @@ flowchart LR
 
 ## Phase 2 — Backends de calcul et détection du matériel
 
-- [ ] **P2.1 `lumos.backend`** — namespace Array API, `with lumos.backend.use("jax"):`, conversions.
-- [ ] **P2.2 FFT** — façade par backend, *workers* CPU, cache de plans.
-- [ ] **P2.3 Détection du matériel** — `lumos.hardware_report()`, sélection automatique. ADR-0004 « Politique de sélection du backend ».
-- [ ] **P2.4 Précision et mémoire** — `config.precision`, estimateur mémoire, découpage.
-- [ ] **P2.5 Compilation** — `lumos.jit` (JAX) et conventions numba ; premier *benchmark*.
+- [x] **P2.1 `lumos.backend`** — namespace Array API, `with lumos.backend.use("jax"):`, conversions.
+- [x] **P2.2 FFT** — façade par backend, *workers* CPU, cache de plans.
+- [x] **P2.3 Détection du matériel** — `lumos.hardware_report()`, sélection automatique. ADR-0004 « Politique de sélection du backend ».
+- [x] **P2.4 Précision et mémoire** — `config.precision`, estimateur mémoire, découpage.
+- [x] **P2.5 Compilation** — `lumos.jit` (JAX) et conventions numba ; premier *benchmark*.
 
 **Tests écrits d'abord :** équivalence numérique NumPy/JAX sur les primitives (comparée à `numpy.fft` comme référence indépendante), sérialisation du rapport matériel, respect des forçages utilisateur, découpage qui donne le même résultat qu'un calcul monobloc.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 2** (P2.1).
+Lancer la **phase 3** (P3.1).
