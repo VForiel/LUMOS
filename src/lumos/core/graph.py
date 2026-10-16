@@ -326,11 +326,22 @@ class Graph:
 
 
 class Result(dict[PortRef, Any]):
-    """Signals computed by :meth:`Graph.run`, by port reference or ``"id.port"`` string."""
+    """Signals computed by :meth:`Graph.run`, by port reference or ``"id.port"`` string.
+
+    Attributes
+    ----------
+    archive
+        The :class:`~lumos.results.RunArchive` written by ``ctx.run(..., archive=...)``, or ``None``.
+    """
 
     def __init__(self, graph: Graph) -> None:
         super().__init__()
         self._graph = graph
+        self.archive: Any = None
+
+    def name_of(self, key: PortRef) -> str:
+        """Return ``"id.port"`` for an output port of the graph."""
+        return f"{self._graph.id_of(key.owner)}.{key.name}"
 
     def __getitem__(self, key: Any) -> Any:
         """Return the signal of an output port given as a reference or as ``"id.port"``."""

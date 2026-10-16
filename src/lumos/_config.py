@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 __all__ = ["Config", "config"]
@@ -22,14 +23,29 @@ class Config:
         ``"single"`` (float32 / complex64).
     fft_workers
         Number of CPU threads used by FFTs on the NumPy backend; ``-1`` uses every core.
+    archive_root
+        Directory in which run archives are created (``None``: an ``archives`` directory next to the
+        executed script or notebook, see :func:`lumos.results.default_archive_root`).
     """
 
-    __slots__ = ("_backend", "_fft_workers", "_precision")
+    __slots__ = ("_archive_root", "_backend", "_fft_workers", "_precision")
 
     def __init__(self) -> None:
         self._backend = "auto"
         self._precision = "double"
         self._fft_workers = -1
+        self._archive_root: str | None = None
+
+    @property
+    def archive_root(self) -> str | None:
+        """Directory of the run archives (``None``: next to the executed script or notebook)."""
+        return self._archive_root
+
+    @archive_root.setter
+    def archive_root(self, value: Any) -> None:
+        if value is not None and not isinstance(value, str | os.PathLike):
+            raise TypeError(f"archive_root must be a path or None, got {type(value).__name__}")
+        self._archive_root = None if value is None else os.fspath(value)
 
     @property
     def precision(self) -> str:
@@ -78,7 +94,7 @@ class Config:
         """List the settings."""
         return (
             f"lumos.config(backend={self.backend!r}, precision={self.precision!r}, "
-            f"fft_workers={self.fft_workers})"
+            f"fft_workers={self.fft_workers}, archive_root={self.archive_root!r})"
         )
 
 

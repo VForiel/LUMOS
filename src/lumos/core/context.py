@@ -279,11 +279,28 @@ class Context:
 
     # --- Execution ----------------------------------------------------------------------------
 
-    def run(self, outputs: Iterable[Any]) -> Result:
+    def run(
+        self,
+        outputs: Iterable[Any],
+        *,
+        archive: bool | str = False,
+        archive_root: Any = None,
+    ) -> Result:
         """Compute the requested outputs (ports, elements or ``"id.port"`` strings), see :meth:`Graph.run`.
 
         Records of the LUMOS loggers emitted during the run (numerical choices, physical warnings) are copied
         to the journal.
+
+        Parameters
+        ----------
+        outputs
+            Output ports, elements or ``"id.port"`` strings.
+        archive
+            ``True`` or a name: write an archive of the run (:func:`lumos.results.new_archive`) holding the
+            context, the metadata, the journal and the computed outputs (in ``data/<id.port>``); it is
+            returned as ``result.archive``.
+        archive_root
+            Directory of the archive (default: next to the executed script or notebook).
         """
         targets = [self.port(t) if isinstance(t, str) and "." in t else t for t in outputs]
         root = logging.getLogger("lumos")
@@ -292,14 +309,34 @@ class Context:
         root.addHandler(handler)
         if root.getEffectiveLevel() > logging.INFO:
             root.setLevel(logging.INFO)
+        started = time.perf_counter()
         try:
             if self._backend == "auto":
-                return self._graph.run(targets)
-            with use(self._backend):
-                return self._graph.run(targets)
+                result = self._graph.run(targets)
+            else:
+                with use(self._backend):
+                    result = self._graph.run(targets)
         finally:
             root.removeHandler(handler)
             root.setLevel(previous_level)
+        if archive:
+            self._archive_run(result, archive, archive_root, time.perf_counter() - started)
+        return result
+
+    def _archive_run(self, result: Result, archive: bool | str, root: Any, seconds: float) -> None:
+        from lumos.results.archive import new_archive
+
+        names = [result.name_of(key) for key in result]
+        name = archive if isinstance(archive, str) else self.name
+        run = new_archive(
+            self, name, root=root, metadata={"outputs": names, "durations": {"run": max(seconds, 1e-9)}}
+        )
+        for key, name in zip(list(result), names, strict=True):
+            try:
+                run.save_data(name, dict.__getitem__(result, key))
+            except TypeError as error:
+                logger.warning("output %s is not saved in the archive: %s", name, error)
+        result.archive = run
 
     # --- Journal ----------------------------------------------------------------------------------
 
