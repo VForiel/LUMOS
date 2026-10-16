@@ -20,7 +20,7 @@ from lumos.fields.grid import Grid
 from lumos.fields.incoherent import IncoherentBundle
 from lumos.fields.wavecube import Wavecube
 from lumos.fields.wavefront import Wavefront
-from lumos.propagation._common import Method, namespace
+from lumos.propagation._common import Method, complex_dtype, namespace, quadratic_phase
 from lumos.units import require_unit, to_si
 
 __all__ = ["focus", "methods", "plan", "propagate", "register_method"]
@@ -229,12 +229,11 @@ def focus(
     chosen = "fraunhofer" if method == "auto" else method
     if chosen == "fraunhofer":
         return propagate(signal, focal_length, output_grid=output_grid, method="fraunhofer")
-    xx, yy = grid_in.coords(backend=signal.backend)
     xp = get(signal.backend).xp
 
     def lens(field: Any, wavelength: float) -> Any:
         k = 2 * math.pi / wavelength
-        return field * xp.exp(-1j * k * (xx**2 + yy**2) / (2 * f))
+        return field * quadratic_phase(grid_in, -k / (2 * f), 0.0, xp, complex_dtype(field))
 
     lensed = _map_channels(signal, grid_in, lens)
     return propagate(lensed, focal_length, output_grid=output_grid, method=chosen)

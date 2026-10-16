@@ -29,6 +29,7 @@ __all__ = [
     "frequencies",
     "mft_matrix",
     "pad",
+    "quadratic_phase",
     "same_sampling",
 ]
 
@@ -90,6 +91,23 @@ def mft_matrix(frequencies: np.ndarray, coordinates: np.ndarray, sign: float, xp
 
     def build() -> np.ndarray:
         return np.exp(1j * sign * 2.0 * math.pi * np.outer(frequencies, coordinates))
+
+    return KERNEL_CACHE.get(key, build, xp, dtype)
+
+
+def quadratic_phase(grid: Grid, curvature: float, constant: float, xp: Any, dtype: Any) -> Any:
+    """Phase factor ``exp(i [constant + curvature (x² + y²)])`` on ``grid`` as a backend array (cached).
+
+    The phase is computed in double precision and rounded once to ``dtype``: phases such as ``k z`` reach
+    1e4 to 1e7 rad, which float32 would resolve only to 1e-3 to 1 rad.
+    """
+    x = axis_coordinates(grid.nx, grid.dx_si, grid.x0_si)
+    y = axis_coordinates(grid.ny, grid.dy_si, grid.y0_si)
+    key = ("quadratic_phase", curvature, constant, x.tobytes(), y.tobytes())
+
+    def build() -> np.ndarray:
+        r2 = x[None, :] ** 2 + y[:, None] ** 2
+        return np.exp(1j * (constant + curvature * r2))
 
     return KERNEL_CACHE.get(key, build, xp, dtype)
 

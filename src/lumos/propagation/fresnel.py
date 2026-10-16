@@ -37,9 +37,17 @@ from typing import Any
 import numpy as np
 
 from lumos.backend import fft
-from lumos.backend._core import backend_of
 from lumos.fields.grid import Grid
-from lumos.propagation._common import KERNEL_CACHE, Method, axis_coordinates, crop, frequencies, pad
+from lumos.propagation._common import (
+    KERNEL_CACHE,
+    Method,
+    axis_coordinates,
+    complex_dtype,
+    crop,
+    frequencies,
+    pad,
+    quadratic_phase,
+)
 from lumos.propagation.fraunhofer import fraunhofer
 
 __all__ = ["FRESNEL_IR", "FRESNEL_MFT", "FRESNEL_TF", "fresnel_ir", "fresnel_mft", "fresnel_tf"]
@@ -98,8 +106,7 @@ def fresnel_mft(
     """One-step Fresnel propagation with a matrix Fourier transform (any output grid)."""
     z = _finite(z)
     k = 2 * math.pi / wavelength
-    xx, yy = grid_in.coords(backend=backend_of(field))
-    chirp = xp.exp(1j * k * (xx**2 + yy**2) / (2 * z))
+    chirp = quadratic_phase(grid_in, k / (2 * z), 0.0, xp, complex_dtype(field))
     return fraunhofer(field * chirp, grid_in, grid_out, wavelength, z, xp)
 
 

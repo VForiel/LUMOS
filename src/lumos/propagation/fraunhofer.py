@@ -30,9 +30,8 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from lumos.backend._core import backend_of
 from lumos.fields.grid import Grid
-from lumos.propagation._common import Method, axis_coordinates, mft
+from lumos.propagation._common import Method, axis_coordinates, complex_dtype, mft, quadratic_phase
 
 __all__ = ["METHOD", "fraunhofer"]
 
@@ -49,8 +48,7 @@ def fraunhofer(field: Any, grid_in: Grid, grid_out: Grid, wavelength: float, z: 
         raise ValueError("a finite distance needs a spatial output grid")
     k = 2 * math.pi / wavelength
     spectrum = mft(field, xo / (wavelength * z), yo / (wavelength * z), grid_in, -1.0, xp)
-    xx, yy = grid_out.coords(backend=backend_of(field))
-    chirp = xp.exp(1j * (k * z + k * (xx**2 + yy**2) / (2 * z)))
+    chirp = quadratic_phase(grid_out, k / (2 * z), k * z, xp, complex_dtype(spectrum))
     return chirp * spectrum / (1j * wavelength * z)
 
 
