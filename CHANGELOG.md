@@ -72,6 +72,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `lumos.elements.detectors`: camera (QE curve, photon, dark and read noises, saturation, binning, timed
   exposures), photodiode with shot noise, power meter.
 
+### Changed
+
+- Cached propagation kernels stay on the device: GPU backends no longer copy them from the host at every
+  propagation.
+
 ### Fixed
 
 - The JAX import hook is no longer consumed by `importlib.util.find_spec("jax")`, so `Values` is registered as
@@ -81,3 +86,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Signals held by CuPy accept NumPy masks and factors (`lumos.backend.operand`).
 - JAX no longer reserves 75 % of the GPU memory when LUMOS loads it (ADR-0008).
 - Turbulent phase screens restore their low frequencies (structure function within a few % of von Kármán).
+- In single precision, the chirps of the Fraunhofer and one-step Fresnel propagations and the lens phase of
+  `focus` are computed in double precision and rounded once (phases such as `k z` were lost in float32).
+- The propagation benchmarks wait for CuPy results; the CuPy times first documented were too short.

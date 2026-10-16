@@ -10,9 +10,3 @@ Chaque entrée indique le contexte, ce que j'ai fait en attendant et ce dont j'a
 
 - [ ] **Publier `vfscitools` sur PyPI** (nécessaire pour P7.3/P7.4 : `.plt` via pltedit, `vfst.archive`).
   En attendant : intégration derrière un import optionnel, avec repli documenté (voir P7).
-
-## À examiner plus tard
-
-- **JAX sur GPU plus lent que CuPy** sur la même GTX 1060 (propagation `asm` 1024² : 36 ms contre 13 ms,
-  machine au repos ; voir `docs/learn/performance.md`) : profiler le chemin JAX (transferts hôte, cache des
-  noyaux, compilation) avant d'en faire le backend GPU préféré, comme le prévoit l'ADR-0004.

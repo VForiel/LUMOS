@@ -27,32 +27,45 @@ input grid.
 
 The GPU speed-up is measured with the same benchmark on a machine with a CUDA GPU (CuPy, or JAX with a GPU
 device): the Ryzen 7 2700X above with an NVIDIA GeForce GTX 1060 6 GB (Pascal, driver 582.28, CUDA 12
-libraries), idle, double precision. Mean time of one propagation in milliseconds, and speed-up over NumPy on
-the same system.
+libraries), idle. Mean time of one propagation in milliseconds, in double and single precision; every run
+waits for the asynchronous GPU computation to finish.
 
 Windows 11, CuPy 14.2:
 
-| Method | N = 256, NumPy | N = 256, CuPy | Speed-up | N = 1024, NumPy | N = 1024, CuPy | Speed-up |
-|--------|---------------:|--------------:|---------:|----------------:|---------------:|---------:|
-| `asm` | 9.0 | 1.9 | 4.7 | 345 | 13.2 | 26 |
-| `fresnel_tf` | 9.6 | 1.9 | 5.0 | 340 | 16.1 | 21 |
-| `fresnel_mft` (256² output) | 11.1 | 2.8 | 3.9 | 92 | 25.6 | 3.6 |
-| `fraunhofer` (256² output) | 5.7 | 2.0 | 2.8 | 30.4 | 17.3 | 1.8 |
+| Method | N = 256, NumPy | N = 256, CuPy | N = 256, CuPy single | N = 1024, NumPy | N = 1024, CuPy | N = 1024, CuPy single |
+|--------|---------------:|--------------:|---------------------:|----------------:|---------------:|----------------------:|
+| `asm` | 11.1 | 1.8 | 1.8 | 374 | 25.9 | 7.2 |
+| `fresnel_tf` | 9.9 | 1.7 | 1.9 | 376 | 19.8 | 7.3 |
+| `fresnel_mft` (256² output) | 6.7 | 2.9 | 0.7 | 41 | 23.3 | 1.1 |
+| `fraunhofer` (256² output) | 5.7 | 2.7 | 0.4 | 29.8 | 22.9 | 1.0 |
 
-Ubuntu 26.04 under WSL 2, JAX 0.11.2 with CUDA 12:
+Ubuntu 26.04 under WSL 2, JAX 0.11.2 with CUDA 12, N = 1024; "compiled" wraps the propagation in `jax.jit`:
 
-| Method | N = 256, NumPy | N = 256, JAX GPU | Speed-up | N = 1024, NumPy | N = 1024, JAX GPU | Speed-up |
-|--------|---------------:|-----------------:|---------:|----------------:|------------------:|---------:|
-| `asm` | 7.8 | 11.0 | 0.7 | 173 | 36.3 | 4.8 |
-| `fresnel_tf` | 14.4 | 10.1 | 1.4 | 186 | 33.5 | 5.5 |
-| `fresnel_mft` (256² output) | 18.5 | 7.2 | 2.6 | 110 | 23.9 | 4.6 |
-| `fraunhofer` (256² output) | 8.4 | 5.3 | 1.6 | 41.6 | 20.5 | 2.0 |
+| Method | NumPy | JAX GPU | JAX GPU compiled | JAX GPU compiled, single |
+|--------|------:|--------:|-----------------:|-------------------------:|
+| `asm` | 179 | 35.0 | 17.8 | 5.8 |
+| `fresnel_tf` | 178 | 31.7 | 16.9 | 5.9 |
+| `fresnel_mft` (256² output) | 68 | 19.5 | 19.1 | 1.4 |
+| `fraunhofer` (256² output) | 43.6 | 19.1 | 18.1 | 1.4 |
 
-The GPU pays off on large padded FFTs (`asm`, `fresnel_tf`: 21 to 26 times faster with CuPy at N = 1024);
-matrix Fourier transforms to a small output grid gain less. The GTX 1060 computes in double precision at
-1/32 of its single-precision rate, so `lumos.config.precision = "single"` should gain more on such consumer
-GPUs. With the same GPU, JAX is about 2 to 3 times slower than CuPy on the padded FFTs, and slower than NumPy
-on small grids, where dispatching to the GPU dominates.
+- The GPU pays off on large padded FFTs: 10 to 20 times faster than NumPy for N = 1024 in double precision.
+  On small grids (N = 256) the fixed cost of each GPU call dominates.
+- **JAX should be compiled.** Run operation by operation, every JAX operation is dispatched separately: at
+  N = 256 an eager JAX propagation (13 ms) is slower than NumPy (7.6 ms). Compiled with `lumos.jit` (or
+  `jax.jit`), it takes 1.5 ms and matches or beats CuPy.
+- **Single precision** makes padded FFTs, which are limited by memory bandwidth, about 2 times faster on the
+  CPU and 3 times faster on the GPU. Matrix Fourier transforms are limited by arithmetic, and consumer GPUs
+  such as the GTX 1060 compute in double precision at 1/32 of their single-precision rate: they become 13 to
+  23 times faster.
+
+### Choosing the precision
+
+LUMOS computes in double precision by default (ADR-0009). `lumos.config.precision = "single"` stores fields
+in complex64; kernels are still computed in double precision and rounded once, and propagated fields agree
+with double precision within about 1e-6 of their peak. Single precision suits exploratory runs, imaging and
+moderate contrasts. Keep double precision for high-contrast work (nulls and coronagraphic contrasts below
+about 1e-8, where round-off in a chain of elements reaches the signal), for long time series and for
+gradients checked by finite differences.
 
 ### Enabling an NVIDIA GPU
 

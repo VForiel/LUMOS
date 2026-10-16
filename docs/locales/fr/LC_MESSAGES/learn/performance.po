@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 23:55+0200\n"
+"POT-Creation-Date: 2026-10-17 00:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -159,13 +159,13 @@ msgstr "GPU"
 msgid ""
 "The GPU speed-up is measured with the same benchmark on a machine with a CUDA GPU (CuPy, or JAX with a GPU "
 "device): the Ryzen 7 2700X above with an NVIDIA GeForce GTX 1060 6 GB (Pascal, driver 582.28, CUDA 12 "
-"libraries), idle, double precision. Mean time of one propagation in milliseconds, and speed-up over NumPy "
-"on the same system."
+"libraries), idle. Mean time of one propagation in milliseconds, in double and single precision; every run "
+"waits for the asynchronous GPU computation to finish."
 msgstr ""
 "Le gain GPU est mesuré avec le même benchmark sur une machine équipée d'un GPU CUDA (CuPy, ou JAX avec un "
 "périphérique GPU) : le Ryzen 7 2700X ci-dessus avec une NVIDIA GeForce GTX 1060 6 Go (Pascal, pilote "
-"582.28, bibliothèques CUDA 12), au repos, en double précision. Temps moyen d'une propagation en "
-"millisecondes, et gain par rapport à NumPy sur le même système."
+"582.28, bibliothèques CUDA 12), au repos. Temps moyen d'une propagation en millisecondes, en double et en "
+"simple précision ; chaque exécution attend la fin du calcul GPU, qui est asynchrone."
 
 #: ../../learn/performance.md:33
 msgid "Windows 11, CuPy 14.2:"
@@ -176,147 +176,31 @@ msgid "N = 256, CuPy"
 msgstr "N = 256, CuPy"
 
 #: ../../learn/performance.md
-msgid "Speed-up"
-msgstr "Gain"
+msgid "N = 256, CuPy single"
+msgstr "N = 256, CuPy simple"
 
 #: ../../learn/performance.md
 msgid "N = 1024, CuPy"
 msgstr "N = 1024, CuPy"
 
 #: ../../learn/performance.md
-msgid "1.9"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "4.7"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "345"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "13.2"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "26"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "5.0"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "16.1"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "21"
-msgstr ""
+msgid "N = 1024, CuPy single"
+msgstr "N = 1024, CuPy simple"
 
 #: ../../learn/performance.md
 msgid "11.1"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "2.8"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "3.9"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "92"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "25.6"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "3.6"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "2.0"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "30.4"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "17.3"
-msgstr ""
-
-#: ../../learn/performance.md
 msgid "1.8"
 msgstr ""
 
-#: ../../learn/performance.md:42
-msgid "Ubuntu 26.04 under WSL 2, JAX 0.11.2 with CUDA 12:"
-msgstr "Ubuntu 26.04 sous WSL 2, JAX 0.11.2 avec CUDA 12 :"
-
 #: ../../learn/performance.md
-msgid "N = 256, JAX GPU"
-msgstr "N = 256, JAX GPU"
-
-#: ../../learn/performance.md
-msgid "N = 1024, JAX GPU"
-msgstr "N = 1024, JAX GPU"
-
-#: ../../learn/performance.md
-msgid "7.8"
+msgid "374"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "11.0"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "0.7"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "173"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "36.3"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "4.8"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "14.4"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "10.1"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "1.4"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "186"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "33.5"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "5.5"
-msgstr ""
-
-#: ../../learn/performance.md
-msgid "18.5"
+msgid "25.9"
 msgstr ""
 
 #: ../../learn/performance.md
@@ -324,61 +208,205 @@ msgid "7.2"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "2.6"
+msgid "9.9"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "110"
+msgid "1.7"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "23.9"
+msgid "1.9"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "4.6"
+msgid "376"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "8.4"
+msgid "19.8"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "5.3"
+msgid "7.3"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "1.6"
+msgid "6.7"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "41.6"
+msgid "2.9"
 msgstr ""
 
 #: ../../learn/performance.md
-msgid "20.5"
+msgid "0.7"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "41"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "23.3"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "1.1"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "2.7"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "0.4"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "29.8"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "22.9"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "1.0"
+msgstr ""
+
+#: ../../learn/performance.md:42
+msgid ""
+"Ubuntu 26.04 under WSL 2, JAX 0.11.2 with CUDA 12, N = 1024; \"compiled\" wraps the propagation in "
+"`jax.jit`:"
+msgstr ""
+"Ubuntu 26.04 sous WSL 2, JAX 0.11.2 avec CUDA 12, N = 1024 ; « compilé » enveloppe la propagation dans "
+"`jax.jit` :"
+
+#: ../../learn/performance.md
+msgid "NumPy"
+msgstr "NumPy"
+
+#: ../../learn/performance.md
+msgid "JAX GPU"
+msgstr "JAX GPU"
+
+#: ../../learn/performance.md
+msgid "JAX GPU compiled"
+msgstr "JAX GPU compilé"
+
+#: ../../learn/performance.md
+msgid "JAX GPU compiled, single"
+msgstr "JAX GPU compilé, simple"
+
+#: ../../learn/performance.md
+msgid "179"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "35.0"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "17.8"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "178"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "31.7"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "16.9"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "5.9"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "68"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "19.5"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "19.1"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "1.4"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "43.6"
+msgstr ""
+
+#: ../../learn/performance.md
+msgid "18.1"
 msgstr ""
 
 #: ../../learn/performance.md:51
 msgid ""
-"The GPU pays off on large padded FFTs (`asm`, `fresnel_tf`: 21 to 26 times faster with CuPy at N = 1024); "
-"matrix Fourier transforms to a small output grid gain less. The GTX 1060 computes in double precision at "
-"1/32 of its single-precision rate, so `lumos.config.precision = \"single\"` should gain more on such "
-"consumer GPUs. With the same GPU, JAX is about 2 to 3 times slower than CuPy on the padded FFTs, and slower"
-" than NumPy on small grids, where dispatching to the GPU dominates."
+"The GPU pays off on large padded FFTs: 10 to 20 times faster than NumPy for N = 1024 in double precision. "
+"On small grids (N = 256) the fixed cost of each GPU call dominates."
 msgstr ""
-"Le GPU est rentable sur les grandes FFT avec bourrage (`asm`, `fresnel_tf` : 21 à 26 fois plus rapides avec"
-" CuPy pour N = 1024) ; les transformées de Fourier matricielles vers une petite grille de sortie gagnent "
-"moins. La GTX 1060 calcule en double précision à 1/32 de sa vitesse en simple précision : "
-"`lumos.config.precision = \"single\"` devrait gagner davantage sur ces GPU grand public. Sur le même GPU, "
-"JAX est 2 à 3 fois plus lent que CuPy sur les FFT avec bourrage, et plus lent que NumPy sur les petites "
-"grilles, où l'envoi des calculs au GPU domine."
+"Le GPU est rentable sur les grandes FFT avec bourrage : 10 à 20 fois plus rapide que NumPy pour N = 1024 en"
+" double précision. Sur les petites grilles (N = 256), le coût fixe de chaque appel au GPU domine."
 
-#: ../../learn/performance.md:57
+#: ../../learn/performance.md:53
+msgid ""
+"**JAX should be compiled.** Run operation by operation, every JAX operation is dispatched separately: at N "
+"= 256 an eager JAX propagation (13 ms) is slower than NumPy (7.6 ms). Compiled with `lumos.jit` (or "
+"`jax.jit`), it takes 1.5 ms and matches or beats CuPy."
+msgstr ""
+"**JAX doit être compilé.** Exécutée opération par opération, chaque opération JAX est envoyée séparément : "
+"pour N = 256, une propagation JAX non compilée (13 ms) est plus lente que NumPy (7,6 ms). Compilée avec "
+"`lumos.jit` (ou `jax.jit`), elle prend 1,5 ms et égale ou dépasse CuPy."
+
+#: ../../learn/performance.md:56
+msgid ""
+"**Single precision** makes padded FFTs, which are limited by memory bandwidth, about 2 times faster on the "
+"CPU and 3 times faster on the GPU. Matrix Fourier transforms are limited by arithmetic, and consumer GPUs "
+"such as the GTX 1060 compute in double precision at 1/32 of their single-precision rate: they become 13 to "
+"23 times faster."
+msgstr ""
+"La **simple précision** rend les FFT avec bourrage, limitées par la bande passante mémoire, environ 2 fois "
+"plus rapides sur le CPU et 3 fois plus rapides sur le GPU. Les transformées de Fourier matricielles sont "
+"limitées par le calcul, et les GPU grand public comme la GTX 1060 calculent en double précision à 1/32 de "
+"leur vitesse en simple précision : elles deviennent 13 à 23 fois plus rapides."
+
+#: ../../learn/performance.md:61
+msgid "Choosing the precision"
+msgstr "Choisir la précision"
+
+#: ../../learn/performance.md:63
+msgid ""
+"LUMOS computes in double precision by default (ADR-0009). `lumos.config.precision = \"single\"` stores "
+"fields in complex64; kernels are still computed in double precision and rounded once, and propagated fields"
+" agree with double precision within about 1e-6 of their peak. Single precision suits exploratory runs, "
+"imaging and moderate contrasts. Keep double precision for high-contrast work (nulls and coronagraphic "
+"contrasts below about 1e-8, where round-off in a chain of elements reaches the signal), for long time "
+"series and for gradients checked by finite differences."
+msgstr ""
+"LUMOS calcule en double précision par défaut (ADR-0009). `lumos.config.precision = \"single\"` stocke les "
+"champs en complex64 ; les noyaux restent calculés en double précision puis arrondis une seule fois, et les "
+"champs propagés s'accordent avec la double précision à environ 1e-6 de leur pic. La simple précision "
+"convient aux calculs exploratoires, à l'imagerie et aux contrastes modérés. Gardez la double précision pour"
+" le haut contraste (extinctions et contrastes coronographiques sous environ 1e-8, où l'arrondi accumulé le "
+"long d'une chaîne d'éléments atteint le signal), pour les longues séries temporelles et pour les gradients "
+"vérifiés par différences finies."
+
+#: ../../learn/performance.md:70
 msgid "Enabling an NVIDIA GPU"
 msgstr "Activer un GPU NVIDIA"
 
-#: ../../learn/performance.md:59
+#: ../../learn/performance.md:72
 msgid ""
 "LUMOS sees a GPU only through an array library built for CUDA; `lumos.hardware_report()` lists the GPUs "
 "that these libraries see, and `lumos.config.backend = \"auto\"` then chooses a GPU backend."
@@ -387,7 +415,7 @@ msgstr ""
 "`lumos.hardware_report()` liste les GPU que ces bibliothèques voient, et `lumos.config.backend = \"auto\"` "
 "choisit alors un backend GPU."
 
-#: ../../learn/performance.md:62
+#: ../../learn/performance.md:75
 msgid ""
 "**Windows**: install CuPy with the CUDA 12 libraries from pip, which need no system CUDA toolkit: `pip "
 "install cupy-cuda12x \"cuda-toolkit[cublas,cudart,cufft,curand,nvrtc]==12.*\"`. CUDA 12 supports GPUs from "
@@ -397,13 +425,13 @@ msgstr ""
 "système : `pip install cupy-cuda12x \"cuda-toolkit[cublas,cudart,cufft,curand,nvrtc]==12.*\"`. CUDA 12 "
 "prend en charge les GPU à partir de la génération Maxwell (CUDA 13 demande Turing ou plus récent)."
 
-#: ../../learn/performance.md:65
+#: ../../learn/performance.md:78
 msgid "**Linux or WSL 2**: `pip install \"jax[cuda12]\"` (JAX publishes no CUDA build for native Windows), or CuPy."
 msgstr ""
 "**Linux ou WSL 2** : `pip install \"jax[cuda12]\"` (JAX ne publie pas de version CUDA pour Windows natif), "
 "ou CuPy."
 
-#: ../../learn/performance.md:66
+#: ../../learn/performance.md:79
 #, python-format
 msgid ""
 "JAX reserves 75 % of the GPU memory by default; LUMOS turns this off so that JAX shares the GPU with the "
@@ -413,13 +441,13 @@ msgstr ""
 "le GPU avec l'affichage et CuPy (ADR-0008). Définir `XLA_PYTHON_CLIENT_PREALLOCATE=true` pour préallouer "
 "sur un GPU dédié."
 
-#: ../../learn/performance.md:68
+#: ../../learn/performance.md:81
 msgid "Measure with the GPU otherwise idle: a game or another GPU application changes the results by large factors."
 msgstr ""
 "Mesurer avec un GPU inoccupé par ailleurs : un jeu ou une autre application GPU modifie les résultats d'un "
 "facteur important."
 
-#: ../../learn/performance.md:71
+#: ../../learn/performance.md:84
 msgid "The test suite runs on NumPy by default; `LUMOS_TEST_BACKEND=jax` (or `cupy`) runs it on another backend."
 msgstr ""
 "La suite de tests tourne par défaut sur NumPy ; `LUMOS_TEST_BACKEND=jax` (ou `cupy`) la lance sur un autre "
@@ -435,3 +463,139 @@ msgstr ""
 #~ " sur une machine équipée d'un GPU CUDA (CuPy, ou "
 #~ "JAX avec un périphérique GPU). Les mesures seront "
 #~ "ajoutées ici."
+
+#~ msgid "Speed-up"
+#~ msgstr "Gain"
+
+#~ msgid "4.7"
+#~ msgstr ""
+
+#~ msgid "345"
+#~ msgstr ""
+
+#~ msgid "13.2"
+#~ msgstr ""
+
+#~ msgid "26"
+#~ msgstr ""
+
+#~ msgid "5.0"
+#~ msgstr ""
+
+#~ msgid "16.1"
+#~ msgstr ""
+
+#~ msgid "21"
+#~ msgstr ""
+
+#~ msgid "2.8"
+#~ msgstr ""
+
+#~ msgid "3.9"
+#~ msgstr ""
+
+#~ msgid "92"
+#~ msgstr ""
+
+#~ msgid "25.6"
+#~ msgstr ""
+
+#~ msgid "3.6"
+#~ msgstr ""
+
+#~ msgid "2.0"
+#~ msgstr ""
+
+#~ msgid "30.4"
+#~ msgstr ""
+
+#~ msgid "17.3"
+#~ msgstr ""
+
+#~ msgid "N = 1024, JAX GPU"
+#~ msgstr "N = 1024, JAX GPU"
+
+#~ msgid "7.8"
+#~ msgstr ""
+
+#~ msgid "11.0"
+#~ msgstr ""
+
+#~ msgid "173"
+#~ msgstr ""
+
+#~ msgid "36.3"
+#~ msgstr ""
+
+#~ msgid "4.8"
+#~ msgstr ""
+
+#~ msgid "14.4"
+#~ msgstr ""
+
+#~ msgid "10.1"
+#~ msgstr ""
+
+#~ msgid "186"
+#~ msgstr ""
+
+#~ msgid "33.5"
+#~ msgstr ""
+
+#~ msgid "5.5"
+#~ msgstr ""
+
+#~ msgid "18.5"
+#~ msgstr ""
+
+#~ msgid "2.6"
+#~ msgstr ""
+
+#~ msgid "110"
+#~ msgstr ""
+
+#~ msgid "23.9"
+#~ msgstr ""
+
+#~ msgid "4.6"
+#~ msgstr ""
+
+#~ msgid "8.4"
+#~ msgstr ""
+
+#~ msgid "5.3"
+#~ msgstr ""
+
+#~ msgid "1.6"
+#~ msgstr ""
+
+#~ msgid "41.6"
+#~ msgstr ""
+
+#~ msgid "20.5"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The GPU pays off on large padded FFTs (`asm`, "
+#~ "`fresnel_tf`: 21 to 26 times faster with CuPy at N"
+#~ " = 1024); matrix Fourier transforms to a small output"
+#~ " grid gain less. The GTX 1060 computes in double "
+#~ "precision at 1/32 of its single-precision rate, so "
+#~ "`lumos.config.precision = \"single\"` should gain more on such"
+#~ " consumer GPUs. With the same GPU, JAX is about "
+#~ "2 to 3 times slower than CuPy on the padded "
+#~ "FFTs, and slower than NumPy on small grids, where "
+#~ "dispatching to the GPU dominates."
+#~ msgstr ""
+#~ "Le GPU est rentable sur les grandes FFT avec "
+#~ "bourrage (`asm`, `fresnel_tf` : 21 à 26 fois plus "
+#~ "rapides avec CuPy pour N = 1024) ; les "
+#~ "transformées de Fourier matricielles vers une petite grille"
+#~ " de sortie gagnent moins. La GTX 1060 calcule en "
+#~ "double précision à 1/32 de sa vitesse en simple "
+#~ "précision : `lumos.config.precision = \"single\"` devrait gagner "
+#~ "davantage sur ces GPU grand public. Sur le même "
+#~ "GPU, JAX est 2 à 3 fois plus lent que CuPy"
+#~ " sur les FFT avec bourrage, et plus lent que "
+#~ "NumPy sur les petites grilles, où l'envoi des calculs"
+#~ " au GPU domine."
