@@ -78,3 +78,18 @@ def test_random_key_is_a_reserved_name():
             random_key = Param(default=1.0)
 
     assert np.isfinite(CALLS).all()
+
+
+def test_stochastic_elements_inside_groups_have_their_own_stream():
+    """A child of a group draws from the stream of its path ``"group.child"`` (ADR-0007)."""
+    from lumos.core.group import ElementGroup
+
+    ctx = Context(seed=21)
+    group = ctx.add(ElementGroup(name="box"))
+    child = group.add(Noise(name="noise"))
+    group.expose("out", child.port("out"))
+    value = ctx.run(["box.out"])["box.out"].value
+    expected = float(
+        np.random.default_rng(np.random.SeedSequence(21, spawn_key=tuple(b"box.noise"))).normal()
+    )
+    assert value == expected
