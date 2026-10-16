@@ -1,4 +1,4 @@
-"""The context: container and coordinator of a LUMOS system (REQ-CTX-*).
+"""The context: container and coordinator of a LUMOS system (``REQ-CTX-*``).
 
 A :class:`Context` holds the graph of elements and everything that is global to a simulation or an
 experiment: the operating mode (simulation or operation) and the digital twin (REQ-EL-4, REQ-EL-7), the array

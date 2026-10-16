@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 5** (P5.1).
+Lancer la **phase 6** (P6.1).

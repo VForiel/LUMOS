@@ -92,11 +92,42 @@
    :members:
 ```
 
+## Contexts and graphs
+
+```{eval-rst}
+.. autoclass:: lumos.Context
+   :members:
+
+.. automodule:: lumos.core.context
+   :members: Observation, SweepPoint
+
+.. automodule:: lumos.core.graph
+   :members: Graph, Connection, Result, GraphError, CycleError
+
+.. automodule:: lumos.core.group
+   :members: ElementGroup
+
+.. automodule:: lumos.core.clock
+   :members: Clock
+
+.. automodule:: lumos.core.action
+   :members: action, ActionSpec
+
+.. automodule:: lumos.core.driver
+   :members: Driver, SimulatedDriver, Command, Reply, DriverError
+
+.. automodule:: lumos.core.journal
+   :members: Journal, JournalEntry, JsonFormatter
+```
+
 ## Files
 
 ```{eval-rst}
 .. automodule:: lumos.io
    :members:
+
+.. automodule:: lumos.io.codegen
+   :members: to_python
 
 .. automodule:: lumos.errors
    :members:

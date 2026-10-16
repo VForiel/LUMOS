@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 16:03+0200\n"
+"POT-Creation-Date: 2026-10-16 16:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -44,18 +44,41 @@ msgstr ""
 #: lumos.backend.hardware.GPUInfo lumos.backend.hardware.select_backend
 #: lumos.backend.jit.jit lumos.backend.memory.available_memory
 #: lumos.backend.memory.chunk_slices lumos.backend.memory.estimate_bytes
-#: lumos.core.element.Element.apply lumos.core.element.Element.from_lumos
+#: lumos.core.action.ActionSpec.duration_si lumos.core.clock.Clock.advance
+#: lumos.core.clock.Clock.reset lumos.core.context.Context.add
+#: lumos.core.context.Context.as_origin lumos.core.context.Context.connect
+#: lumos.core.context.Context.id_of lumos.core.context.Context.mode_of
+#: lumos.core.context.Context.path_of lumos.core.context.Context.port
+#: lumos.core.context.Context.remove lumos.core.context.Context.rng
+#: lumos.core.context.Context.run lumos.core.context.Context.sample
+#: lumos.core.context.Context.simulate lumos.core.context.Context.spawn_key
+#: lumos.core.context.Context.twin_state lumos.core.context.Context.wait
+#: lumos.core.context.SweepPoint lumos.core.driver.Command.from_json
+#: lumos.core.driver.Driver.query lumos.core.driver.Driver.send
+#: lumos.core.driver.SimulatedDriver lumos.core.element.Element.apply
+#: lumos.core.element.Element.from_lumos lumos.core.element.Element.port
 #: lumos.core.element.Element.to_lumos lumos.core.element.Values
+#: lumos.core.graph.Connection lumos.core.graph.Graph.add
+#: lumos.core.graph.Graph.disconnect lumos.core.graph.Graph.downstream
+#: lumos.core.graph.Graph.id_of lumos.core.graph.Graph.incoming
+#: lumos.core.graph.Graph.invalidate lumos.core.graph.Graph.is_cached
+#: lumos.core.graph.Graph.remove lumos.core.graph.Graph.required
+#: lumos.core.graph.Graph.resolve lumos.core.graph.Graph.upstream
+#: lumos.core.graph.Result lumos.core.group.ElementGroup.add
+#: lumos.core.group.ElementGroup.apply lumos.core.group.ElementGroup.connect
+#: lumos.core.group.ElementGroup.expose lumos.core.group.ElementGroup.id_of
+#: lumos.core.group.ElementGroup.remove lumos.core.journal.Journal.append
+#: lumos.core.journal.Journal.entries lumos.core.journal.JsonFormatter.format
 #: lumos.core.param.Param.check_prior lumos.core.param.Param.validate
 #: lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
 #: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si
 #: lumos.core.param.Setting.validate lumos.core.param.State
 #: lumos.core.port.Output lumos.core.port.Port lumos.core.port.check_compatible
 #: lumos.core.port.compatible lumos.core.port.ports_of
-#: lumos.core.priors.LogUniform lumos.core.priors.Normal
-#: lumos.core.priors.Uniform lumos.core.priors.prior_to_json
-#: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
-#: lumos.core.registry.Registry.load_plugins
+#: lumos.core.priors.LogUniform.sample lumos.core.priors.Normal.sample
+#: lumos.core.priors.Prior.sample lumos.core.priors.Uniform.sample
+#: lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration
+#: lumos.core.registry.Registry.get lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
 #: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.version
 #: lumos.fields.dataproduct.DataProduct.from_fits
@@ -99,12 +122,13 @@ msgstr ""
 #: lumos.fields.wavefront.Wavefront.plane lumos.fields.wavefront.Wavefront.tilt
 #: lumos.fields.wavefront.Wavefront.to_backend
 #: lumos.fields.wavefront.Wavefront.with_polarization
-#: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.lumos_format.load
-#: lumos.io.lumos_format.save lumos.io.lumos_format.to_document
-#: lumos.plotting.plot_data lumos.plotting.plot_field
-#: lumos.plotting.plot_radiance lumos.propagation.api.focus
-#: lumos.propagation.api.plan lumos.propagation.api.register_method
-#: lumos.units.quantity_to_json lumos.units.si_unit of
+#: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.codegen.to_python
+#: lumos.io.lumos_format.load lumos.io.lumos_format.save
+#: lumos.io.lumos_format.to_document lumos.plotting.plot_data
+#: lumos.plotting.plot_field lumos.plotting.plot_radiance
+#: lumos.propagation.api.focus lumos.propagation.api.plan
+#: lumos.propagation.api.register_method lumos.units.quantity_to_json
+#: lumos.units.si_unit of
 msgid "Parameters"
 msgstr ""
 
@@ -127,18 +151,51 @@ msgstr ""
 #: lumos.backend.hardware.HardwareReport.to_dict
 #: lumos.backend.hardware.select_backend lumos.backend.jit.jit
 #: lumos.backend.memory.available_memory lumos.backend.memory.chunk_slices
-#: lumos.backend.memory.estimate_bytes lumos.core.element.Element.apply
+#: lumos.backend.memory.estimate_bytes lumos.core.action.ActionSpec.duration_si
+#: lumos.core.clock.Clock.advance lumos.core.clock.Clock.reset
+#: lumos.core.context.Context.add lumos.core.context.Context.as_origin
+#: lumos.core.context.Context.connect
+#: lumos.core.context.Context.free_parameters lumos.core.context.Context.id_of
+#: lumos.core.context.Context.mode_of lumos.core.context.Context.parallel
+#: lumos.core.context.Context.path_of lumos.core.context.Context.port
+#: lumos.core.context.Context.remove lumos.core.context.Context.rng
+#: lumos.core.context.Context.run lumos.core.context.Context.sample
+#: lumos.core.context.Context.simulate lumos.core.context.Context.spawn_key
+#: lumos.core.context.Context.to_python lumos.core.context.Context.twin_state
+#: lumos.core.context.Context.wait lumos.core.context.Observation.wavelengths
+#: lumos.core.driver.Command.from_json lumos.core.driver.Command.to_json
+#: lumos.core.driver.Driver.connect lumos.core.driver.Driver.disconnect
+#: lumos.core.driver.Driver.query lumos.core.driver.Driver.send
+#: lumos.core.driver.Driver.status lumos.core.driver.Driver.stop
+#: lumos.core.element.Element.actions lumos.core.element.Element.apply
 #: lumos.core.element.Element.describe lumos.core.element.Element.from_lumos
+#: lumos.core.element.Element.instance_ports lumos.core.element.Element.port
 #: lumos.core.element.Element.ports lumos.core.element.Element.schema
 #: lumos.core.element.Element.to_lumos lumos.core.element.Element.values
-#: lumos.core.param.Param.check_prior lumos.core.param.Param.validate
-#: lumos.core.param.ParamHost.declared lumos.core.param.ParamHost.is_free
-#: lumos.core.param.ParamHost.prior lumos.core.param.ParamHost.set_free
-#: lumos.core.param.ParamHost.si lumos.core.param.Setting.validate
-#: lumos.core.port.check_compatible lumos.core.port.compatible
-#: lumos.core.port.ports_of lumos.core.priors.prior_to_json
-#: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
-#: lumos.core.registry.Registry.load_plugins
+#: lumos.core.graph.Graph.add lumos.core.graph.Graph.disconnect
+#: lumos.core.graph.Graph.downstream lumos.core.graph.Graph.id_of
+#: lumos.core.graph.Graph.incoming lumos.core.graph.Graph.invalidate
+#: lumos.core.graph.Graph.is_cached lumos.core.graph.Graph.remove
+#: lumos.core.graph.Graph.required lumos.core.graph.Graph.resolve
+#: lumos.core.graph.Graph.topological_order lumos.core.graph.Graph.upstream
+#: lumos.core.group.ElementGroup.add lumos.core.group.ElementGroup.apply
+#: lumos.core.group.ElementGroup.connect lumos.core.group.ElementGroup.expose
+#: lumos.core.group.ElementGroup.exposed lumos.core.group.ElementGroup.id_of
+#: lumos.core.group.ElementGroup.instance_ports
+#: lumos.core.group.ElementGroup.remove lumos.core.journal.Journal.append
+#: lumos.core.journal.Journal.clear lumos.core.journal.Journal.commands
+#: lumos.core.journal.Journal.entries lumos.core.journal.Journal.to_json
+#: lumos.core.journal.JournalEntry.to_json
+#: lumos.core.journal.JsonFormatter.format lumos.core.param.Param.check_prior
+#: lumos.core.param.Param.validate lumos.core.param.ParamHost.declared
+#: lumos.core.param.ParamHost.is_free lumos.core.param.ParamHost.prior
+#: lumos.core.param.ParamHost.set_free lumos.core.param.ParamHost.si
+#: lumos.core.param.Setting.validate lumos.core.port.check_compatible
+#: lumos.core.port.compatible lumos.core.port.ports_of
+#: lumos.core.priors.LogUniform.sample lumos.core.priors.Normal.sample
+#: lumos.core.priors.Prior.sample lumos.core.priors.Uniform.sample
+#: lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration
+#: lumos.core.registry.Registry.get lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
 #: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.version
 #: lumos.fields.dataproduct.DataProduct.from_fits
@@ -191,8 +248,9 @@ msgstr ""
 #: lumos.fields.wavefront.Wavefront.to_backend
 #: lumos.fields.wavefront.Wavefront.to_json
 #: lumos.fields.wavefront.Wavefront.with_polarization
-#: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.lumos_format.load
-#: lumos.io.lumos_format.save lumos.io.lumos_format.to_document
+#: lumos.fields.wavefront.Wavefront.with_power_unit lumos.io.codegen.to_python
+#: lumos.io.lumos_format.load lumos.io.lumos_format.save
+#: lumos.io.lumos_format.to_document lumos.io.schema.document_schema
 #: lumos.plotting.plot_data lumos.plotting.plot_field
 #: lumos.plotting.plot_radiance lumos.propagation._common.cache_info
 #: lumos.propagation._common.clear_cache lumos.propagation.api.focus
@@ -409,6 +467,7 @@ msgstr ""
 msgid "``\"double\"`` or ``\"single\"``."
 msgstr ""
 
+#: lumos.Context.backend lumos.Context.mode lumos.Context.origin
 #: lumos._config.Config.backend lumos._config.Config.fft_workers
 #: lumos._config.Config.precision lumos.fields.wavecube.Wavecube.intensity_unit
 #: lumos.fields.wavecube.Wavecube.power_unit
@@ -978,8 +1037,8 @@ msgid ""
 "Priors describe what is known about a free parameter before calibration "
 "or inference. They carry physical units, so they can be checked against "
 "the parameter they are attached to. Plain numbers are accepted for "
-"dimensionless parameters. Sampling and log-densities are added with the "
-"inference blocks (phase 17)."
+"dimensionless parameters. :meth:`Prior.sample` draws values (Monte-Carlo "
+"runs); log-densities are added with the inference blocks (phase 17)."
 msgstr ""
 
 #: lumos.core.priors.LogUniform:1 of
@@ -994,10 +1053,18 @@ msgid ""
 "contrasts...)."
 msgstr ""
 
+#: lumos.core.priors.LogUniform.sample:1 of
+msgid "Draw uniformly in ``log`` between ``log(low)`` and ``log(high)``."
+msgstr ""
+
 #: lumos.core.priors.Normal:1 of
 msgid ""
 "Normal (Gaussian) distribution of mean ``mean`` and standard deviation "
 "``std > 0``."
+msgstr ""
+
+#: lumos.core.priors.Normal.sample:1 of
+msgid "Draw from the normal distribution."
 msgstr ""
 
 #: lumos.core.priors.Prior:1 of
@@ -1014,8 +1081,16 @@ msgstr ""
 msgid "Unit of the values described by the prior."
 msgstr ""
 
+#: lumos.core.priors.Prior.sample:1 of
+msgid "Draw values from the distribution with the NumPy generator ``rng``."
+msgstr ""
+
 #: lumos.core.priors.Uniform:1 of
 msgid "Uniform distribution between ``low`` and ``high`` (``low < high``)."
+msgstr ""
+
+#: lumos.core.priors.Uniform.sample:1 of
+msgid "Draw uniformly between ``low`` and ``high``."
 msgstr ""
 
 #: lumos.core.priors.prior_from_json:1 of
@@ -1180,6 +1255,29 @@ msgid ""
 "required."
 msgstr ""
 
+#: lumos.core.element.Element.time_dependent:1 of
+msgid ""
+"Whether the transfer function reads the elapsed time ``values.time`` "
+"(seconds since the start of the context). Time-dependent elements are "
+"recomputed whenever the clock advances."
+msgstr ""
+
+#: lumos.core.element.Element.context:1 of
+msgid ""
+"The :class:`~lumos.Context` holding this element (through its groups), or"
+" ``None``."
+msgstr ""
+
+#: lumos.core.element.Element.driver:1 of
+msgid ""
+"Driver of the equipment represented by this element (used in operation "
+"mode), or ``None``."
+msgstr ""
+
+#: lumos.core.element.Element.container:1 of
+msgid "The context or group directly holding this element, or ``None``."
+msgstr ""
+
 #: lumos.core.element.Element.name:1 of
 msgid "Human-readable name of the element (or ``None``)."
 msgstr ""
@@ -1188,8 +1286,30 @@ msgstr ""
 msgid "Return the declared ports by name, inputs and outputs in definition order."
 msgstr ""
 
+#: lumos.core.element.Element.instance_ports:1 of
+msgid ""
+"Return the ports of this instance (the class ports; groups add the ports "
+"they expose)."
+msgstr ""
+
+#: lumos.core.element.Element.port:1 of
+msgid "Return the port ``name`` of this instance, bound to it."
+msgstr ""
+
 #: lumos.core.element.Element.values:1 of
 msgid "Return an immutable snapshot of the SI values of all fields."
+msgstr ""
+
+#: lumos.core.element.Element.values:3 of
+msgid ""
+"Time-dependent elements also get ``time``, the elapsed time of their "
+"context in seconds (0 outside a context)."
+msgstr ""
+
+#: lumos.core.element.Element.actions:1 of
+msgid ""
+"Return the timed actions declared by the class, by name (see "
+":func:`lumos.core.action.action`)."
 msgstr ""
 
 #: lumos.core.element.Element.transfer:1 of
@@ -1618,6 +1738,7 @@ msgid ""
 "display unit."
 msgstr ""
 
+#: lumos.core.driver.Command.from_json:1
 #: lumos.fields.dataproduct.DataProduct.from_json:1
 #: lumos.fields.grid.Grid.from_json:1 of
 msgid "Decode a dictionary produced by :meth:`to_json`."
@@ -2516,7 +2637,7 @@ msgid ""
 "absolute value (JCGM 100:2008, *GUM*, §5.1)."
 msgstr ""
 
-#: ../../api/index.md:95 lumos.fields.dataproduct:16 of
+#: ../../api/index.md:123 lumos.fields.dataproduct:16 of
 msgid "Files"
 msgstr "Fichiers"
 
@@ -2904,6 +3025,798 @@ msgid ""
 "``\"L\"`` (left circular)."
 msgstr ""
 
+#: ../../api/index.md:95
+msgid "Contexts and graphs"
+msgstr ""
+
+#: lumos.core.context.Context:1 of
+msgid "Container and coordinator of elements."
+msgstr ""
+
+#: lumos.core.context.Context:3 of
+msgid "``\"simulation\"`` (default) or ``\"operation\"``."
+msgstr ""
+
+#: lumos.core.context.Context:4 of
+msgid ""
+"Whether the digital twin runs alongside the real equipment in operation "
+"mode (default ``True``)."
+msgstr ""
+
+#: lumos.core.context.Context:5 of
+msgid ""
+"Array backend used by :meth:`run`: ``\"auto\"`` (default, the process "
+"default) or a backend name."
+msgstr ""
+
+#: lumos.core.context.Context:6 of
+msgid "Seed of the random streams; a random seed is drawn (and kept) if ``None``."
+msgstr ""
+
+#: lumos.core.context.Context:7 of
+msgid ""
+"Absolute start date of the clock (``astropy.time.Time``, UTC); defaults "
+"to now."
+msgstr ""
+
+#: lumos.core.context.Context:8 of
+msgid "Optional name of the context."
+msgstr ""
+
+#: lumos.Context.mode:1 of
+msgid "``\"simulation\"`` or ``\"operation\"``."
+msgstr ""
+
+#: lumos.Context.mode:3 of
+msgid "Operating mode"
+msgstr ""
+
+#: lumos.Context.twin:1 of
+msgid "Whether the digital twin is enabled in operation mode."
+msgstr ""
+
+#: lumos.Context.backend:1 of
+msgid "the process default)."
+msgstr ""
+
+#: lumos.Context.backend:3 of
+msgid "Backend used by :meth:`run` (``\"auto\"``"
+msgstr ""
+
+#: lumos.Context.graph:1 of
+msgid "The graph of elements."
+msgstr ""
+
+#: lumos.core.context.Context.add:1 of
+msgid "Add elements and return them (the element itself when only one is given)."
+msgstr ""
+
+#: lumos.core.context.Context.add:3 of
+msgid ""
+"``id`` sets the identifier of a single element (by default its name, or "
+"its class name and a counter)."
+msgstr ""
+
+#: lumos.core.context.Context.remove:1 lumos.core.graph.Graph.remove:1 of
+msgid "Remove ``element`` and its connections."
+msgstr ""
+
+#: lumos.core.context.Context.connect:1 of
+msgid ""
+"Connect an output port to an input port (adding the target element if "
+"needed)."
+msgstr ""
+
+#: lumos.core.context.Context.id_of:1 of
+msgid "Return the identifier of ``element`` in the context."
+msgstr ""
+
+#: lumos.Context.elements:1 of
+msgid "Elements by identifier."
+msgstr ""
+
+#: lumos.core.context.Context.port:1 of
+msgid ""
+"Return the port ``\"element.port\"`` (``\"group.child.port\"`` inside "
+"groups)."
+msgstr ""
+
+#: lumos.core.context.Context.run:1 of
+msgid ""
+"Compute the requested outputs (ports, elements or ``\"id.port\"`` "
+"strings), see :meth:`Graph.run`."
+msgstr ""
+
+#: lumos.core.context.Context.run:3 of
+msgid ""
+"Records of the LUMOS loggers emitted during the run (numerical choices, "
+"physical warnings) are copied to the journal."
+msgstr ""
+
+#: lumos.Context.origin:1 lumos.core.journal.JournalEntry:9 of
+msgid "``\"python\"``, ``\"web\"`` or ``\"mcp\"``."
+msgstr ""
+
+#: lumos.Context.origin:3 of
+msgid "Origin of the actions being executed"
+msgstr ""
+
+#: lumos.core.context.Context.as_origin:1 of
+msgid "Attribute the actions of the block to ``origin`` in the journal."
+msgstr ""
+
+#: lumos.Context.time:1 of
+msgid "Current absolute date of the clock."
+msgstr ""
+
+#: lumos.Context.elapsed:1 of
+msgid "Time elapsed since the start of the clock."
+msgstr ""
+
+#: lumos.core.context.Context.wait:1 of
+msgid ""
+"Let ``duration`` pass (counts as one duration inside a :meth:`parallel` "
+"block)."
+msgstr ""
+
+#: lumos.core.context.Context.parallel:1 of
+msgid ""
+"Run the actions of the block simultaneously: the clock advances by the "
+"longest duration."
+msgstr ""
+
+#: lumos.core.context.Context.simulate:1 of
+msgid ""
+"Force ``element`` to simulation, even in operation mode (``flag=False`` "
+"removes the override)."
+msgstr ""
+
+#: lumos.core.context.Context.mode_of:1 of
+msgid ""
+"Effective mode of ``element``: the context mode unless the element is "
+"forced to simulation."
+msgstr ""
+
+#: lumos.core.context.Context.path_of:1 of
+msgid "Path of ``element`` from the context: ``\"id\"`` or ``\"group.child\"``."
+msgstr ""
+
+#: lumos.core.context.Context.twin_state:1 of
+msgid ""
+"State measured on the equipment at the last command, next to the twin's "
+"simulated state."
+msgstr ""
+
+#: lumos.core.context.Context.spawn_key:1 of
+msgid ""
+"Spawn key of the random stream of an element (or identifier): the UTF-8 "
+"bytes of its identifier."
+msgstr ""
+
+#: lumos.core.context.Context.rng:1 of
+msgid ""
+"Return a new generator of the reproducible random stream of an element "
+"(or identifier)."
+msgstr ""
+
+#: lumos.core.context.Context.rng:3 of
+msgid ""
+"Streams derive from ``numpy.random.SeedSequence(seed, spawn_key=...)``: "
+"they are independent between elements and identical between runs with the"
+" same seed."
+msgstr ""
+
+#: lumos.core.context.Context.sweep:1 of
+msgid "Run the context for several values of some fields and collect the outputs."
+msgstr ""
+
+#: lumos.core.context.Context.sweep:3 of
+msgid ""
+"Values of each field, by path ``\"element.field\"`` "
+"(``\"group.child.field\"`` inside groups)."
+msgstr ""
+
+#: lumos.core.context.Context.sweep:4 of
+msgid "Outputs to compute at each point (see :meth:`run`)."
+msgstr ""
+
+#: lumos.core.context.Context.sweep:5 of
+msgid ""
+"``\"grid\"``: every combination (Cartesian product, last parameter "
+"varying fastest); ``\"zip\"``: the i-th values of every parameter "
+"together."
+msgstr ""
+
+#: lumos.core.context.Context.sweep:8 of
+msgid ""
+"One point per combination. The fields get their original values back "
+"afterwards."
+msgstr ""
+
+#: lumos.core.context.Context.free_parameters:1 of
+msgid ""
+"Return the priors of the free parameters, by path ``\"element.field\"`` "
+"(``None`` without prior)."
+msgstr ""
+
+#: lumos.core.context.Context.sample:1 of
+msgid ""
+"Monte-Carlo run: draw ``n`` values of every free parameter from its prior"
+" and run the context."
+msgstr ""
+
+#: lumos.core.context.Context.sample:3 of
+msgid ""
+"Draws come from the reproducible stream ``ctx.rng(\"sample\")``, "
+"parameter after parameter in the order of :meth:`free_parameters`."
+msgstr ""
+
+#: lumos.core.context.Context.to_python:1 of
+msgid ""
+"Return a Python script rebuilding this context (see "
+":func:`lumos.io.codegen.to_python`)."
+msgstr ""
+
+#: lumos.core.context:1 of
+msgid "The context: container and coordinator of a LUMOS system (``REQ-CTX-*``)."
+msgstr ""
+
+#: lumos.core.context:3 of
+msgid ""
+"A :class:`Context` holds the graph of elements and everything that is "
+"global to a simulation or an experiment: the operating mode (simulation "
+"or operation) and the digital twin (REQ-EL-4, REQ-EL-7), the array "
+"backend, the observation settings (spectral band, site, pointing; REQ-"
+"CTX-6) and the random seed from which every element gets its own "
+"reproducible random stream."
+msgstr ""
+
+#: lumos.core.context.Observation:1 of
+msgid "Observation settings shared by the elements of a context (REQ-CTX-6)."
+msgstr ""
+
+#: lumos.core.context.Observation:3 of
+msgid "``(min, max)`` wavelengths of the spectral band, or ``None``."
+msgstr ""
+
+#: lumos.core.context.Observation:4 of
+msgid "Number of spectral samples of the band."
+msgstr ""
+
+#: lumos.core.context.Observation:5 of
+msgid ""
+"Quadrature rule of the band, ``\"midpoint\"`` or ``\"gauss\"`` "
+"(:func:`lumos.fields.spectral_samples`)."
+msgstr ""
+
+#: lumos.core.context.Observation:6 of
+msgid "Free-form JSON-compatible settings (site, platform, pointing...)."
+msgstr ""
+
+#: lumos.core.context.Observation.band:1 of
+msgid "Spectral band ``(min, max)``."
+msgstr ""
+
+#: lumos.core.context.Observation.wavelengths:1 of
+msgid "Return the wavelengths and normalised weights sampling the band."
+msgstr ""
+
+#: lumos.core.context.SweepPoint:1 of
+msgid "One point of a sweep: the field values and the computed outputs."
+msgstr ""
+
+#: lumos.core.graph:1 of
+msgid ""
+"Directed acyclic graph of elements connected port to port, with pull "
+"execution (REQ-CTX-1/2/4)."
+msgstr ""
+
+#: lumos.core.graph:3 of
+msgid ""
+"A :class:`Graph` holds elements under unique identifiers and the "
+"connections between their ports. A connection goes from an output port to"
+" an input port whose signal type is the same or a base class (REQ-"
+"SIG-11). The graph is acyclic: physical loops (adaptive optics, servo "
+"loops, iterative calibration) are iterations in time driven by the "
+"context, not cycles of signals."
+msgstr ""
+
+#: lumos.core.graph:8 of
+msgid ""
+"Execution is *pull*: :meth:`Graph.run` computes only the elements needed "
+"by the requested outputs, in topological order. The outputs of every "
+"element are cached; changing a parameter or a state of an element, or a "
+"connection, invalidates the cache of that element and of everything "
+"downstream."
+msgstr ""
+
+#: lumos.core.graph.Connection:1 of
+msgid "A connection from an output port to an input port."
+msgstr ""
+
+#: lumos.core.graph.CycleError:1 of
+msgid "Raised when a connection would create a cycle."
+msgstr ""
+
+#: lumos.core.graph.Graph:1 of
+msgid "Elements and their connections."
+msgstr ""
+
+#: lumos.core.graph.Graph.add:1 of
+msgid "Add ``element`` and return its identifier."
+msgstr ""
+
+#: lumos.core.graph.Graph.add:3 of
+msgid ""
+"The identifier is ``id`` if given, otherwise the element name, otherwise "
+"the lower-case class name followed by a counter."
+msgstr ""
+
+#: lumos.core.graph.Graph.id_of:1 of
+msgid "Return the identifier of ``element`` in this graph."
+msgstr ""
+
+#: lumos.core.graph.Graph.elements:1 of
+msgid "Elements by identifier (a copy)."
+msgstr ""
+
+#: lumos.core.graph.Graph.connections:1 of
+msgid "Connections in creation order (a copy)."
+msgstr ""
+
+#: lumos.core.graph.Graph.connect:1 of
+msgid "Connect the output ``source`` to the input ``target``."
+msgstr ""
+
+#: lumos.core.graph.Graph.connect:3 of
+msgid "If the directions or signal types are incompatible."
+msgstr ""
+
+#: lumos.core.graph.Graph.connect:4 of
+msgid "If an element is not in the graph or a single input is already connected."
+msgstr ""
+
+#: lumos.core.graph.Graph.connect:5 of
+msgid "If the connection would create a cycle."
+msgstr ""
+
+#: lumos.core.graph.Graph.disconnect:1 of
+msgid "Remove the connection from ``source`` to ``target``."
+msgstr ""
+
+#: lumos.core.graph.Graph.incoming:1 of
+msgid ""
+"Return the connections arriving at the input ``target``, in creation "
+"order."
+msgstr ""
+
+#: lumos.core.graph.Graph.upstream:1 of
+msgid ""
+"Elements feeding ``element`` directly, in connection order, without "
+"duplicates."
+msgstr ""
+
+#: lumos.core.graph.Graph.downstream:1 of
+msgid ""
+"Elements fed directly by ``element``, in connection order, without "
+"duplicates."
+msgstr ""
+
+#: lumos.core.graph.Graph.topological_order:1 of
+msgid ""
+"Elements ordered so that every connection goes forward (Kahn's algorithm,"
+" stable)."
+msgstr ""
+
+#: lumos.core.graph.Graph.required:1 of
+msgid ""
+"Elements needed to compute ``targets`` (elements or output ports), in "
+"topological order."
+msgstr ""
+
+#: lumos.core.graph.Graph.invalidate:1 of
+msgid ""
+"Drop the cached outputs of ``element`` and everything downstream "
+"(everything if ``None``)."
+msgstr ""
+
+#: lumos.core.graph.Graph.is_cached:1 of
+msgid "Whether the outputs of ``element`` are cached."
+msgstr ""
+
+#: lumos.core.graph.Graph.resolve:1 of
+msgid ""
+"Turn ``\"id\"`` or ``\"id.port\"`` into an element or a port reference; "
+"other values pass through."
+msgstr ""
+
+#: lumos.core.graph.Graph.run:1 of
+msgid "Compute the requested outputs."
+msgstr ""
+
+#: lumos.core.graph.Graph.run:3 of
+msgid ""
+"Output ports, elements (all their outputs) or identifiers ``\"id\"`` / "
+"``\"id.port\"``."
+msgstr ""
+
+#: lumos.core.graph.Graph.run:4 of
+msgid ""
+"Signals given directly to unconnected input ports (used by groups for "
+"their exposed inputs). The caller invalidates the elements whose feeds "
+"changed."
+msgstr ""
+
+#: lumos.core.graph.Graph.run:7 of
+msgid "The signals by output port, also reachable by ``\"id.port\"``."
+msgstr ""
+
+#: lumos.core.graph.GraphError:1 of
+msgid "Raised when an operation would make the graph invalid."
+msgstr ""
+
+#: lumos.core.graph.Result:1 of
+msgid ""
+"Signals computed by :meth:`Graph.run`, by port reference or "
+"``\"id.port\"`` string."
+msgstr ""
+
+#: lumos.core.group:1 of
+msgid ""
+"Element groups: composite elements exposing some of their internal ports "
+"(REQ-CTX-7)."
+msgstr ""
+
+#: lumos.core.group:3 of
+msgid ""
+"An :class:`ElementGroup` holds a sub-graph of elements (a planetary "
+"system, a photonic chip and its components, a multi-lens objective...) "
+"and **exposes** chosen internal ports as its own ports. It is an "
+":class:`~lumos.core.element.Element`: it can be added to a context or to "
+"another group, connected with ``>>`` and saved to ``.lumos`` (``kind: "
+"\"group\"``)."
+msgstr ""
+
+#: lumos.core.group:16 of
+msgid ""
+"When the group runs, the signals arriving on its exposed inputs are fed "
+"to the internal ports and the internal graph computes the exposed outputs"
+" with its own cache. A change of a parameter of any child invalidates the"
+" results of the group, and therefore everything downstream of it, in the "
+"enclosing graph."
+msgstr ""
+
+#: lumos.core.group.ElementGroup:1 of
+msgid "Composite element made of a sub-graph of elements."
+msgstr ""
+
+#: lumos.core.group.ElementGroup:3 of
+msgid "Name of the group (also its default identifier in a context)."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.graph:1 of
+msgid "Internal graph of the group."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.add:1 of
+msgid "Add children and return them (the child itself when only one is given)."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.remove:1 of
+msgid "Remove a child, its connections and the ports it exposes."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.connect:1 of
+msgid "Connect two internal ports (adding the target child if needed)."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.id_of:1 of
+msgid "Return the identifier of a child."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.expose:1 of
+msgid ""
+"Expose the internal port ``internal`` as the group port ``name`` and "
+"return the group port."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.exposed:1 of
+msgid "Return the internal ports behind the exposed ports, by exposed name."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.instance_ports:1 of
+msgid "Return the exposed ports of this group."
+msgstr ""
+
+#: lumos.core.group.ElementGroup.apply:1 of
+msgid "Run the internal graph on the signals arriving at the exposed inputs."
+msgstr ""
+
+#: lumos.core.clock:1 of
+msgid "Clock of a context: absolute start date and elapsed time (REQ-CTX-5)."
+msgstr ""
+
+#: lumos.core.clock:3 of
+msgid ""
+"The absolute time is an :class:`astropy.time.Time` in UTC; durations are "
+"quantities. Time advances only when an action completes or when the "
+"context waits, so a simulation is reproducible whatever the speed of the "
+"computer."
+msgstr ""
+
+#: lumos.core.clock.Clock:1 of
+msgid "Start date and elapsed time."
+msgstr ""
+
+#: lumos.core.clock.Clock:3 of
+msgid "Absolute date of the beginning of the context (UTC); defaults to now."
+msgstr ""
+
+#: lumos.core.clock.Clock.start:1 of
+msgid "Date of the beginning of the context (UTC)."
+msgstr ""
+
+#: lumos.core.clock.Clock.elapsed:1 of
+msgid "Time elapsed since the start."
+msgstr ""
+
+#: lumos.core.clock.Clock.elapsed_si:1 of
+msgid "Time elapsed since the start, in seconds."
+msgstr ""
+
+#: lumos.core.clock.Clock.time:1 of
+msgid "Current absolute date."
+msgstr ""
+
+#: lumos.core.clock.Clock.advance:1 of
+msgid "Advance the clock by ``seconds`` (non-negative)."
+msgstr ""
+
+#: lumos.core.clock.Clock.reset:1 of
+msgid "Set the start date and elapsed time (used when loading a context)."
+msgstr ""
+
+#: lumos.core.action:1 of
+msgid "Timed actions of elements (REQ-EL-5, REQ-EL-6)."
+msgstr ""
+
+#: lumos.core.action:3 of
+msgid ""
+"An action is a method of an element that changes the state of the "
+"equipment it represents: move a stage, open a shutter, take an exposure. "
+"It is declared with the :func:`action` decorator and a duration, fixed or"
+" computed from the element properties before the action runs::"
+msgstr ""
+
+#: lumos.core.action:15 of
+msgid ""
+"When the element belongs to a context, calling the action goes through "
+"the context: in simulation the body updates the virtual state, the "
+"command is logged and the clock advances by the duration; in operation "
+"the command is sent to the driver (see :mod:`lumos.core.driver`). Outside"
+" a context the body simply runs."
+msgstr ""
+
+#: lumos.core.action.ActionSpec:1 of
+msgid ""
+"Description of an action: its name, its duration and the undecorated "
+"method."
+msgstr ""
+
+#: lumos.core.action.ActionSpec.duration_si:1 of
+msgid "Duration of a call, in seconds (computed before the action runs)."
+msgstr ""
+
+#: lumos.core.action.action:1 of
+msgid "Declare a method as a timed action."
+msgstr ""
+
+#: lumos.core.action.action:3 of
+msgid ""
+"A time quantity, a function ``(self, *args, **kwargs) -> quantity`` "
+"evaluated before the action, or ``None`` for an instantaneous action."
+msgstr ""
+
+#: lumos.core.driver:1 of
+msgid "Drivers of real or emulated equipment (REQ-HW-1)."
+msgstr ""
+
+#: lumos.core.driver:3 of
+msgid ""
+"A :class:`Driver` connects an element to the equipment it represents. In "
+"operation mode, the actions of the element become :class:`Command` "
+"objects sent to the driver, which answers with a :class:`Reply`: the "
+"measured duration, the state read back from the equipment and an optional"
+" value. Concrete drivers implement the protected methods ``_connect``, "
+"``_disconnect``, ``_send``, ``_query`` and ``_stop`` on top of a "
+"transport (serial, TCP, VISA, vendor SDK; phase 12)."
+msgstr ""
+
+#: lumos.core.driver:9 of
+msgid ""
+":class:`SimulatedDriver` sends nothing: it records the commands and "
+"answers with the virtual state of its element, which makes it possible to"
+" test a sequence of commands without any equipment."
+msgstr ""
+
+#: lumos.core.driver.Command:1 of
+msgid "A command for the equipment of an element."
+msgstr ""
+
+#: lumos.core.driver.Command:3 of
+msgid "Path of the element in the context (``\"id\"`` or ``\"group.child\"``)."
+msgstr ""
+
+#: lumos.core.driver.Command:5 of
+msgid "Name of the action."
+msgstr ""
+
+#: lumos.core.driver.Command:7 of
+msgid "Arguments of the action (quantities keep their units)."
+msgstr ""
+
+#: lumos.core.driver.Command.to_json:1 of
+msgid "Encode the command as a JSON-compatible dictionary."
+msgstr ""
+
+#: lumos.core.driver.Driver:1 of
+msgid "Base class of drivers."
+msgstr ""
+
+#: lumos.core.driver.Driver.connected:1 of
+msgid "Whether the driver is connected to its equipment."
+msgstr ""
+
+#: lumos.core.driver.Driver.connect:1 of
+msgid "Open the connection to the equipment."
+msgstr ""
+
+#: lumos.core.driver.Driver.disconnect:1 of
+msgid "Close the connection."
+msgstr ""
+
+#: lumos.core.driver.Driver.send:1 of
+msgid "Execute ``command`` on the equipment and return its reply."
+msgstr ""
+
+#: lumos.core.driver.Driver.query:1 of
+msgid "Read the quantity ``name`` from the equipment."
+msgstr ""
+
+#: lumos.core.driver.Driver.status:1 of
+msgid "Return a summary of the driver and equipment state."
+msgstr ""
+
+#: lumos.core.driver.Driver.stop:1 of
+msgid "Stop any motion or emission immediately (emergency stop)."
+msgstr ""
+
+#: lumos.core.driver.DriverError:1 of
+msgid ""
+"Raised when a driver cannot execute a command (missing, disconnected, "
+"failing equipment)."
+msgstr ""
+
+#: lumos.core.driver.Reply:1 of
+msgid "Answer of a driver to a command."
+msgstr ""
+
+#: lumos.core.driver.Reply:3 of
+msgid ""
+"Measured duration of the command (``None``: the wall-clock time of the "
+"call is used)."
+msgstr ""
+
+#: lumos.core.driver.Reply:5 of
+msgid "State read back from the equipment, by field name."
+msgstr ""
+
+#: lumos.core.driver.Reply:7 of
+msgid "Value returned by the action, if any."
+msgstr ""
+
+#: lumos.core.driver.SimulatedDriver:1 of
+msgid ""
+"Driver that records commands and answers with the virtual state of "
+"``element``."
+msgstr ""
+
+#: lumos.core.journal:1 of
+msgid "Structured journal of a context (REQ-CTX-9)."
+msgstr ""
+
+#: lumos.core.journal:3 of
+msgid ""
+"Every action, wait and numerical choice of a context is recorded as a "
+":class:`JournalEntry` in ``ctx.journal`` and emitted through the standard"
+" :mod:`logging` module on the ``lumos.context`` logger, with the entry "
+"attached to the record as ``record.lumos`` (a JSON-compatible "
+"dictionary). :class:`JsonFormatter` writes such records as one JSON "
+"object per line, ready for log files and the web interface."
+msgstr ""
+
+#: lumos.core.journal:8 of
+msgid ""
+"Each entry records the **origin** of the action: ``\"python\"`` (scripts "
+"and notebooks), ``\"web\"`` (the visual interface) or ``\"mcp\"`` (an AI "
+"assistant), set with ``ctx.as_origin(...)`` by the service layer."
+msgstr ""
+
+#: lumos.core.journal.Journal:1 of
+msgid "Ordered list of :class:`JournalEntry` objects."
+msgstr ""
+
+#: lumos.core.journal.Journal.append:1 of
+msgid "Add an entry."
+msgstr ""
+
+#: lumos.core.journal.Journal.entries:1 of
+msgid "Return the entries, optionally of one kind only."
+msgstr ""
+
+#: lumos.core.journal.Journal.commands:1 of
+msgid ""
+"Return the commands of the actions, in order (identical in simulation and"
+" operation)."
+msgstr ""
+
+#: lumos.core.journal.Journal.clear:1 of
+msgid "Remove every entry."
+msgstr ""
+
+#: lumos.core.journal.Journal.to_json:1 of
+msgid "Return the entries as JSON-compatible dictionaries."
+msgstr ""
+
+#: lumos.core.journal.JournalEntry:1 of
+msgid "One event of a context."
+msgstr ""
+
+#: lumos.core.journal.JournalEntry:3 of
+msgid ""
+"``\"action\"``, ``\"wait\"`` or ``\"log\"`` (records of other LUMOS "
+"loggers during a run)."
+msgstr ""
+
+#: lumos.core.journal.JournalEntry:5 of
+msgid "Elapsed time of the context clock when the event started, in seconds."
+msgstr ""
+
+#: lumos.core.journal.JournalEntry:7 of
+msgid "Absolute date of the clock when the event started (ISO 8601, UTC)."
+msgstr ""
+
+#: lumos.core.journal.JournalEntry:11 of
+msgid ""
+"For actions: element path, action name, readable arguments, the "
+":class:`~lumos.core.driver.Command`, effective mode and driver class name"
+" (operation only)."
+msgstr ""
+
+#: lumos.core.journal.JournalEntry:13 of
+msgid ""
+"Predicted and measured durations in seconds (``measured`` in operation "
+"only)."
+msgstr ""
+
+#: lumos.core.journal.JournalEntry:14 of
+msgid "For log entries: logger name, level name and message."
+msgstr ""
+
+#: lumos.core.journal.JournalEntry.to_json:1 of
+msgid "Return the entry as a JSON-compatible dictionary."
+msgstr ""
+
+#: lumos.core.journal.JsonFormatter:1 of
+msgid ""
+"Format log records as one JSON object per line, including the structured "
+"``record.lumos`` entry."
+msgstr ""
+
+#: lumos.core.journal.JsonFormatter.format:1 of
+msgid "Return the JSON line of ``record``."
+msgstr ""
+
 #: lumos.io:1 of
 msgid "Reading and writing LUMOS documents (``.lumos`` files)."
 msgstr ""
@@ -2918,8 +3831,12 @@ msgstr ""
 msgid "A ``.lumos`` document is malformed or describes invalid values."
 msgstr ""
 
+#: lumos.io.schema.document_schema:1 of
+msgid "Return the JSON Schema (draft 2020-12) of ``.lumos`` documents."
+msgstr ""
+
 #: lumos.io.lumos_format.from_document:1 of
-msgid "Create the element described by a ``.lumos`` document."
+msgid "Create the element, group or context described by a ``.lumos`` document."
 msgstr ""
 
 #: lumos.io.lumos_format.from_document:3 of
@@ -2935,24 +3852,57 @@ msgid "If the element type is not registered."
 msgstr ""
 
 #: lumos.io.lumos_format.load:1 of
-msgid "Read an element from a ``.lumos`` file."
+msgid ""
+"Read an element, group or context from a ``.lumos`` file (and its "
+"``.npz`` sidecar if any)."
 msgstr ""
 
 #: lumos.io.lumos_format.save:1 of
-msgid "Write ``element`` to a ``.lumos`` file (UTF-8, indented strict JSON)."
+msgid ""
+"Write an element, group or context to a ``.lumos`` file (UTF-8, indented "
+"strict JSON)."
+msgstr ""
+
+#: lumos.io.lumos_format.save:3 of
+msgid ""
+"Arrays larger than :data:`SIDECAR_THRESHOLD` are stored in a ``.npz`` "
+"file next to it (same name)."
 msgstr ""
 
 #: lumos.io.lumos_format.to_document:1 of
 msgid ""
-"Return the ``.lumos`` document (a JSON-compatible dictionary) describing "
-"``element``."
+"Return the ``.lumos`` document (a JSON-compatible dictionary) of an "
+"element, a group or a context."
+msgstr ""
+
+#: lumos.io.codegen:1 of
+msgid ""
+"Generation of a Python script equivalent to a context (REQ-CTX-8, step "
+"P5.9)."
+msgstr ""
+
+#: lumos.io.codegen:3 of
+msgid ""
+":func:`to_python` writes a script that rebuilds a context with the public"
+" API: imports of the element classes, creation of the elements and groups"
+" with their values, connections, clock, observation settings, simulation "
+"overrides and free parameters. Running the script gives a context with "
+"the same ``.lumos`` document and the same results; it is a readable "
+"starting point to edit a system built in the web interface or by an "
+"assistant."
+msgstr ""
+
+#: lumos.io.codegen.to_python:1 of
+msgid ""
+"Return a Python script that rebuilds ``ctx`` (assigned to the variable "
+"``ctx``)."
 msgstr ""
 
 #: lumos.errors:1 of
 msgid "Exceptions shared by several LUMOS modules."
 msgstr ""
 
-#: ../../api/index.md:105
+#: ../../api/index.md:136
 msgid "Propagation"
 msgstr ""
 
@@ -3427,7 +4377,7 @@ msgid ""
 "valid as long as the output plane stays inside the padded window."
 msgstr ""
 
-#: ../../api/index.md:120
+#: ../../api/index.md:151
 msgid "Plotting"
 msgstr ""
 
@@ -3514,4 +4464,31 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Any"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Priors describe what is known about "
+#~ "a free parameter before calibration or"
+#~ " inference. They carry physical units, "
+#~ "so they can be checked against the"
+#~ " parameter they are attached to. "
+#~ "Plain numbers are accepted for "
+#~ "dimensionless parameters. Sampling and log-"
+#~ "densities are added with the inference"
+#~ " blocks (phase 17)."
+#~ msgstr ""
+
+#~ msgid "Create the element described by a ``.lumos`` document."
+#~ msgstr ""
+
+#~ msgid "Read an element from a ``.lumos`` file."
+#~ msgstr ""
+
+#~ msgid "Write ``element`` to a ``.lumos`` file (UTF-8, indented strict JSON)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Return the ``.lumos`` document (a "
+#~ "JSON-compatible dictionary) describing "
+#~ "``element``."
 #~ msgstr ""

@@ -41,6 +41,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   band-limited angular spectrum methods; automatic, logged choice of the method (ADR-0005); vectorised over
   polarisation, wavelengths and modes; kernel cache; chunking under a memory budget; differentiable with JAX.
 - Validation suite of the propagation methods against analytic solutions, POPPY and HCIPy (`[validation]`).
+- `lumos.Context`: graph of elements with typed connections, pull execution with a per-element cache and
+  downstream invalidation, `>>` shorthand, access by dotted paths, per-element random streams, observation
+  band (ADR-0006).
+- `lumos.core.group.ElementGroup`: composite elements with exposed ports, nested freely.
+- Clock with timed actions (`@action(duration=...)`), `ctx.wait`, `ctx.parallel()` and time-dependent elements.
+- Simulation and operation modes, `Driver` interface, `SimulatedDriver`, digital twin skeleton.
+- Structured journal with action origins (Python, web, MCP) and a JSON-lines formatter.
+- `.lumos` documents of kind `group` and `context`, `.npz` sidecar for large arrays, published JSON Schema.
+- `ctx.to_python()`: equivalent Python script; `ctx.sweep` and `ctx.sample` (Monte-Carlo from priors).
 
 ### Fixed
 

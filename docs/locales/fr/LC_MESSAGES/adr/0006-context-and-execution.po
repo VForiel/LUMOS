@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev16\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 16:47+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0006-context-and-execution.md:1
+msgid "ADR-0006: Context, graph and execution model"
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:4
+msgid "**Date**: 2026-10-16"
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:5
+msgid "**Plan step**: P5.1–P5.10"
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:9
+msgid ""
+"Phase 5 turns isolated elements into systems (REQ-CTX-1 to 10): a graph "
+"of elements connected by typed ports, executed on demand with caching, a "
+"clock driven by timed actions, two operating modes with a digital twin, a"
+" structured journal, files and generated scripts. These choices shape "
+"every later phase (web editor, MCP server, hardware drivers), so they are"
+" recorded here."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:14
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:16
+msgid ""
+"**Graph.** A `Graph` holds elements under unique identifiers (explicit, "
+"from the name, or class name and counter) and connections between "
+"`PortRef`s. Connections are type-checked, single inputs take one "
+"connection, and cycles are refused at connection time."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:19
+msgid ""
+"**Pull execution.** `run(outputs)` computes the required sub-graph in a "
+"stable topological order. Outputs are cached **per element** (all outputs"
+" of an element come from one transfer call). Elements notify listeners "
+"when a field changes; the graph then drops the cache of the element and "
+"of everything downstream. Connections and removals invalidate the same "
+"way."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:23
+msgid ""
+"**Containers.** An element belongs to at most one container, a `Context` "
+"or an `ElementGroup`. Groups are elements with **instance-level ports** "
+"(`instance_ports()`), feeding their exposed inputs to the internal graph "
+"through `Graph.run(..., feeds=...)`; child changes propagate up as field "
+"changes of the group."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:26
+msgid ""
+"**Clock and actions.** Time advances only through actions and waits, "
+"never with the wall clock in simulation, which keeps simulations "
+"reproducible. `@action(duration=...)` computes the duration before the "
+"action runs; `ctx.parallel()` blocks advance by the longest duration. "
+"Time-dependent elements receive `values.time` and are invalidated when "
+"the clock moves."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:30
+msgid ""
+"**Modes.** The context executes every action: in simulation the method "
+"body updates the virtual state; in operation a `Command` goes to the "
+"element's `Driver`, the clock advances by the measured duration, and the "
+"twin either keeps the simulated state next to the measured one or the "
+"measured state is written back. Overrides keep chosen elements simulated."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:34
+msgid ""
+"**Journal.** Entries are dataclasses kept in `ctx.journal` and attached "
+"to `logging` records (`record.lumos`); records of other LUMOS loggers are"
+" captured during runs. The origin (`python`, `web`, `mcp`) is a context-"
+"managed stack set by the service layer."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:37
+msgid ""
+"**Files.** Context documents follow §10 of the specifications; arrays "
+"above 64 kB go to a `.npz` sidecar next to the file, referenced by name "
+"only (no paths). A JSON Schema of the envelope is shipped with the "
+"package and published with the documentation."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:41
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:43
+msgid ""
+"Caching per port instead of per element: no gain, since a transfer "
+"function computes all its outputs at once."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:45
+msgid ""
+"Push execution (recompute on every change): wasteful for interactive "
+"editing, where parameters change many times before a result is needed."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:47
+msgid ""
+"Wall-clock time in simulation: makes runs depend on the machine and "
+"breaks reproducibility."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:48
+msgid ""
+"Storing large arrays as base64 only: JSON files of hundreds of megabytes "
+"for pupil maps or phase screens."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:50
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:52
+msgid ""
+"The web interface and the MCP server drive the same `Context` API and "
+"only set the origin."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:53
+msgid ""
+"Hardware drivers (phase 12) implement `Driver._send` and return `Reply` "
+"objects; nothing else changes in the context."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:55
+msgid ""
+"Compiled pipelines bypass the graph and call pure transfer functions "
+"directly (ADR-0002); the graph is an orchestration layer, not a compiled "
+"one."
+msgstr ""
+
+#: ../../adr/0006-context-and-execution.md:57
+msgid ""
+"Plan numbering: the ADR planned as ADR-0006 for extended-scene imaging "
+"becomes ADR-0007, and the later ones shift accordingly."
+msgstr ""

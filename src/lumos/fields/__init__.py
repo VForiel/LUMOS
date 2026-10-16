@@ -1,4 +1,4 @@
-"""Discrete representations of optical fields and detected data (REQ-SIG-*).
+"""Discrete representations of optical fields and detected data (``REQ-SIG-*``).
 
 - :class:`Grid`: rectangular sampling of a spatial or angular plane.
 - :class:`Wavefront`: coherent monochromatic field sampled on a grid, scalar or polarised.

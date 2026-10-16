@@ -12,4 +12,5 @@ This guide will explain the concepts of LUMOS:
 :maxdepth: 1
 
 fields
+context
 ```
