@@ -125,7 +125,7 @@ def test_east_west_baseline_traces_an_ellipse(hour_angle, declination):
         hour_angle=hour_angle * u.hourangle,
         diameter=1 * u.m,
     )
-    (baseline,) = array.baselines().to_value(u.m)
+    (baseline,) = np.asarray(array.baselines().to_value(u.m))
     h, d = math.radians(15 * hour_angle), math.radians(declination)
     np.testing.assert_allclose(baseline, [100 * math.cos(h), 100 * math.sin(d) * math.sin(h)], atol=1e-9)
 
@@ -158,7 +158,7 @@ def test_hour_angle_advances_with_the_clock():
         )
     )
     ctx.wait(SIDEREAL_DAY / 24 * u.s)
-    (baseline,) = array.baselines().to_value(u.m)
+    (baseline,) = np.asarray(array.baselines().to_value(u.m))
     np.testing.assert_allclose(baseline, tms_uv(50, 50, 0, lat, dec, 0.0), atol=1e-6)
 
 
@@ -200,7 +200,7 @@ def test_life_is_a_six_to_one_x_array_of_two_metre_collectors():
     array = life(nulling_baseline=12 * u.m)
     assert array.n_telescopes == 4
     assert array.diameter.to_value(u.m) == pytest.approx(2.0)
-    lengths = sorted(np.hypot(*b) for b in array.baselines().to_value(u.m))
+    lengths = sorted(np.hypot(*b) for b in np.asarray(array.baselines().to_value(u.m)))
     nulling, imaging = 12.0, 72.0
     expected = sorted(
         [nulling, nulling, imaging, imaging, math.hypot(nulling, imaging), math.hypot(nulling, imaging)]
