@@ -513,8 +513,11 @@ class Context:
     # --- Random streams -----------------------------------------------------------------------
 
     def spawn_key(self, target: Any) -> tuple[int, ...]:
-        """Spawn key of the random stream of an element (or identifier): the UTF-8 bytes of its identifier."""
-        identifier = target if isinstance(target, str) else self.id_of(target)
+        """Spawn key of the random stream of an element (or identifier): the UTF-8 bytes of its path.
+
+        The path is the identifier of a top-level element and ``"group.child"`` inside groups.
+        """
+        identifier = target if isinstance(target, str) else self.path_of(target)
         return tuple(identifier.encode("utf-8"))
 
     def rng(self, target: Any) -> np.random.Generator:
