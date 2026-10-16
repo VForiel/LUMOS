@@ -218,3 +218,31 @@
 .. automodule:: lumos.plotting
    :members:
 ```
+
+```{eval-rst}
+.. automodule:: lumos.plotting.style
+   :members:
+
+.. automodule:: lumos.plotting.results
+   :members:
+```
+
+## Processing
+
+```{eval-rst}
+.. automodule:: lumos.processing.profiles
+   :members:
+```
+
+## Results and archives
+
+```{eval-rst}
+.. automodule:: lumos.results.figures
+   :members:
+
+.. automodule:: lumos.results.archive
+   :members: RunArchive, new_archive, default_archive_root, DEPENDENCIES
+
+.. automodule:: lumos.results.reader
+   :members:
+```

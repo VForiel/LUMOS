@@ -71,6 +71,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   MMI couplers from a slab mode solver (`lumos.physics.photonics`); Bracewell and kernel-nuller chips.
 - `lumos.elements.detectors`: camera (QE curve, photon, dark and read noises, saturation, binning, timed
   exposures), photodiode with shot noise, power meter.
+- `lumos.plotting.style`: publication figure style, colour maps by role, unit labels and journal widths.
+- `lumos.plotting`: PSF (λ/D units), radial profile, spectra, transmission maps, chip outputs and diagrams of
+  the graph of a context (SVG, PNG); `lumos.processing.radial_profile`.
+- `lumos.results`: figures saved as `.png` and `.plt` (PltEdit) with their data in `.npz` files; run archives
+  (`ctx.run(..., archive=...)`, `vfst.archive`) next to the script or notebook with the context, complete
+  metadata, journal, figures and outputs; `lumos.load_archive` (ADR-0010).
+- Example notebooks `01_first_simulation` to `04_interferometry` and shared presets in `examples/presets/`.
 
 ### Changed
 

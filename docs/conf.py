@@ -1,7 +1,9 @@
 """Sphinx configuration for the LUMOS documentation (English source, French translation)."""
 
 import os
+import shutil
 from datetime import UTC, datetime
+from pathlib import Path
 
 import lumos
 
@@ -12,6 +14,16 @@ author = "Vincent Foriel"
 copyright = f"{datetime.now(UTC).year}, {author}"
 release = lumos.__version__
 version = release
+
+# -- Example notebooks -------------------------------------------------------
+# The notebooks live in examples/ (next to their presets); they are copied into the documentation tree so
+# that myst-nb renders them under "Examples".
+
+_examples = Path(__file__).resolve().parent.parent / "examples"
+_rendered = Path(__file__).resolve().parent / "examples" / "notebooks"
+_rendered.mkdir(exist_ok=True)
+for _notebook in sorted(_examples.glob("[0-9][0-9]_*.ipynb")):
+    shutil.copy2(_notebook, _rendered / _notebook.name)
 
 # -- General -----------------------------------------------------------------
 

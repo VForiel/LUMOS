@@ -8,7 +8,8 @@ This guide will explain the concepts of LUMOS:
 - the **signals** that flow between elements (wavefronts, wavecubes, incoherent bundles, radiance fields, data);
 - the `.lumos` file format;
 - the **element library**: sources, optics, telescopes, atmosphere, coronagraphs, fibres, photonic chips and
-  detectors.
+  detectors;
+- **results**: figures, data files and archives of runs.
 
 ```{toctree}
 :maxdepth: 1
@@ -16,4 +17,5 @@ This guide will explain the concepts of LUMOS:
 fields
 context
 elements
+results
 ```

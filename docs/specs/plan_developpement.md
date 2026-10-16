@@ -177,12 +177,12 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 7 — Résultats, figures, archivage
 
-- [ ] **P7.1 Style de figures** — feuille de style, cartes de couleurs, étiquettes avec unités automatiques.
-- [ ] **P7.2 `lumos.plotting`** — intensité et phase, PSF, profil radial, spectres, cartes de transmission, sorties de puce, graphe du contexte.
-- [ ] **P7.3 Export** — `.png` + `.plt` (pltedit) + données `.npz`.
-- [ ] **P7.4 Archive** — `vfst.archive.new` à côté du script ou du notebook ; `context.lumos`, `metadata.yml` enrichi, `lumos.log`, `figures/`, `data/`.
-- [ ] **P7.5 Relecture** — `lumos.load_archive`.
-- [ ] **P7.6 Premiers notebooks** — `01_first_simulation`, `02_propagation_methods`, `03_psf_and_pupils`, `04_interferometry` ; exécutés en CI ; préréglages `.lumos`.
+- [x] **P7.1 Style de figures** — feuille de style, cartes de couleurs, étiquettes avec unités automatiques.
+- [x] **P7.2 `lumos.plotting`** — intensité et phase, PSF, profil radial, spectres, cartes de transmission, sorties de puce, graphe du contexte.
+- [x] **P7.3 Export** — `.png` + `.plt` (pltedit) + données `.npz`.
+- [x] **P7.4 Archive** — `vfst.archive.new` à côté du script ou du notebook ; `context.lumos`, `metadata.yml` enrichi, `lumos.log`, `figures/`, `data/`.
+- [x] **P7.5 Relecture** — `lumos.load_archive`.
+- [x] **P7.6 Premiers notebooks** — `01_first_simulation`, `02_propagation_methods`, `03_psf_and_pupils`, `04_interferometry` ; exécutés en CI ; préréglages `.lumos`.
 
 **Critères d'acceptation (v0.2) :** un notebook produit une archive complète ; les `.plt` se rechargent avec `pltedit.load` ; les métadonnées contiennent tous les champs de REQ-RES-2.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 7** (P7.1).
+Lancer la **phase 8** (P8.1).
