@@ -30,13 +30,14 @@ import inspect
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from typing import Any, ClassVar
 
+import numpy as np
 from astropy import units as u
 
 from lumos.core.param import MISSING, Field, Param, ParamHost, Setting
 from lumos.core.port import Port, PortRef
 from lumos.units import quantity_to_json
 
-__all__ = ["Element", "Values"]
+__all__ = ["Element", "Values", "generator"]
 
 _SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
 _NUMBER_SCHEMA: dict[str, Any] = {"oneOf": [{"type": "number"}, {"enum": ["nan", "inf", "-inf"]}]}
@@ -100,6 +101,16 @@ class Values(Mapping[str, Any]):
         return f"Values({self._data!r})"
 
 
+def generator(values: Mapping[str, Any]) -> np.random.Generator:
+    """Return a new NumPy generator of the random stream of a stochastic element from its ``values``.
+
+    The stream is ``numpy.random.SeedSequence(seed, spawn_key=...)`` of the context of the element, as in
+    :meth:`lumos.Context.rng`: identical between runs with the same seed, independent between elements.
+    """
+    seed, *spawn_key = values["random_key"]
+    return np.random.default_rng(np.random.SeedSequence(seed, spawn_key=tuple(spawn_key)))
+
+
 def _own_docstring(cls: type) -> str:
     doc = cls.__dict__.get("__doc__")
     return inspect.cleandoc(doc) if doc else ""
@@ -123,6 +134,10 @@ class Element(ParamHost):
     #: Whether the transfer function reads the spectral sampling of the context, ``values.wavelengths`` and
     #: ``values.bandwidths`` (tuples of SI floats from ``ctx.observation``).
     observation_dependent: ClassVar[bool] = False
+    #: Whether the transfer function draws random numbers. Stochastic elements get ``values.random_key``, the
+    #: key of their reproducible context stream (see :func:`generator`), and are recomputed when the seed of
+    #: the context changes.
+    stochastic: ClassVar[bool] = False
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Collect fields and ports and check the class definition."""
@@ -157,6 +172,8 @@ class Element(ParamHost):
             raise TypeError(
                 f"{cls.__name__}: 'wavelengths' and 'bandwidths' are reserved for the observation"
             )
+        if cls.stochastic and "random_key" in cls._lumos_fields:
+            raise TypeError(f"{cls.__name__}: stochastic elements cannot declare a field named 'random_key'")
 
     def __init__(self, name: str | None = None, **values: Any) -> None:
         self._lumos_listeners: list[Callable[[Element, str], None]] = []
@@ -262,7 +279,8 @@ class Element(ParamHost):
         """Return an immutable snapshot of the SI values of all fields.
 
         Time-dependent elements also get ``time``, the elapsed time of their context in seconds (0 outside a
-        context).
+        context); stochastic elements get ``random_key``, ``(seed, *spawn_key)`` of their context stream
+        (``(0,)`` outside a context).
         """
         data = {name: self.si(name) for name in type(self)._lumos_fields}
         if type(self).time_dependent:
@@ -276,6 +294,9 @@ class Element(ParamHost):
             low, high = (float(q.to_value(u.m, equivalencies=u.spectral())) for q in context.observation.band)
             data["wavelengths"] = tuple(float(v) for v in wavelengths.to_value(u.m))
             data["bandwidths"] = tuple(float(w) * (high - low) for w in weights)
+        if type(self).stochastic:
+            context = self.context
+            data["random_key"] = (0,) if context is None else (int(context.seed), *context.spawn_key(self))
         return Values(data)
 
     @classmethod

@@ -1,6 +1,7 @@
 r"""Bulk optics (§5.9, step P6.3).
 
-Free space, thin lenses and mirrors, beam splitters, filters, delay lines, polarisers and wave plates. Every
+Free space, thin lenses and mirrors, beam splitters, filters, delay lines, polarisers, wave plates and
+Zernike phase plates. Every
 element acts on :class:`~lumos.fields.Wavefront`, :class:`~lumos.fields.Wavecube` and
 :class:`~lumos.fields.IncoherentBundle` signals (REQ-EL-8), channel by channel for polychromatic light and
 mode by mode for bundles; the spectral filter also acts on :class:`~lumos.fields.RadianceField` signals.
@@ -48,6 +49,7 @@ __all__ = [
     "BeamSplitter",
     "DelayLine",
     "FreeSpace",
+    "PhasePlate",
     "Polarizer",
     "SpectralFilter",
     "ThinLens",
@@ -267,3 +269,35 @@ class WavePlate(Element):
         signal = _coherent(inputs["in"], "WavePlate")
         matrix = jones.retarder(values.retardance * u.rad, values.angle * u.rad)
         return {"out": jones.apply(matrix, signal)}
+
+
+# --- Phase plates (step P6.5) -------------------------------------------------------------------------
+
+
+def _plate_opd(values: Values, grid: Any) -> np.ndarray:
+    from lumos.physics.zernike import zernike_basis
+
+    coefficients = np.atleast_1d(np.asarray(values.coefficients, dtype=float))
+    basis = zernike_basis(grid, values.diameter * u.m, len(coefficients))
+    return np.tensordot(coefficients, basis, axes=1)
+
+
+@register("lumos.optics.PhasePlate")
+class PhasePlate(Element):
+    """Phase plate adding the OPD ``Σ a_j Z_j`` (Noll's Zernike modes, j from 1) over a disk."""
+
+    diameter = Param(unit=u.mm, default=10 * u.mm, bounds=(0 * u.m, None), inclusive=(False, True))
+    coefficients = Param(unit=u.nm, shape=None, default=[0.0] * u.nm, doc="RMS OPD of modes 1, 2, ...")
+    in_ = Input(OpticalSignal)
+    out = Output(OpticalSignal)
+
+    def opd(self, grid: Any) -> u.Quantity:
+        """Return the optical path difference of the plate on ``grid`` (zero outside the disk)."""
+        return _plate_opd(self.values(), grid) * u.m
+
+    @staticmethod
+    def transfer(values: Values, inputs: Any) -> dict[str, Any]:
+        """Add the optical path of the plate to every channel and mode."""
+        signal = _coherent(inputs["in"], "PhasePlate")
+        opd = _plate_opd(values, signal.grid)
+        return {"out": _phase(signal, lambda grid, xp: xp.asarray(opd))}

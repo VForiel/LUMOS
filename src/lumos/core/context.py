@@ -168,7 +168,7 @@ class Context:
         self.mode = mode
         self.twin = twin
         self.backend = backend
-        self.seed = int(np.random.SeedSequence().entropy) if seed is None else int(seed)  # type: ignore[arg-type]
+        self._seed = int(np.random.SeedSequence().entropy) if seed is None else int(seed)  # type: ignore[arg-type]
         self.name = name
         self.meta: dict[str, Any] = {}
         self.ui: dict[str, Any] = {}
@@ -371,6 +371,18 @@ class Context:
         for element in self._walk():
             if type(element).time_dependent:
                 element._on_field_changed("time")
+
+    @property
+    def seed(self) -> int:
+        """Seed of the random streams; changing it recomputes the stochastic elements."""
+        return self._seed
+
+    @seed.setter
+    def seed(self, value: int) -> None:
+        self._seed = int(value)
+        for element in self._walk():
+            if getattr(type(element), "stochastic", False):
+                element._on_field_changed("seed")
 
     def _observation_changed(self) -> None:
         for element in self._walk():

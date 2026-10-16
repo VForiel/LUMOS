@@ -164,7 +164,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P6.2 Ouvertures et pupilles** — primitives, préréglages JWST, VLT et ELT, anti-crénelage.
 - [x] **P6.3 Optique de volume** — espace libre, lentille et miroir minces, séparatrice, lames, polariseurs, filtre, ligne à retard.
 - [x] **P6.4 Télescopes et réseaux** — préréglages VLTI et LIFE, bases projetées.
-- [ ] **P6.5 Atmosphère et OA** — von Kármán multi-couches dépendant du temps, miroir déformable, correction simple.
+- [x] **P6.5 Atmosphère et OA** — von Kármán multi-couches dépendant du temps, miroir déformable, correction simple.
 - [ ] **P6.6 Coronographes** — 4QPM, vortex, Lyot.
 - [ ] **P6.7 Optique guidée** — modes LP, injection, fibres.
 - [ ] **P6.8 Photonique** — guide, déphaseur, Y-splitter, coupleur, MMI (solveur de modes), croisement ; puce comme groupe ; préréglages Bracewell et nulleur à noyaux.
