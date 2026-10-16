@@ -1,0 +1,226 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.1.dev10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 12:52+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0001-stack-and-conventions.md:1
+msgid "ADR-0001: Technical stack and project conventions"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:4
+msgid "**Date**: 2026-10-16"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:5
+msgid "**Plan step**: P0.1"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:9
+msgid ""
+"LUMOS starts from scratch. The requirements "
+"(`docs/specs/cahier_des_charges.md`, decisions D1–D13) fix the main "
+"orientations; this ADR records the concrete tooling chosen in phase 0."
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:12
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Topic"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Choice"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Distribution / import"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "`lumos-maxima` on PyPI (`lumos` is taken), `import lumos`, CLI `lumos`"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Python versions"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid ""
+"SPEC 0 policy. On 2026-10-16 the latest NumPy (2.5), SciPy (1.18) and JAX"
+" (0.11) all require Python ≥ 3.12, so `requires-python = \">=3.12\"`; CI "
+"tests 3.12, 3.13 and 3.14"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Build backend"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "`hatchling` with `hatch-vcs` (version derived from git tags)"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Layout"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "`src/` layout, typed package (`py.typed`)"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Lint / format"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "`ruff` (lint and format), configured in `pyproject.toml`"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Type checking"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid ""
+"`pyright` (standard mode for the whole package, strict mode for the core "
+"packages as they are created)"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Tests"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid ""
+"`pytest`, `pytest-cov`, `hypothesis`; markers `network`, `hardware`, "
+"`gpu`, `slow` excluded by default"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Test discipline"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid ""
+"tests first, separate test commits, independent reference values, "
+"enforced by `tools/check_test_integrity.py`"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Commits"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid ""
+"Conventional Commits, scope = plan step (`feat(P4.3): …`); breaking test "
+"changes use `test(Px.y)!:` with a justification"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Docs"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid ""
+"Sphinx, Breeze theme, MyST, myst-nb, Mermaid; English source, French via "
+"gettext (`sphinx-intl`); ReadTheDocs (one project per language)"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "CI"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid ""
+"GitHub Actions: lint, type checking, test matrix (Linux, Windows, macOS ×"
+" 3.12–3.14), docs (EN and FR, warnings as errors), test integrity"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "Release"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "PyPI trusted publishing on GitHub Release"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "License"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md
+msgid "MIT"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:30
+msgid "`vfscitools` dependency"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:32
+msgid ""
+"`vfscitools` (archives and `.plt` figures, REQ-RES-*) is **not published "
+"on PyPI**, and a package published on PyPI cannot depend on a git URL. It"
+" is therefore not declared yet. It must be published on PyPI before step "
+"P7.3, when LUMOS starts using it."
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:36
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:38
+msgid ""
+"**setuptools + setuptools-scm**: equivalent, but more configuration for "
+"the same result."
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:39
+msgid ""
+"**mypy**: slower, and its NumPy/JAX stub ecosystem is less convenient "
+"than pyright's."
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:40
+msgid ""
+"**Python ≥ 3.11** for a wider audience: impossible without giving up the "
+"latest NumPy, SciPy and JAX releases."
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:42
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:44
+msgid ""
+"Version numbers come from git tags (`v0.1.0`). Untagged commits get "
+"`0.1.devN` versions."
+msgstr ""
+
+#: ../../adr/0001-stack-and-conventions.md:45
+msgid "`vfscitools` must be released on PyPI before P7.3."
+msgstr ""

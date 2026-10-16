@@ -1,0 +1,33 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.1.dev10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 12:52+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../assistant/index.md:1
+msgid "AI assistant (MCP)"
+msgstr "Assistant IA (MCP)"
+
+#: ../../assistant/index.md:3
+msgid ""
+"LUMOS provides an MCP server so that an AI assistant can build, run and analyse simulations for you. This "
+"page will explain how to connect it to Claude Code, Claude Desktop and other MCP clients."
+msgstr ""
+"LUMOS fournit un serveur MCP pour qu'un assistant IA puisse construire, exécuter et analyser des "
+"simulations pour vous. Cette page expliquera comment le connecter à Claude Code, Claude Desktop et d'autres"
+" clients MCP."

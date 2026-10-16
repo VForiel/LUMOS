@@ -1,0 +1,32 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.1.dev10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 12:52+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../learn/index.md:1
+msgid "Learn"
+msgstr "Comprendre"
+
+#: ../../learn/index.md:3
+msgid ""
+"Explanations of the physics behind LUMOS: wave propagation methods and their sampling requirements, imaging"
+" of extended scenes, guided and integrated optics, detectors and noise, radiometry."
+msgstr ""
+"La physique derrière LUMOS : méthodes de propagation des ondes et leurs contraintes d'échantillonnage, "
+"imagerie des scènes étendues, optique guidée et intégrée, détecteurs et bruits, radiométrie."

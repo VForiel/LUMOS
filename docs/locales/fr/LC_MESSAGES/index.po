@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.1.dev10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-16 12:52+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../index.md:13
+msgid "🚀 Start"
+msgstr "🚀 Démarrer"
+
+#: ../../index.md:20
+msgid "📖 Guides"
+msgstr "📖 Guides"
+
+#: ../../index.md:32
+msgid "🧩 Reference"
+msgstr "🧩 Référence"
+
+#: ../../index.md:39
+msgid "🛠️ Project"
+msgstr "🛠️ Projet"
+
+#: ../../index.md:1
+msgid "LUMOS"
+msgstr "LUMOS"
+
+#: ../../index.md:3
+msgid "**Lumos is a Universal and Modular Optical Simulator & Operating System.**"
+msgstr ""
+"**Lumos is a Universal and Modular Optical Simulator & Operating System** (simulateur optique universel et "
+"modulaire, doublé d'un système de pilotage)."
+
+#: ../../index.md:5
+msgid ""
+"LUMOS simulates light end to end, from a scene (astronomical, terrestrial or laboratory) to the detected "
+"data, through any optical system. The same object model drives real optical equipment, builds data "
+"processing pipelines and is exposed to AI assistants through an MCP server."
+msgstr ""
+"LUMOS simule la lumière de bout en bout, d'une scène (astronomique, terrestre ou de laboratoire) jusqu'aux "
+"données détectées, à travers n'importe quel système optique. Le même modèle objet pilote les équipements "
+"optiques réels, construit des pipelines de traitement de données et est mis à disposition des assistants IA"
+" via un serveur MCP."
+
+#: ../../index.md:10
+msgid ""
+"LUMOS is in early development. This documentation describes the planned structure; most pages are "
+"placeholders."
+msgstr ""
+"LUMOS est en tout début de développement. Cette documentation décrit la structure prévue ; la plupart des "
+"pages sont encore vides."
