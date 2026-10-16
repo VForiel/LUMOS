@@ -55,6 +55,19 @@ jobs:
       - run: python -m pip install -e ".[dev,jax]"
       - run: python -m pytest --cov --cov-report=term
 
+  validation:
+    # Comparisons with independent libraries (POPPY, HCIPy): extra [validation].
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e ".[dev,validation]"
+      - run: python -m pytest tests/cross -ra
+
   docs:
     runs-on: ubuntu-latest
     strategy:
