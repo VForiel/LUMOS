@@ -63,6 +63,9 @@
 ```{eval-rst}
 .. automodule:: lumos.fields.grid
    :members: Grid
+
+.. automodule:: lumos.fields.wavefront
+   :members: Wavefront
 ```
 
 ## Files

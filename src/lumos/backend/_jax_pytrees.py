@@ -55,6 +55,12 @@ def register() -> None:
         return Values({key: data[key] for key in order})
 
     jax.tree_util.register_pytree_node(Values, flatten, unflatten)
+
+    # Signals define _tree_flatten() -> (children, aux) and the classmethod _tree_unflatten(aux, children).
+    from lumos.fields import pytree_classes
+
+    for cls in pytree_classes():
+        jax.tree_util.register_pytree_node(cls, cls._tree_flatten, cls._tree_unflatten)
     _registered = True
 
 
