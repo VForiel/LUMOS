@@ -146,14 +146,22 @@ class Element(ParamHost):
 
     def __init__(self, name: str | None = None, **values: Any) -> None:
         self._lumos_listeners: list[Callable[[Element, str], None]] = []
-        self._lumos_context: Any = None
+        self._lumos_container: Any = None
         self.name = name
         super().__init__(**values)
 
     @property
     def context(self) -> Any:
-        """The :class:`~lumos.Context` holding this element, or ``None``."""
-        return self._lumos_context
+        """The :class:`~lumos.Context` holding this element (through its groups), or ``None``."""
+        container = self._lumos_container
+        while container is not None and not hasattr(container, "mode"):
+            container = container._lumos_container  # an ElementGroup: go up
+        return container
+
+    @property
+    def container(self) -> Any:
+        """The context or group directly holding this element, or ``None``."""
+        return self._lumos_container
 
     def __rshift__(self, other: Any) -> Any:
         """Connect the unique output of this element to the unique input of ``other`` (an element or port).
@@ -472,9 +480,11 @@ def _connect_shorthand(left: Any, right: Any) -> Any:
     from lumos.core.graph import GraphError
 
     source = left if isinstance(left, PortRef) else _unique_port(left, "out")
-    context = source.owner.context
+    context = source.owner.container
     if context is None:
-        raise GraphError(f"{source.owner!r} is not in a context; add it with ctx.add() before using '>>'")
+        raise GraphError(
+            f"{source.owner!r} is not in a context or group; add it with ctx.add() before using '>>'"
+        )
     target_owner = right.owner if isinstance(right, PortRef) else right
     if target_owner not in context:
         context.add(target_owner)

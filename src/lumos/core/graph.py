@@ -273,28 +273,37 @@ class Graph:
             return self._elements[key].port(port)
         return self[target]
 
-    def _inputs(self, element: Any) -> dict[str, Any]:
+    def _inputs(self, element: Any, feeds: Mapping[PortRef, Any]) -> dict[str, Any]:
         inputs: dict[str, Any] = {}
         for name, port in element.instance_ports().items():
             if port.direction != "in":
                 continue
-            connections = self.incoming(element.port(name))
+            ref = element.port(name)
+            connections = self.incoming(ref)
+            if ref in feeds:
+                if connections:
+                    raise GraphError(f"input {self.id_of(element)}.{name} is both fed and connected")
+                inputs[name] = feeds[ref]
+                continue
             if not connections and not port.multiple:
                 raise GraphError(f"input {self.id_of(element)}.{name} is not connected")
             signals = [self._cache[id_(c.source.owner)][c.source.name] for c in connections]
             inputs[name] = signals if port.multiple else signals[0]
         return inputs
 
-    def _compute(self, element: Any) -> Mapping[str, Any]:
-        return element.apply(**self._inputs(element))
+    def _compute(self, element: Any, feeds: Mapping[PortRef, Any]) -> Mapping[str, Any]:
+        return element.apply(**self._inputs(element, feeds))
 
-    def run(self, targets: Iterable[Any]) -> Result:
+    def run(self, targets: Iterable[Any], *, feeds: Mapping[PortRef, Any] | None = None) -> Result:
         """Compute the requested outputs.
 
         Parameters
         ----------
         targets
             Output ports, elements (all their outputs) or identifiers ``"id"`` / ``"id.port"``.
+        feeds
+            Signals given directly to unconnected input ports (used by groups for their exposed inputs).
+            The caller invalidates the elements whose feeds changed.
 
         Returns
         -------
@@ -302,9 +311,10 @@ class Graph:
             The signals by output port, also reachable by ``"id.port"``.
         """
         resolved = [self.resolve(t) for t in targets]
+        feeds = {} if feeds is None else feeds
         for element in self.required(resolved):
             if id_(element) not in self._cache:
-                self._cache[id_(element)] = dict(self._compute(element))
+                self._cache[id_(element)] = dict(self._compute(element, feeds))
         result = Result(self)
         for target in resolved:
             if isinstance(target, PortRef):

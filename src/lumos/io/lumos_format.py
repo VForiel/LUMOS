@@ -1,7 +1,7 @@
 """The ``.lumos`` document format (ADR-0003).
 
 A ``.lumos`` file is a UTF-8 strict-JSON document. This module handles documents of kind ``"element"``,
-which describe a single element::
+which describe a single element, and ``"group"``, which describe an element group::
 
     {
       "lumos_format": "1.0",
@@ -15,6 +15,10 @@ which describe a single element::
         "free": {"focal_length": {"prior": {"kind": "normal", "mean": ..., "std": ...}}}
       }
     }
+
+A group entry has the type ``"lumos.group"`` and lists its ``children`` (element or group entries, each with
+an ``id``), its internal ``connections`` (``{"from": "id.port", "to": "id.port"}``) and its
+``exposed_ports`` (``{"name": "id.port"}``).
 
 Physical values keep the user's unit (see :func:`lumos.units.quantity_to_json`). The element class is found
 in the :class:`~lumos.core.registry.Registry` from its ``type`` identifier; nothing is ever imported while
@@ -36,13 +40,14 @@ from astropy import units as u
 import lumos
 from lumos.core import registry as _registry_module
 from lumos.core.element import Element
+from lumos.core.group import GROUP_TYPE, ElementGroup
 from lumos.core.param import Param, Setting
 from lumos.core.priors import prior_from_json, prior_to_json
 from lumos.core.registry import Registry
 from lumos.errors import FormatVersionError, LumosFormatError
 from lumos.units import quantity_from_json, quantity_to_json
 
-__all__ = ["FORMAT_VERSION", "from_document", "load", "save", "to_document"]
+__all__ = ["FORMAT_VERSION", "entry_of", "from_document", "from_entry", "load", "save", "to_document"]
 
 FORMAT_VERSION = "1.0"
 _SUPPORTED = (1, 0)
@@ -55,8 +60,41 @@ def _registry(registry: Registry | None) -> Registry:
 
 
 def to_document(element: Element, *, registry: Registry | None = None) -> dict[str, Any]:
-    """Return the ``.lumos`` document (a JSON-compatible dictionary) describing ``element``."""
+    """Return the ``.lumos`` document (a JSON-compatible dictionary) describing an element or a group."""
     reg = _registry(registry)
+    kind = "group" if isinstance(element, ElementGroup) else "element"
+    return {
+        "lumos_format": FORMAT_VERSION,
+        "kind": kind,
+        "lumos_version": lumos.__version__,
+        "created_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
+        kind: entry_of(element, reg),
+    }
+
+
+def entry_of(element: Element, registry: Registry | None = None) -> dict[str, Any]:
+    """Return the document entry of an element or a group (without the envelope)."""
+    reg = _registry(registry)
+    if isinstance(element, ElementGroup):
+        graph = element.graph
+        children = []
+        for child_id, child in graph.elements.items():
+            children.append({"id": child_id, **entry_of(child, reg)})
+        connections = [
+            {
+                "from": f"{graph.id_of(c.source.owner)}.{c.source.name}",
+                "to": f"{graph.id_of(c.target.owner)}.{c.target.name}",
+            }
+            for c in graph.connections
+        ]
+        exposed = {name: f"{graph.id_of(ref.owner)}.{ref.name}" for name, ref in element.exposed().items()}
+        return {
+            "type": GROUP_TYPE,
+            "name": element.name,
+            "children": children,
+            "connections": connections,
+            "exposed_ports": exposed,
+        }
     type_id = reg.type_id(type(element))
     groups: dict[str, dict[str, Any]] = {"param": {}, "setting": {}, "state": {}}
     free: dict[str, Any] = {}
@@ -67,19 +105,13 @@ def to_document(element: Element, *, registry: Registry | None = None) -> dict[s
             prior = element.prior(name)
             free[name] = {"prior": None if prior is None else prior_to_json(prior)}
     return {
-        "lumos_format": FORMAT_VERSION,
-        "kind": "element",
-        "lumos_version": lumos.__version__,
-        "created_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
-        "element": {
-            "type": type_id,
-            "type_version": reg.version(type_id),
-            "name": element.name,
-            "params": groups["param"],
-            "settings": groups["setting"],
-            "state": groups["state"],
-            "free": free,
-        },
+        "type": type_id,
+        "type_version": reg.version(type_id),
+        "name": element.name,
+        "params": groups["param"],
+        "settings": groups["setting"],
+        "state": groups["state"],
+        "free": free,
     }
 
 
@@ -110,14 +142,23 @@ def from_document(document: Mapping[str, Any], *, registry: Registry | None = No
     reg = _registry(registry)
     if not isinstance(document, Mapping):
         raise LumosFormatError("a .lumos document must be a JSON object")
-    missing = [key for key in ("lumos_format", "kind", "element") if key not in document]
+    missing = [key for key in ("lumos_format", "kind") if key not in document]
     if missing:
         raise LumosFormatError(f"missing key(s) in the document: {missing}")
     _check_format_version(document["lumos_format"])
-    if document["kind"] != "element":
-        raise LumosFormatError(f"unsupported document kind {document['kind']!r}")
+    kind = document["kind"]
+    if kind not in ("element", "group"):
+        raise LumosFormatError(f"unsupported document kind {kind!r}")
+    if kind not in document:
+        raise LumosFormatError(f"missing key {kind!r} in the document")
+    return from_entry(document[kind], registry=reg)
 
-    entry = document["element"]
+
+def from_entry(entry: Any, *, registry: Registry | None = None) -> Element:
+    """Create the element or group described by a document entry."""
+    reg = _registry(registry)
+    if isinstance(entry, Mapping) and entry.get("type") == GROUP_TYPE:
+        return _group_from_entry(entry, reg)
     if not isinstance(entry, Mapping) or "type" not in entry or "type_version" not in entry:
         raise LumosFormatError("the element entry needs 'type' and 'type_version'")
     type_id = entry["type"]
@@ -145,6 +186,33 @@ def from_document(document: Mapping[str, Any], *, registry: Registry | None = No
     except (TypeError, ValueError, u.UnitsError) as error:
         raise LumosFormatError(f"{type_id}: {error}") from error
     return element
+
+
+def _group_from_entry(entry: Mapping[str, Any], reg: Registry) -> Element:
+    unknown = set(entry) - {"type", "name", "children", "connections", "exposed_ports", "id"}
+    if unknown:
+        raise LumosFormatError(f"unknown key(s) in a group entry: {sorted(unknown)}")
+    group = ElementGroup(name=entry.get("name"))
+    for child in entry.get("children", []):
+        if not isinstance(child, Mapping) or not isinstance(child.get("id"), str):
+            raise LumosFormatError("every child of a group needs a string 'id'")
+        body = {key: value for key, value in child.items() if key != "id"}
+        group.add(from_entry(body, registry=reg), id=child["id"])
+    try:
+        for connection in entry.get("connections", []):
+            group.connect(_port(group, connection["from"]), _port(group, connection["to"]))
+        for name, path in entry.get("exposed_ports", {}).items():
+            group.expose(name, _port(group, path))
+    except (KeyError, TypeError, ValueError) as error:
+        raise LumosFormatError(f"invalid group {entry.get('name')!r}: {error}") from error
+    return group
+
+
+def _port(group: Any, path: Any) -> Any:
+    if not isinstance(path, str) or "." not in path:
+        raise LumosFormatError(f"invalid port reference {path!r}: expected 'id.port'")
+    owner, _, name = path.rpartition(".")
+    return group[owner].port(name)
 
 
 def _apply_free(element: Element, free: Any) -> None:

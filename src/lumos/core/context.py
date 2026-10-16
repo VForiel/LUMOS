@@ -174,19 +174,19 @@ class Context:
     def add(self, *elements: Any) -> Any:
         """Add elements and return them (the element itself when only one is given)."""
         for element in elements:
-            owner = getattr(element, "_lumos_context", None)
+            owner = getattr(element, "_lumos_container", None)
             if owner is not None and owner is not self:
                 raise GraphError(f"{element!r} already belongs to another context")
             if owner is self:
                 continue
             self._graph.add(element)
-            element._lumos_context = self
+            element._lumos_container = self
         return elements[0] if len(elements) == 1 else elements
 
     def remove(self, element: Any) -> None:
         """Remove ``element`` and its connections."""
         self._graph.remove(element)
-        element._lumos_context = None
+        element._lumos_container = None
 
     def connect(self, source: PortRef, target: PortRef) -> None:
         """Connect an output port to an input port (adding the target element if needed)."""
