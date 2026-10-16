@@ -422,7 +422,7 @@ Les émulateurs supportent l'**injection de fautes** (déconnexion, délai, vale
 1. Pour chaque étape du plan, les **tests sont écrits avant l'implémentation**, à partir de la spécification de l'étape. Ils échouent au départ (« rouge »).
 2. Les tests sont **commités séparément**, avant le code : `test(Px.y): …`.
 3. L'implémentation est écrite **sans modifier les tests** jusqu'à ce qu'ils passent : `feat(Px.y): …`.
-4. Un test ne peut être modifié qu'en cas de **changement d'objectif** (consigné dans un ADR ou dans le cahier des charges) ou d'**erreur ou limite avérée du test** (valeur de référence fausse, tolérance physiquement injustifiée, hypothèse incorrecte). La modification fait alors l'objet d'un **commit dédié** `test!(Px.y): …` dont le message explique la raison et cite la source qui fait foi. Elle n'est **jamais** mélangée à du code d'implémentation.
+4. Un test ne peut être modifié qu'en cas de **changement d'objectif** (consigné dans un ADR ou dans le cahier des charges) ou d'**erreur ou limite avérée du test** (valeur de référence fausse, tolérance physiquement injustifiée, hypothèse incorrecte). La modification fait alors l'objet d'un **commit dédié** `test(Px.y)!: …` dont le message explique la raison et cite la source qui fait foi. Elle n'est **jamais** mélangée à du code d'implémentation.
 5. Assouplir une tolérance pour faire passer une implémentation est interdit, sauf justification physique documentée.
 
 ### 7.2 Valeurs attendues indépendantes (pas d'auto-validation)
@@ -434,7 +434,7 @@ Les émulateurs supportent l'**injection de fautes** (déconnexion, délai, vale
 
 ### 7.3 Contrôles automatiques
 
-- Un job CI signale tout commit qui modifie à la fois `tests/` et `src/`, ainsi que toute modification de test sans le préfixe `test!`.
+- Un job CI signale tout commit qui modifie à la fois `tests/` et `src/`, ainsi que toute modification de test sans le préfixe `test(…)!`.
 - Les tests sont paramétrés par backend (NumPy, JAX, et CuPy si disponible).
 - Les tests réseau (catalogues) et matériel (drivers réels) sont marqués et exclus par défaut ; les drivers LumosLabs sont testés en CI via leurs émulateurs.
 

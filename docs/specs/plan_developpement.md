@@ -13,7 +13,7 @@
    2. *Tester* : écrire les tests à partir de la spécification, avec des valeurs attendues issues de sources indépendantes (cahier des charges §7.2), puis les commiter seuls (`test(Px.y): …`). Ils doivent échouer.
    3. *Implémenter* jusqu'au vert **sans toucher aux tests** (`feat(Px.y): …`).
    4. *Documenter* : docstrings, pages de doc, `CHANGELOG`, ADR si une décision a été prise.
-   5. Un test erroné ou dont l'objectif change est corrigé dans un commit dédié `test!(Px.y): …` qui donne la justification (cahier des charges §7.1).
+   5. Un test erroné ou dont l'objectif change est corrigé dans un commit dédié `test(Px.y)!: …` qui donne la justification (cahier des charges §7.1).
 2. **Fondations d'abord, verticalité ensuite.** Le cœur est validé physiquement avant d'élargir la bibliothèque ; dès la phase 5, chaque phase livre une tranche utilisable de bout en bout (notebook qui tourne).
 3. **Une décision structurante = un ADR** (`docs/adr/`).
 4. **Commits au format *Conventional Commits*** qui référencent l'étape.
@@ -71,7 +71,7 @@ flowchart LR
 - [ ] **P0.1 Conventions** — `CLAUDE.md` : cycle de chaque étape, règles de test (cahier des charges §7), unités, structure, langue, *Conventional Commits*, interdits (fichiers à la racine, `print`, `pickle`, désactivation TLS). ADR-0001 « Stack et conventions ».
 - [ ] **P0.2 Squelette** — `pyproject.toml` (nom `lumos-maxima`, import `lumos`, src layout, extras définis dans NF-2, version dynamique, bornes Python selon SPEC 0), `src/lumos/__init__.py`, `LICENSE` MIT, `CHANGELOG.md`, `.gitignore`, `README.md` (corriger `&amp;`).
 - [ ] **P0.3 Qualité** — ruff, pyright ou mypy, pytest, pytest-cov, hypothesis, pre-commit.
-- [ ] **P0.4 CI** — lint, typage, tests (matrice OS × versions Python), doc ; job d'**intégrité des tests** (alerte sur les commits qui modifient `tests/` et `src/` ensemble, ou un test sans `test!`).
+- [ ] **P0.4 CI** — lint, typage, tests (matrice OS × versions Python), doc ; job d'**intégrité des tests** (alerte sur les commits qui modifient `tests/` et `src/` ensemble, ou un test sans `test(…)!`).
 - [ ] **P0.5 Docs** — Sphinx + Breeze + MyST + myst-nb + Mermaid, `.readthedocs.yaml`, squelette des sections (REQ-DOC-4), chaîne de traduction `sphinx-intl` (EN → FR) et projet RTD FR.
 - [ ] **P0.6 Réservation du nom** — publication d'une version `0.0.1` vide de `lumos-maxima` sur TestPyPI puis PyPI (*trusted publishing*).
 
