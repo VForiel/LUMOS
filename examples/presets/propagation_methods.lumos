@@ -2,7 +2,7 @@
   "lumos_format": "1.0",
   "kind": "context",
   "lumos_version": "0.0.2.dev16",
-  "created_at": "2026-10-16T23:03:32Z",
+  "created_at": "2026-10-16T23:37:07Z",
   "meta": {
     "name": "Propagation methods",
     "description": "A Gaussian beam propagated over 2 m: the planner chooses the method (see the journal).",

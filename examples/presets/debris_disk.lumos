@@ -1,0 +1,343 @@
+{
+  "lumos_format": "1.0",
+  "kind": "context",
+  "lumos_version": "0.0.2.dev16",
+  "created_at": "2026-10-16T23:37:15Z",
+  "meta": {
+    "name": "Debris disk",
+    "description": "A star and an inclined debris disk (1e-3 of the stellar flux) behind a vortex coronagraph; the disk is decomposed into incoherent point sources (SceneToSources).",
+    "outputs": [
+      "image.out",
+      "sky.radiance"
+    ],
+    "author": "LUMOS"
+  },
+  "context": {
+    "mode": "simulation",
+    "twin": true,
+    "seed": 1,
+    "backend": {
+      "preferred": "auto"
+    },
+    "clock": {
+      "start": "2026-01-01T00:00:00.000",
+      "elapsed": {
+        "value": 0.0,
+        "unit": "s"
+      }
+    },
+    "observation": {
+      "band": {
+        "min": {
+          "value": 1.59,
+          "unit": "um"
+        },
+        "max": {
+          "value": 1.61,
+          "unit": "um"
+        }
+      },
+      "n": 1,
+      "rule": "midpoint",
+      "extra": {}
+    },
+    "simulate": []
+  },
+  "elements": [
+    {
+      "id": "sky",
+      "type": "lumos.group",
+      "name": "sky",
+      "children": [
+        {
+          "id": "combiner",
+          "type": "lumos.scenes.SceneCombiner",
+          "type_version": 1,
+          "name": "combiner",
+          "params": {
+            "ra": {
+              "value": 0.0,
+              "unit": "deg"
+            },
+            "dec": {
+              "value": 0.0,
+              "unit": "deg"
+            },
+            "latitude": {
+              "value": 0.0,
+              "unit": "deg"
+            },
+            "longitude": {
+              "value": 0.0,
+              "unit": "deg"
+            },
+            "altitude": {
+              "value": 0.0,
+              "unit": "m"
+            },
+            "distance": {
+              "value": 1.0,
+              "unit": "m"
+            },
+            "pixel_scale": {
+              "value": 1.5e-07,
+              "unit": "rad"
+            }
+          },
+          "settings": {
+            "frame": "celestial",
+            "n_pixels": 24
+          },
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "star",
+          "type": "lumos.sources.PointSource",
+          "type_version": 1,
+          "name": "star",
+          "params": {
+            "flux_density": {
+              "value": 1.0,
+              "unit": "Jy"
+            },
+            "theta_x": {
+              "value": 0.0,
+              "unit": "rad"
+            },
+            "theta_y": {
+              "value": 0.0,
+              "unit": "rad"
+            }
+          },
+          "settings": {},
+          "state": {},
+          "free": {}
+        },
+        {
+          "id": "disk",
+          "type": "lumos.scenes.InclinedRing",
+          "type_version": 1,
+          "name": "disk",
+          "params": {
+            "flux_density": {
+              "value": 0.001,
+              "unit": "Jy"
+            },
+            "reference_wavelength": {
+              "value": 1.0,
+              "unit": "um"
+            },
+            "temperature": {
+              "value": 5772.0,
+              "unit": "K"
+            },
+            "x0": {
+              "value": 0.0,
+              "unit": "mas"
+            },
+            "y0": {
+              "value": 0.0,
+              "unit": "mas"
+            },
+            "pixel_scale": {
+              "value": 7.5e-08,
+              "unit": "rad"
+            },
+            "inner_radius": {
+              "value": 1e-06,
+              "unit": "rad"
+            },
+            "outer_radius": {
+              "value": 1.4e-06,
+              "unit": "rad"
+            },
+            "inclination": {
+              "value": 60.0,
+              "unit": "deg"
+            },
+            "position_angle": {
+              "value": 30.0,
+              "unit": "deg"
+            },
+            "power_law": {
+              "value": 0.0,
+              "unit": ""
+            }
+          },
+          "settings": {
+            "spectrum": "flat",
+            "n_pixels": 48,
+            "supersample": 4
+          },
+          "state": {},
+          "free": {}
+        }
+      ],
+      "connections": [
+        {
+          "from": "star.out",
+          "to": "combiner.points"
+        },
+        {
+          "from": "disk.out",
+          "to": "combiner.diffuse"
+        }
+      ],
+      "exposed_ports": {
+        "sources": "combiner.sources",
+        "radiance": "combiner.radiance"
+      },
+      "group_type": "lumos.scenes.Scene"
+    },
+    {
+      "id": "pixels",
+      "type": "lumos.scenes.SceneToSources",
+      "type_version": 1,
+      "name": "pixels",
+      "params": {},
+      "settings": {
+        "threshold": 0.0
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "telescope",
+      "type": "lumos.telescopes.Telescope",
+      "type_version": 1,
+      "name": "telescope",
+      "params": {
+        "diameter": {
+          "value": 8.0,
+          "unit": "m"
+        },
+        "obstruction": {
+          "value": 0.0,
+          "unit": "m"
+        },
+        "spider_width": {
+          "value": 0.0,
+          "unit": "m"
+        },
+        "spider_rotation": {
+          "value": 0.0,
+          "unit": "deg"
+        }
+      },
+      "settings": {
+        "n_spiders": 0,
+        "n_pixels": 128,
+        "oversize": 1.1,
+        "supersample": 4
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "coronagraph",
+      "type": "lumos.coronagraphs.VortexCoronagraph",
+      "type_version": 1,
+      "name": "coronagraph",
+      "params": {
+        "pupil_diameter": {
+          "value": 8.0,
+          "unit": "m"
+        },
+        "lyot_stop": {
+          "value": 0.95,
+          "unit": ""
+        },
+        "reference_wavelength": {
+          "value": 1000.0,
+          "unit": "nm"
+        }
+      },
+      "settings": {
+        "charge": 2,
+        "achromatic": true
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "lens",
+      "type": "lumos.optics.ThinLens",
+      "type_version": 1,
+      "name": "lens",
+      "params": {
+        "focal_length": {
+          "value": 100.0,
+          "unit": "m"
+        }
+      },
+      "settings": {},
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "image",
+      "type": "lumos.optics.FreeSpace",
+      "type_version": 1,
+      "name": "image",
+      "params": {
+        "distance": {
+          "value": 100.0,
+          "unit": "m"
+        }
+      },
+      "settings": {
+        "method": "fresnel_mft",
+        "output_grid": {
+          "nx": 64,
+          "ny": 64,
+          "dx": {
+            "value": 8e-06,
+            "unit": "m"
+          },
+          "dy": {
+            "value": 8e-06,
+            "unit": "m"
+          },
+          "x0": {
+            "value": 0.0,
+            "unit": "m"
+          },
+          "y0": {
+            "value": 0.0,
+            "unit": "m"
+          }
+        }
+      },
+      "state": {},
+      "free": {}
+    }
+  ],
+  "connections": [
+    {
+      "from": "sky.radiance",
+      "to": "pixels.in"
+    },
+    {
+      "from": "pixels.out",
+      "to": "telescope.in"
+    },
+    {
+      "from": "sky.sources",
+      "to": "telescope.in"
+    },
+    {
+      "from": "telescope.out",
+      "to": "coronagraph.in"
+    },
+    {
+      "from": "coronagraph.out",
+      "to": "lens.in"
+    },
+    {
+      "from": "lens.out",
+      "to": "image.in"
+    }
+  ],
+  "ui": {}
+}

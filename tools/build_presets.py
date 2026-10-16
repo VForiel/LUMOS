@@ -23,6 +23,8 @@ from lumos.elements.photonics import bracewell, kernel_nuller
 from lumos.elements.sources import GaussianLaser, PointSource
 from lumos.elements.telescopes import Telescope, TelescopeArray
 from lumos.fields import Grid
+from lumos.scenes import Scene, SceneToSources
+from lumos.scenes.diffuse import InclinedRing
 
 PRESETS = Path(__file__).resolve().parents[1] / "examples" / "presets"
 START = Time("2026-01-01T00:00:00", scale="utc")
@@ -171,6 +173,49 @@ def bracewell_preset() -> Context:
     return ctx
 
 
+def debris_disk() -> Context:
+    lam, d, f = 1.6e-6, 8.0, 100.0
+    resolution = lam / d  # rad
+    ctx = _context(
+        "Debris disk",
+        "A star and an inclined debris disk (1e-3 of the stellar flux) behind a vortex coronagraph; "
+        "the disk is decomposed into incoherent point sources (SceneToSources).",
+        ["image.out", "sky.radiance"],
+    )
+    _band(ctx, 1.59 * u.um, 1.61 * u.um, 1)
+    sky = ctx.add(Scene(name="sky", n_pixels=24, pixel_scale=0.75 * resolution * u.rad))
+    sky.add(PointSource(name="star", flux_density=1 * u.Jy))
+    sky.add(
+        InclinedRing(
+            name="disk",
+            inner_radius=5 * resolution * u.rad,
+            outer_radius=7 * resolution * u.rad,
+            inclination=60 * u.deg,
+            position_angle=30 * u.deg,
+            flux_density=1e-3 * u.Jy,
+            n_pixels=48,
+            pixel_scale=0.375 * resolution * u.rad,
+        )
+    )
+    pixels = ctx.add(SceneToSources(name="pixels"))
+    scope = ctx.add(Telescope(name="telescope", diameter=d * u.m, n_pixels=128, oversize=1.1))
+    ctx.connect(sky.port("radiance"), pixels.port("in"))
+    ctx.connect(pixels.port("out"), scope.port("in"))
+    ctx.connect(sky.port("sources"), scope.port("in"))
+    vortex = ctx.add(VortexCoronagraph(name="coronagraph", charge=2, pupil_diameter=d * u.m, lyot_stop=0.95))
+    lens = ctx.add(ThinLens(name="lens", focal_length=f * u.m))
+    image = ctx.add(
+        FreeSpace(
+            name="image",
+            distance=f * u.m,
+            method="fresnel_mft",
+            output_grid=Grid(64, dx=lam * f / d / 2.5 * u.m),
+        )
+    )
+    scope >> vortex >> lens >> image
+    return ctx
+
+
 BUILDERS: dict[str, Callable[[], Context]] = {
     "first_simulation": first_simulation,
     "propagation_methods": propagation_methods,
@@ -178,6 +223,7 @@ BUILDERS: dict[str, Callable[[], Context]] = {
     "coronagraph": coronagraph,
     "kernel_nuller": kernel_nuller_preset,
     "bracewell": bracewell_preset,
+    "debris_disk": debris_disk,
 }
 
 
