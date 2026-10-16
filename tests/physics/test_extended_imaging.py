@@ -187,7 +187,7 @@ def test_point_sources_are_added_exactly():
     star = SourceList([2e-6] * u.rad, [0.0] * u.rad, lam, [2e-4] * u.um, [[1e12]] * PHOTON_FLUX_DENSITY)
     alone = image_scene(radiance, system, strategy="isoplanatic")
     both = image_scene(radiance, system, strategy="isoplanatic", points=star)
-    np.testing.assert_allclose(both.power - alone.power, system.response(star)[0], rtol=1e-10, atol=1e-30)
+    np.testing.assert_allclose(both.power - alone.power, system.response(star), rtol=1e-10, atol=1e-30)
 
 
 def test_scene_to_sources_conserves_the_flux():
