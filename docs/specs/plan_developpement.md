@@ -1,6 +1,6 @@
 # LUMOS — Plan de développement
 
-> Compagnon du [cahier des charges](cahier_des_charges.md). Statut : v0.1 (proposition), 2026-10-16.
+> Compagnon du [cahier des charges](cahier_des_charges.md). Statut : v0.2, 2026-10-16.
 >
 > Chaque **étape** (`Px.y`) est dimensionnée pour une ou deux sessions de travail. Elle se termine par du code testé, documenté et commité. On ne démarre une étape que lorsque ses dépendances sont validées. Cocher les cases au fil de l'eau.
 
@@ -8,297 +8,329 @@
 
 ## Principes de conduite
 
-1. **Fondations d'abord, verticalité ensuite.** Le cœur (paramètres, champs, propagation, contexte) est construit et validé physiquement avant d'élargir la bibliothèque d'éléments. Dès la phase 5, chaque phase livre une **tranche verticale** utilisable de bout en bout (notebook qui tourne).
-2. **Validation physique systématique.** Chaque fonctionnalité physique arrive avec un test qui vérifie un résultat connu (analytique, littérature, ou référence HELIOS, PHISE, POPPY, HCIPy).
-3. **Portage HELIOS et PHISE guidé par les tests.** Avant de porter un module, on écrit le test qui fige le comportement attendu (en le corrigeant si HELIOS était faux, cf. §2.2 du cahier des charges).
-4. **Une décision structurante = un ADR** (`docs/adr/`), court : contexte, décision, alternatives, conséquences.
-5. **Jalons de version** : v0.1 → v1.0, puis v1.x pour l'IA.
+1. **Cycle de chaque étape : spécifier → tester → implémenter → documenter.**
+   1. *Spécifier* : relire les exigences visées et préciser le comportement attendu.
+   2. *Tester* : écrire les tests à partir de la spécification, avec des valeurs attendues issues de sources indépendantes (cahier des charges §7.2), puis les commiter seuls (`test(Px.y): …`). Ils doivent échouer.
+   3. *Implémenter* jusqu'au vert **sans toucher aux tests** (`feat(Px.y): …`).
+   4. *Documenter* : docstrings, pages de doc, `CHANGELOG`, ADR si une décision a été prise.
+   5. Un test erroné ou dont l'objectif change est corrigé dans un commit dédié `test!(Px.y): …` qui donne la justification (cahier des charges §7.1).
+2. **Fondations d'abord, verticalité ensuite.** Le cœur est validé physiquement avant d'élargir la bibliothèque ; dès la phase 5, chaque phase livre une tranche utilisable de bout en bout (notebook qui tourne).
+3. **Une décision structurante = un ADR** (`docs/adr/`).
+4. **Commits au format *Conventional Commits*** qui référencent l'étape.
+5. **Anglais** pour le code, les docstrings, les notebooks et les identifiants ; la doc et le web sont traduits en français.
 
 ### Jalons
 
 | Version | Contenu | Phases |
 |---------|---------|--------|
 | **v0.1** « Noyau » | Paramètres, backends, champs, propagation validée | 0 → 4 |
-| **v0.2** « Simulateur » | Contexte et graphe, temps, éléments v1, résultats archivés, premiers notebooks | 5 → 7 |
-| **v0.3** « Symbolique et ciel » | Symbolique, catalogues | 8 → 9 |
-| **v0.4** « Traitement » | Pipelines de données, capacités de détection | 10 |
-| **v0.5** « Opération » | Drivers, mode opération et jumeau | 11 |
-| **v0.6** « Web » | Interface de programmation visuelle | 12 |
-| **v1.0** | Stabilisation, docs complètes, préréglages et tutoriels | 13 |
-| **v1.x** | Blocs IA | 14 |
+| **v0.2** « Simulateur » | Contexte et graphe, temps, éléments v1, résultats archivés | 5 → 7 |
+| **v0.3** « Scènes » | Scènes diffuses et imagerie étendue, catalogues | 8 → 9 |
+| **v0.4** « Symbolique et traitement » | Symbolique, pipelines de données | 10 → 11 |
+| **v0.5** « Opération » | Drivers, LumosLabs, jumeau numérique | 12 |
+| **v0.6** « Assistant » | Couche de service et serveur MCP | 13 |
+| **v0.7** « Web » | Interface web bilingue, instance publique et authentification | 14 |
+| **v1.0** | Stabilisation, docs EN/FR complètes, préréglages et tutoriels | 15 |
+| **v1.x** | Observation de la Terre et photographie ; blocs IA | 16 → 17 |
 
 ```mermaid
 flowchart LR
   P0[P0 Fondations] --> P1[P1 Unités & Element]
-  P0 --> P2[P2 Backends & matériel]
+  P0 --> P2[P2 Backends]
   P1 --> P3[P3 Champs]
   P2 --> P3
   P3 --> P4[P4 Propagation]
   P1 --> P5[P5 Contexte & graphe]
   P4 --> P6[P6 Éléments v1]
   P5 --> P6
-  P5 --> P7[P7 Résultats & figures]
-  P6 --> P8[P8 Symbolique]
-  P6 --> P9[P9 Catalogues]
-  P6 --> P10[P10 Traitement]
-  P5 --> P11[P11 Opération]
-  P6 --> P11
-  P5 --> P12[P12 Web]
+  P5 --> P7[P7 Résultats]
+  P6 --> P8[P8 Scènes & imagerie étendue]
+  P8 --> P9[P9 Catalogues]
+  P6 --> P10[P10 Symbolique]
+  P6 --> P11[P11 Traitement]
+  P5 --> P12[P12 Opération & LumosLabs]
   P6 --> P12
-  P10 --> P13[P13 v1.0]
-  P11 --> P13
-  P12 --> P13
-  P8 --> P13
-  P9 --> P13
-  P13 --> P14[P14 IA]
+  P5 --> P13[P13 Service & MCP]
+  P7 --> P13
+  P13 --> P14[P14 Web]
+  P9 --> P15[P15 v1.0]
+  P10 --> P15
+  P11 --> P15
+  P12 --> P15
+  P14 --> P15
+  P15 --> P16[P16 Terre & photo]
+  P15 --> P17[P17 IA]
 ```
 
-> P7 peut démarrer en parallèle de P6 ; P12 (backend web) peut démarrer dès que P5 fournit le registre et les schémas.
+> P7 peut avancer en parallèle de P6. Une première version de P13 (MCP en lecture : découverte, construction, exécution) peut être livrée dès la fin de P7, pour profiter de l'assistant pendant le reste du développement.
 
 ---
 
 ## Phase 0 — Fondations du dépôt
 
-**Objectif :** dépôt outillé, CI au vert, doc vide publiée.
+- [ ] **P0.1 Conventions** — `CLAUDE.md` : cycle de chaque étape, règles de test (cahier des charges §7), unités, structure, langue, *Conventional Commits*, interdits (fichiers à la racine, `print`, `pickle`, désactivation TLS). ADR-0001 « Stack et conventions ».
+- [ ] **P0.2 Squelette** — `pyproject.toml` (nom `lumos-maxima`, import `lumos`, src layout, extras définis dans NF-2, version dynamique, bornes Python selon SPEC 0), `src/lumos/__init__.py`, `LICENSE` MIT, `CHANGELOG.md`, `.gitignore`, `README.md` (corriger `&amp;`).
+- [ ] **P0.3 Qualité** — ruff, pyright ou mypy, pytest, pytest-cov, hypothesis, pre-commit.
+- [ ] **P0.4 CI** — lint, typage, tests (matrice OS × versions Python), doc ; job d'**intégrité des tests** (alerte sur les commits qui modifient `tests/` et `src/` ensemble, ou un test sans `test!`).
+- [ ] **P0.5 Docs** — Sphinx + Breeze + MyST + myst-nb + Mermaid, `.readthedocs.yaml`, squelette des sections (REQ-DOC-4), chaîne de traduction `sphinx-intl` (EN → FR) et projet RTD FR.
+- [ ] **P0.6 Réservation du nom** — publication d'une version `0.0.1` vide de `lumos-maxima` sur TestPyPI puis PyPI (*trusted publishing*).
 
-- [ ] **P0.1 Décisions préalables** — trancher les questions ouvertes 1, 2, 3, 7 et 9 du cahier des charges. ADR-0001 « Stack et conventions ».
-- [ ] **P0.2 Squelette** — `pyproject.toml` (src layout, extras définis dans NF-2, version dynamique), `src/lumos/__init__.py`, `LICENSE` (MIT), `CHANGELOG.md`, `.gitignore`, `README.md` (corriger `&amp;`).
-- [ ] **P0.3 Qualité** — ruff (lint et format), mypy ou pyright, pytest + pytest-cov, pre-commit.
-- [ ] **P0.4 CI** — GitHub Actions : lint, typage, tests (Windows et Linux × Python 3.12/3.13), construction de la doc.
-- [ ] **P0.5 Docs** — Sphinx + Breeze + MyST + myst-nb + Mermaid, `.readthedocs.yaml`, pages squelettes (*Getting started*, *User guide*, *Learn*, *Examples*, *API*, *Contributing*, *ADR*), import de ce cahier des charges dans `docs/specs/`.
-- [ ] **P0.6 Guide agent** — `CLAUDE.md` : conventions (unités, structure, tests physiques, ADR, docstrings NumPy en anglais, pas de fichiers à la racine, `tmp/` comme brouillon), plus le lien vers les specs.
-
-**Critères d'acceptation :** `pip install -e .[dev]` fonctionne ; `pytest` passe (test fumée) ; la doc se construit sans avertissement sur RTD ; la CI est verte.
+**Critères d'acceptation :** `pip install -e .[dev]` fonctionne ; un test fumée passe ; la doc EN et FR se construit sans avertissement ; la CI est verte ; le job d'intégrité détecte un commit mixte de test.
 
 ---
 
 ## Phase 1 — Unités, paramètres, Element, registre
 
-**Objectif :** la brique de base de tout objet LUMOS.
+- [ ] **P1.1 `lumos.units`** — validation (`require_unit`), conversion SI, sérialisation `{"value", "unit"}` des scalaires et des tableaux.
+- [ ] **P1.2 `Param`** — descripteur : unité, défaut, bornes, doc, `free`, `prior`, `differentiable`, unité utilisateur mémorisée, stockage SI, callback d'invalidation.
+- [ ] **P1.3 `Port` et types de signaux abstraits** — direction, type, multiplicité, règles de compatibilité.
+- [ ] **P1.4 `Element`** — paramètres et ports déclaratifs, état virtuel séparé du transfert pur (ADR-0002 « État et transferts purs »), `describe()`, `_repr_html_`, `schema()`.
+- [ ] **P1.5 Registre** — identifiants stables, `type_version`, décorateur d'enregistrement, *entry points*.
+- [ ] **P1.6 Sérialisation d'un élément** — `kind: element`, validation par schéma, refus des types non enregistrés. ADR-0003 « Format .lumos ».
 
-- [ ] **P1.1 `lumos.units`** — helpers de validation (`require_unit(q, u.m)`), conversion SI, sérialisation `{"value", "unit"}` des quantités (scalaires et tableaux).
-- [ ] **P1.2 `Param` (descripteur)** — unité, défaut, bornes, doc, `free`, `prior`, `differentiable`, mémorisation de l'unité utilisateur, stockage SI interne, callback d'invalidation (patron PHISE). Tests : erreurs d'unité, bornes, conversion aller-retour.
-- [ ] **P1.3 `Port` et types de signaux (abstraits)** — direction, type, multiplicité, compatibilité.
-- [ ] **P1.4 `Element`** — déclaration des paramètres et des ports, `describe()`, `_repr_html_`, `schema()` (JSON Schema), état virtuel, `__slots__` ou classe à attributs explicites (pas de `hasattr` dynamique).
-- [ ] **P1.5 Registre** — identifiants stables `lumos.<famille>.<Classe>`, `type_version`, enregistrement par décorateur et par *entry points* (plugins).
-- [ ] **P1.6 Sérialisation d'un élément** — `to_lumos()` / `from_lumos()` pour `kind: element`, validation du schéma, refus des types non enregistrés. ADR-0002 « Format .lumos ».
-
-**Critères d'acceptation :** un élément jouet (`DummyLens(focal_length=…)`) se crée, se valide, se décrit, s'exporte et se réimporte à l'identique ; son schéma JSON contient les unités et les bornes.
+**Tests écrits d'abord :** erreurs et conversions d'unités, bornes, aller-retour de sérialisation (Hypothesis), contenu du schéma JSON, refus d'un type inconnu, invalidation déclenchée par un changement de `Param`.
 
 ---
 
 ## Phase 2 — Backends de calcul et détection du matériel
 
-- [ ] **P2.1 `lumos.backend`** — sélection du namespace Array API (`numpy`, `jax.numpy`, `cupy`, `torch`), `xp = lumos.backend.get()`, conversion entre backends, contexte `with lumos.backend.use("jax"):`.
-- [ ] **P2.2 FFT** — façade `fft2/ifft2/fftshift` par backend (scipy.fft avec `workers` sur CPU, `cupy.fft`, `jnp.fft`), politique de plans et de cache.
-- [ ] **P2.3 Détection du matériel** — `lumos.hardware_report()` : OS, CPU, RAM, GPU et VRAM, CUDA, bibliothèques et versions. Sélection automatique du backend avec politique documentée. ADR-0003 « Politique de sélection du backend ».
-- [ ] **P2.4 Précision et mémoire** — `config.precision`, estimateur mémoire, utilitaire de découpage (*chunking*).
-- [ ] **P2.5 Compilation** — décorateurs `lumos.jit` (JAX `jit` si backend JAX, sinon passthrough) ; conventions numba pour les noyaux CPU. Premier benchmark.
+- [ ] **P2.1 `lumos.backend`** — namespace Array API, `with lumos.backend.use("jax"):`, conversions.
+- [ ] **P2.2 FFT** — façade par backend, *workers* CPU, cache de plans.
+- [ ] **P2.3 Détection du matériel** — `lumos.hardware_report()`, sélection automatique. ADR-0004 « Politique de sélection du backend ».
+- [ ] **P2.4 Précision et mémoire** — `config.precision`, estimateur mémoire, découpage.
+- [ ] **P2.5 Compilation** — `lumos.jit` (JAX) et conventions numba ; premier *benchmark*.
 
-**Critères d'acceptation :** la suite de tests passe sur NumPy, et sur JAX quand il est installé (paramétrisation pytest par backend) ; le rapport matériel est lisible et sérialisable en YAML.
+**Tests écrits d'abord :** équivalence numérique NumPy/JAX sur les primitives (comparée à `numpy.fft` comme référence indépendante), sérialisation du rapport matériel, respect des forçages utilisateur, découpage qui donne le même résultat qu'un calcul monobloc.
 
 ---
 
 ## Phase 3 — Représentations du champ
 
-- [ ] **P3.1 `Grid`** — rectangulaire, pas, centre, plan spatial ou angulaire, coordonnées (`x`, `y`, `meshgrid` paresseux), égalité et compatibilité, sérialisation. Tests des conventions de centrage (§8).
-- [ ] **P3.2 `Wavefront`** — champ complexe, λ, normalisation, `intensity/phase/amplitude/power`, opérations (multiplication par un masque ou une phase, somme cohérente), copie, changement de backend.
-- [ ] **P3.3 Polarisation** — Wavefront de Jones `(2, ny, nx)`, matrices de Jones (uniformes ou spatiales), conversion vers les Stokes.
-- [ ] **P3.4 `Wavecube`** — axe spectral, poids spectraux, vectorisation, intégration spectrale, extraction d'une tranche.
-- [ ] **P3.5 `IncoherentBundle`** — axe de modes incohérents, somme en intensité, construction à partir de sources ponctuelles (inclinaison de phase selon la position angulaire). Corrige le TODO HELIOS.
-- [ ] **P3.6 `ModalField`** — amplitudes par mode ou par guide, × λ × modes incohérents ; application d'une S-matrice.
-- [ ] **P3.7 `DataProduct`** — image, cube, série temporelle avec unités, axes, masque, incertitudes, métadonnées ; export FITS et NPZ.
-- [ ] **P3.8 Tracés de base** — `wf.plot()`, `cube.plot()` avec axes physiques, phase en carte cyclique (prépare la P7).
+- [ ] **P3.1 `Grid`** — rectangulaire, centre, plan spatial ou angulaire, coordonnées paresseuses.
+- [ ] **P3.2 `Wavefront`** — champ complexe, λ, normalisation, propriétés, opérations.
+- [ ] **P3.3 Polarisation** — Jones, matrices de Jones, Stokes.
+- [ ] **P3.4 `Wavecube`** — axe spectral, poids, intégration.
+- [ ] **P3.5 `IncoherentBundle`** — axe de modes, somme en intensité, rampes de phase pour les sources hors axe.
+- [ ] **P3.6 `RadianceField`** — radiance spectrale sur grille, unités radiométriques, rééchantillonnage conservatif.
+- [ ] **P3.7 `ModalField`** — amplitudes modales, application de S-matrices.
+- [ ] **P3.8 `DataProduct`** — axes, unités, masque, incertitudes ; FITS et NPZ.
+- [ ] **P3.9 Tracés de base** — axes physiques, phase en carte cyclique.
 
-**Critères d'acceptation :** tests de conservation (puissance invariante par changement de backend et par sérialisation) ; une source ponctuelle hors axe produit la rampe de phase attendue ; la S-matrice d'un coupleur 50/50 conserve l'énergie.
+**Tests écrits d'abord :** conventions de centrage (§9 du cahier des charges), invariance de la puissance au changement de backend et à la sérialisation, inclinaison de phase d'une source hors axe (forme analytique), loi de Malus avec un polariseur, unitarité d'un coupleur 50/50, conservation du flux au rééchantillonnage d'une `RadianceField`, aller-retour FITS.
 
 ---
 
 ## Phase 4 — Propagation numérique
 
-**Objectif :** O2. C'est le cœur scientifique ; il faut en soigner la validation.
+- [ ] **P4.1 Suite de validation** (écrite en premier, et elle constitue l'étape à elle seule) — Airy (zéros à 1,22 ; 2,23 ; 3,24 λ/D), sinc d'une ouverture carrée, faisceau gaussien en Fresnel (w(z), R(z), phase de Gouy), champ proche d'une ouverture comparé à l'intégrale de RS calculée indépendamment sur un petit cas, Parseval, réciprocité, rétro-propagation, tolérances justifiées physiquement.
+- [ ] **P4.2 Rayleigh-Sommerfeld direct** — référence par blocs, grilles quelconques.
+- [ ] **P4.3 Fraunhofer + MFT** — échantillonnage et centre de sortie arbitraires ; pupille ↔ plan focal.
+- [ ] **P4.4 Fresnel** — fonction de transfert, réponse impulsionnelle, deux étapes.
+- [ ] **P4.5 ASM à bande limitée**, puis ASM mis à l'échelle ou décalé (MFT ou CZT).
+- [ ] **P4.6 Planificateur** — critères d'échantillonnage, coût estimé, choix de méthode, journalisation et forçage. ADR-0005 « Règles du planificateur ».
+- [ ] **P4.7 Vectorisation** — λ, polarisation, modes ; cache des noyaux ; découpage.
+- [ ] **P4.8 Différentiabilité** — gradients JAX vérifiés par différences finies.
+- [ ] **P4.9 Comparaisons externes** — POPPY et HCIPy (extra `[validation]`).
+- [ ] **P4.10 Doc *Learn*** — méthodes, échantillonnage, planificateur.
+- [ ] **P4.11 Benchmarks** CPU contre GPU.
 
-- [ ] **P4.1 Suite de validation d'abord** — cas de référence : ouverture circulaire → Airy (champ lointain), ouverture carrée → sinc, faisceau gaussien en Fresnel (solution analytique de w(z) et R(z)), ouverture → champ proche comparé à `rs_direct`, conservation de Parseval. Tolérances explicites.
-- [ ] **P4.2 Rayleigh-Sommerfeld direct** — référence (numba ou JAX, par blocs), grilles quelconques.
-- [ ] **P4.3 Fraunhofer + MFT** — FFT (échantillonnage imposé) et MFT (échantillonnage et centre de sortie arbitraires) ; transformée pupille ↔ plan focal avec focale.
-- [ ] **P4.4 Fresnel** — fonction de transfert (TF), réponse impulsionnelle (1 FFT), deux étapes avec changement d'échelle.
-- [ ] **P4.5 ASM à bande limitée** — Matsushima ; puis ASM mis à l'échelle ou décalé (MFT ou CZT) pour des grilles de sortie quelconques.
-- [ ] **P4.6 Planificateur** — critères d'échantillonnage, nombre de Fresnel, rembourrage, coût mémoire et temps estimé sur le matériel détecté, choix de méthode, journalisation et avertissements, forçage possible. ADR-0004 « Règles du planificateur ».
-- [ ] **P4.7 Vectorisation** — λ, polarisation et modes incohérents en une passe, cache des noyaux, découpage mémoire.
-- [ ] **P4.8 Différentiabilité** — tests de gradient (JAX) sur chaque méthode, par rapport à la phase d'entrée et à z.
-- [ ] **P4.9 Comparaisons externes** — tests optionnels (extra `[validation]`) contre POPPY et HCIPy.
-- [ ] **P4.10 Doc « Learn »** — reprise et mise à jour des pages HELIOS (`fraunhofer`, `fresnel`, `asm`, `scaled_asm`, `rs_direct`), page « Choisir l'échantillonnage », page « Planificateur ».
-- [ ] **P4.11 Benchmarks** — CPU contre GPU, par méthode et par taille.
-
-**Critères d'acceptation (fin de v0.1) :** toutes les méthodes passent la suite de validation dans leur domaine ; le planificateur choisit une méthode valide pour 100 % des cas de la suite ; l'écart à RS direct est < 1e-3 en énergie ; le gain GPU est mesuré et documenté.
+**Critères d'acceptation (v0.1) :** toutes les méthodes passent la suite dans leur domaine de validité ; le planificateur choisit une méthode valide sur 100 % des cas ; l'écart à RS direct est < 1e-3 en énergie ; le gain GPU est mesuré et documenté.
 
 ---
 
 ## Phase 5 — Contexte, graphe, temps et modes
 
-- [ ] **P5.1 `Graph`** — ajout et retrait d'éléments, connexions port → port avec vérification de type, détection de cycles, tri topologique, sous-graphe requis pour des sorties données.
-- [ ] **P5.2 Exécution pull et cache** — cache par port, invalidation en aval sur changement de `Param` ou d'état (acquis HELIOS), exécution des fonctions de transfert pures.
-- [ ] **P5.3 `Context`** — mode, backend, paramètres d'observation, graines, accès par nom, `ctx.run(outputs)`, opérateur `>>`.
-- [ ] **P5.4 `ElementGroup`** — enfants, connexions internes, ports exposés, paramètres agrégés, imbrication, sérialisation `kind: group`.
-- [ ] **P5.5 `Clock` et actions** — décorateur `@action(duration=…)` (fixe ou calculée), avance de l'horloge en simulation, `ctx.wait()`, `with ctx.parallel()`, éléments dépendants du temps.
-- [ ] **P5.6 Modes** — simulation (journalisation des commandes, état virtuel) ; interface `Driver` et `SimulatedDriver` (la partie matérielle réelle vient en P11) ; dérogation par élément.
-- [ ] **P5.7 Journal** — logging structuré (commandes, états, choix numériques, avertissements, durées), niveaux, export.
-- [ ] **P5.8 `.lumos` contexte** — import et export complets, *sidecar* des tableaux, migrations (squelette), schéma JSON publié.
-- [ ] **P5.9 Codegen** — génération d'un script Python équivalent à un contexte (aller-retour testé).
-- [ ] **P5.10 Balayages** — `ctx.sweep(...)` (vectorisé ou par processus).
+- [ ] **P5.1 `Graph`** — connexions typées, détection de cycles, tri topologique, sous-graphe requis.
+- [ ] **P5.2 Exécution pull et cache** — cache par port, invalidation en aval.
+- [ ] **P5.3 `Context`** — mode, jumeau, backend, observation, graines, accès par nom, `>>`.
+- [ ] **P5.4 `ElementGroup`** — ports exposés, imbrication, sérialisation `kind: group`.
+- [ ] **P5.5 `Clock` et actions** — `@action(duration=…)`, `ctx.wait`, `ctx.parallel`, éléments dépendants du temps.
+- [ ] **P5.6 Modes** — simulation, interface `Driver`, `SimulatedDriver`, dérogation par élément, squelette du jumeau.
+- [ ] **P5.7 Journal** — logging structuré avec l'origine des actions.
+- [ ] **P5.8 `.lumos` contexte** — import et export, *sidecar*, migrations, JSON Schema publié.
+- [ ] **P5.9 Codegen** — script Python équivalent.
+- [ ] **P5.10 Balayages** — `ctx.sweep`.
 
-**Critères d'acceptation :** un contexte jouet (source → masque → propagation → détecteur fictif) s'exécute, se sauvegarde, se recharge et donne un résultat identique ; modifier un paramètre amont ne recalcule que l'aval ; une séquence d'actions simulées fait avancer l'horloge comme prévu.
+**Tests écrits d'abord :** refus d'une connexion incompatible ou d'un cycle ; seul l'aval est recalculé après un changement de paramètre (compteurs d'appels) ; avance de l'horloge pour des actions séquentielles et parallèles (valeurs calculées à la main) ; aller-retour `.lumos` et codegen à résultat identique ; une commande simulée est journalisée sans appel au transport.
 
 ---
 
-## Phase 6 — Bibliothèque d'éléments v1 (portage HELIOS et PHISE)
+## Phase 6 — Bibliothèque d'éléments v1
 
-Chaque élément arrive avec ses paramètres déclaratifs, ses ports, sa fonction de transfert numérique, un test physique, une docstring physique et une entrée dans la doc API.
+Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transfert numérique, ses **tests physiques écrits avant**, sa docstring physique et sa doc API.
 
-- [ ] **P6.1 Sources** — source ponctuelle, laser gaussien, lampe incohérente, `Star` (corps noir, magnitudes, zéro-points via les profils de bandes), `Planet` (thermique et réfléchie, phase), exo-zodi et zodi, `PlanetarySystem` comme `ElementGroup` (géométrie orbitale de HELIOS).
-- [ ] **P6.2 Ouvertures et pupilles** — constructeur par primitives (portage `Pupil`), préréglages JWST, VLT et ELT, anti-crénelage.
-- [ ] **P6.3 Optique de volume** — espace libre (via le planificateur), lentille et miroir minces, séparatrice, lames et polariseurs (Jones), filtre spectral, ligne à retard.
-- [ ] **P6.4 Télescopes et réseaux** — télescope, réseau de télescopes (VLTI, LIFE), projection des bases selon le pointage et l'angle horaire.
-- [ ] **P6.5 Atmosphère et OA** — écrans von Kármán multi-couches à écoulement figé dépendant de `ctx.time`, chromatisme ; miroir déformable (Zernike, actionneurs) ; correction OA simple.
-- [ ] **P6.6 Coronographes** — 4QPM, vortex (charge), Lyot ; validation par la profondeur de réjection théorique.
-- [ ] **P6.7 Optique guidée** — modes LP (portage `lp_modes`), injection par recouvrement, fibre monomode et multimode.
-- [ ] **P6.8 Photonique** — guide, déphaseur (TOPS), Y-splitter, coupleur, MMI (portage du solveur `sim/mmi.py`, découpé en physique / élément / visualisation), croisement ; puce comme `ElementGroup` ; préréglages kernel-nuller (architectures PHISE).
-- [ ] **P6.9 Détecteurs** — caméra (QE(λ), bruits de photons, de lecture et d'obscurité, gain, saturation, binning, pose comme action temporisée), photodiode, puissance-mètre.
-- [ ] **P6.10 Tests d'intégration de référence** — reproduire les démos HELIOS (comparaisons de propagation, PSF chromatique, coronographie, turbulence) et les résultats PHISE (sorties et carte de transmission du kernel-nuller, profondeur de nulling) dans les tolérances.
+- [ ] **P6.1 Sources ponctuelles et de laboratoire** — source ponctuelle, `Star` (corps noir, magnitudes, bandes), `Planet` (thermique et réfléchie, phase), système planétaire (géométrie orbitale), laser gaussien, lampe incohérente.
+- [ ] **P6.2 Ouvertures et pupilles** — primitives, préréglages JWST, VLT et ELT, anti-crénelage.
+- [ ] **P6.3 Optique de volume** — espace libre, lentille et miroir minces, séparatrice, lames, polariseurs, filtre, ligne à retard.
+- [ ] **P6.4 Télescopes et réseaux** — préréglages VLTI et LIFE, bases projetées.
+- [ ] **P6.5 Atmosphère et OA** — von Kármán multi-couches dépendant du temps, miroir déformable, correction simple.
+- [ ] **P6.6 Coronographes** — 4QPM, vortex, Lyot.
+- [ ] **P6.7 Optique guidée** — modes LP, injection, fibres.
+- [ ] **P6.8 Photonique** — guide, déphaseur, Y-splitter, coupleur, MMI (solveur de modes), croisement ; puce comme groupe ; préréglages Bracewell et nulleur à noyaux.
+- [ ] **P6.9 Détecteurs** — caméra (bruits, pose temporisée), photodiode, puissance-mètre.
+- [ ] **P6.10 Tests d'intégration de référence** — PSF chromatique, coronographie idéale, turbulence (fonction de structure de Kolmogorov), réponse d'un nulleur à noyaux comparée à la littérature (Martinache & Ireland 2018), carte de transmission d'un Bracewell (analytique).
 
-**Critères d'acceptation (cœur de v0.2) :** UC1 et UC7 réalisables en Python ; les tests d'intégration de référence passent.
+**Critères d'acceptation :** UC1 et UC8 réalisables en Python ; tests d'intégration au vert.
 
 ---
 
 ## Phase 7 — Résultats, figures, archivage
 
-- [ ] **P7.1 Style de figures** — feuille de style matplotlib LUMOS, cartes de couleurs (séquentielle, cyclique pour la phase, divergente), étiquettes avec unités automatiques depuis `Grid` et `DataProduct`.
-- [ ] **P7.2 `lumos.plotting`** — tracés standard : intensité et phase, PSF (log), profil radial, spectre et SED, cartes de transmission, sorties de puce, graphe du contexte (successeur de `uml_export`).
-- [ ] **P7.3 Export** — `save_figure(fig, name)` → `.png` + `.plt` (pltedit) + données sous-jacentes (`.npz`).
-- [ ] **P7.4 Archive** — intégration `vfst.archive.new` : racine à côté du script ou du notebook, `context.lumos`, `metadata.yml` enrichi (rapport matériel, versions, mode, horloge, graines), `lumos.log`, `figures/`, `data/`.
-- [ ] **P7.5 Relecture** — `lumos.load_archive(path)`.
-- [ ] **P7.6 Premiers notebooks** — `examples/01_first_simulation.ipynb`, `02_propagation_methods.ipynb`, `03_psf_and_pupils.ipynb`, `04_interferometry.ipynb`, exécutés en CI et rendus dans la doc ; préréglages `.lumos` associés.
+- [ ] **P7.1 Style de figures** — feuille de style, cartes de couleurs, étiquettes avec unités automatiques.
+- [ ] **P7.2 `lumos.plotting`** — intensité et phase, PSF, profil radial, spectres, cartes de transmission, sorties de puce, graphe du contexte.
+- [ ] **P7.3 Export** — `.png` + `.plt` (pltedit) + données `.npz`.
+- [ ] **P7.4 Archive** — `vfst.archive.new` à côté du script ou du notebook ; `context.lumos`, `metadata.yml` enrichi, `lumos.log`, `figures/`, `data/`.
+- [ ] **P7.5 Relecture** — `lumos.load_archive`.
+- [ ] **P7.6 Premiers notebooks** — `01_first_simulation`, `02_propagation_methods`, `03_psf_and_pupils`, `04_interferometry` ; exécutés en CI ; préréglages `.lumos`.
 
-**Critères d'acceptation (fin de v0.2) :** un notebook produit une archive complète, et les `.plt` s'ouvrent dans PltEdit.
+**Critères d'acceptation (v0.2) :** un notebook produit une archive complète ; les `.plt` se rechargent avec `pltedit.load` ; les métadonnées contiennent tous les champs de REQ-RES-2.
 
 ---
 
-## Phase 8 — Symbolique
+## Phase 8 — Scènes et imagerie de scènes étendues
 
-- [ ] **P8.1 `SymbolicField`** — variables canoniques, paramètres liés aux `Param`, domaine, plan ; rendu LaTeX.
-- [ ] **P8.2 Symbols → grid** — `lambdify` par backend, cache, anti-crénelage des discontinuités, sortie Wavefront ou Wavecube selon la dépendance en λ.
-- [ ] **P8.3 Transferts symboliques des éléments simples** — masques, phases (lentille, inclinaison, Zernike), Jones, S-matrices.
-- [ ] **P8.4 Formes closes de propagation** — faisceaux gaussiens, HG et LG via ABCD ; transformées tabulées (circ, rect, gaussienne) pour Fraunhofer ; tentative SymPy avec délai, sinon **repli numérique journalisé**.
-- [ ] **P8.5 Grid → symbols** — projections modales (Zernike, HG, LG, LP, Fourier), ajustement paramétrique (gaussien, Airy), régression parcimonieuse ; métrique d'erreur ; PySR en option.
-- [ ] **P8.6 Intégration au graphe** — un port peut transporter un `SymbolicField` ; conversion automatique vers le numérique quand un élément aval n'a pas de transfert symbolique.
-- [ ] **P8.7 Notebook** `05_symbolic_optics.ipynb`.
+- [ ] **P8.1 `Scene` et repères** — céleste, terrestre, laboratoire ; placement à l'infini ou à distance finie.
+- [ ] **P8.2 Radiométrie** — radiance, éclairement, flux en pupille, étendue, photons ↔ énergie, magnitudes et bandes.
+- [ ] **P8.3 Composants diffus paramétriques** — disque, gaussienne, Sérsic, anneau ou disque incliné, zodi, fond.
+- [ ] **P8.4 Composants cartographiés** — import FITS avec WCS, cubes, images calibrées ; rééchantillonnage conservatif.
+- [ ] **P8.5 Stratégies d'imagerie** — isoplanatique (convolution), anisoplanatique (grille de PSF), décomposition en `IncoherentBundle` ; sélection automatique et journalisée. ADR-0006 « Imagerie des scènes étendues ».
+- [ ] **P8.6 Composants procéduraux** — textures et champs aléatoires (tests, imagerie générique).
+- [ ] **P8.7 Notebook** `05_extended_scenes` (disque de débris derrière un coronographe, nébuleuse).
 
-**Critères d'acceptation :** gaussien → lentille → espace libre en symbolique donne le résultat analytique, et son échantillonnage concorde avec la voie numérique à 1e-6 près ; la décomposition de Zernike d'un front d'onde aberré retrouve les coefficients injectés.
+**Tests écrits d'abord :** flux total d'un corps noir intégré (loi de Stefan-Boltzmann), conservation du flux scène → image, équivalence des trois stratégies sur un système isoplanatique, image d'un disque uniforme par une ouverture circulaire comparée à la solution analytique, refus de la stratégie convolutive pour un système non invariant.
 
 ---
 
 ## Phase 9 — Catalogues astronomiques
 
-- [ ] **P9.1 Infrastructure** — interface `Provider`, cache utilisateur (`platformdirs`, durée de vie), mode hors-ligne, TLS vérifié, timeouts par requête, `logging`.
-- [ ] **P9.2 Enregistrements typés** — `StarRecord`, `ExoplanetRecord`, `SolarSystemRecord` avec unités, incertitudes et provenance.
-- [ ] **P9.3 Portage des fournisseurs** — SIMBAD, VizieR, CALSPEC, ESO, IRSA/ISO, Pickles, NASA Exoplanet Archive, JPL Horizons, ASTM E490. Tests avec réponses enregistrées (pas de réseau en CI), plus des tests réseau marqués.
-- [ ] **P9.4 Fusion de SED et complétion** — règles de priorité documentées, valeurs estimées signalées.
-- [ ] **P9.5 Résolution** — `lumos.catalogs.resolve(name)` ; constructeurs `Star.from_catalog`, `Planet.from_catalog`, `PlanetarySystem.from_catalog`.
-- [ ] **P9.6 Ajouts** — Gaia DR3, SVO Filter Profile Service, MAST, exoplanet.eu.
-- [ ] **P9.7 Notebook** `06_targets_from_catalogs.ipynb`.
+- [ ] **P9.1 Infrastructure** — `Provider`, cache utilisateur, mode hors-ligne, TLS vérifié, timeouts par requête.
+- [ ] **P9.2 Enregistrements typés** avec provenance par champ.
+- [ ] **P9.3 Fournisseurs stellaires et exoplanétaires** — SIMBAD, VizieR, Gaia DR3, CALSPEC, ESO, IRSA, MAST, NASA Exoplanet Archive, exoplanet.eu.
+- [ ] **P9.4 Système solaire** — JPL Horizons, spectre solaire de référence.
+- [ ] **P9.5 Bandes et modèles** — SVO Filter Profile Service, bibliothèques de spectres modèles.
+- [ ] **P9.6 Objets diffus** — images et cubes (SkyView, hips2fits, archives) → composants cartographiés.
+- [ ] **P9.7 Fusion de SED et complétion.**
+- [ ] **P9.8 Résolution et constructeurs** — `resolve`, `Star.from_catalog`, `Scene.from_catalog`, `MappedComponent.from_survey`.
+- [ ] **P9.9 Notebook** `06_targets_from_catalogs`.
 
-**Critères d'acceptation (fin de v0.3) :** `PlanetarySystem.from_catalog("TRAPPIST-1")` crée un groupe utilisable dans un contexte ; aucun appel réseau n'a lieu en CI hors tests marqués.
+**Tests écrits d'abord :** sur des réponses enregistrées (aucun réseau en CI) ; valeurs attendues relevées manuellement dans les catalogues et citées ; vérification que TLS n'est jamais désactivé ; comportement hors-ligne.
 
----
-
-## Phase 10 — Pipelines de traitement et capacités de détection
-
-- [ ] **P10.1 Blocs de réduction** — dark, champ plat, empilement, recadrage et rééchantillonnage, photométrie, profil radial, contraste, SNR.
-- [ ] **P10.2 Blocs interférométriques** — profondeur de nulling, kernels, cartes de transmission (portage PHISE).
-- [ ] **P10.3 Statistiques de détection** — statistiques de test, ROC, courbes de contraste limite, capacité de détection en fonction de la séparation et du contraste (portage PHISE).
-- [ ] **P10.4 Calibration classique** — ajustement de phases de puce (PHISE essais-erreurs et génétique, HELIOS pour les MMI) comme blocs.
-- [ ] **P10.5 Bloc « script »** — fonction utilisateur encapsulée.
-- [ ] **P10.6 Notebooks** `07_data_pipeline.ipynb`, `08_detection_capability.ipynb`.
-
-**Critères d'acceptation (fin de v0.4) :** UC6 réalisable ; les courbes ROC concordent avec PHISE sur un cas de référence.
+**Critères d'acceptation (v0.3) :** `Scene.from_catalog("TRAPPIST-1")` et `MappedComponent.from_survey("M42", …)` sont utilisables dans un contexte.
 
 ---
 
-## Phase 11 — Mode opération et pilotage matériel
+## Phase 10 — Symbolique
 
-- [ ] **P11.1 Interface `Driver` complète** — cycle de vie, erreurs, timeouts, reprise, arrêt d'urgence global, bornes, *dry-run*, confirmation des actions dangereuses, état sûr sur interruption.
-- [ ] **P11.2 Découverte** — énumération USB, série, VISA et SDK ; association aux éléments.
-- [ ] **P11.3 Premier driver réel** — l'équipement prioritaire du banc (question ouverte 4), par exemple une platine Kinesis ; tests sur matériel marqués `hardware` et exécutés manuellement.
-- [ ] **P11.4 Drivers suivants** — caméra scientifique, puissance-mètre, contrôleur piézo, générique SCPI/VISA.
-- [ ] **P11.5 Mode jumeau** — commandes appliquées au réel et au simulé, sorties côte à côte, résidus journalisés.
-- [ ] **P11.6 Séquences** — enregistrement et rejeu d'une séquence d'actions en simulation puis en opération.
-- [ ] **P11.7 Plugins de drivers** — *entry points* et documentation « Écrire un driver ».
-- [ ] **P11.8 Notebook** `09_bench_operation.ipynb` (exécutable en simulation en CI).
+- [ ] **P10.1 `SymbolicField`**, rendu LaTeX.
+- [ ] **P10.2 Symbols → grid** — `lambdify` par backend, anti-crénelage.
+- [ ] **P10.3 Transferts symboliques** des éléments simples.
+- [ ] **P10.4 Formes closes** — gaussiens, HG et LG via ABCD ; transformées tabulées ; repli numérique journalisé.
+- [ ] **P10.5 Grid → symbols** — projections modales, ajustements, régression parcimonieuse, PySR en option.
+- [ ] **P10.6 Intégration au graphe** — conversion automatique symbolique → numérique.
+- [ ] **P10.7 Notebook** `07_symbolic_optics`.
 
-**Critères d'acceptation (fin de v0.5) :** UC2 réalisé sur le vrai banc avec un même script qui bascule de mode par un seul paramètre ; l'arrêt d'urgence est testé.
-
----
-
-## Phase 12 — Interface web
-
-- [ ] **P12.1 Backend API** — FastAPI : registre et schémas des éléments, CRUD du contexte, exécution asynchrone, WebSocket (progression, logs), inspection de port, import et export `.lumos`, codegen, préréglages. Liaison `localhost` par défaut, opération désactivée hors local.
-- [ ] **P12.2 Frontend : socle** — Vite, React, `@xyflow/react`, Tailwind ; palette générée depuis le registre ; nœuds génériques rendus depuis les schémas (aucun code par composant).
-- [ ] **P12.3 Édition** — ajout, suppression, déplacement, connexion typée, formulaires avec unités, annulation et rétablissement.
-- [ ] **P12.4 Groupes** — création par sélection, repli et dépli, sauvegarde comme bloc.
-- [ ] **P12.5 Exécution et inspection** — lancement, progression, visualisations de port (intensité, phase, spectres, données), téléchargements.
-- [ ] **P12.6 Préréglages et tutoriel** — chargement des `.lumos` d'exemple, visite guidée pas à pas.
-- [ ] **P12.7 Opération depuis le web** — panneau des équipements, état, actions et arrêt d'urgence (local uniquement).
-- [ ] **P12.8 Déploiement** — Docker multi-étapes (acquis HELIOS), instance de démo optionnelle (simulation seulement, quotas).
-- [ ] **P12.9 Tests** — tests API (pytest), tests de bout en bout du frontend (Playwright).
-
-**Critères d'acceptation (fin de v0.6) :** UC4 réalisé ; un contexte créé dans le web s'exporte en `.lumos` et en script qui donnent le même résultat en Python (O4).
+**Tests écrits d'abord :** gaussien → lentille → espace libre comparé à la solution ABCD analytique ; évaluation symbolique et numérique concordantes à 1e-6 ; coefficients de Zernike injectés retrouvés ; repli déclenché et journalisé quand il n'y a pas de forme close.
 
 ---
 
-## Phase 13 — Stabilisation v1.0
+## Phase 11 — Pipelines de traitement et capacités de détection
 
-- [ ] **P13.1 Revue d'API publique** — nommage, cohérence, dépréciations ; gel de l'API et du format `.lumos` 1.x.
-- [ ] **P13.2 Docs complètes** — user guide, learn, hardware, web, ADR ; tous les notebooks rendus ; tutoriels.
-- [ ] **P13.3 Performance** — profilage des cas de référence, optimisation ciblée (extension native seulement si justifiée, ADR à l'appui).
-- [ ] **P13.4 Qualité** — couverture, typage strict du cœur, audit de sécurité (chargement `.lumos`, web, réseau).
-- [ ] **P13.5 Publication** — PyPI (*trusted publishing*), annonce, archivage éventuel de HELIOS (question ouverte 8).
+- [ ] **P11.1 Réduction** — dark, champ plat, empilement, rééchantillonnage, photométrie, profil radial, contraste, SNR.
+- [ ] **P11.2 Interférométrie** — profondeur de nulling, observables à noyaux, cartes de transmission.
+- [ ] **P11.3 Statistiques de détection** — tests statistiques, ROC, contraste limite, capacité de détection.
+- [ ] **P11.4 Calibration classique** — ajustement de phases, mesure de MTF (lame inclinée), mesure de PSF.
+- [ ] **P11.5 Bloc « script ».**
+- [ ] **P11.6 Notebooks** `08_data_pipeline`, `09_detection_capability`.
 
----
+**Tests écrits d'abord :** ROC d'un test de Neyman-Pearson sur un signal gaussien comparée à la forme analytique ; MTF d'une optique limitée par la diffraction comparée à la formule analytique ; propagation correcte des incertitudes.
 
-## Phase 14 — Blocs IA (v1.x)
-
-- [ ] **P14.1 Générateur de jeux de données** — échantillonnage des paramètres libres selon leurs a priori, export standardisé.
-- [ ] **P14.2 Calibration par gradient** — ajustement des paramètres libres sur des données réelles (mode jumeau) via la simulation différentiable JAX (optax).
-- [ ] **P14.3 Inférence bayésienne** — NumPyro ou BlackJAX (HMC) sur un `ElementGroup` a priori ; SBI (`sbi`) quand la vraisemblance est intraitable.
-- [ ] **P14.4 Reconstruction de scène** — UC8 : compagnons (nombre, positions, flux) à partir des sorties réelles.
-- [ ] **P14.5 Blocs appris** — débruitage, détection, *surrogates* de sous-graphes coûteux.
-- [ ] **P14.6 Notebooks et préréglages IA.**
+**Critères d'acceptation (v0.4) :** UC7 réalisable.
 
 ---
 
-## Correspondance HELIOS / PHISE → LUMOS (aide au portage)
+## Phase 12 — Mode opération, LumosLabs et jumeau numérique
 
-| Source | Destination | Étape |
-|--------|-------------|-------|
-| `helios/core/layer.py`, `pipeline.py` (pull + cache) | `lumos/core/graph.py`, `context.py` | P5.1–P5.3 |
-| `helios/core/wavefront.py`, `optical_scene.py` | `lumos/fields/*` | P3 |
-| `helios/sim/propagation.py` | `lumos/propagation/*` | P4 |
-| `helios/components/generation/scene.py`, `sim/spectrum.py` | `lumos/elements/sources/*`, `lumos/physics/sed.py` | P6.1 |
-| `helios/components/sampling/*` | `lumos/elements/apertures/*` | P6.2, P6.4 |
-| `helios/components/generation/atmosphere.py`, `bulk_optics/adaptive_optics.py` | `lumos/elements/environment/*`, `optics/dm.py` | P6.5 |
-| `helios/components/bulk_optics/coronagraph.py` | `lumos/elements/optics/coronagraph.py` | P6.6 |
-| `helios/sim/lp_modes.py`, `components/photonics/fibers.py` | `lumos/physics/lp_modes.py`, `elements/guided/*` | P6.7 |
-| `helios/sim/mmi.py`, `components/photonics/*` | `lumos/physics/mmi/*`, `elements/photonics/*` | P6.8 |
-| `phise/classes/archs/*`, `subcomponents/*` | préréglages `elements/photonics/presets/*` | P6.8 |
-| `helios/components/detection/camera.py`, `phise/classes/camera.py` | `lumos/elements/detectors/*` | P6.9 |
-| `helios/io/uml_export.py` | `lumos/plotting/graph.py` | P7.2 |
-| `helios/io/external_query/**`, `utils/data_completion/*` | `lumos/catalogs/**` | P9 |
-| `phise/modules/{roc,test_statistics,detection_capability,transmission_map,signals}.py` | `lumos/elements/processing/*` | P10.2–P10.3 |
-| `phise/modules/calibration/*`, `helios/sim/mmi.py` (calibration) | `lumos/elements/processing/calibration/*` | P10.4 |
-| `phise/modules/ml.py` | `lumos/ai/*` | P14 |
-| `HELIOS/web/**` | `LUMOS/web/**` + `lumos/web/*` (refonte pilotée par schéma) | P12 |
-| `HELIOS/demo/**` | `examples/*.ipynb` + `examples/presets/*.lumos` | P7.6, P13.2 |
-| `HELIOS/docs/learn/**` | `docs/learn/**` | P4.10, P6 |
+- [ ] **P12.1 Interface `Driver` complète** — cycle de vie, erreurs, timeouts, reprise, arrêt d'urgence, bornes, *dry-run*, confirmations, état sûr sur interruption.
+- [ ] **P12.2 Transports** — série (y compris virtuelle), TCP, VISA ; abstraction testable.
+- [ ] **P12.3 Protocole LumosLabs** — spécification ASCII documentée (commandes, réponses, erreurs), commune à toute la gamme.
+- [ ] **P12.4 Émulateurs LumosLabs** — `LL-LS100`, `LL-RS360`, `LL-PZ3`, `LL-SH1`, `LL-FW6`, `LL-LD`, `LL-PM`, `LL-CAM`, `LL-PCU` (cahier des charges §5.8.1), avec latences, bruit, limites et injection de fautes ; lancés par `lumos emulators start`.
+- [ ] **P12.5 Drivers LumosLabs** — un driver par équipement, sur le transport réel.
+- [ ] **P12.6 Découverte** — énumération et association aux éléments.
+- [ ] **P12.7 Jumeau numérique** — commandes appliquées au réel et au simulé, sorties côte à côte, résidus ; `LL-CAM` et `LL-PM` reçoivent leurs mesures du jumeau avec un bruit et des défauts propres à l'émulateur, ce qui crée un écart réel/simulé contrôlé.
+- [ ] **P12.8 Séquences** — enregistrement et rejeu.
+- [ ] **P12.9 Plugins de drivers** — *entry points*, guide « Writing a driver » ; vérification que l'interface couvre les SDK Thorlabs (Kinesis, TSI, TLPM), en vue du premier driver constructeur.
+- [ ] **P12.10 Notebook** `10_bench_operation` (exécuté en CI contre les émulateurs).
+
+**Tests écrits d'abord :** respect des bornes même sur une commande directe ; l'arrêt d'urgence interrompt un mouvement en cours ; reprise après une déconnexion injectée ; un même script donne un journal de commandes identique en simulation et en opération ; la durée réelle mesurée est cohérente avec la durée prédite.
+
+**Critères d'acceptation (v0.5) :** UC3 et UC4 réalisés de bout en bout avec les émulateurs LumosLabs.
+
+---
+
+## Phase 13 — Couche de service et serveur MCP
+
+- [ ] **P13.1 `lumos.service`** — sessions, contextes, édition, exécution asynchrone avec progression, inspection, catalogues, archives, opération ; API typée (Pydantic). ADR-0007 « Couche de service ».
+- [ ] **P13.2 Serveur MCP (stdio)** — outils de découverte, construction, vérification, exécution et résultats (REQ-MCP-2) ; commande `lumos mcp`.
+- [ ] **P13.3 Ressources et prompts** — docs, schémas, préréglages, contexte courant, journaux ; prompts par cas d'usage.
+- [ ] **P13.4 Outils d'opération** — désactivés par défaut ; confirmation humaine par *elicitation* ; bornes côté serveur ; traçabilité de l'origine MCP.
+- [ ] **P13.5 Réponses adaptées aux LLM** — résumés, unités, erreurs exploitables, figures renvoyées en image.
+- [ ] **P13.6 Transport HTTP *streamable*** — prêt à être adossé à l'instance web (authentification en P14).
+- [ ] **P13.7 Doc « AI assistant »** — configuration pas à pas de Claude Code et Claude Desktop, exemples de conversations ; test de conformité générique au protocole MCP pour les autres clients.
+- [ ] **P13.8 Évaluation** — scénarios types (UC1, UC8, UC9) avec résultat attendu vérifiable.
+
+**Tests écrits d'abord :** chaque outil est appelé via un client MCP de test ; parité entre service, MCP et API Python (même `.lumos` et même résultat) ; refus d'une action matérielle sans confirmation ; refus en mode désactivé.
+
+**Critères d'acceptation (v0.6) :** depuis Claude Code, un utilisateur construit, exécute et analyse le préréglage coronographe en langage naturel.
+
+---
+
+## Phase 14 — Interface web
+
+- [ ] **P14.1 Backend HTTP** — adaptateur FastAPI de la couche de service, WebSocket, liaison `localhost` par défaut.
+- [ ] **P14.2 Authentification et autorisation** — mot de passe (Argon2id), clé SSH (défi signé via `ssh-keygen -Y sign` ou `lumos login`), sessions expirantes, rôles, limitation de débit, journal d'audit, TLS obligatoire dès que l'opération est activée hors local. ADR-0008 « Modèle de sécurité de l'instance publique ».
+- [ ] **P14.3 Configuration de déploiement** — profils `local` et `public` ; opération interdite par défaut en `public` ; quotas de calcul.
+- [ ] **P14.4 Frontend : socle** — Vite, React, `@xyflow/react`, Tailwind, i18next (EN/FR) ; palette et nœuds générés depuis les schémas.
+- [ ] **P14.5 Édition** — blocs, connexions typées, formulaires avec unités, annulation et rétablissement, groupes.
+- [ ] **P14.6 Exécution et inspection** — progression, visualisations de port, téléchargements.
+- [ ] **P14.7 Préréglages et tutoriel** pas à pas.
+- [ ] **P14.8 Panneau opération** — équipements, état, actions, arrêt d'urgence (selon les droits).
+- [ ] **P14.9 Panneau assistant** (optionnel) connecté au MCP HTTP.
+- [ ] **P14.10 Déploiement** — Docker (machine unique, profil `local` utilisé jusqu'à la v1.0) ; documentation d'hébergement de l'instance publique sur un VPS (reverse proxy, TLS, quotas adaptés à la machine).
+- [ ] **P14.11 Tests** — API, sécurité (accès refusé sans authentification, élévation de rôle, rejeu de défi SSH), parcours de bout en bout (Playwright) en EN et FR.
+
+**Critères d'acceptation (v0.7) :** UC5 réalisé sur l'instance publique ; opération impossible sur l'instance publique sans configuration et authentification ; parité web, Python et MCP vérifiée.
+
+---
+
+## Phase 15 — Stabilisation v1.0
+
+- [ ] **P15.1 Revue d'API** — nommage et cohérence ; gel de l'API et du format `.lumos` 1.x.
+- [ ] **P15.2 Docs complètes EN et FR** — user guide, learn, hardware, web, assistant, ADR ; notebooks ; tutoriels.
+- [ ] **P15.3 Performance** — profilage, optimisation ciblée (extension native seulement si justifiée).
+- [ ] **P15.4 Qualité et sécurité** — couverture, typage strict, audit (chargement `.lumos`, web, MCP, réseau).
+- [ ] **P15.5 Publication** — `lumos-maxima` 1.0 sur PyPI ; mise en ligne de l'instance publique sur le VPS (profil `public`, opération désactivée).
+
+---
+
+## Phase 16 — Observation de la Terre et photographie (v1.x)
+
+- [ ] **P16.1 Plateforme orbitale** — TLE/SGP4 ou éléments képlériens, attitude, pointage, trace au sol.
+- [ ] **P16.2 Scènes terrestres** — cartes de radiance géoréférencées (GeoTIFF), repère WGS84, illumination solaire.
+- [ ] **P16.3 Modes de détection** — matriciel, *pushbroom*, TDI ; flou de bougé.
+- [ ] **P16.4 Atmosphère simple** et plugins de transfert radiatif.
+- [ ] **P16.5 Métriques** — MTF, GSD, SNR ; notebook `11_earth_observation`.
+- [ ] **P16.6 Photographie** — scène image + profondeur, objectif épais, mise au point, filtre de Bayer et dématriçage ; notebook `12_camera`.
+
+---
+
+## Phase 17 — Blocs IA (v1.x)
+
+- [ ] **P17.1 Générateur de jeux de données** à partir des paramètres libres et de leurs a priori.
+- [ ] **P17.2 Calibration par gradient** sur le jumeau numérique (JAX, optax).
+- [ ] **P17.3 Inférence bayésienne** (NumPyro, BlackJAX) et SBI (`sbi`).
+- [ ] **P17.4 Reconstruction de scène**, ponctuelle et diffuse.
+- [ ] **P17.5 Blocs appris** — débruitage, détection, *surrogates*.
+- [ ] **P17.6 Outils MCP associés** (lancer une calibration, interpréter une reconstruction) et notebooks.
 
 ---
 
@@ -306,16 +338,18 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, sa fonctio
 
 | Risque | Impact | Parade |
 |--------|--------|--------|
-| L'abstraction multi-backend ralentit le développement | Élevé | NumPy de référence d'abord, JAX en second ; CuPy et Torch seulement via Array API sans code spécifique ; tests paramétrés par backend |
-| Planificateur de propagation trop ambitieux | Élevé | Suite de validation écrite **avant** (P4.1) ; règles simples et documentées, affinées ensuite |
-| Symbolique : explosion des expressions | Moyen | Délais, simplification ciblée, repli numérique systématique (REQ-SYM-5) |
-| Drivers propriétaires (Kinesis .NET, Windows only) | Moyen | Interface `Driver` stricte, `pylablib` en priorité, tests matériels manuels |
-| Périmètre très large | Élevé | Jalons verticaux, priorités M/S/C, P14 explicitement repoussée |
-| Dette de portage (bugs HELIOS reproduits) | Moyen | Portage guidé par les tests physiques, pas par copier-coller |
-| Pureté des transferts incompatible avec l'état des équipements | Moyen | Séparer l'état (actions, driver) du calcul (transfert pur qui reçoit l'état en argument), à fixer dans un ADR en P1.4 et P5.5 |
+| Abstraction multi-backend coûteuse | Élevé | NumPy de référence puis JAX ; Array API sans code spécifique ; tests paramétrés par backend |
+| Planificateur trop ambitieux | Élevé | Suite de validation écrite avant (P4.1) ; règles simples et documentées, affinées ensuite |
+| Tests biaisés par l'implémentation | Élevé | Valeurs de référence indépendantes, commits de tests séparés, job d'intégrité (cahier des charges §7) |
+| Explosion des expressions symboliques | Moyen | Délais, repli numérique systématique |
+| Imagerie étendue coûteuse | Moyen | Choix de stratégie journalisé, découpage, GPU |
+| Sécurité de l'instance publique (pilotage matériel distant, LLM) | Élevé | Opération désactivée par défaut, authentification forte, bornes côté serveur, confirmation humaine, audit (ADR-0008) |
+| Drivers constructeurs propriétaires | Moyen | Modèle validé avec LumosLabs, plugins, tests matériels manuels |
+| Périmètre très large | Élevé | Jalons verticaux, priorités M/S/C, Terre, photo et IA après la v1.0 |
+| Collision du nom d'import `lumos` avec le paquet tiers | Faible | Documenté ; distribution `lumos-maxima` |
 
 ---
 
-## Prochaine étape proposée
+## Prochaine étape
 
-Valider ou amender le cahier des charges, répondre aux **questions ouvertes** (§11 du cahier des charges), puis lancer **P0.1 → P0.6**.
+Lancer **P0.1 → P0.6**.
