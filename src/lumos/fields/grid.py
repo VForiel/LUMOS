@@ -30,9 +30,10 @@ from astropy import units as u
 
 from lumos.backend._core import get
 from lumos.backend.memory import dtypes
+from lumos.core.param import Setting
 from lumos.units import quantity_from_json, quantity_to_json, to_si
 
-__all__ = ["Grid", "Plane"]
+__all__ = ["Grid", "GridSetting", "Plane"]
 
 Plane = Literal["spatial", "angular"]
 
@@ -441,3 +442,24 @@ class Grid:
             x0=quantity_from_json(data["x0"]),
             y0=quantity_from_json(data["y0"]),
         )
+
+
+class GridSetting(Setting):
+    """A setting holding a :class:`Grid` or ``None`` (saved in ``.lumos`` files with :meth:`Grid.to_json`)."""
+
+    def __init__(self, *, default: Grid | None = None, doc: str = "") -> None:
+        super().__init__(object, default=default, doc=doc)
+
+    def validate(self, value: Any) -> tuple[Any, Any]:
+        """Accept a :class:`Grid` or ``None``."""
+        if value is not None and not isinstance(value, Grid):
+            raise TypeError(f"{self.name}: expected a lumos.fields.Grid or None, got {type(value).__name__}")
+        return value, value
+
+    def encode(self, value: Any) -> Any:
+        """Return the JSON form of the grid."""
+        return None if value is None else value.to_json()
+
+    def decode(self, data: Any) -> Any:
+        """Return the grid of a JSON form."""
+        return None if data is None else Grid.from_json(data)

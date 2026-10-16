@@ -156,7 +156,9 @@ def entry_of(element: Element, registry: Registry | None = None) -> dict[str, An
     free: dict[str, Any] = {}
     for name, field in type(element).declared().items():
         value = getattr(element, name)
-        groups[field.kind][name] = value if isinstance(field, Setting) else quantity_to_json(value)
+        groups[field.kind][name] = (
+            field.encode(value) if isinstance(field, Setting) else quantity_to_json(value)
+        )
         if isinstance(field, Param) and element.is_free(name):
             prior = element.prior(name)
             free[name] = {"prior": None if prior is None else prior_to_json(prior)}
@@ -283,7 +285,11 @@ def from_entry(entry: Any, *, registry: Registry | None = None) -> Element:
         location = "/".join(str(part) for part in error.absolute_path) or "element"
         raise LumosFormatError(f"{type_id}: {error.message} (at {location})") from error
 
-    values: dict[str, Any] = dict(body["settings"])
+    declared = cls.declared()
+    values: dict[str, Any] = {}
+    for name, value in body["settings"].items():
+        field = declared.get(name)
+        values[name] = field.decode(value) if isinstance(field, Setting) else value
     try:
         for group in ("params", "state"):
             for name, encoded in body[group].items():

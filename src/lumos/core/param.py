@@ -247,6 +247,14 @@ class Setting(Field):
             raise ValueError(f"{self.name}: {value!r} is not one of {list(self.choices)}")
         return value, value
 
+    def encode(self, value: Any) -> Any:
+        """Return the JSON form of ``value`` (settings are JSON values; subclasses may override)."""
+        return value
+
+    def decode(self, data: Any) -> Any:
+        """Return the value of the JSON form ``data`` (inverse of :meth:`encode`)."""
+        return data
+
 
 class ParamHost:
     """Base class of objects declaring :class:`Param`, :class:`State` and :class:`Setting` fields.

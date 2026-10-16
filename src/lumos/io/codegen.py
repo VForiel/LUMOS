@@ -19,6 +19,7 @@ from lumos.core.context import Context
 from lumos.core.group import ElementGroup
 from lumos.core.param import Param, Setting
 from lumos.core.priors import prior_to_json
+from lumos.fields.grid import Grid
 from lumos.units import quantity_to_json
 
 __all__ = ["to_python"]
@@ -50,6 +51,12 @@ class _Writer:
         self.need("lumos.units", "quantity_from_json")
         return f"quantity_from_json({json.dumps(encoded)})"
 
+    def setting(self, value: Any) -> str:
+        if isinstance(value, Grid):
+            self.need("lumos.fields", "Grid")
+            return f"Grid.from_json({json.dumps(value.to_json())})"
+        return repr(value)
+
     def element(self, element: Any, path: str) -> str:
         """Write the creation of ``element`` and return its variable name."""
         variable = self.variable(path)
@@ -76,9 +83,10 @@ class _Writer:
         arguments = [f"name={element.name!r}"]
         for name, field in cls.declared().items():
             value = getattr(element, name)
-            arguments.append(
-                f"{name}={value!r}" if isinstance(field, Setting) else f"{name}={self.quantity(value)}"
-            )
+            if isinstance(field, Setting):
+                arguments.append(f"{name}={self.setting(value)}")
+            else:
+                arguments.append(f"{name}={self.quantity(value)}")
         self.lines.append(f"{variable} = {cls.__qualname__}({', '.join(arguments)})")
         for name, field in cls.declared().items():
             if not isinstance(field, Param):
