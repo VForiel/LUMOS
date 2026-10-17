@@ -137,6 +137,7 @@ class Camera(Element):
     """Pixel detector: quantum efficiency, photon, dark and read noises, gain, saturation and binning."""
 
     stochastic = True
+    lumoslabs_model = "LL-CAM"
     quantum_efficiency = Param(shape=None, default=[0.8], bounds=(0, 1), doc="one value, or a curve")
     qe_wavelengths = Param(unit=u.nm, shape=None, default=[] * u.nm, doc="wavelengths of the QE curve")
     exposure = Param(unit=u.s, default=1 * u.s, bounds=(0 * u.s, None))
@@ -247,6 +248,8 @@ class Photodiode(Element):
 @register("lumos.detectors.PowerMeter")
 class PowerMeter(Element):
     """Ideal power meter reading the optical power in watts."""
+
+    lumoslabs_model = "LL-PM"
 
     in_ = Input(OpticalSignal)
     out = Output(DataProduct)

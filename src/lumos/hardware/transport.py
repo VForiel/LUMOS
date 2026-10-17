@@ -23,6 +23,7 @@ pyserial URL, options as ``?baudrate=9600``), ``visa://`` and ``pipe://`` is not
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import socket
 import threading
@@ -128,6 +129,11 @@ class TCPTransport(Transport):
                 self._socket.close()
             finally:
                 self._socket = None
+
+    def __del__(self) -> None:
+        """Close the socket of a transport dropped without :meth:`close`."""
+        with contextlib.suppress(Exception):  # nothing to report while the interpreter collects it
+            self.close()
 
     def _require(self) -> socket.socket:
         if self._socket is None:

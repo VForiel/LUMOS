@@ -204,6 +204,8 @@ class Element(ParamHost):
 
         if value is not None and not isinstance(value, Driver):
             raise TypeError(f"driver must be a lumos.core.driver.Driver or None, got {type(value).__name__}")
+        if value is not None:
+            value.element = self  # drivers may read the parameters of their element (velocity...)
         self._lumos_driver = value
 
     @property

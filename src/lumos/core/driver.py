@@ -211,8 +211,8 @@ class Driver(ABC):
 
     #: Positional argument names of each action, used to check the limits.
     signatures: ClassVar[Mapping[str, tuple[str, ...]]] = {}
-    #: Software limits: ``"action.argument"`` -> ``(low, high)``.
-    limits: ClassVar[Mapping[str, tuple[Any, Any]]] = {}
+    #: Software limits: ``"action.argument"`` -> ``(low, high)`` (each instance gets its own copy).
+    limits: dict[str, tuple[Any, Any]]
     #: Actions that need a confirmation.
     dangerous: ClassVar[frozenset[str]] = frozenset()
 
@@ -227,6 +227,8 @@ class Driver(ABC):
         self._connected = False
         self._state = "disconnected"
         self._stop_event = threading.Event()
+        self.element: Any = None  # the element using this driver, set when it is attached
+        self.limits = dict(getattr(type(self), "limits", {}))
         self.timeout = timeout
         self.retries = int(retries)
         self.dry_run = bool(dry_run)
@@ -286,13 +288,17 @@ class Driver(ABC):
                 ) from error
             if not inside:
                 raise LimitError(f"{command.element}.{key} = {value} is outside its limits [{low}, {high}]")
-        if command.action in self.dangerous:
+        if self.is_dangerous(command):
             if self.confirm is None:
                 raise ActionRefused(f"{command} is dangerous and needs a confirmation (set driver.confirm)")
             if not self.confirm(command):
                 raise ActionRefused(f"{command} was not confirmed")
 
     # --- Commands ------------------------------------------------------------------------------------------
+
+    def is_dangerous(self, command: Command) -> bool:
+        """Whether ``command`` needs a confirmation (its action is listed in :attr:`dangerous`)."""
+        return command.action in self.dangerous
 
     def send(self, command: Command) -> Reply:
         """Check ``command``, execute it on the equipment and return its reply."""
@@ -335,10 +341,10 @@ class Driver(ABC):
         self._connect()
         logger.info("%s reconnected", type(self).__name__)
 
-    def query(self, name: str) -> Any:
-        """Read the quantity ``name`` from the equipment."""
+    def query(self, name: str, *arguments: Any) -> Any:
+        """Read the quantity ``name`` from the equipment (with the arguments it needs, e.g. a channel)."""
         self._require_connection()
-        return self._query(name)
+        return self._query(name, *arguments) if arguments else self._query(name)
 
     def status(self) -> dict[str, Any]:
         """Return a summary of the driver and equipment state."""
@@ -387,7 +393,7 @@ class Driver(ABC):
     def _send(self, command: Command) -> Reply: ...
 
     @abstractmethod
-    def _query(self, name: str) -> Any: ...
+    def _query(self, name: str, *arguments: Any) -> Any: ...
 
     @abstractmethod
     def _stop(self) -> None: ...
@@ -418,7 +424,7 @@ class SimulatedDriver(Driver):
         logger.info("simulated command %s", command)
         return Reply()
 
-    def _query(self, name: str) -> Any:
+    def _query(self, name: str, *arguments: Any) -> Any:
         if self.element is None:
             raise DriverError("this simulated driver is not attached to an element")
         return getattr(self.element, name)
