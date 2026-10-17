@@ -12,7 +12,7 @@ from lumos.backend import to_numpy
 from lumos.service.models import PortSummary
 from lumos.service.values import format_value
 
-__all__ = ["figure_png", "job_text", "summarize", "summary_text"]
+__all__ = ["figure_of", "figure_png", "job_text", "summarize", "summary_text"]
 
 _MAX_VALUES = 16
 
@@ -119,15 +119,15 @@ def summarize(port: str, signal: Any, *, figure: bool = False) -> PortSummary:
     return summary
 
 
-def figure_png(signal: Any) -> bytes | None:
-    """Draw ``signal`` (intensity of fields, images and curves of data products) as PNG bytes."""
+def figure_of(signal: Any, *, dpi: int = 90) -> Any:
+    """Return a matplotlib figure of ``signal`` (field intensity, 1-D or 2-D data product), or None."""
     from matplotlib.backends.backend_agg import FigureCanvasAgg
     from matplotlib.figure import Figure
 
     from lumos.fields import DataProduct, IncoherentBundle, Wavecube, Wavefront
     from lumos.plotting import plot_data, plot_intensity
 
-    fig = Figure(figsize=(5, 4), dpi=90)
+    fig = Figure(figsize=(5, 4), dpi=dpi)
     FigureCanvasAgg(fig)
     ax = fig.add_subplot()
     if isinstance(signal, DataProduct) and np.asarray(signal.data.value).ndim in (1, 2):
@@ -137,6 +137,14 @@ def figure_png(signal: Any) -> bytes | None:
     else:
         return None
     fig.tight_layout()
+    return fig
+
+
+def figure_png(signal: Any) -> bytes | None:
+    """Draw ``signal`` (intensity of fields, images and curves of data products) as PNG bytes."""
+    fig = figure_of(signal)
+    if fig is None:
+        return None
     buffer = io.BytesIO()
     fig.savefig(buffer, format="png")
     return buffer.getvalue()

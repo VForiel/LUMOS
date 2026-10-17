@@ -68,7 +68,7 @@ export type JobInfo = {
   id: string;
   context: string;
   outputs: string[];
-  status: "queued" | "running" | "done" | "failed";
+  status: "queued" | "running" | "done" | "failed" | "cancelled";
   progress: number;
   message: string;
   error: string | null;
@@ -194,6 +194,12 @@ export const api = {
   result: (job: string, port: string) => request<PortSummary>("GET", `/api/jobs/${enc(job)}/results/${port}`),
   inspect: (id: string, port: string) => request<PortSummary>("GET", `${ctx(id)}/ports/${port}`),
   figureUrl: (id: string, port: string) => `${ctx(id)}/ports/${port}/figure.png`,
+  resultFigureUrl: (job: string, port: string) => `/api/jobs/${enc(job)}/results/${port}/figure.png`,
+  portDownloadUrl: (id: string, port: string, format: string) => `${ctx(id)}/ports/${port}/download?format=${format}`,
+  resultDownloadUrl: (job: string, port: string, format: string) =>
+    `/api/jobs/${enc(job)}/results/${port}/download?format=${format}`,
+  archiveUrl: (path: string) => `/api/archives/download?path=${enc(path)}`,
+  cancel: (job: string) => request<JobInfo>("POST", `/api/jobs/${enc(job)}/cancel`),
   journal: (id: string, limit = 200) => request<JournalEntry[]>("GET", `${ctx(id)}/journal?limit=${limit}`),
   me: () => request<{ user: string | null; role: Role | null }>("GET", "/api/auth/me"),
   login: (username: string, password: string) =>

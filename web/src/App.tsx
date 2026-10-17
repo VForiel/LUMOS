@@ -2,11 +2,13 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { Code2, FilePlus2, FolderOpen, Keyboard, Redo2, Save, Undo2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { BottomPanel } from "./components/BottomPanel";
 import { Canvas } from "./components/Canvas";
 import { Dialogs } from "./components/Dialogs";
 import { Inspector } from "./components/Inspector";
 import { Palette } from "./components/Palette";
 import { QuickAdd } from "./components/QuickAdd";
+import { RunButton } from "./components/RunButton";
 import { Toasts } from "./components/Toasts";
 import { ToolButton, TopBar } from "./components/TopBar";
 import { connectEvents, disconnectEvents } from "./events";
@@ -23,18 +25,31 @@ function Editor() {
   const role = useStore((s) => s.info?.role);
   const store = useStore.getState();
   const fileInput = useRef<HTMLInputElement>(null);
+  const ready = useStore((s) => s.ready);
   const editable = role !== "viewer";
 
-  const inspect = useCallback((port: string) => {
-    useStore.getState().toast({ kind: "info", title: port });
-  }, []);
-  const actions = useMemo(() => ({ open: () => fileInput.current?.click() }), []);
+  const inspect = useCallback((port: string) => void useStore.getState().inspect(port), []);
+  const actions = useMemo(() => ({ open: () => fileInput.current?.click(), run: () => void useStore.getState().run() }), []);
   useShortcuts(actions);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col" data-ready={ready}>
+      {!ready && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-50/70 backdrop-blur-sm dark:bg-slate-950/70" data-testid="loading">
+          <div className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-lg dark:bg-slate-900">
+            <span className="size-4 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+            <span className="text-sm">{t("common.loading")}</span>
+          </div>
+        </div>
+      )}
       <TopBar
-        right={<ToolButton icon={<Keyboard className="size-4" />} label={t("toolbar.shortcuts")} onClick={() => store.setDialog({ kind: "shortcuts" })} shortcut="?" />}
+        right={
+          <>
+            <RunButton />
+            <Separator />
+            <ToolButton icon={<Keyboard className="size-4" />} label={t("toolbar.shortcuts")} onClick={() => store.setDialog({ kind: "shortcuts" })} shortcut="?" />
+          </>
+        }
       >
         <Separator />
         <ToolButton icon={<FilePlus2 className="size-4" />} label={t("toolbar.new")} onClick={() => void store.newContext()} testId="new" disabled={!editable} />
@@ -61,6 +76,7 @@ function Editor() {
         <Palette />
         <main className="relative flex min-w-0 flex-1 flex-col">
           <Canvas onInspect={inspect} />
+          <BottomPanel />
         </main>
         <Inspector onInspect={inspect} />
       </div>

@@ -66,7 +66,8 @@
     "opened": "{{name}} ouvert.",
     "copied_one": "{{count}} élément copié.",
     "copied_other": "{{count}} éléments copiés.",
-    "blockSaved": "Bloc {{name}} enregistré dans Mes blocs."
+    "blockSaved": "Bloc {{name}} enregistré dans Mes blocs.",
+    "runDone": "Calcul terminé en {{seconds}} s."
   },
   "fields": {
     "free": "paramètre libre (ajusté par calibration)",
@@ -148,5 +149,45 @@
   "quickAdd": {
     "placeholder": "Élément à ajouter… (par ex. thin lens, camera)",
     "compatible": "Élément à relier à {{port}}…"
+  },
+  "run": {
+    "run": "Lancer",
+    "cancel": "Annuler",
+    "queued": "En attente…",
+    "archive": "Archiver les résultats des calculs",
+    "problems_one": "{{count}} problème à corriger d'abord (voir Problèmes)",
+    "problems_other": "{{count}} problèmes à corriger d'abord (voir Problèmes)"
+  },
+  "tabs": {
+    "results": "Résultats",
+    "journal": "Journal",
+    "problems": "Problèmes",
+    "show": "Afficher le panneau",
+    "hide": "Masquer le panneau"
+  },
+  "results": {
+    "inspected": "Port",
+    "computing": "Calcul en cours…",
+    "lastRun": "Dernier calcul",
+    "archive": "Archive (fichier .zip)",
+    "data": "Données",
+    "empty": "Lancez le calcul (Ctrl+Entrée), ou cliquez sur une sortie d'un bloc pour l'inspecter.",
+    "min": "min",
+    "max": "max",
+    "mean": "moyenne",
+    "sum": "somme",
+    "status": {
+      "queued": "en attente",
+      "running": "en cours",
+      "done": "terminé",
+      "failed": "échec",
+      "cancelled": "annulé"
+    }
+  },
+  "journal": {
+    "empty": "Rien pour l'instant : les calculs et les actions s'affichent ici au fil de l'eau."
+  },
+  "problems": {
+    "none": "Aucun problème détecté."
   }
 }

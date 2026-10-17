@@ -46,10 +46,15 @@ type State = {
   dialog: Dialog | null;
   quickAdd: QuickAdd | null;
   blocks: Block[];
+  lastJob: string | null;
+  results: Record<string, PortSummary>;
+  archive: boolean;
+  ready: boolean;
 };
 
 type Actions = {
   start: () => Promise<void>;
+  restore: () => Promise<void>;
   show: (summary: ContextSummary) => Promise<void>;
   refresh: () => Promise<void>;
   open: (summary: ContextSummary) => Promise<void>;
@@ -83,6 +88,10 @@ type Actions = {
   setBottom: (tab: BottomTab | null) => void;
   setDialog: (dialog: Dialog | null) => void;
   setQuickAdd: (quickAdd: QuickAdd | null) => void;
+  run: () => Promise<void>;
+  cancel: () => Promise<void>;
+  setArchive: (archive: boolean) => void;
+  inspect: (port: string) => Promise<void>;
   onJob: (job: JobInfo) => void;
   onJournal: (context: string, entry: JournalEntry) => void;
 };
@@ -92,7 +101,11 @@ const DOCUMENT_KEY = "lumos.document";
 const CLIPBOARD_KEY = "lumos.clipboard";
 const BLOCKS_KEY = "lumos.blocks";
 
+/** Kinds of signals drawn as figures by the server. */
+export const FIGURE_KINDS = ["Wavefront", "Wavecube", "IncoherentBundle", "DataProduct"];
+
 let toastId = 0;
+const announced = new Set<string>();
 let copying: Promise<void> = Promise.resolve();
 
 export function storage(): Storage | null {
@@ -183,15 +196,28 @@ export const useStore = create<State & Actions>((set, get) => {
     dialog: null,
     quickAdd: null,
     blocks: readBlocks(),
+    lastJob: null,
+    results: {},
+    archive: storage()?.getItem("lumos.archive") === "1",
+    ready: false,
 
     async start() {
       try {
-        const [info, palette] = await Promise.all([api.info(), api.palette()]);
-        set({ info, palette });
+        // the first request alone: it opens the session (cookie) used by all the others
+        const info = await api.info();
+        set({ info, palette: await api.palette() });
       } catch (error) {
         get().fail(error);
         return;
       }
+      try {
+        await get().restore();
+      } finally {
+        set({ ready: true });
+      }
+    },
+
+    async restore() {
       const store = storage();
       const id = store?.getItem(CONTEXT_KEY);
       if (id) {
@@ -235,7 +261,7 @@ export const useStore = create<State & Actions>((set, get) => {
 
     async open(summary) {
       const previous = get().context;
-      set({ selection: [], inspected: null, journal: [] });
+      set({ selection: [], inspected: null, journal: [], lastJob: null, results: {} });
       await get().show(summary);
       if (previous && previous.id !== summary.id) void api.close(previous.id).catch(() => undefined);
     },
@@ -462,8 +488,64 @@ export const useStore = create<State & Actions>((set, get) => {
       set({ quickAdd });
     },
 
+    async run() {
+      const context = get().context;
+      if (!context) return;
+      const running = Object.values(get().jobs).some((j) => j.context === context.id && (j.status === "queued" || j.status === "running"));
+      if (running) return;
+      try {
+        const job = await api.run(context.id, [], get().archive);
+        const known = get().jobs[job.id];
+        set({ lastJob: job.id, results: {}, bottom: "results" });
+        get().onJob(known ?? job);
+      } catch (error) {
+        get().fail(error);
+      }
+    },
+
+    async cancel() {
+      const job = get().lastJob;
+      if (!job) return;
+      try {
+        get().onJob(await api.cancel(job));
+      } catch (error) {
+        get().fail(error);
+      }
+    },
+
+    setArchive(archive) {
+      storage()?.setItem("lumos.archive", archive ? "1" : "0");
+      set({ archive });
+    },
+
+    async inspect(port) {
+      const context = get().context;
+      if (!context) return;
+      set({ inspected: { context: context.id, port, summary: null, figure: null, loading: true }, bottom: "results" });
+      try {
+        const summary = await api.inspect(context.id, port);
+        const figure = FIGURE_KINDS.includes(summary.kind) && summary.shape.length <= 4 ? `${api.figureUrl(context.id, port)}?t=${Date.now()}` : null;
+        if (get().inspected?.port === port) set({ inspected: { context: context.id, port, summary, figure, loading: false } });
+      } catch (error) {
+        const message = error instanceof ApiError ? `${error.message} — ${error.hint}` : String(error);
+        if (get().inspected?.port === port) set({ inspected: { context: context.id, port, summary: null, figure: null, loading: false, error: message } });
+      }
+    },
+
     onJob(job) {
       set({ jobs: { ...get().jobs, [job.id]: job } });
+      if (job.id !== get().lastJob || announced.has(`${job.id}:${job.status}`)) return;
+      announced.add(`${job.id}:${job.status}`);
+      if (job.status === "done") {
+        void Promise.all(job.outputs.map((port) => api.result(job.id, port).then((summary) => [port, summary] as const)))
+          .then((pairs) => {
+            if (get().lastJob === job.id) set({ results: Object.fromEntries(pairs) });
+          })
+          .catch((error) => get().fail(error));
+        get().toast({ kind: "success", title: "runDone", values: { seconds: (job.seconds ?? 0).toFixed(1) } });
+      } else if (job.status === "failed") {
+        get().toast({ kind: "error", title: job.error ?? "failed", hint: job.hint ?? undefined });
+      }
     },
 
     onJournal(context, entry) {

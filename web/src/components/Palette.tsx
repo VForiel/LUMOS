@@ -21,20 +21,31 @@ function matches(item: ElementType, words: string[]): boolean {
   return words.every((word) => text.includes(word));
 }
 
-/** A free spot near the centre of the visible canvas, in flow coordinates (new blocks never overlap). */
-export function freeSpot(centre: [number, number], taken: [number, number][]): [number, number] {
+/** A free spot near ``centre`` (flow coordinates), inside ``bounds`` when given: new blocks never overlap
+ * and stay visible, away from the edges where dragging a wire scrolls the view. Spots on the right come first:
+ * light flows from left to right. */
+export function freeSpot(
+  centre: [number, number],
+  taken: [number, number][],
+  bounds?: { x0: number; y0: number; x1: number; y1: number },
+): [number, number] {
   const [cx, cy] = centre;
   const free = ([x, y]: [number, number]) => taken.every(([tx, ty]) => Math.abs(tx - x) > 250 || Math.abs(ty - y) > 180);
-  for (let ring = 0; ring < 12; ring += 1) {
-    for (let dx = -ring; dx <= ring; dx += 1) {
-      for (let dy = -ring; dy <= ring; dy += 1) {
-        if (Math.max(Math.abs(dx), Math.abs(dy)) !== ring) continue;
-        const spot: [number, number] = [Math.round(cx + dx * 270), Math.round(cy + dy * 200)];
-        if (free(spot)) return spot;
-      }
-    }
-  }
-  return [Math.round(cx), Math.round(cy)];
+  const inside = ([x, y]: [number, number]) => !bounds || (x >= bounds.x0 && x + 230 <= bounds.x1 && y >= bounds.y0 && y + 150 <= bounds.y1);
+  const cells: [number, number][] = [];
+  for (let dx = -6; dx <= 6; dx += 1) for (let dy = -6; dy <= 6; dy += 1) cells.push([dx, dy]);
+  cells.sort(([ax, ay], [bx, by]) => Math.hypot(ax, ay * 1.2) - Math.hypot(bx, by * 1.2) || bx - ax || ay - by);
+  const spots = cells.map(([dx, dy]) => [Math.round(cx + dx * 270), Math.round(cy + dy * 200)] as [number, number]);
+  return spots.find((spot) => free(spot) && inside(spot)) ?? spots.find(free) ?? [Math.round(cx), Math.round(cy)];
+}
+
+/** Bounds of the visible canvas in flow coordinates, without a margin along its edges. */
+export function visibleBounds(flow: ReturnType<typeof useReactFlow>, margin = 70) {
+  const canvas = document.querySelector('[data-testid="canvas"]')?.getBoundingClientRect();
+  if (!canvas) return undefined;
+  const a = flow.screenToFlowPosition({ x: canvas.left + margin, y: canvas.top + margin });
+  const b = flow.screenToFlowPosition({ x: canvas.right - margin, y: canvas.bottom - margin });
+  return { x0: a.x, y0: a.y, x1: b.x, y1: b.y };
 }
 
 export function useCanvasCentre(): () => [number, number] {
@@ -45,7 +56,7 @@ export function useCanvasCentre(): () => [number, number] {
     const point = flow.screenToFlowPosition({ x: canvas.left + canvas.width / 2, y: canvas.top + canvas.height / 2 });
     const positions = useStore.getState().positions;
     const taken = Object.entries(positions).filter(([id]) => !id.includes(".")).map(([, xy]) => xy);
-    return freeSpot([point.x - 115, point.y - 60], taken);
+    return freeSpot([point.x - 115, point.y - 60], taken, visibleBounds(flow));
   };
 }
 

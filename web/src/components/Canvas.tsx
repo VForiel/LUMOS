@@ -9,6 +9,7 @@ import {
   MiniMap,
   ReactFlow,
   useReactFlow,
+  useUpdateNodeInternals,
   type Connection,
   type Edge,
   type FinalConnectionState,
@@ -148,8 +149,23 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
     });
   }, [context, positions, selection, issues, types, running, onInspect, expanded, signalOf]);
 
+  // ports may move when a context changes (values shown, problems, groups): measure the handles again
+  const updateNodeInternals = useUpdateNodeInternals();
+  const nodeIds = nodes.map((node) => node.id).join(",");
   useEffect(() => {
-    if (context && nodes.length && fitted.current !== context.id) {
+    if (!nodeIds) return;
+    const frame = window.requestAnimationFrame(() => updateNodeInternals(nodeIds.split(",")));
+    return () => window.cancelAnimationFrame(frame);
+  }, [context, nodeIds, updateNodeInternals]);
+
+  useEffect(() => {
+    // fit the view to a context opened with elements; a context built from empty keeps the view of the user
+    if (!context || fitted.current === context.id) return;
+    if (context.elements.length === 0) {
+      fitted.current = context.id;
+      return;
+    }
+    if (nodes.length) {
       fitted.current = context.id;
       window.requestAnimationFrame(() => void flow.fitView({ padding: 0.15, duration: 300, maxZoom: 1 }));
     }
@@ -250,18 +266,41 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
 
   const onConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent, state: FinalConnectionState) => {
-      if (state.isValid || state.toNode || !state.fromNode || !state.fromHandle || !editable) return;
+      if (state.isValid || !state.fromNode || !state.fromHandle || !editable || !context || !palette) return;
       const point = "changedTouches" in event ? event.changedTouches[0] : event;
+      const fromId = state.fromNode.id;
+      const fromPort = state.fromHandle.id ?? "";
+      const outgoing = state.fromHandle.type === "source";
+      // dropped on a block: connect to its first compatible port that is free
+      const below = document.elementFromPoint(point.clientX, point.clientY)?.closest(".react-flow__node") as HTMLElement | null;
+      const onto = below?.dataset.id;
+      if (onto && onto !== fromId && !onto.includes(".")) {
+        const element = context.elements.find((e) => e.id === onto);
+        const fromSignal = signalOf(fromId, fromPort, outgoing ? "outputs" : "inputs");
+        const busy = new Set(context.connections.map((c) => (outgoing ? c.target : c.source)));
+        const candidates = outgoing ? (element?.inputs ?? []) : (element?.outputs ?? []);
+        const port = candidates.find((name) => {
+          const signal = signalOf(onto, name, outgoing ? "inputs" : "outputs");
+          const ok = outgoing ? compatible(fromSignal, signal, palette.signals) : compatible(signal, fromSignal, palette.signals);
+          return ok && (!outgoing || !busy.has(`${onto}.${name}`));
+        });
+        if (port) {
+          if (outgoing) void connect(`${fromId}.${fromPort}`, `${onto}.${port}`);
+          else void connect(`${onto}.${port}`, `${fromId}.${fromPort}`);
+        }
+        return;
+      }
+      if (state.toNode) return;
       const position = flow.screenToFlowPosition({ x: point.clientX, y: point.clientY });
-      const direction = state.fromHandle.type === "source" ? "out" : "in";
-      const port = `${state.fromNode.id}.${state.fromHandle.id}`;
-      const signal = signalOf(state.fromNode.id, state.fromHandle.id ?? "", direction === "out" ? "outputs" : "inputs");
+      const direction = outgoing ? "out" : "in";
+      const port = `${fromId}.${fromPort}`;
+      const signal = signalOf(fromId, fromPort, outgoing ? "outputs" : "inputs");
       setQuickAdd({
         position: [position.x - (direction === "out" ? 0 : NODE_WIDTH), position.y - 30],
         from: { port, direction, signal },
       });
     },
-    [flow, signalOf, setQuickAdd, editable],
+    [flow, signalOf, setQuickAdd, editable, context, palette, connect],
   );
 
   const onDrop = useCallback(

@@ -23,6 +23,7 @@ __all__ = [
     "Issue",
     "JobInfo",
     "Page",
+    "PortFile",
     "PortSummary",
     "PresetInfo",
     "ServiceConfig",
@@ -179,6 +180,14 @@ class PortSummary(BaseModel):
     statistics: dict[str, float] = {}
     details: dict[str, str] = {}
     figure_png: bytes | None = None
+
+
+class PortFile(BaseModel):
+    """A file made from the signal of a port: its name, media type and content."""
+
+    filename: str
+    media_type: str
+    content: bytes
 
 
 class ArchiveInfo(BaseModel):

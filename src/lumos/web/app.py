@@ -42,6 +42,7 @@ from lumos.service.models import (
     Issue,
     JobInfo,
     Page,
+    PortFile,
     PortSummary,
     PresetInfo,
 )
@@ -826,6 +827,25 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     def job(request: Request, job: str) -> JobInfo:
         return service.get_job(sid(request), job)
 
+    def send(file: PortFile) -> Response:
+        return _attachment(file.content, file.filename, file.media_type)
+
+    @app.post("/api/jobs/{job}/cancel", dependencies=[simulator])
+    def cancel(request: Request, job: str) -> JobInfo:
+        return service.cancel_job(sid(request), job)
+
+    @app.get("/api/jobs/{job}/results/{port:path}/download", dependencies=[viewer])
+    def result_download(request: Request, job: str, port: str, format: str = "png") -> Response:
+        return send(service.result_file(sid(request), job, port, format))
+
+    @app.get("/api/jobs/{job}/results/{port:path}/figure.png", dependencies=[viewer])
+    def result_figure(request: Request, job: str, port: str) -> Response:
+        return Response(service.result_file(sid(request), job, port, "png").content, media_type="image/png")
+
+    @app.get("/api/contexts/{cid}/ports/{port:path}/download", dependencies=[simulator])
+    def port_download(request: Request, cid: str, port: str, format: str = "png") -> Response:
+        return send(service.port_file(sid(request), cid, port, format))
+
     @app.get("/api/jobs/{job}/results/{port:path}", dependencies=[viewer])
     def result(request: Request, job: str, port: str) -> dict[str, Any]:
         summary = service.get_result(sid(request), job, port)
@@ -860,6 +880,10 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     @app.get("/api/archives", dependencies=[viewer])
     def archives(limit: int = Query(50, ge=1, le=1000)) -> list[ArchiveInfo]:
         return service.list_archives(limit=limit)
+
+    @app.get("/api/archives/download", dependencies=[viewer])
+    def archive_download(path: str) -> Response:
+        return _attachment(service.archive_zip(path), f"{Path(path).name}.zip", "application/zip")
 
     @app.get("/api/archives/metadata", dependencies=[viewer])
     def archive_metadata(path: str) -> dict[str, Any]:

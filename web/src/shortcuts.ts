@@ -2,7 +2,7 @@
 
 import { useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
-import { freeSpot } from "./components/Palette";
+import { freeSpot, visibleBounds } from "./components/Palette";
 import { useStore } from "./store";
 
 function typing(target: EventTarget | null): boolean {
@@ -16,7 +16,7 @@ export function canvasCentre(flow: ReturnType<typeof useReactFlow>): [number, nu
   if (!canvas) return [0, 0];
   const point = flow.screenToFlowPosition({ x: canvas.left + canvas.width / 2, y: canvas.top + canvas.height / 2 });
   const taken = Object.entries(useStore.getState().positions).filter(([id]) => !id.includes(".")).map(([, xy]) => xy);
-  return freeSpot([point.x - 115, point.y - 60], taken);
+  return freeSpot([point.x - 115, point.y - 60], taken, visibleBounds(flow));
 }
 
 export function useShortcuts(actions: { run?: () => void; open: () => void }): void {

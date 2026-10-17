@@ -53,6 +53,7 @@ from lumos.service.models import (
     Issue,
     JobInfo,
     Page,
+    PortFile,
     PortSummary,
     PresetInfo,
     ServiceConfig,
@@ -66,6 +67,14 @@ __all__ = ["Service"]
 logger = logging.getLogger("lumos.service")
 
 
+#: Formats of the files of a port (``port_file``): figure, PltEdit figure, data, JSON form of the signal.
+FILE_FORMATS = ("png", "plt", "npz", "json")
+
+
+class _Cancelled(Exception):
+    """A run stopped at the request of the user."""
+
+
 @dataclass
 class _Job:
     info: JobInfo
@@ -73,6 +82,7 @@ class _Job:
     result: Result | None = None
     future: concurrent.futures.Future[Any] | None = None
     started: float = 0.0
+    cancelled: bool = False
 
 
 #: Edits kept for undo, per context.
@@ -866,6 +876,8 @@ class Service:
         state.jobs[job.info.id] = job
 
         def progress(done: int, total: int, element: str) -> None:
+            if job.cancelled:
+                raise _Cancelled("cancelled")
             job.info.progress = done / max(total, 1)
             job.info.message = f"computed {element} ({done}/{total})"
             if time.perf_counter() - job.started > self.config.max_run_seconds:
@@ -883,6 +895,9 @@ class Service:
                 job.info.status = "done"
                 if job.result.archive is not None:
                     job.info.archive = str(job.result.archive.path)
+            except _Cancelled:
+                job.info.status = "cancelled"
+                job.info.message = "cancelled by the user"
             except Exception as error:
                 job.info.status = "failed"
                 job.info.error = str(error)
@@ -961,6 +976,20 @@ class Service:
         except Exception as error:
             raise ServiceError(str(error), hint=_hint_for(error), code="failed") from error
 
+    def cancel_job(self, session: str, job: str) -> JobInfo:
+        """Ask a queued or running run to stop (at the end of the element being computed)."""
+        record = self._session(session).jobs.get(job)
+        if record is None:
+            raise ServiceError(f"unknown job {job!r}", hint="start one with run()", code="not_found")
+        if record.info.status not in ("queued", "running"):
+            raise ServiceError(
+                f"job {job} is already {record.info.status}", hint="only a run in progress can be cancelled"
+            )
+        record.cancelled = True
+        if record.future is not None and record.future.cancel():
+            record.info.status = "cancelled"
+        return record.info.model_copy()
+
     def get_job(self, session: str, job: str) -> JobInfo:
         """Status, progress and outcome of a run."""
         state = self._session(session)
@@ -1005,6 +1034,93 @@ class Service:
         reference = self._port(ctx, port)
         signal = self._compute(session, ctx, [reference])[reference]
         return summarize(port, signal, figure=figure)
+
+    def port_file(self, session: str, context: str, port: str, fmt: str) -> PortFile:
+        """Compute the signal of ``port`` and return it as a file: ``png``, ``plt``, ``npz`` or ``json``."""
+        self._check_format(fmt)
+        ctx = self._context(session, context)
+        reference = self._port(ctx, port)
+        return self._file(port, self._compute(session, ctx, [reference])[reference], fmt)
+
+    def result_file(self, session: str, job: str, port: str, fmt: str) -> PortFile:
+        """Return an output computed by a run as a file (see :meth:`port_file`), without computing again."""
+        self._check_format(fmt)
+        record = self._session(session).jobs.get(job)
+        if record is None:
+            raise ServiceError(f"unknown job {job!r}", hint="start one with run()", code="not_found")
+        if record.info.status != "done" or record.result is None:
+            raise ServiceError(f"job {job} is {record.info.status}", hint="wait for the end of the run")
+        try:
+            signal = record.result[port]
+        except (KeyError, GraphError):
+            raise ServiceError(
+                f"the job did not compute {port!r}", hint=f"outputs: {', '.join(record.info.outputs)}"
+            ) from None
+        return self._file(port, signal, fmt)
+
+    @staticmethod
+    def _check_format(fmt: str) -> None:
+        if fmt not in FILE_FORMATS:
+            raise ServiceError(f"unknown format {fmt!r}", hint=f"formats: {', '.join(FILE_FORMATS)}")
+
+    def _file(self, port: str, signal: Any, fmt: str) -> PortFile:
+        import io
+        import tempfile
+
+        import numpy as np
+
+        from lumos.fields import DataProduct
+        from lumos.results import save_data
+        from lumos.service.summaries import figure_of
+
+        name = f"{port}.{fmt}"
+        if fmt in ("png", "plt"):
+            figure = figure_of(signal, dpi=120)
+            if figure is None:
+                raise ServiceError(
+                    f"{port} carries a {type(signal).__name__}, which has no figure", hint="download its data"
+                )
+            if fmt == "png":
+                buffer = io.BytesIO()
+                figure.savefig(buffer, format="png")
+                return PortFile(filename=name, media_type="image/png", content=buffer.getvalue())
+            from lumos._vendor import pltedit
+
+            with tempfile.TemporaryDirectory() as folder:
+                path = Path(folder) / name
+                pltedit.save(figure, path)
+                return PortFile(
+                    filename=name, media_type="application/octet-stream", content=path.read_bytes()
+                )
+        if fmt == "json":
+            if not hasattr(signal, "to_json"):
+                raise ServiceError(f"{port} has no JSON form", hint="download its data (npz)")
+            document = {"signal": type(signal).__name__, "data": signal.to_json()}
+            text = json.dumps(document, default=str)
+            return PortFile(filename=name, media_type="application/json", content=text.encode())
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / name
+            if isinstance(signal, DataProduct):
+                signal.to_npz(path)
+            elif hasattr(signal, "intensity") and hasattr(signal, "grid"):
+                from lumos.backend import to_numpy
+
+                grid = signal.grid
+                unit = signal.intensity_unit
+                data: dict[str, Any] = {
+                    "intensity": np.asarray(to_numpy(signal.intensity), dtype=float) * unit,
+                    "x": grid.x,
+                    "y": grid.y,
+                }
+                waves = getattr(signal, "wavelengths", None)
+                if waves is None and hasattr(signal, "wavelength"):
+                    waves = signal.wavelength
+                if waves is not None:
+                    data["wavelength"] = waves
+                save_data(path, data)
+            else:
+                raise ServiceError(f"{port} has no data to download as npz", hint="download its JSON form")
+            return PortFile(filename=name, media_type="application/octet-stream", content=path.read_bytes())
 
     def radial_profile(
         self,
@@ -1145,6 +1261,34 @@ class Service:
                 )
             )
         return found
+
+    def _archive_path(self, path: str) -> Path:
+        root = self.archive_root().resolve()
+        target = Path(path).resolve()
+        if root not in target.parents:
+            raise ServiceError(
+                "this path is outside the archives",
+                hint="use a path given by list_archives",
+                code="forbidden",
+            )
+        if not (target / "metadata.yml").is_file():
+            raise ServiceError(
+                f"no archive at {path}", hint="use a path given by list_archives", code="not_found"
+            )
+        return target
+
+    def archive_zip(self, path: str) -> bytes:
+        """Return an archive of the archive directory as the bytes of a ``.zip`` file."""
+        import io
+        import zipfile
+
+        target = self._archive_path(path)
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+            for file in sorted(target.rglob("*")):
+                if file.is_file():
+                    archive.write(file, Path(target.name) / file.relative_to(target))
+        return buffer.getvalue()
 
     def read_archive_metadata(self, path: str) -> dict[str, Any]:
         """``metadata.yml`` of an archive (only inside the archive directory of the service)."""

@@ -66,7 +66,8 @@
     "opened": "{{name}} opened.",
     "copied_one": "{{count}} element copied.",
     "copied_other": "{{count}} elements copied.",
-    "blockSaved": "Block {{name}} saved in My blocks."
+    "blockSaved": "Block {{name}} saved in My blocks.",
+    "runDone": "Run finished in {{seconds}} s."
   },
   "fields": {
     "free": "free parameter (fitted by calibration)",
@@ -148,5 +149,45 @@
   "quickAdd": {
     "placeholder": "Element to add… (e.g. thin lens, camera)",
     "compatible": "Element to connect to {{port}}…"
+  },
+  "run": {
+    "run": "Run",
+    "cancel": "Cancel",
+    "queued": "Waiting…",
+    "archive": "Archive the results of the runs",
+    "problems_one": "{{count}} problem to fix first (see Problems)",
+    "problems_other": "{{count}} problems to fix first (see Problems)"
+  },
+  "tabs": {
+    "results": "Results",
+    "journal": "Journal",
+    "problems": "Problems",
+    "show": "Show the panel",
+    "hide": "Hide the panel"
+  },
+  "results": {
+    "inspected": "Port",
+    "computing": "Computing…",
+    "lastRun": "Last run",
+    "archive": "Archive (.zip)",
+    "data": "Data",
+    "empty": "Run the context (Ctrl+Enter), or click an output of a block to inspect it.",
+    "min": "min",
+    "max": "max",
+    "mean": "mean",
+    "sum": "sum",
+    "status": {
+      "queued": "waiting",
+      "running": "running",
+      "done": "done",
+      "failed": "failed",
+      "cancelled": "cancelled"
+    }
+  },
+  "journal": {
+    "empty": "Nothing yet: runs and actions appear here as they happen."
+  },
+  "problems": {
+    "none": "No problem found."
   }
 }
