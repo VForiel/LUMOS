@@ -11,7 +11,9 @@ Independent references:
   Monte-Carlo draws (NumPy random generator);
 - the efficiency of the median of N normal samples: σ_med ≈ √(π/2) σ / √N for large N (Kenney & Keeping
   1962, §13.13);
-- a circular Gaussian spot of total flux F and standard deviation s holds F (1 - exp(-r²/2s²)) within r;
+- a circular Gaussian spot of total flux F and standard deviation s holds F (1 - exp(-r²/2s²)) within r
+  (checked with an aperture of 6 s, where the pixelation of the spot is negligible);
+- the area of a disk of radius r is π r²: partial pixels count by their exact overlap with the aperture;
 - the CCD equation SNR = S / √(S + n (B + D + R²)) (Howell 2006, *Handbook of CCD Astronomy*, eq. 4.4),
   checked against the scatter of simulated Poisson and Gaussian noises;
 - the contrast limit with the small-sample penalty of Mawet et al. (2014, ApJ 792, 97, eq. 9): with n
@@ -184,11 +186,17 @@ def test_aperture_photometry_with_background_annulus():
     assert result.area.to_value(u.pix) == pytest.approx(math.pi * 144, rel=1e-3)
 
 
-def test_partial_apertures_follow_the_gaussian_encircled_flux():
-    image = spot(background=0.0)
-    for radius in (1.5, 2.0, 3.0, 5.0):
-        flux = aperture_photometry(image, center=(0.3 * u.pix, -0.7 * u.pix), radius=radius * u.pix).flux
-        assert flux.to_value(E) == pytest.approx(1000 * (1 - math.exp(-(radius**2) / 8)), rel=2e-3)
+def test_partial_pixels_are_weighted_by_their_exact_overlap():
+    n = 32
+    axis = (np.arange(n) - n // 2) * u.pix
+    uniform = DataProduct(np.ones((n, n)) * E, axes={"y": axis, "x": axis})
+    for radius in (0.4, 1.5, 2.3, 3.7, 5.2):
+        result = aperture_photometry(uniform, center=(0.3 * u.pix, -0.7 * u.pix), radius=radius * u.pix)
+        assert result.flux.to_value(E) == pytest.approx(math.pi * radius**2, rel=1e-12)
+    ring = aperture_photometry(
+        uniform, center=(0.0 * u.pix, 0.0 * u.pix), radius=3 * u.pix, annulus=(4 * u.pix, 7 * u.pix)
+    )
+    assert ring.background_area.to_value(u.pix) == pytest.approx(math.pi * (49 - 16), rel=1e-12)
 
 
 def test_ccd_equation_matches_simulated_noise():
