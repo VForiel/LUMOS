@@ -37,9 +37,13 @@ def test_matched_filter_roc_matches_the_analytic_form():
     roc = detection.roc_curve(h0, h1)
     pfa = roc.axes["false_alarm_probability"].value
     pd = roc.data.value
-    analytic = stats.norm.sf(stats.norm.isf(pfa) - d)
     inside = (pfa > 0.01) & (pfa < 0.99)
-    np.testing.assert_allclose(pd[inside], analytic[inside], atol=0.015)
+    pfa, pd = pfa[inside], pd[inside]
+    analytic = stats.norm.sf(stats.norm.isf(pfa) - d)
+    # binomial standard errors of the empirical P_D and P_FA, the latter scaled by the slope of the ROC
+    slope = stats.norm.pdf(stats.norm.isf(pfa) - d) / stats.norm.pdf(stats.norm.isf(pfa))
+    error = np.sqrt(analytic * (1 - analytic) / trials + slope**2 * pfa * (1 - pfa) / trials)
+    assert np.all(np.abs(pd - analytic) < 5 * error)
     model = detection.roc_matched_filter(np.array([1e-3, 1e-2, 0.1]), deflection=d)
     np.testing.assert_allclose(model, stats.norm.sf(stats.norm.isf([1e-3, 1e-2, 0.1]) - d), rtol=1e-12)
 
