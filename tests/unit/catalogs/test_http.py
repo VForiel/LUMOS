@@ -184,3 +184,14 @@ def test_providers_are_pluggable():
 def test_no_network_without_a_transport_in_tests(monkeypatch):
     """The default transport is the real one; tests always install a fake one."""
     assert http.default_transport().__class__.__name__ == "RequestsTransport"
+
+
+def test_settings_from_the_environment(monkeypatch, tmp_path):
+    """Notebooks and CI select a cache and the offline mode with environment variables (step P9.9)."""
+    monkeypatch.setenv("LUMOS_CATALOGS_CACHE", str(tmp_path / "shared"))
+    monkeypatch.setenv("LUMOS_CATALOGS_OFFLINE", "1")
+    configured = CatalogSettings()
+    assert configured.cache_dir == tmp_path / "shared"
+    assert configured.offline is True
+    monkeypatch.setenv("LUMOS_CATALOGS_OFFLINE", "0")
+    assert CatalogSettings().offline is False
