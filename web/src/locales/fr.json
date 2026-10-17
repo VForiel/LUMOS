@@ -1,0 +1,56 @@
+{
+  "common": {
+    "close": "Fermer",
+    "clear": "Effacer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "apply": "Appliquer",
+    "loading": "Chargement…"
+  },
+  "toolbar": {
+    "language": "Langue"
+  },
+  "theme": {
+    "switch": "Passer au thème {{theme}}",
+    "light": "clair",
+    "dark": "sombre",
+    "system": "du système"
+  },
+  "context": {
+    "untitled": "Contexte sans titre"
+  },
+  "palette": {
+    "title": "Éléments",
+    "search": "Rechercher un élément…",
+    "empty": "Aucun élément ne correspond à votre recherche.",
+    "hint": "Glissez-le sur le canevas, ou cliquez pour l'ajouter."
+  },
+  "categories": {
+    "sources": "Sources",
+    "scenes": "Scènes",
+    "telescopes": "Télescopes",
+    "apertures": "Ouvertures",
+    "atmosphere": "Atmosphère",
+    "optics": "Optique",
+    "coronagraphs": "Coronographes",
+    "fibers": "Fibres",
+    "photonics": "Photonique",
+    "detectors": "Détecteurs",
+    "processing": "Traitement",
+    "lab": "Laboratoire",
+    "symbolic": "Symbolique",
+    "other": "Autres"
+  },
+  "canvas": {
+    "empty": "Partez d'un préréglage, ou ajoutez des éléments",
+    "hint": "Glissez des éléments depuis la palette, puis reliez une sortie (côté droit d'un bloc) à une entrée (côté gauche)."
+  },
+  "node": {
+    "problems_one": "{{count}} problème",
+    "problems_other": "{{count}} problèmes",
+    "inspect": "Inspecter {{port}}"
+  },
+  "toast": {
+    "restored": "Votre dernier contexte a été restauré."
+  }
+}

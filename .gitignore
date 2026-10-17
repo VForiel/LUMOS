@@ -38,3 +38,8 @@ tmp/
 .DS_Store
 Thumbs.db
 .idea/
+
+# Web interface: dependencies and build (served by lumos web)
+web/node_modules/
+src/lumos/web/static/
+test-results/

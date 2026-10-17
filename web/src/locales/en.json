@@ -1,0 +1,56 @@
+{
+  "common": {
+    "close": "Close",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "apply": "Apply",
+    "loading": "Loading…"
+  },
+  "toolbar": {
+    "language": "Language"
+  },
+  "theme": {
+    "switch": "Switch to the {{theme}} theme",
+    "light": "light",
+    "dark": "dark",
+    "system": "system"
+  },
+  "context": {
+    "untitled": "Untitled context"
+  },
+  "palette": {
+    "title": "Elements",
+    "search": "Search elements…",
+    "empty": "No element matches your search.",
+    "hint": "Drag onto the canvas, or click to add."
+  },
+  "categories": {
+    "sources": "Sources",
+    "scenes": "Scenes",
+    "telescopes": "Telescopes",
+    "apertures": "Apertures",
+    "atmosphere": "Atmosphere",
+    "optics": "Optics",
+    "coronagraphs": "Coronagraphs",
+    "fibers": "Fibres",
+    "photonics": "Photonics",
+    "detectors": "Detectors",
+    "processing": "Processing",
+    "lab": "Laboratory",
+    "symbolic": "Symbolic",
+    "other": "Other"
+  },
+  "canvas": {
+    "empty": "Start from a preset, or add elements",
+    "hint": "Drag elements from the palette, then connect an output (right side of a block) to an input (left side)."
+  },
+  "node": {
+    "problems_one": "{{count}} problem",
+    "problems_other": "{{count}} problems",
+    "inspect": "Inspect {{port}}"
+  },
+  "toast": {
+    "restored": "Your last context was restored."
+  }
+}

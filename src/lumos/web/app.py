@@ -56,6 +56,7 @@ from lumos.web.auth import (
 from lumos.web.config import LOOPBACK_HOSTS, WebConfig
 from lumos.web.security import AuditLog, RateLimiter, client_address, is_secure, retry_after
 from lumos.web.sessions import COOKIE, WebSession, WebSessions
+from lumos.web.units import unit_choices
 
 __all__ = ["create_app"]
 
@@ -225,6 +226,21 @@ def _signals() -> dict[str, dict[str, list[str]]]:
         parents = [c.__name__ for c in cls.__mro__[1:] if isinstance(c, type) and issubclass(c, Signal)]
         found[cls.__name__] = {"parents": parents}
         stack.extend(cls.__subclasses__())
+    return found
+
+
+def _units_of(types: list[dict[str, Any]]) -> set[str]:
+    """Units of the parameters, states and quantity settings of the element types."""
+    found: set[str] = set()
+    for item in types:
+        properties = item["schema"]["properties"]
+        for group in ("params", "settings", "state"):
+            for field in properties[group]["properties"].values():
+                if "x-lumos-unit" in field:
+                    found.add(field["x-lumos-unit"])
+                default = field.get("default")
+                if isinstance(default, dict) and isinstance(default.get("unit"), str):
+                    found.add(default["unit"])
     return found
 
 
@@ -523,6 +539,7 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
                 for item in listing.items
             ]
             palette_cache["signals"] = _signals()
+            palette_cache["units"] = unit_choices(_units_of(palette_cache["types"]))
         return palette_cache
 
     @app.get("/api/docs/search", dependencies=[viewer])
