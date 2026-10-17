@@ -9,6 +9,10 @@ coefficients or parameters found, the relative error :math:`\|U - \hat U\|_2 / \
 - :func:`project_hermite_gauss`: complex coefficients
   :math:`c_{nm} = \langle \mathrm{HG}_{nm}, U\rangle` on the orthonormal Hermite-Gauss modes of a waist
   :math:`w` (the modes of :mod:`lumos.symbolic.closed_forms` at their waist).
+- :func:`project_laguerre_gauss`: the same on the Laguerre-Gauss modes :math:`\mathrm{LG}_{p\ell}` (complex
+  modes: :math:`c_{p\ell} = \langle \mathrm{LG}_{p\ell}, U\rangle` with the
+  conjugate);
+- :func:`project_lp`: LP modes of a step-index fibre (Gloge 1971), by least squares;
 - :func:`project_fourier`: the ``n_terms`` largest terms of the discrete Fourier series of the field.
 - :func:`fit_gaussian`: Gaussian beam :math:`A e^{-\rho^2/w^2} e^{ik\rho^2/2R} e^{i\phi}` around
   :math:`(x_0, y_0)`, from weighted least squares on :math:`\ln|U|` and on the phase.
@@ -43,6 +47,8 @@ __all__ = [
     "fit_gaussian",
     "project_fourier",
     "project_hermite_gauss",
+    "project_laguerre_gauss",
+    "project_lp",
     "project_zernike",
     "sparse_regression",
     "symbolic_regression",
@@ -183,6 +189,107 @@ def project_hermite_gauss(signal: Any, *, waist: u.Quantity, max_order: int) -> 
             expression += (sp.Float(c.real) + sp.I * sp.Float(c.imag)) * form.expression()
     reconstructed = SymbolicField(expression, wavelength=wavelength, power_unit=power_unit, grid=grid)
     return Reconstruction(reconstructed, coefficients, _residual(values, estimate), "hermite-gauss")
+
+
+def project_laguerre_gauss(signal: Any, *, waist: u.Quantity, max_order: int) -> Reconstruction:
+    """Project ``signal`` on the Laguerre-Gauss modes of ``waist`` with ``2p + |l| <= max_order``."""
+    from scipy.special import genlaguerre
+
+    from lumos.symbolic.closed_forms import GaussianBeamForm
+
+    values, grid, wavelength, power_unit = _data(signal)
+    w = float(to_si(require_unit(waist, u.m, name="waist")))
+    xx, yy = (np.asarray(c) for c in grid.coords(backend="numpy"))
+    rr2 = xx**2 + yy**2
+    azimuth = np.arctan2(yy, xx)
+    area = grid.dx_si * grid.dy_si
+    lam = float(to_si(wavelength))
+    z_r = math.pi * w**2 / lam
+    coefficients: dict[tuple[int, int], complex] = {}
+    estimate = np.zeros_like(values)
+    expression = sp.Integer(0)
+    for order in range(int(max_order) + 1):
+        for p in range(order // 2 + 1):
+            ell_abs = order - 2 * p
+            for ell in sorted({ell_abs, -ell_abs}):
+                norm = math.sqrt(2 * math.factorial(p) / (math.pi * math.factorial(p + ell_abs))) / w
+                radial = (np.sqrt(2 * rr2) / w) ** ell_abs * genlaguerre(p, ell_abs)(2 * rr2 / w**2)
+                mode = norm * radial * np.exp(-rr2 / w**2) * np.exp(1j * ell * azimuth)
+                c = complex(np.sum(np.conj(mode) * values) * area)
+                coefficients[(p, ell)] = c
+                estimate = estimate + c * mode
+                form = GaussianBeamForm(complex(0, -z_r), lam, 1.0, "lg", (p, ell))
+                expression += (sp.Float(c.real) + sp.I * sp.Float(c.imag)) * form.expression()
+    reconstructed = SymbolicField(expression, wavelength=wavelength, power_unit=power_unit, grid=grid)
+    return Reconstruction(reconstructed, coefficients, _residual(values, estimate), "laguerre-gauss")
+
+
+# --- LP modes of step-index fibres -------------------------------------------------------------------------
+
+
+def _lp_expression(mode: Any, core: float, parity: str) -> sp.Expr:
+    rho = r / sp.Float(core)
+    inside = sp.besselj(mode.ell, sp.Float(mode.u) * rho) / sp.Float(float(_jv(mode.ell, mode.u)))
+    outside = sp.besselk(mode.ell, sp.Float(mode.w) * rho) / sp.Float(float(_kv(mode.ell, mode.w)))
+    radial = sp.Piecewise((inside, r <= sp.Float(core)), (outside, True))
+    if mode.ell == 0:
+        return radial
+    # cos(lφ) and sin(lφ) as Re and Im of ((x + iy) / r)^l (no singularity in the expression of φ)
+    power = sp.expand(((x + sp.I * y) / r) ** mode.ell)
+    return radial * (sp.re(power) if parity == "cos" else sp.im(power))
+
+
+def _jv(order: int, value: float) -> float:
+    from scipy.special import jv
+
+    return float(jv(order, value))
+
+
+def _kv(order: int, value: float) -> float:
+    from scipy.special import kv
+
+    return float(kv(order, value))
+
+
+def project_lp(signal: Any, *, core_radius: u.Quantity, v_number: float) -> Reconstruction:
+    r"""Project ``signal`` on the guided LP modes of a step-index fibre (core radius, normalised frequency V).
+
+    The modes (:mod:`lumos.physics.fibers`, Gloge 1971) are normalised to unit power on the grid; modes with
+    :math:`\ell > 0` come in ``"cos"`` and ``"sin"`` versions. The coefficients, keyed by
+    ``(label, parity)``, are found by least squares, since the sampled modes are only nearly orthogonal.
+    """
+    from lumos.physics.fibers import lp_modes, lp_radial
+
+    values, grid, wavelength, power_unit = _data(signal)
+    core = float(to_si(require_unit(core_radius, u.m, name="core_radius")))
+    xx, yy = (np.asarray(c) for c in grid.coords(backend="numpy"))
+    rho, azimuth = np.hypot(xx, yy) / core, np.arctan2(yy, xx)
+    area = grid.dx_si * grid.dy_si
+    keys: list[tuple[str, str]] = []
+    columns: list[np.ndarray] = []
+    terms: list[sp.Expr] = []
+    for mode in lp_modes(float(v_number)):
+        radial = lp_radial(mode, rho)
+        for parity in ("cos",) if mode.ell == 0 else ("cos", "sin"):
+            angular = np.cos(mode.ell * azimuth) if parity == "cos" else np.sin(mode.ell * azimuth)
+            sampled = radial * angular
+            norm = math.sqrt(float(np.sum(sampled**2)) * area)
+            keys.append((mode.label, parity))
+            columns.append((sampled / norm).ravel())
+            terms.append(_lp_expression(mode, core, parity) / sp.Float(norm))
+    matrix = np.stack(columns, axis=1).astype(complex)
+    solution, *_ = np.linalg.lstsq(matrix, values.ravel(), rcond=None)
+    coefficients = {key: complex(c) for key, c in zip(keys, solution, strict=True)}
+    expression = sum(
+        (
+            (sp.Float(c.real) + sp.I * sp.Float(c.imag)) * term
+            for c, term in zip(solution, terms, strict=True)
+        ),
+        sp.Integer(0),
+    )
+    reconstructed = SymbolicField(expression, wavelength=wavelength, power_unit=power_unit, grid=grid)
+    estimate = (matrix @ solution).reshape(values.shape)
+    return Reconstruction(reconstructed, coefficients, _residual(values, estimate), "lp")
 
 
 # --- Fourier ------------------------------------------------------------------------------------------------

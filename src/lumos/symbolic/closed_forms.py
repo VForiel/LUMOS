@@ -122,9 +122,11 @@ class GaussianBeamForm:
             return sp.Float(norm) * shape * common
         p, ell = self.indices
         norm = root_power * math.sqrt(2 * math.factorial(p) / (math.pi * math.factorial(p + abs(ell)))) / w
-        radial = (math.sqrt(2) * r / w) ** abs(ell) * sp.assoc_laguerre(p, abs(ell), 2 * r**2 / w**2)
-        azimuth = ((x + sp.I * y) / r) ** ell if ell else sp.Integer(1)
-        return sp.Float(norm) * radial * azimuth * common
+        # (√2 r/w)^|l| e^{ilφ} = (√2/w)^|l| (x ± iy)^|l|: polynomial, without the 0/0 of (x + iy)/r at r = 0
+        vortex = (x + sp.I * y) if ell >= 0 else (x - sp.I * y)
+        radial = sp.Float((math.sqrt(2) / w) ** abs(ell)) * vortex ** abs(ell)
+        radial = radial * sp.assoc_laguerre(p, abs(ell), 2 * r**2 / w**2)
+        return sp.Float(norm) * radial * common
 
     def field(self, grid: Any = None) -> SymbolicField:
         """Return the symbolic field of the beam."""
