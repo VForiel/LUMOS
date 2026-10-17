@@ -285,6 +285,7 @@ def test_parity_the_web_exports_the_same_document_as_the_service(client, tmp_pat
     for document in (web, direct):
         document.pop("created_at")
         document["context"].pop("seed")  # drawn at random for each new context
+        document["context"]["clock"].pop("start")  # date of creation of the context
     assert web == direct
 
 
