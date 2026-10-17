@@ -97,8 +97,8 @@ def test_celestial_pointing_is_icrs():
     pointing = scene.pointing
     assert isinstance(pointing, SkyCoord)
     assert pointing.frame.name == "icrs"
-    assert pointing.ra.to_value(u.deg) == pytest.approx(83.82)
-    assert pointing.dec.to_value(u.deg) == pytest.approx(-5.39)
+    assert u.Quantity(pointing.ra).to_value(u.deg) == pytest.approx(83.82)
+    assert u.Quantity(pointing.dec).to_value(u.deg) == pytest.approx(-5.39)
 
 
 def test_terrestrial_frame_parameters():
