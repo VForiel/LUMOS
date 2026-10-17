@@ -99,6 +99,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   Airy fits, sparse regression, optional PySR); `SymbolicSource` and automatic, logged conversion to numbers in
   contexts; safe JSON form in `.lumos` files and archives; notebook `07_symbolic_optics` and the
   `symbolic_focus` preset.
+- `lumos.processing`: dark subtraction, flat field, stacking (mean, median, sigma clipping), cropping, rebinning
+  and flux-conserving resampling with propagated uncertainties; aperture photometry with exact pixel overlaps,
+  CCD equation, contrast curves (Mawet et al. 2014), radial profiles and SNR maps; null depth, kernel observables
+  and transmission maps; matched-filter and energy statistics, ROC curves, contrast limits and detection
+  capability maps; phase fitting (gradient, scan, genetic), slanted-edge MTF and PSF measurements; processing
+  elements with `DataProduct` ports and script blocks (ADR-0013); notebooks `08_data_pipeline` and
+  `09_detection_capability`.
 - `lumos.elements.sources.Planet`: one planet of a star on a Keplerian orbit.
 - Source lists can be archived and read back.
 

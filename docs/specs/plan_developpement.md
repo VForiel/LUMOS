@@ -236,12 +236,12 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 11 — Pipelines de traitement et capacités de détection
 
-- [ ] **P11.1 Réduction** — dark, champ plat, empilement, rééchantillonnage, photométrie, profil radial, contraste, SNR.
-- [ ] **P11.2 Interférométrie** — profondeur de nulling, observables à noyaux, cartes de transmission.
-- [ ] **P11.3 Statistiques de détection** — tests statistiques, ROC, contraste limite, capacité de détection.
-- [ ] **P11.4 Calibration classique** — ajustement de phases, mesure de MTF (lame inclinée), mesure de PSF.
-- [ ] **P11.5 Bloc « script ».**
-- [ ] **P11.6 Notebooks** `08_data_pipeline`, `09_detection_capability`.
+- [x] **P11.1 Réduction** — dark, champ plat, empilement, rééchantillonnage, photométrie, profil radial, contraste, SNR.
+- [x] **P11.2 Interférométrie** — profondeur de nulling, observables à noyaux, cartes de transmission.
+- [x] **P11.3 Statistiques de détection** — tests statistiques, ROC, contraste limite, capacité de détection.
+- [x] **P11.4 Calibration classique** — ajustement de phases, mesure de MTF (lame inclinée), mesure de PSF.
+- [x] **P11.5 Bloc « script ».**
+- [x] **P11.6 Notebooks** `08_data_pipeline`, `09_detection_capability`.
 
 **Tests écrits d'abord :** ROC d'un test de Neyman-Pearson sur un signal gaussien comparée à la forme analytique ; MTF d'une optique limitée par la diffraction comparée à la formule analytique ; propagation correcte des incertitudes.
 
