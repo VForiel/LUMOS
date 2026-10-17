@@ -45,7 +45,12 @@ gpu = ["cupy-cuda12x>=13.0"]
 torch = ["torch>=2.4"]
 catalogs = ["requests>=2.32"]
 hardware = ["pyserial>=3.5", "pyvisa>=1.14"]
-web = ["fastapi>=0.115", "uvicorn[standard]>=0.30", "argon2-cffi>=23.1"]
+web = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "argon2-cffi>=23.1",  # password hashes (Argon2id)
+    "cryptography>=42",  # verification of SSH signatures (lumos login)
+]
 mcp = ["mcp>=2.3,<3"]  # MCPServer API of the SDK 2 (ADR-0016)
 ai = ["numpyro>=0.15", "optax>=0.2", "blackjax>=1.2"]
 validation = ["poppy>=1.1", "hcipy>=0.6"]
@@ -76,7 +81,9 @@ dev = [
     "nbclient>=0.10",
     "nbformat>=5.10",
     "ipykernel>=6.29",
+    "httpx>=0.27",  # test client of the web backend
 ]
+e2e = ["pytest-playwright>=0.5"]  # browser tests of the web interface (tests/e2e)
 all = ["lumos-maxima[jax,catalogs,hardware,web,mcp]"]
 
 [project.scripts]
@@ -175,7 +182,7 @@ executionEnvironments = [
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
-addopts = ["-ra", "--strict-markers", "--strict-config", "-m", "not network and not hardware and not gpu and not benchmark"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "-m", "not network and not hardware and not gpu and not benchmark and not e2e"]
 xfail_strict = true
 filterwarnings = ["error"]
 markers = [
@@ -184,6 +191,7 @@ markers = [
     "gpu: needs a GPU backend",
     "slow: long-running test",
     "benchmark: performance measurement (run with -m benchmark)",
+    "e2e: browser tests of the web interface (Playwright, built frontend; run with -m e2e)",
 ]
 
 [tool.coverage.run]
