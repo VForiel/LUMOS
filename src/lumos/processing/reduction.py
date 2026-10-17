@@ -348,6 +348,13 @@ class Rebin(Element):
         return {"out": rebin(inputs["in"], int(values.factor))}
 
 
+def _on_axis(value: u.Quantity, axis: u.Quantity) -> u.Quantity:
+    """Express ``value`` in the unit of ``axis``; zero (the default centre, ``0 pix``) fits every unit."""
+    if value.value == 0:
+        return 0 * axis.unit
+    return value.to(axis.unit)
+
+
 @register("lumos.processing.Crop")
 class Crop(Element):
     """Keep ``nx`` × ``ny`` pixels around the pixel nearest to (``x``, ``y``)."""
@@ -364,5 +371,5 @@ class Crop(Element):
         """Return the cropped image."""
         product = inputs["in"]
         y_name, x_name = _image_axes(product)
-        cx, cy = values.x.to(product.axes[x_name].unit), values.y.to(product.axes[y_name].unit)
+        cx, cy = _on_axis(values.x, product.axes[x_name]), _on_axis(values.y, product.axes[y_name])
         return {"out": crop(product, center=(cx, cy), size=(int(values.nx), int(values.ny)))}
