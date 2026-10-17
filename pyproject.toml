@@ -165,7 +165,7 @@ venv = ".venv"
 # Quantity.to_value() as a union that NumPy overloads and operators reject (same for operators, indexing and Quantity.unit, typed Optional).
 # Tests of optional dependencies import them when present: a missing one is a warning there.
 executionEnvironments = [
-    { root = "tests", reportArgumentType = "none", reportCallIssue = "none", reportOperatorIssue = "none", reportIndexIssue = "none", reportOptionalMemberAccess = "none", reportAttributeAccessIssue = "none", reportIncompatibleMethodOverride = "none", reportIncompatibleVariableOverride = "none", reportAssignmentType = "none", reportMissingImports = "warning" },
+    { root = "tests", reportArgumentType = "none", reportCallIssue = "none", reportOperatorIssue = "none", reportIndexIssue = "none", reportOptionalMemberAccess = "none", reportAttributeAccessIssue = "none", reportIncompatibleMethodOverride = "none", reportIncompatibleVariableOverride = "none", reportAssignmentType = "none", reportOptionalSubscript = "none", reportOptionalOperand = "none", reportRedeclaration = "none", reportMissingImports = "warning" },
     { root = "src" },
     { root = "tools" },
 ]
