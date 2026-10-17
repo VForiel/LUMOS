@@ -270,7 +270,7 @@ def _context_from_document(document: Mapping[str, Any], reg: Registry) -> Contex
 
 
 #: Built-in element modules imported only when a document uses them (SymPy is slow to import).
-_LAZY_TYPES = {"lumos.symbolic.": "lumos.symbolic.source"}
+_LAZY_TYPES = {"lumos.symbolic.": "lumos.symbolic.source", "lumos.processing.": "lumos.processing"}
 
 
 def _import_lazy_types(type_id: Any) -> None:

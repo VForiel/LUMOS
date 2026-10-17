@@ -1,9 +1,16 @@
-"""Pure data-processing functions shared by plots, processing blocks and the service layer.
+"""Data processing: reduction, photometry, interferometry, detection statistics and calibration (phase 11).
 
-The processing *elements* (blocks of a graph with :class:`~lumos.fields.DataProduct` ports) live in
-:mod:`lumos.elements.processing`; the functions here work on plain arrays and grids.
+Functions work on :class:`~lumos.fields.DataProduct` objects (or plain arrays and grids); the processing
+*elements* defined next to them wrap the functions with ``DataProduct`` ports, so that pipelines are built in
+the same graph as the optics (REQ-PIPE-1).
+
+- :mod:`~lumos.processing.reduction`: dark, flat field, stacking, cropping, rebinning, resampling;
+- :mod:`~lumos.processing.photometry`: aperture photometry, CCD signal-to-noise ratio, contrast curves,
+  radial profiles;
+- :func:`radial_profile`: azimuthal averages of maps sampled on a grid.
 """
 
+from lumos.processing import photometry, reduction
 from lumos.processing.profiles import radial_profile
 
-__all__ = ["radial_profile"]
+__all__ = ["photometry", "radial_profile", "reduction"]
