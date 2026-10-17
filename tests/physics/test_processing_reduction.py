@@ -255,7 +255,7 @@ def test_reduction_elements_in_a_context():
     science = ctx.add(FrameSource(name="science"))
     dark = ctx.add(DarkSource(name="dark"))
     subtract = ctx.add(reduction.DarkSubtraction(name="subtract"))
-    science >> subtract
+    ctx.connect(science.port("out"), subtract.port("in"))
     ctx.connect(dark.port("out"), subtract.port("dark"))
     binned = ctx.add(reduction.Rebin(name="bin", factor=2))
     subtract >> binned
