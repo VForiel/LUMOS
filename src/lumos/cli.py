@@ -6,8 +6,10 @@
 - ``lumos mcp [--archive-root DIR] [--presets-dir DIR] [--enable-operation]``: serve the MCP server for AI
   assistants over stdio, or over streamable HTTP with ``--transport http [--host H] [--port P] [--path /mcp]``
   (local only unless ``--allow-remote``);
-- ``lumos web [--host H] [--port P] [--profile local|public] [--open]``: serve the web interface
-  (``http://127.0.0.1:8000`` by default).
+- ``lumos web [--config FILE] [--host H] [--port P] [--profile local|public] [--open] ...``: serve the web
+  interface (``http://127.0.0.1:8000`` by default);
+- ``lumos users add|remove|list [NAME] [--role R] [--password] [--ssh-key FILE]``: users of an instance;
+- ``lumos login URL --user NAME [--key FILE]``: log in with an SSH key and print a bearer token.
 """
 
 from __future__ import annotations
@@ -105,6 +107,7 @@ def _web(arguments: argparse.Namespace) -> int:
         import uvicorn
 
         from lumos.web import WebConfig, create_app
+        from lumos.web.config import ConfigError, load_config
     except ImportError as error:  # pragma: no cover - depends on the installed extras
         sys.stderr.write(
             f"the web interface needs the extra 'web': pip install 'lumos-maxima[web]' ({error})\n"
@@ -113,23 +116,126 @@ def _web(arguments: argparse.Namespace) -> int:
     from lumos.service import ServiceConfig
 
     logging.basicConfig(stream=sys.stderr, level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
-    config = WebConfig(
-        profile=arguments.profile,
-        host=arguments.host,
-        port=arguments.port,
-        service=ServiceConfig(archive_root=arguments.archive_root, presets_dir=arguments.presets_dir),
-    )
-    app = create_app(config)
-    url = (
-        f"http://{'localhost' if arguments.host in ('127.0.0.1', '::1') else arguments.host}:{arguments.port}"
-    )
-    sys.stderr.write(f"LUMOS web interface on {url} (press Ctrl+C to stop)\n")
+    options = {
+        "profile": arguments.profile,
+        "host": arguments.host,
+        "port": arguments.port,
+        "users_file": arguments.users,
+        "tls_certfile": arguments.tls_cert,
+        "tls_keyfile": arguments.tls_key,
+        "trust_proxy": arguments.trust_proxy or None,
+        "audit_log": arguments.audit_log,
+    }
+    given = {key: value for key, value in options.items() if value is not None}
+    if arguments.config:  # the file wins over the defaults of the command line
+        for key, default in (("profile", "local"), ("host", "127.0.0.1"), ("port", 8000)):
+            if given.get(key) == default:
+                del given[key]
+    service_options = {
+        "archive_root": arguments.archive_root,
+        "presets_dir": arguments.presets_dir,
+        "operation_enabled": arguments.enable_operation or None,
+    }
+    service = {key: value for key, value in service_options.items() if value is not None}
+    try:
+        if arguments.config:
+            config = load_config(arguments.config, **given, service=service)
+        else:
+            config = WebConfig(**given, service=ServiceConfig(**service))
+        app = create_app(config)
+    except ConfigError as error:
+        sys.stderr.write(f"invalid configuration: {error}\n")
+        return 2
+    scheme = "https" if config.tls_certfile else "http"
+    shown = "localhost" if config.host in ("127.0.0.1", "::1") else config.host
+    url = f"{scheme}://{shown}:{config.port}"
+    sys.stderr.write(f"LUMOS web interface ({config.profile} profile) on {url} (press Ctrl+C to stop)\n")
     if arguments.open:
         import threading
         import webbrowser
 
         threading.Timer(1.0, webbrowser.open, args=(url,)).start()
-    uvicorn.run(app, host=arguments.host, port=arguments.port, log_level="warning")
+    uvicorn.run(
+        app,
+        host=config.host,
+        port=config.port,
+        log_level="warning",
+        ssl_certfile=config.tls_certfile,
+        ssl_keyfile=config.tls_keyfile,
+        proxy_headers=config.trust_proxy,
+        forwarded_allow_ips="*" if config.trust_proxy else None,
+    )
+    return 0
+
+
+def _users(arguments: argparse.Namespace) -> int:
+    import getpass
+    from pathlib import Path
+
+    from lumos.web.auth import ConfigError, User, hash_password, load_users, save_users
+
+    path = Path(arguments.file)
+    try:
+        users = load_users(path) if path.exists() else {}
+    except ConfigError as error:
+        sys.stderr.write(f"{error}\n")
+        return 2
+    if arguments.action == "list":
+        for user in sorted(users.values(), key=lambda u: u.name):
+            methods = [m for m, ok in (("password", user.password), ("ssh", user.ssh_keys)) if ok]
+            _write(f"{user.name:20s} {user.role:10s} {', '.join(methods) or 'no credential'}")
+        return 0
+    if not arguments.name:
+        sys.stderr.write("give the name of the user\n")
+        return 2
+    if arguments.action == "remove":
+        if users.pop(arguments.name, None) is None:
+            sys.stderr.write(f"no user {arguments.name} in {path}\n")
+            return 1
+        save_users(path, users)
+        return 0
+    user = users.get(arguments.name) or User(name=arguments.name, role=arguments.role or "simulator")
+    if arguments.role:
+        user.role = arguments.role
+    password = None
+    if arguments.password_stdin:
+        password = sys.stdin.readline().rstrip("\r\n")
+    elif arguments.password:
+        password = getpass.getpass(f"password of {arguments.name}: ")
+        if password != getpass.getpass("again: "):
+            sys.stderr.write("the passwords differ\n")
+            return 1
+    if password is not None:
+        if len(password) < 8:
+            sys.stderr.write("use a password of at least 8 characters\n")
+            return 1
+        user.password = hash_password(password)
+    for key in arguments.ssh_key or []:
+        line = Path(key).expanduser().read_text(encoding="utf-8").strip()
+        if line not in user.ssh_keys:
+            user.ssh_keys.append(line)
+    candidate = {**users, user.name: user}
+    save_users(path, candidate)
+    try:
+        load_users(path)
+    except ConfigError as error:  # e.g. not a public key file: restore the previous file
+        save_users(path, users)
+        sys.stderr.write(f"{error}\n")
+        return 2
+    _write(f"{user.name}: {user.role} in {path}")
+    return 0
+
+
+def _login(arguments: argparse.Namespace) -> int:
+    from lumos.web.login import LoginError, login
+
+    try:
+        token = login(arguments.url, arguments.user, arguments.key)
+    except LoginError as error:
+        sys.stderr.write(f"{error}\n")
+        return 1
+    sys.stderr.write("logged in; send the token as 'Authorization: Bearer <token>'\n")
+    _write(token)
     return 0
 
 
@@ -162,14 +268,37 @@ def _parser() -> argparse.ArgumentParser:
         help="allow actions on real equipment, each one confirmed by the user (default: disabled)",
     )
     web = commands.add_parser("web", help="web interface (visual editor)")
+    web.add_argument("--config", default=None, help="TOML configuration file (see the hosting guide)")
     web.add_argument("--host", default="127.0.0.1", help="address to listen on (default: 127.0.0.1)")
     web.add_argument("--port", type=int, default=8000, help="port (default: 8000)")
     web.add_argument(
         "--profile", choices=("local", "public"), default="local", help="deployment profile (default: local)"
     )
+    web.add_argument("--users", default=None, help="users file (lumos users add)")
+    web.add_argument("--tls-cert", default=None, help="certificate (PEM) to serve HTTPS")
+    web.add_argument("--tls-key", default=None, help="private key (PEM) of the certificate")
+    web.add_argument("--trust-proxy", action="store_true", help="behind a reverse proxy terminating TLS")
+    web.add_argument("--audit-log", default=None, help="JSON-lines file of the security events")
     web.add_argument("--archive-root", default=None, help="directory of the archives of the runs")
     web.add_argument("--presets-dir", default=None, help="directory of the preset .lumos files")
+    web.add_argument(
+        "--enable-operation", action="store_true", help="allow actions on real equipment, each one confirmed"
+    )
     web.add_argument("--open", action="store_true", help="open the interface in the default browser")
+    users = commands.add_parser("users", help="users of a web instance")
+    users.add_argument("action", choices=("add", "remove", "list"))
+    users.add_argument("name", nargs="?", help="user name")
+    users.add_argument("--file", default="users.toml", help="users file (default: users.toml)")
+    users.add_argument("--role", choices=("viewer", "simulator", "operator"), default=None)
+    users.add_argument("--password", action="store_true", help="ask for a password")
+    users.add_argument(
+        "--password-stdin", action="store_true", help="read the password from the standard input"
+    )
+    users.add_argument("--ssh-key", action="append", help="public key file (id_ed25519.pub); repeatable")
+    login = commands.add_parser("login", help="log in to a web instance with an SSH key")
+    login.add_argument("url", help="address of the instance, e.g. https://lumos.example.org")
+    login.add_argument("--user", required=True, help="user name")
+    login.add_argument("--key", default="~/.ssh/id_ed25519", help="private key (default: ~/.ssh/id_ed25519)")
     return parser
 
 
@@ -182,6 +311,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _mcp(arguments)
     if arguments.command == "web":
         return _web(arguments)
+    if arguments.command == "users":
+        return _users(arguments)
+    if arguments.command == "login":
+        return _login(arguments)
     return 1  # pragma: no cover - argparse requires a command
 
 
