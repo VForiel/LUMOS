@@ -16,6 +16,7 @@ The interface opens at <http://localhost:8000>. It only listens on your own mach
 :maxdepth: 1
 
 editing
+running
 configuration
 accounts
 api

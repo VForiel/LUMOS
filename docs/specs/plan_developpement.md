@@ -292,7 +292,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P14.3 Configuration de déploiement** — profils `local` et `public` ; opération interdite par défaut en `public` ; quotas de calcul.
 - [x] **P14.4 Frontend : socle** — Vite, React, `@xyflow/react`, Tailwind, i18next (EN/FR) ; palette et nœuds générés depuis les schémas.
 - [x] **P14.5 Édition** — blocs, connexions typées, formulaires avec unités, annulation et rétablissement, groupes.
-- [ ] **P14.6 Exécution et inspection** — progression, visualisations de port, téléchargements.
+- [x] **P14.6 Exécution et inspection** — progression, visualisations de port, téléchargements.
 - [ ] **P14.7 Préréglages et tutoriel** pas à pas.
 - [ ] **P14.8 Panneau opération** — équipements, état, actions, arrêt d'urgence (selon les droits).
 - [ ] **P14.9 Panneau assistant** (optionnel) connecté au MCP HTTP.

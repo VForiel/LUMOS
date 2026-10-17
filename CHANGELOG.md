@@ -172,6 +172,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   shortcuts, `.lumos` files opened and saved, equivalent Python script. Service: `undo`, `redo`,
   `update_ui`, `rename_element`, `group_elements`, `ungroup`, `copy_elements`, `paste_elements`,
   `export_element`, `import_element`, `set_context`; summaries give the inside of groups and the undo state.
+- Runs in the web interface: progress, cancellation, archives; results with figures and statistics; any port
+  inspected without a run; downloads as PNG, PltEdit, NPZ and JSON; live journal; problems leading to the
+  element. Service: `port_file`, `result_file`, `archive_zip`, `cancel_job` (status `cancelled`).
 
 ### Changed
 
