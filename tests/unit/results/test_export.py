@@ -18,10 +18,10 @@ matplotlib.use("Agg")
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
-import pltedit
 import pytest
 from astropy import units as u
 
+from lumos._vendor import pltedit
 from lumos.results import load_data, save_data, save_figure
 
 

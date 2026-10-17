@@ -19,12 +19,12 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import nbformat
-import pltedit
 import pytest
 import yaml
 from nbclient import NotebookClient
 
 import lumos.io
+from lumos._vendor import pltedit
 
 # On Windows, pyzmq warns that asyncio's default Proactor event loop lacks add_reader and starts a
 # selector thread (pyzmq documentation, "asyncio on Windows"): a notice of the kernel client, not of LUMOS.
