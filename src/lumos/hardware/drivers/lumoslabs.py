@@ -106,6 +106,8 @@ class LumosLabsDriver(Driver):
             if not self.wait(self.poll):
                 raise DriverStopped(f"{self.model} {verb} interrupted by an emergency stop")
             if self.ask("BUSY?") == [0]:
+                if self.stop_requested:  # stopped between the wait and the query: idle, not done
+                    raise DriverStopped(f"{self.model} {verb} interrupted by an emergency stop")
                 return
             if time.monotonic() > deadline:
                 raise DriverTimeout(f"{self.model} {verb} did not finish in time")
