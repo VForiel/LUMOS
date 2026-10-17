@@ -18,6 +18,7 @@ The expected values are analytic and recomputed here independently:
   pupil (Mawet et al. 2005, ApJ 633, 1191), so what remains is far below the Airy level.
 """
 
+import json
 import math
 import subprocess
 import sys
@@ -33,7 +34,13 @@ pytest.importorskip("mcp")
 from mcp import Client
 
 from lumos.mcp import create_server
-from lumos.mcp.evaluation import SCENARIOS, parse_answer, run_reference
+from lumos.mcp.evaluation import (
+    SCENARIOS,
+    claude_code_command,
+    parse_answer,
+    run_reference,
+    run_with_claude_code,
+)
 from lumos.service import Service, ServiceConfig
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -158,8 +165,9 @@ def test_radial_profile_tool(server):
 
 
 def test_the_evaluation_runner(tmp_path):
+    """Without option, the runner solves the scenarios with the scripted solutions (free, no account)."""
     reference = subprocess.run(
-        [sys.executable, str(ROOT / "tools" / "mcp_eval.py"), "--reference"],
+        [sys.executable, str(ROOT / "tools" / "mcp_eval.py")],
         capture_output=True,
         text=True,
         cwd=tmp_path,
@@ -167,7 +175,39 @@ def test_the_evaluation_runner(tmp_path):
     )
     assert reference.returncode == 0, reference.stdout + reference.stderr
     assert "3/3 scenarios passed" in reference.stdout
-    workflow = (ROOT / ".github" / "workflows" / "mcp-eval.yml").read_text(encoding="utf-8")
-    assert "schedule" in workflow
-    assert "tools/mcp_eval.py" in workflow
-    assert "ANTHROPIC_API_KEY" in workflow
+
+
+def test_claude_code_is_given_the_lumos_server_only(tmp_path):
+    """The evaluation runs Claude Code (``claude -p``), restricted to the tools of LUMOS."""
+    scenario = SCENARIOS["uc9_coronagraph_contrast"]
+    command = claude_code_command(scenario, archive_root=tmp_path)
+    assert command[:3] == ["claude", "-p", scenario.task]
+    config = json.loads(command[command.index("--mcp-config") + 1])
+    lumos = config["mcpServers"]["lumos"]
+    assert lumos["command"] == sys.executable  # no reliance on the PATH
+    assert lumos["args"][:3] == ["-m", "lumos.cli", "mcp"]
+    assert "--strict-mcp-config" in command
+    assert command[command.index("--allowedTools") + 1] == "mcp__lumos"
+    assert command[command.index("--output-format") + 1] == "json"
+
+
+def test_the_answers_of_claude_code_are_checked(tmp_path):
+    scenario = SCENARIOS["uc1_nuller_transmission"]
+    final = "The transmission follows sin^2.\n```json\n" + json.dumps(dict(scenario.expected)) + "\n```"
+    output = json.dumps(
+        {"type": "result", "subtype": "success", "is_error": False, "result": final, "num_turns": 9}
+    )
+
+    def answered(command, **options):
+        return subprocess.CompletedProcess(command, 0, stdout=output, stderr="")
+
+    def failing(command, **options):
+        return subprocess.CompletedProcess(command, 1, stdout="", stderr="not logged in")
+
+    result = run_with_claude_code(scenario, archive_root=tmp_path, run=answered)
+    assert result.passed, result.failures
+    assert result.answer == dict(scenario.expected)
+    failed = run_with_claude_code(scenario, archive_root=tmp_path, run=failing)
+    assert not failed.passed
+    assert "not logged in" in failed.failures[0]
+    assert not (ROOT / ".github" / "workflows" / "mcp-eval.yml").exists()  # no paid periodic run
