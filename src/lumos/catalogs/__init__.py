@@ -5,7 +5,8 @@
 - :mod:`~lumos.catalogs.records`: typed records with provenance per field;
 - providers: :mod:`~lumos.catalogs.simbad`, :mod:`~lumos.catalogs.gaia`, :mod:`~lumos.catalogs.exoplanets`,
   :mod:`~lumos.catalogs.vizier`, :mod:`~lumos.catalogs.calspec`, :mod:`~lumos.catalogs.archives`,
-  :mod:`~lumos.catalogs.solar_system`, :mod:`~lumos.catalogs.svo`, :mod:`~lumos.catalogs.models`.
+  :mod:`~lumos.catalogs.solar_system`, :mod:`~lumos.catalogs.svo`, :mod:`~lumos.catalogs.models`,
+  :mod:`~lumos.catalogs.surveys`.
 
 Importing this package registers the providers of LUMOS.
 """
@@ -22,6 +23,7 @@ from lumos.catalogs import (
     simbad,
     solar_system,
     spectra,
+    surveys,
     svo,
     tap,
     vizier,
@@ -47,6 +49,7 @@ __all__ = [
     "simbad",
     "solar_system",
     "spectra",
+    "surveys",
     "svo",
     "tap",
     "vizier",

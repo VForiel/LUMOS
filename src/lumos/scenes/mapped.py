@@ -224,12 +224,35 @@ class MappedComponent(Element):
     ) -> MappedComponent:
         """Create a component from a FITS image or cube with a celestial WCS (see the module notes)."""
         from astropy.io import fits
-        from astropy.wcs import WCS
 
         with fits.open(path) as hdul:
             selected = cast(Any, hdul)[hdu]
-            header = selected.header
-            raw = np.asarray(selected.data, dtype=float)
+            return cls.from_hdu(
+                selected,
+                unit=unit,
+                reference_wavelength=reference_wavelength,
+                name=name,
+                origin=str(path),
+                **values,
+            )
+
+    @classmethod
+    def from_hdu(
+        cls,
+        hdu: Any,
+        *,
+        unit: Any = None,
+        reference_wavelength: u.Quantity = 1 * u.um,
+        name: str | None = None,
+        origin: str = "the HDU",
+        **values: Any,
+    ) -> MappedComponent:
+        """Create a component from a FITS HDU (image or cube) with a celestial WCS."""
+        from astropy.wcs import WCS
+
+        header = hdu.header
+        raw = np.asarray(hdu.data, dtype=float)
+        path = origin
         bunit = unit if unit is not None else header.get("BUNIT")
         if bunit is None:
             raise u.UnitsError(f"{path}: no BUNIT keyword; give the brightness unit with unit=")
@@ -260,6 +283,37 @@ class MappedComponent(Element):
             wavelengths=wavelengths,
             reference_wavelength=reference_wavelength,
             name=name,
+            **values,
+        )
+
+    @classmethod
+    def from_survey(
+        cls,
+        target: str,
+        *,
+        survey: str = "DSS",
+        pixels: int = 128,
+        size: u.Quantity = 0.25 * u.deg,
+        calibration: u.Quantity | None = None,
+        flux_density: u.Quantity | None = None,
+        reference_wavelength: u.Quantity = 1 * u.um,
+        name: str | None = None,
+        **values: Any,
+    ) -> MappedComponent:
+        """Create a component from a survey image of ``target`` (SkyView, see :mod:`lumos.catalogs.surveys`).
+
+        Survey images are rarely calibrated: give the brightness of one data unit (``calibration``) or the
+        total flux density of the image (``flux_density``).
+        """
+        from lumos.catalogs.surveys import SkyView, survey_component
+
+        hdu = SkyView().image(target, survey=survey, pixels=pixels, size=size)
+        return survey_component(
+            hdu,
+            name=name or target,
+            calibration=calibration,
+            flux_density=flux_density,
+            reference_wavelength=reference_wavelength,
             **values,
         )
 
