@@ -234,3 +234,28 @@ export function ConfirmAction({ element, action, device, onConfirm }: { element:
     </Modal>
   );
 }
+
+/** A question of the MCP server to the user (e.g. confirm an action asked by the assistant). */
+export function ElicitDialog({ message, answer }: { message: string; answer: (accepted: boolean) => void }) {
+  const { t } = useTranslation();
+  const close = (accepted: boolean) => {
+    useStore.getState().setDialog(null);
+    answer(accepted);
+  };
+  return (
+    <Modal title={t("assistant.confirmTitle")} onClose={() => close(false)} testId="elicit">
+      <div className="space-y-4 p-5">
+        <p className="flex gap-3 text-sm whitespace-pre-wrap">
+          <ShieldAlert className="size-6 shrink-0 text-amber-500" />
+          <span>{message}</span>
+        </p>
+        <div className="flex justify-end gap-2">
+          <Button onClick={() => close(false)}>{t("assistant.decline")}</Button>
+          <Button primary testId="dialog-confirm" onClick={() => close(true)}>
+            {t("common.confirm")}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}

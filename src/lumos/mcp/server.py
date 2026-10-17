@@ -40,6 +40,7 @@ from lumos.service.models import (
     PortSummary,
     PresetInfo,
 )
+from lumos.service.service import acting_as
 from lumos.service.summaries import job_text, summary_text
 
 __all__ = ["INSTRUCTIONS", "LumosTools", "create_http_app", "create_server"]
@@ -100,6 +101,25 @@ def _guarded(fn: Callable[..., Any]) -> Callable[..., Any]:
     return run
 
 
+def _as_mcp(fn: Callable[..., Any]) -> Callable[..., Any]:
+    """Journal what ``fn`` does with the origin ``mcp``, even in the session of a browser."""
+    if inspect.iscoroutinefunction(fn):
+
+        @functools.wraps(fn)
+        async def run_async(*args: Any, **kwargs: Any) -> Any:
+            with acting_as("mcp"):
+                return await fn(*args, **kwargs)
+
+        return run_async
+
+    @functools.wraps(fn)
+    def run(*args: Any, **kwargs: Any) -> Any:
+        with acting_as("mcp"):
+            return fn(*args, **kwargs)
+
+    return run
+
+
 def _job_result(job: JobInfo) -> CallToolResult:
     """Return a run as one line of text, with the :class:`JobInfo` as structured content."""
     return CallToolResult(
@@ -126,9 +146,9 @@ class LumosTools:
         Service layer executing the requests.
     """
 
-    def __init__(self, service: Service) -> None:
+    def __init__(self, service: Service, session: str | None = None) -> None:
         self.service = service
-        self.session = service.create_session(origin="mcp").id
+        self.session = session or service.create_session(origin="mcp").id
         self.current: str | None = None
 
     def context(self, context: str | None) -> str:
@@ -152,7 +172,12 @@ class LumosTools:
 
 
 def create_server(
-    service: Service | None = None, *, config: ServiceConfig | None = None, name: str = "lumos"
+    service: Service | None = None,
+    *,
+    config: ServiceConfig | None = None,
+    name: str = "lumos",
+    session: str | None = None,
+    can_operate: bool = True,
 ) -> MCPServer:
     """Create the MCP server of LUMOS.
 
@@ -164,6 +189,11 @@ def create_server(
         Configuration of the new service (operation, quotas, directories).
     name
         Name of the server announced to the clients.
+    session
+        Existing session of ``service`` to work in (the web instance gives the session of the browser, so that
+        the assistant sees the contexts of the interface); a new session of origin ``mcp`` by default.
+    can_operate
+        Whether the user may drive real equipment (operators); otherwise actions reach simulated elements.
 
     Returns
     -------
@@ -173,12 +203,12 @@ def create_server(
     import lumos
 
     service = service or Service(config)
-    state = LumosTools(service)
+    state = LumosTools(service, session)
     server: MCPServer = MCPServer(name, title="LUMOS", instructions=INSTRUCTIONS, version=lumos.__version__)
     session = state.session
 
     def tool(fn: Callable[..., Any]) -> Callable[..., Any]:
-        server.add_tool(_guarded(fn))
+        server.add_tool(_guarded(_as_mcp(fn)))
         return fn
 
     # --- Discovery -----------------------------------------------------------------------------------------
@@ -477,7 +507,7 @@ def create_server(
         """Metadata of an archived run (parameters, versions, origin, outputs); path from list_archives."""
         return service.read_archive_metadata(path)
 
-    register_operation_tools(server, state, tool)
+    register_operation_tools(server, state, tool, can_operate=can_operate)
     register_resources(server, state)
     register_prompts(server)
     server.lumos = state  # type: ignore[attr-defined]

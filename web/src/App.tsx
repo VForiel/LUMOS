@@ -1,13 +1,13 @@
 import { ReactFlowProvider } from "@xyflow/react";
-import { Code2, Cpu, FilePlus2, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Bot, Code2, Cpu, FilePlus2, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AccountMenu, LoginDialog } from "./components/Account";
 import { BottomPanel } from "./components/BottomPanel";
 import { Canvas } from "./components/Canvas";
 import { Dialogs } from "./components/Dialogs";
 import { Inspector } from "./components/Inspector";
-import { ConfirmAction, EmergencyStop, OperationPanel } from "./components/Operation";
+import { ConfirmAction, ElicitDialog, EmergencyStop, OperationPanel } from "./components/Operation";
 import { Palette } from "./components/Palette";
 import { PresetsDialog } from "./components/Presets";
 import { QuickAdd } from "./components/QuickAdd";
@@ -18,6 +18,8 @@ import { connectEvents, disconnectEvents } from "./events";
 import { useShortcuts } from "./shortcuts";
 import { startTour } from "./tour";
 import { useStore } from "./store";
+
+const AssistantPanel = lazy(() => import("./components/Assistant").then((module) => ({ default: module.AssistantPanel })));
 
 function Separator() {
   return <div className="mx-1 h-5 w-px bg-slate-200 dark:bg-slate-700" />;
@@ -31,6 +33,7 @@ function Editor() {
   const fileInput = useRef<HTMLInputElement>(null);
   const ready = useStore((s) => s.ready);
   const info = useStore((s) => s.info);
+  const showAssistant = Boolean(info?.assistant && (info.role === "simulator" || info.role === "operator"));
   const showOperation = Boolean(info?.operation || context?.mode === "operation" || context?.elements.some((e) => e.actions.length));
   const editable = role !== "viewer";
 
@@ -93,8 +96,15 @@ function Editor() {
         <main className="relative flex min-w-0 flex-1 flex-col">
           <Canvas onInspect={inspect} />
           <BottomPanel
-            extraTabs={showOperation ? [{ tab: "operation", icon: Cpu, label: "tabs.operation" }] : []}
-            renderExtra={(tab) => (tab === "operation" ? <OperationPanel /> : null)}
+            extraTabs={[
+              ...(showOperation ? [{ tab: "operation" as const, icon: Cpu, label: "tabs.operation" }] : []),
+              ...(showAssistant ? [{ tab: "assistant" as const, icon: Bot, label: "tabs.assistant" }] : []),
+            ]}
+            renderExtra={(tab) => (tab === "operation" ? <OperationPanel /> : tab === "assistant" ? (
+                <Suspense fallback={null}>
+                  <AssistantPanel />
+                </Suspense>
+              ) : null)}
           />
         </main>
         <Inspector onInspect={inspect} />
@@ -106,6 +116,8 @@ function Editor() {
             <PresetsDialog />
           ) : dialog.kind === "login" ? (
             <LoginDialog />
+          ) : dialog.kind === "elicit" ? (
+            <ElicitDialog message={dialog.message} answer={dialog.answer} />
           ) : dialog.kind === "confirm-action" ? (
             <ConfirmAction element={dialog.element} action={dialog.action} device={dialog.device} onConfirm={dialog.onConfirm} />
           ) : null

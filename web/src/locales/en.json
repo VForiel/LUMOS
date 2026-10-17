@@ -169,7 +169,8 @@
     "problems": "Problems",
     "show": "Show the panel",
     "hide": "Hide the panel",
-    "operation": "Operation"
+    "operation": "Operation",
+    "assistant": "Assistant"
   },
   "results": {
     "inspected": "Port",
@@ -286,5 +287,21 @@
       "simulator": "simulator",
       "operator": "operator"
     }
+  },
+  "assistant": {
+    "keyTitle": "Anthropic API key",
+    "keyHint": "The assistant is Claude, called from your browser with your own key (console.anthropic.com). The key stays in this tab and goes to the Claude API only, never to the LUMOS server; requests are billed to your account.",
+    "empty": "Ask in plain language: \"add a camera after the lens\", \"why is the image under-sampled?\", \"run it and give me the contrast between 3 and 4 λ/D\".",
+    "placeholder": "Ask the assistant… (Enter to send)",
+    "send": "Send",
+    "footer": "{{model}} · tools of this instance",
+    "forget": "Forget the key",
+    "refused": "Claude declined this request.",
+    "truncated": "The answer was cut: ask for a shorter one.",
+    "tooLong": "Stopped after 25 steps: ask again to continue.",
+    "stopped": "Stopped.",
+    "badKey": "The API key was refused: check it, or forget it and give another one.",
+    "confirmTitle": "The assistant asks for a confirmation",
+    "decline": "Refuse"
   }
 }

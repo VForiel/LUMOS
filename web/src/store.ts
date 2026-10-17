@@ -27,7 +27,8 @@ export type Dialog =
   | { kind: "shortcuts" }
   | { kind: "presets" }
   | { kind: "login" }
-  | { kind: "confirm-action"; element: string; action: string; device: string; onConfirm: () => void };
+  | { kind: "confirm-action"; element: string; action: string; device: string; onConfirm: () => void }
+  | { kind: "elicit"; message: string; answer: (accepted: boolean) => void };
 
 /** Run an action of an element; on equipment, only after the user confirmed it in a dialog. */
 export async function runAction(element: string, action: string, args: unknown[]): Promise<void> {
@@ -114,6 +115,8 @@ type Actions = {
   setBottom: (tab: BottomTab | null) => void;
   setDialog: (dialog: Dialog | null) => void;
   setQuickAdd: (quickAdd: QuickAdd | null) => void;
+  /** Ask the user to confirm what the assistant wants to do (MCP elicitation). */
+  ask: (message: string) => Promise<boolean>;
   run: () => Promise<void>;
   cancel: () => Promise<void>;
   setArchive: (archive: boolean) => void;
@@ -514,6 +517,12 @@ export const useStore = create<State & Actions>((set, get) => {
 
     setQuickAdd(quickAdd) {
       set({ quickAdd });
+    },
+
+    ask(message) {
+      return new Promise<boolean>((resolve) => {
+        set({ dialog: { kind: "elicit", message, answer: resolve } });
+      });
     },
 
     async run() {

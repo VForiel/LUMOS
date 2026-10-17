@@ -169,7 +169,8 @@
     "problems": "Problèmes",
     "show": "Afficher le panneau",
     "hide": "Masquer le panneau",
-    "operation": "Opération"
+    "operation": "Opération",
+    "assistant": "Assistant"
   },
   "results": {
     "inspected": "Port",
@@ -286,5 +287,21 @@
       "simulator": "simulateur",
       "operator": "opérateur"
     }
+  },
+  "assistant": {
+    "keyTitle": "Clé API Anthropic",
+    "keyHint": "L'assistant est Claude, appelé depuis votre navigateur avec votre propre clé (console.anthropic.com). La clé reste dans cet onglet et ne part que vers l'API Claude, jamais vers le serveur LUMOS ; les requêtes sont facturées sur votre compte.",
+    "empty": "Demandez en langage courant : « ajoute une caméra après la lentille », « pourquoi l'image est-elle sous-échantillonnée ? », « lance le calcul et donne-moi le contraste entre 3 et 4 λ/D ».",
+    "placeholder": "Demandez à l'assistant… (Entrée pour envoyer)",
+    "send": "Envoyer",
+    "footer": "{{model}} · outils de cette instance",
+    "forget": "Oublier la clé",
+    "refused": "Claude a refusé cette demande.",
+    "truncated": "La réponse a été coupée : demandez-en une plus courte.",
+    "tooLong": "Arrêt après 25 étapes : redemandez pour continuer.",
+    "stopped": "Arrêté.",
+    "badKey": "La clé API a été refusée : vérifiez-la, ou oubliez-la et donnez-en une autre.",
+    "confirmTitle": "L'assistant demande une confirmation",
+    "decline": "Refuser"
   }
 }

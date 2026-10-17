@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import concurrent.futures
 import contextlib
+import contextvars
 import difflib
 import json
 import logging
@@ -62,7 +63,7 @@ from lumos.service.models import (
 from lumos.service.summaries import summarize
 from lumos.service.values import format_value, parse_quantity, parse_value
 
-__all__ = ["Service"]
+__all__ = ["Service", "acting_as"]
 
 logger = logging.getLogger("lumos.service")
 
@@ -83,6 +84,23 @@ class _Job:
     future: concurrent.futures.Future[Any] | None = None
     started: float = 0.0
     cancelled: bool = False
+
+
+#: Origin of the actions of the current call when it differs from the origin of the session (see acting_as).
+_ACTING_AS: contextvars.ContextVar[str | None] = contextvars.ContextVar("lumos_acting_as", default=None)
+
+
+@contextlib.contextmanager
+def acting_as(origin: str) -> Iterator[None]:
+    """Journal the actions of the calls made in this block with ``origin``.
+
+    The web instance uses it for an assistant working in the session of a browser (origin ``"mcp"``).
+    """
+    token = _ACTING_AS.set(origin)
+    try:
+        yield
+    finally:
+        _ACTING_AS.reset(token)
 
 
 #: Edits kept for undo, per context.
@@ -158,6 +176,10 @@ class Service:
         self._histories: dict[str, _History] = {}
 
     # --- Sessions ------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def _origin(state: _Session) -> str:
+        return _ACTING_AS.get() or state.info.origin
 
     def create_session(self, *, origin: str = "python", user: str | None = None) -> SessionInfo:
         """Open a session; its actions are journaled with ``origin`` (``python``, ``web`` or ``mcp``)."""
@@ -889,11 +911,13 @@ class Service:
             if time.perf_counter() - job.started > self.config.max_run_seconds:
                 raise TimeoutError(f"the run exceeded {self.config.max_run_seconds:g} s")
 
+        origin = self._origin(state)
+
         def work() -> None:
             job.info.status = "running"
             job.started = time.perf_counter()
             try:
-                with state.lock, ctx.as_origin(state.info.origin):
+                with state.lock, ctx.as_origin(origin):
                     job.result = ctx.run(
                         names, archive=archive, archive_root=self.config.archive_root, progress=progress
                     )
@@ -975,7 +999,7 @@ class Service:
                 raise TimeoutError(f"the computation exceeded {self.config.max_run_seconds:g} s")
 
         try:
-            with state.lock, ctx.as_origin(state.info.origin):
+            with state.lock, ctx.as_origin(self._origin(state)):
                 return ctx.run(references, progress=progress)
         except ServiceError:
             raise
@@ -1416,7 +1440,7 @@ class Service:
             for k, v in (kwargs or {}).items()
         }
         try:
-            with state.lock, ctx.as_origin(state.info.origin):
+            with state.lock, ctx.as_origin(self._origin(state)):
                 value = getattr(target, action)(*values, **named)
         except (DriverError, ValueError, TypeError, u.UnitsError) as error:
             raise ServiceError(str(error), hint=_hint_for(error), code="failed") from error

@@ -49,8 +49,14 @@ def _call_text(action: str, args: list[Any] | None, kwargs: dict[str, Any] | Non
     return f"{action}({', '.join(values)})"
 
 
-def register_operation_tools(server: "MCPServer", state: "LumosTools", tool: "Callable[..., Any]") -> None:
-    """Add the operation tools to ``server``; ``tool`` registers a function with the error translation."""
+def register_operation_tools(
+    server: "MCPServer", state: "LumosTools", tool: "Callable[..., Any]", *, can_operate: bool = True
+) -> None:
+    """Add the operation tools to ``server``; ``tool`` registers a function with the error translation.
+
+    With ``can_operate=False`` (a user who is not an operator, in the web instance), actions only reach
+    simulated elements and the tools that discover and associate devices are not offered.
+    """
     service = state.service
     session = state.session
 
@@ -95,6 +101,12 @@ def register_operation_tools(server: "MCPServer", state: "LumosTools", tool: "Ca
         with their unit. The result gives the predicted and measured durations.
         """
         data = getattr(confirmed, "data", None)
+        if data != _NOT_NEEDED and not can_operate:
+            raise ServiceError(
+                f"{element}.{action} acts on real equipment, which only operators may drive",
+                hint="ask an operator, or act on simulated elements",
+                code="forbidden",
+            )
         if data == _CANNOT_ASK:
             raise ServiceError(
                 f"{element}.{action} acts on real equipment and this MCP client cannot ask the user"
@@ -136,7 +148,7 @@ def register_operation_tools(server: "MCPServer", state: "LumosTools", tool: "Ca
         service.stop_all(session, identifier)
         return f"every device of context {identifier} stopped"
 
-    if not service.config.operation_enabled:
+    if not service.config.operation_enabled or not can_operate:
         return
 
     @tool

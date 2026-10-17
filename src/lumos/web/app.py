@@ -27,6 +27,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.routing import Route
 
 import lumos
 from lumos.service import Service, ServiceError
@@ -46,6 +47,7 @@ from lumos.service.models import (
     PortSummary,
     PresetInfo,
 )
+from lumos.web.assistant import PATH, McpGateway
 from lumos.web.auth import (
     ROLES,
     User,
@@ -423,7 +425,8 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
 
     @contextlib.asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-        yield
+        async with gateway.running():
+            yield
         service.shutdown()
 
     app = FastAPI(
@@ -454,6 +457,16 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
 
     def role_of(session: WebSession) -> str | None:
         return session.role if session.user is not None else config.anonymous_role
+
+    # the MCP server of each session, at /mcp, before every other route (P14.9)
+    gateway = McpGateway(
+        service=service,
+        sessions=sessions,
+        role_of=role_of,
+        anonymous_role=config.anonymous_role,
+        enabled=config.assistant,
+    )
+    app.router.routes.insert(0, Route(PATH, endpoint=gateway, methods=["GET", "POST", "DELETE"]))
 
     # --- Sessions, limits and errors -------------------------------------------------------------------
 
