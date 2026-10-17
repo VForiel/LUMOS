@@ -20,6 +20,7 @@ import base64
 import hashlib
 import json
 import logging
+import os
 import threading
 import time
 from collections.abc import Iterator, Mapping
@@ -53,14 +54,24 @@ class OfflineError(CatalogError):
 
 
 def _default_cache_dir() -> Path:
+    configured = os.environ.get("LUMOS_CATALOGS_CACHE")
+    if configured:
+        return Path(configured)
     from platformdirs import user_cache_dir
 
     return Path(user_cache_dir("lumos-maxima", appauthor=False)) / "catalogs"
 
 
+def _default_offline() -> bool:
+    return os.environ.get("LUMOS_CATALOGS_OFFLINE", "").strip().lower() in ("1", "true", "yes", "on")
+
+
 @dataclass
 class CatalogSettings:
     """Settings of the catalogue requests.
+
+    The defaults can be set with the environment variables ``LUMOS_CATALOGS_CACHE`` (directory of the cache)
+    and ``LUMOS_CATALOGS_OFFLINE`` (``1`` for the offline mode), e.g. to run notebooks on recorded answers.
 
     Attributes
     ----------
@@ -77,7 +88,7 @@ class CatalogSettings:
     cache_dir: Path = field(default_factory=_default_cache_dir)
     ttl: float = 7 * 86400.0
     timeout: float = 60.0
-    offline: bool = False
+    offline: bool = field(default_factory=_default_offline)
 
 
 #: Settings of the process.
