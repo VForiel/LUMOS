@@ -9,10 +9,11 @@ Grids
 -----
 The grid has ``n_pixels`` × ``n_pixels`` pixels. By default it is angular, with pixels of ``pixel_scale``
 (sky scenes); with ``pixel_size`` > 0 it is spatial, with pixels of that length (laboratory scenes, at the
-distance of the :class:`~lumos.scenes.Scene`). The **geometry of the patterns is given in pixels** of this
-grid (radius, period), measured from the central pixel ``N // 2`` (§9 of the specifications), so that the same
-target serves both kinds of scene. Edges are anti-aliased by averaging ``supersample`` × ``supersample``
-sub-pixels.
+distance of the :class:`~lumos.scenes.Scene`). The **sizes of the patterns** (radius, period, length) are
+angles on angular grids, lengths on spatial grids, or numbers of pixels (``u.pix`` or a plain number) on both,
+so that the same target serves both kinds of scene; a size :math:`s` covers :math:`s/p` pixels of size
+:math:`p`. Positions are measured from the central pixel ``N // 2`` (§9 of the specifications). Edges are
+anti-aliased by averaging ``supersample`` × ``supersample`` sub-pixels.
 
 Patterns
 --------
@@ -34,7 +35,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -47,8 +48,16 @@ from lumos.fields.grid import Grid
 from lumos.fields.radiance import RadianceField
 from lumos.scenes.diffuse import _planck_nu
 from lumos.scenes.scene import RADIANCE_UNIT
+from lumos.units import quantity_from_json, quantity_to_json
 
-__all__ = ["BarTarget", "Checkerboard", "GaussianRandomField", "ProceduralComponent", "SiemensStar"]
+__all__ = [
+    "BarTarget",
+    "Checkerboard",
+    "GaussianRandomField",
+    "ProceduralComponent",
+    "SiemensStar",
+    "TargetSize",
+]
 
 _C = 299_792_458.0
 
@@ -60,6 +69,55 @@ def _grid(values: Values) -> Grid:
     if float(values.pixel_size) > 0:
         return Grid(n, dx=float(values.pixel_size) * u.m)
     return Grid(n, dx=float(values.pixel_scale) * u.rad)
+
+
+class TargetSize(Setting):
+    """Size of a test target: an angle, a length, pixels (``u.pix``) or a plain number of pixels."""
+
+    def __init__(self, *, default: float, doc: str = "") -> None:
+        super().__init__(object, default=default, doc=doc)
+
+    def validate(self, value: Any) -> tuple[Any, Any]:
+        """Accept a positive number (pixels) or a scalar quantity of pixels, angle or length."""
+        if isinstance(value, u.Quantity):
+            if not value.isscalar:
+                raise ValueError(f"{self.name}: expected a scalar size")
+            unit = cast(u.UnitBase, value.unit)
+            if not (unit == u.pix or unit.is_equivalent(u.rad) or unit.is_equivalent(u.m)):
+                raise u.UnitsError(f"{self.name}: expected an angle, a length or pixels, got {value.unit}")
+            size = value
+        elif isinstance(value, int | float) and not isinstance(value, bool):
+            size = float(value)
+        else:
+            raise TypeError(
+                f"{self.name}: expected a size (number of pixels or quantity), got {type(value).__name__}"
+            )
+        if float(np.asarray(getattr(size, "value", size))) <= 0:
+            raise ValueError(f"{self.name}: the size must be positive")
+        return size, size
+
+    def encode(self, value: Any) -> Any:
+        """Return the JSON form: a number of pixels or a quantity."""
+        return quantity_to_json(value) if isinstance(value, u.Quantity) else value
+
+    def decode(self, data: Any) -> Any:
+        """Return the size of a JSON form."""
+        return quantity_from_json(data) if isinstance(data, dict) else float(data)
+
+
+def _pixels(values: Values, name: str) -> float:
+    """Return the size ``name`` of the pattern in pixels of its grid."""
+    size = getattr(values, name)
+    if not isinstance(size, u.Quantity) or size.unit == u.pix:
+        return float(getattr(size, "value", size))
+    spatial = float(values.pixel_size) > 0
+    if cast(u.UnitBase, size.unit).is_equivalent(u.rad):
+        if spatial:
+            raise ValueError(f"{name} = {size} is an angle: it needs an angular grid (pixel_size = 0)")
+        return float(np.asarray(size.to_value(u.rad))) / float(values.pixel_scale)
+    if not spatial:
+        raise ValueError(f"{name} = {size} is a length: it needs a spatial grid (pixel_size > 0)")
+    return float(np.asarray(size.to_value(u.m))) / float(values.pixel_size)
 
 
 def _pixel_axes(n: int) -> np.ndarray:
@@ -155,7 +213,7 @@ class GaussianRandomField(ProceduralComponent):
 
 def _siemens(values: Values, x: np.ndarray, y: np.ndarray) -> np.ndarray:
     phi = np.arctan2(y, x)
-    inside = np.hypot(x, y) <= float(values.radius)
+    inside = np.hypot(x, y) <= _pixels(values, "radius")
     return (inside & (np.sin(int(values.n_spokes) * phi) > 0)).astype(float)
 
 
@@ -164,30 +222,30 @@ class SiemensStar(ProceduralComponent):
     """Siemens star: alternating bright and dark sectors."""
 
     n_spokes = Setting(int, default=16, doc="number of bright sectors")
-    radius = Setting(float, default=60.0, doc="radius in pixels")
+    radius = TargetSize(default=60.0, doc="radius (angle, length or pixels)")
     transfer = _anti_aliased(_siemens)
 
 
 def _checkerboard(values: Values, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-    side = float(values.period) / 2
+    side = _pixels(values, "period") / 2
     return ((np.floor(x / side) + np.floor(y / side)) % 2 == 0).astype(float)
 
 
 @register("lumos.scenes.Checkerboard")
 class Checkerboard(ProceduralComponent):
-    """Checkerboard of squares of side ``period / 2`` (in pixels), a corner on the axis."""
+    """Checkerboard of squares of side ``period / 2``, a corner on the axis."""
 
-    period = Setting(float, default=8.0, doc="period in pixels (two squares)")
+    period = TargetSize(default=8.0, doc="period: two squares (angle, length or pixels)")
     transfer = _anti_aliased(_checkerboard)
 
 
 def _bars(values: Values, x: np.ndarray, y: np.ndarray) -> np.ndarray:
-    period = float(values.period)
+    period = _pixels(values, "period")
     n = int(values.n_bars)
     start = -(n - 0.5) * period / 2  # left edge of the first bar; the group of bars is centred
     position = (x - start) / period
     in_bar = (position >= 0) & (position < n) & ((position % 1) < 0.5)
-    in_length = np.abs(y) <= float(values.length) / 2
+    in_length = np.abs(y) <= _pixels(values, "length") / 2
     return (in_bar & in_length).astype(float)
 
 
@@ -196,6 +254,6 @@ class BarTarget(ProceduralComponent):
     """Group of bright vertical bars (one element of a USAF 1951 chart)."""
 
     n_bars = Setting(int, default=3)
-    period = Setting(float, default=10.0, doc="period in pixels (a bar and a gap)")
-    length = Setting(float, default=25.0, doc="length of the bars in pixels")
+    period = TargetSize(default=10.0, doc="period: a bar and a gap (angle, length or pixels)")
+    length = TargetSize(default=25.0, doc="length of the bars (angle, length or pixels)")
     transfer = _anti_aliased(_bars)

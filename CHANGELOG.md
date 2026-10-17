@@ -97,6 +97,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Changed
 
+- Sizes of the test targets (`SiemensStar`, `Checkerboard`, `BarTarget`) may be angles or lengths; plain
+  numbers keep meaning pixels.
 - VFSciTools is no longer a dependency: the PltEdit `.plt` writer and `vfst.archive` are shipped in
   `lumos._vendor`, so LUMOS installs from PyPI, on Read the Docs and in CI.
 - Cached propagation kernels stay on the device: GPU backends no longer copy them from the host at every

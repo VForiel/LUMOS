@@ -52,8 +52,10 @@ Laboratory maps keep their radiance (radiance is invariant along rays) and are s
   Jy/pixel, MJy/sr, Jy/arcsec², W m⁻² sr⁻¹ m⁻¹...), `from_array`, `from_image` (PNG, JPEG, TIFF with a
   calibration).
 - **Procedural components** (`lumos.scenes.procedural`): `GaussianRandomField` (log-normal texture with a
-  power-law spectrum), `SiemensStar`, `Checkerboard`, `BarTarget`; their geometry is in pixels, their grid
-  angular (`pixel_scale`) or spatial (`pixel_size`, laboratory charts).
+  power-law spectrum), `SiemensStar`, `Checkerboard`, `BarTarget`; their grid is angular (`pixel_scale`) or
+  spatial (`pixel_size`, laboratory charts) and their sizes are angles or lengths accordingly, or numbers of
+  pixels on both (`SiemensStar(radius=50 * u.mas, pixel_scale=1 * u.mas)`,
+  `BarTarget(period=0.2 * u.mm, pixel_size=10 * u.um)`, `Checkerboard(period=8)`).
 
 Diffuse components are evaluated on their own grids and resampled onto the scene grid, conserving the flux.
 
