@@ -84,6 +84,31 @@ def compile_field(field: SymbolicField, backend: str) -> tuple[Callable[..., Any
     return function, parameters
 
 
+def _sample(
+    function: Callable[..., Any],
+    xp: Any,
+    xx: Any,
+    yy: Any,
+    wavelength: float,
+    time: float,
+    arguments: Any,
+    dx: float,
+) -> Any:
+    """Evaluate ``function`` at the points, taking the limits of removable singularities.
+
+    Non-finite values (such as the 0/0 of 2J₁(v)/v on the axis) are replaced by the value at a point shifted
+    by 1e-7 pixel, whose error is of the order of the square of the shift.
+    """
+    with np.errstate(divide="ignore", invalid="ignore"):
+        sample = function(xx, yy, wavelength, time, *arguments)
+        sample = sample + 0 * (xx + yy)
+        bad = ~xp.isfinite(sample)
+        if not bool(xp.any(bad)):
+            return sample
+        shifted = function(xx + 1e-7 * dx, yy + 1e-7 * dx, wavelength, time, *arguments) + 0 * (xx + yy)
+    return xp.where(bad, shifted, sample)
+
+
 def _evaluate(field: SymbolicField, grid: Grid, wavelength: float, *, supersample: int, time: float) -> Any:
     if grid.plane != field.plane:
         raise ValueError(f"a {field.plane} field cannot be sampled on a {grid.plane} grid (plane mismatch)")
@@ -104,7 +129,7 @@ def _evaluate(field: SymbolicField, grid: Grid, wavelength: float, *, supersampl
                 for ox in offsets:
                     xx = xp.reshape(xa + ox * grid.dx_si, (1, -1))
                     yy = xp.reshape(ya + oy * grid.dy_si, (-1, 1))
-                    sample = function(xx, yy, wavelength, time, *arguments)
+                    sample = _sample(function, xp, xx, yy, wavelength, time, arguments, grid.dx_si)
                     total = total + sample + 0 * (xx + yy)  # broadcast constants to the grid
             result = total / (s * s)
         except (NameError, TypeError, AttributeError) as error:
