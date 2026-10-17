@@ -41,7 +41,8 @@ Set `LUMOS_BACKEND=http://127.0.0.1:9000` before `npm run dev` if the backend li
 | `npm test` (in `web/`) | unit tests of the pure logic (`tests/frontend`, Vitest): units, forms from schemas, typed ports, layout, translations |
 | `npm run typecheck` | TypeScript |
 | `pytest tests/unit/web` | HTTP API, authentication, configuration |
-| `pytest -m e2e tests/e2e` | the interface in Chromium (Playwright), in English and in French |
+| `pytest -m e2e tests/e2e` | the interface in Chromium (Playwright), in English and in French: editing, runs, presets and tour, operation with an emulated stage, accounts, assistant (Claude API replaced by a scripted stand-in), UC5 on a public instance |
+| `pytest tests/integration/test_web_parity.py` | the same bench built in Python, over HTTP and through MCP: same `.lumos` document, same reading |
 
 The browser tests need the built interface and a browser: `pip install -e ".[e2e]"` then
 `playwright install chromium`.

@@ -297,7 +297,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P14.8 Panneau opération** — équipements, état, actions, arrêt d'urgence (selon les droits).
 - [x] **P14.9 Panneau assistant** (optionnel) connecté au MCP HTTP.
 - [x] **P14.10 Déploiement** — Docker (machine unique, profil `local` utilisé jusqu'à la v1.0) ; documentation d'hébergement de l'instance publique sur un VPS (reverse proxy, TLS, quotas adaptés à la machine).
-- [ ] **P14.11 Tests** — API, sécurité (accès refusé sans authentification, élévation de rôle, rejeu de défi SSH), parcours de bout en bout (Playwright) en EN et FR.
+- [x] **P14.11 Tests** — API, sécurité (accès refusé sans authentification, élévation de rôle, rejeu de défi SSH), parcours de bout en bout (Playwright) en EN et FR.
 
 **Critères d'acceptation (v0.7) :** UC5 réalisé sur l'instance publique ; opération impossible sur l'instance publique sans configuration et authentification ; parité web, Python et MCP vérifiée.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 10** (P10.1).
+Lancer la **phase 15** (P15.1).

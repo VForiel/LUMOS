@@ -190,6 +190,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   port published locally, unprivileged user, health check `/api/health`), compose files for a single machine and
   for a public instance behind Caddy (TLS), example configuration with quotas, hosting guide; wheels ship the
   built interface.
+- Tests of the web interface: HTTP API, security (access refused without authentication, elevation of role,
+  replay of SSH challenges), browser tests in English and French (Playwright, run in CI), parity of the Python
+  API, the web interface and the MCP server.
 
 ### Changed
 
