@@ -1,0 +1,12 @@
+# Context of deploy/Dockerfile (the root of the repository)
+.git/
+.venv/
+**/__pycache__/
+**/node_modules/
+web/dist/
+src/lumos/web/static/
+docs/_build/
+tmp/
+archives/
+test-results/
+*.egg-info/

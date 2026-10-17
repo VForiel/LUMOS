@@ -124,6 +124,7 @@ def _web(arguments: argparse.Namespace) -> int:
         "tls_certfile": arguments.tls_cert,
         "tls_keyfile": arguments.tls_key,
         "trust_proxy": arguments.trust_proxy or None,
+        "listen_all": arguments.listen_all or None,
         "audit_log": arguments.audit_log,
     }
     given = {key: value for key, value in options.items() if value is not None}
@@ -278,6 +279,11 @@ def _parser() -> argparse.ArgumentParser:
     web.add_argument("--tls-cert", default=None, help="certificate (PEM) to serve HTTPS")
     web.add_argument("--tls-key", default=None, help="private key (PEM) of the certificate")
     web.add_argument("--trust-proxy", action="store_true", help="behind a reverse proxy terminating TLS")
+    web.add_argument(
+        "--listen-all",
+        action="store_true",
+        help="in a container published on the local machine only: listen on 0.0.0.0 with the local profile",
+    )
     web.add_argument("--audit-log", default=None, help="JSON-lines file of the security events")
     web.add_argument("--archive-root", default=None, help="directory of the archives of the runs")
     web.add_argument("--presets-dir", default=None, help="directory of the preset .lumos files")

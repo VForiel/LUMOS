@@ -1,0 +1,40 @@
+# A public LUMOS instance on a VPS (docs/web/hosting.md):
+#   1. point the DNS name of the instance to the VPS and replace lumos.example.org in lumos.toml and Caddyfile;
+#   2. docker compose -f deploy/public/compose.yaml up -d --build
+services:
+  lumos:
+    build:
+      context: ../..
+      dockerfile: deploy/Dockerfile
+    image: lumos:public
+    command: ["--config", "/etc/lumos/lumos.toml"]
+    volumes:
+      - ./lumos.toml:/etc/lumos/lumos.toml:ro
+      - lumos-data:/data
+    expose:
+      - "8000"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "3.5"
+          memory: 6g
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - lumos
+    restart: unless-stopped
+
+volumes:
+  lumos-data:
+  caddy-data:
+  caddy-config:

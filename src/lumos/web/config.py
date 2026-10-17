@@ -70,6 +70,10 @@ class WebConfig(BaseModel):
     profile: Literal["local", "public"] = "local"
     host: str = Field(default="127.0.0.1", description="address to listen on")
     port: int = Field(default=8000, ge=0, le=65535)
+    listen_all: bool = Field(
+        default=False,
+        description="in a container whose port is published on the local machine only: listen on 0.0.0.0",
+    )
     allowed_hosts: list[str] = Field(
         default_factory=list, description="host names accepted in requests, besides the local ones"
     )
@@ -121,7 +125,7 @@ class WebConfig(BaseModel):
     @property
     def local_only(self) -> bool:
         """Whether the instance only serves its own machine (local profile on a loopback address)."""
-        return self.profile == "local" and _is_loopback(self.host)
+        return self.profile == "local" and (_is_loopback(self.host) or self.listen_all)
 
     @property
     def tls(self) -> bool:
@@ -139,7 +143,7 @@ class WebConfig(BaseModel):
         """
         from lumos.web.auth import load_users
 
-        if self.profile == "local" and not _is_loopback(self.host):
+        if self.profile == "local" and not _is_loopback(self.host) and not self.listen_all:
             raise ConfigError(
                 f"the local profile only listens on the local machine, not on {self.host}; "
                 "use the public profile (--profile public) to serve other machines"

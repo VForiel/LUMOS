@@ -23,8 +23,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build the web interface (shipped in the wheel)
+        run: npm ci && npm run build
+        working-directory: web
       - run: python -m pip install build
       - run: python -m build
+      - name: Check that the wheel holds the web interface
+        run: python -c "import glob, zipfile; names = zipfile.ZipFile(glob.glob('dist/*.whl')[0]).namelist(); assert 'lumos/web/static/index.html' in names"
       - uses: actions/upload-artifact@v4
         with:
           name: dist

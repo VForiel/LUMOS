@@ -472,7 +472,7 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
 
     @app.middleware("http")
     async def attach_session(request: Request, call_next: Any) -> Response:
-        if not request.url.path.startswith("/api/"):
+        if not request.url.path.startswith("/api/") or request.url.path == "/api/health":
             return await call_next(request)
         wait = requests_limit.hit(address(request))
         if wait:
@@ -563,6 +563,10 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         return session.service_session
 
     # --- Information and discovery ---------------------------------------------------------------------
+
+    @app.get("/api/health")
+    def health() -> dict[str, Any]:
+        return {"status": "ok", "version": lumos.__version__, "sessions": len(sessions)}
 
     @app.get("/api/info")
     def info(request: Request) -> dict[str, Any]:

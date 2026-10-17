@@ -1,0 +1,15 @@
+# Reverse proxy of a public LUMOS instance: HTTPS with automatic certificates (Let's Encrypt),
+# WebSockets and the MCP endpoint forwarded to the container.
+lumos.example.org {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "same-origin"
+		X-Frame-Options "DENY"
+	}
+	request_body {
+		max_size 20MB
+	}
+	reverse_proxy lumos:8000
+}

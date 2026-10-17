@@ -1,0 +1,16 @@
+# LUMOS on a single machine (local profile): docker compose -f deploy/compose.yaml up --build
+# The interface is at http://localhost:8000; the port is published on this machine only.
+services:
+  lumos:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: lumos:local
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - lumos-data:/data
+    restart: unless-stopped
+
+volumes:
+  lumos-data:

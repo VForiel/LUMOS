@@ -98,6 +98,21 @@ jobs:
           name: playwright-traces
           path: test-results/
 
+  docker:
+    # The single-machine image (local profile): build it, start it, check its health and its interface.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f deploy/Dockerfile -t lumos:ci .
+      - run: docker run -d --name lumos -p 127.0.0.1:8000:8000 lumos:ci
+      - name: Wait for the health check
+        run: |
+          for i in $(seq 1 60); do curl -fs http://127.0.0.1:8000/api/health && break; sleep 2; done
+          curl -fs http://localhost:8000/api/info
+          curl -fs http://localhost:8000/ | grep -q '<div id="root">'
+      - if: failure()
+        run: docker logs lumos
+
   validation:
     # Comparisons with independent libraries (POPPY, HCIPy): extra [validation].
     runs-on: ubuntu-latest

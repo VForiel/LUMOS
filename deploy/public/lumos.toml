@@ -1,0 +1,26 @@
+# Configuration of a public LUMOS instance (docs/web/hosting.md), read with lumos web --config.
+# Visitors are anonymous simulators with quotas; the operation of equipment is disabled.
+profile = "public"
+host = "0.0.0.0"                       # inside the container; Caddy is the only way in
+port = 8000
+allowed_hosts = ["lumos.example.org"]  # the host name of the instance
+trust_proxy = true                     # Caddy terminates TLS and sets X-Forwarded-For/Proto
+# users_file = "/data/users.toml"      # to give accounts: lumos users add ... --file /data/users.toml
+audit_log = "/data/audit.log"
+anonymous_role = "simulator"
+session_idle_minutes = 120
+requests_per_minute = 600
+login_attempts_per_minute = 5
+max_sessions = 300
+
+[service]
+archive_root = "/data/archives"
+operation_enabled = false
+# quotas: adapt them to the machine (here 4 cores, 8 GB of memory)
+max_workers = 3
+max_concurrent_runs = 3
+max_jobs_per_session = 1
+max_contexts_per_session = 5
+max_run_seconds = 60
+max_grid_pixels = 1024
+max_memory_mb = 1500
