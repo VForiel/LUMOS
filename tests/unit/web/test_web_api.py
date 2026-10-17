@@ -70,6 +70,12 @@ def wait_done(client, job, timeout=60.0):
     raise TimeoutError(job)
 
 
+def ws_headers(client):
+    # The test client opens WebSockets on the host "testserver" whatever its base URL, so the cookie of the
+    # session (set for "localhost") is passed explicitly, as a browser would send it.
+    return {"origin": "http://localhost", "cookie": f"lumos_session={client.cookies['lumos_session']}"}
+
+
 def reading(summary):
     return (summary["values"][0] * u.Unit(summary["unit"])).to(u.mW)
 
@@ -278,6 +284,7 @@ def test_parity_the_web_exports_the_same_document_as_the_service(client, tmp_pat
     service.shutdown()
     for document in (web, direct):
         document.pop("created_at")
+        document["context"].pop("seed")  # drawn at random for each new context
     assert web == direct
 
 
@@ -305,7 +312,7 @@ def test_archives_are_listed(client):
 
 def test_the_progress_of_runs_is_pushed_over_the_websocket(client):
     cid = bench(client)
-    with client.websocket_connect("/api/ws", headers={"origin": "http://localhost"}) as socket_:
+    with client.websocket_connect("/api/ws", headers=ws_headers(client)) as socket_:
         job = client.post(f"/api/contexts/{cid}/runs", json={"outputs": ["meter.out"]}).json()["id"]
         statuses = []
         deadline = time.monotonic() + 60
@@ -321,14 +328,13 @@ def test_the_progress_of_runs_is_pushed_over_the_websocket(client):
 
 def test_the_logs_of_runs_are_pushed_over_the_websocket(client):
     cid = bench(client)
-    with client.websocket_connect("/api/ws", headers={"origin": "http://localhost"}) as socket_:
+    with client.websocket_connect("/api/ws", headers=ws_headers(client)) as socket_:
         client.post(f"/api/contexts/{cid}/runs", json={"outputs": ["meter.out"]})
         deadline = time.monotonic() + 60
         while time.monotonic() < deadline:
             message = socket_.receive_json()
-            if message["type"] == "journal":
+            if message["type"] == "journal" and message["entry"]["kind"] == "run":
                 assert message["context"] == cid
-                assert message["entry"]["kind"] == "run"
                 break
         else:
             pytest.fail("no journal entry received")
@@ -351,9 +357,13 @@ def test_requests_for_another_host_name_are_refused_in_the_local_profile(app):
 def test_websockets_from_another_origin_are_refused(client):
     from starlette.websockets import WebSocketDisconnect
 
+    bench(client)
+    headers = ws_headers(client)  # a valid session: only the origin is wrong
     with (
         pytest.raises(WebSocketDisconnect),
-        client.websocket_connect("/api/ws", headers={"origin": "http://attacker.example"}) as socket_,
+        client.websocket_connect(
+            "/api/ws", headers={**headers, "origin": "http://attacker.example"}
+        ) as socket_,
     ):
         socket_.receive_json()
 
