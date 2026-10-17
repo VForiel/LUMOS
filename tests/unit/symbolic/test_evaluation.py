@@ -125,3 +125,27 @@ def test_methods_on_the_field():
         np.asarray(to_numpy(gaussian().to_wavefront(grid).field)),
         np.asarray(to_numpy(to_wavefront(gaussian(), grid).field)),
     )
+
+
+# --- Removable singularities (amendment of P10.2, 17/10/2026) ----------------------------------------------
+# Closed forms such as the Airy amplitude 2J₁(v)/v or sin(v)/v are 0/0 at v = 0, which falls on the pixel
+# N // 2. Their limits are 1 (J₁(v) ~ v/2, sin v ~ v): the sampled field takes these limits.
+
+
+def test_removable_singularities_take_their_limit():
+    from scipy.special import j1
+
+    grid = Grid(33, dx=0.5 * u.um)
+    s = 4e-6
+    v = sp.pi * r / sp.Float(s)
+    airy = SymbolicField(2 * sp.besselj(1, v) / v, wavelength=500 * u.nm)
+    values = np.asarray(to_numpy(to_wavefront(airy, grid).field))
+    assert np.all(np.isfinite(values))
+    assert values[16, 16] == pytest.approx(1.0, abs=1e-12)
+    xx, yy = (np.asarray(c) for c in grid.coords(backend="numpy"))
+    vv = np.pi * np.hypot(xx, yy) / s
+    off_axis = vv > 0
+    np.testing.assert_allclose(values[off_axis], 2 * j1(vv[off_axis]) / vv[off_axis], rtol=1e-12)
+    cardinal = SymbolicField(sp.sin(x / sp.Float(1e-6)) / (x / sp.Float(1e-6)), wavelength=500 * u.nm)
+    row = np.asarray(to_numpy(to_wavefront(cardinal, grid).field))[16]
+    assert row[16] == pytest.approx(1.0, abs=1e-12)
