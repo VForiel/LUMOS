@@ -135,7 +135,11 @@ def test_psf_measurement_of_an_airy_pattern():
     assert psf.centroid[0].to_value(u.pix) == pytest.approx(0.37, abs=0.02)
     assert psf.centroid[1].to_value(u.pix) == pytest.approx(-0.81, abs=0.02)
     assert psf.fwhm.to_value(u.pix) == pytest.approx(1.029 * samples, rel=0.01)
-    assert psf.encircled_energy(1.220 * samples * u.pix) == pytest.approx(0.838, abs=0.005)
+    # the image (±16 λ/D) holds 98.9 % of the energy: the encircled energy is relative to the total of the
+    # Airy pattern, ∫[2J₁(v)/v]² dA = 4 s²/π for λ/D = s pixels
+    total = 4 * samples**2 / math.pi * u.adu
+    assert psf.encircled_energy(1.220 * samples * u.pix, total=total) == pytest.approx(0.838, abs=0.005)
+    assert psf.encircled_energy(1.220 * samples * u.pix) == pytest.approx(0.838 / 0.98865, abs=0.005)
     assert psf.peak.to_value(u.adu) == pytest.approx(image.max())
     strehl = calibration.measure_psf(
         DataProduct(0.8 * image * u.adu, axes={"y": axis, "x": axis}),
