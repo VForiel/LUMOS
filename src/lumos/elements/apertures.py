@@ -104,10 +104,14 @@ class CircularAperture(Aperture):
         """Multiply a symbolic field by the indicator of the annulus (no closed form with spiders)."""
         import sympy as sp
 
+        from lumos.symbolic.closed_forms import PlaneWaveForm, circular_pupil_field
         from lumos.symbolic.symbols import r
 
         if values.n_spiders and values.spider_width > 0:
             raise NotImplementedError("circular apertures with spiders have no symbolic transfer")
+        field = inputs["in"]
+        if isinstance(field.form, PlaneWaveForm) and values.obstruction == 0:
+            return {"out": circular_pupil_field(field, float(values.diameter))}
         outer = sp.Float(values.diameter / 2)
         mask = sp.Piecewise((1, r <= outer), (0, True))
         if values.obstruction > 0:

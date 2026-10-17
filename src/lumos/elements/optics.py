@@ -129,6 +129,16 @@ class FreeSpace(Element):
         out = propagate(signal, values.distance * u.m, output_grid=values.output_grid, method=values.method)
         return {"out": out}
 
+    @staticmethod
+    def transfer_symbolic(values: Values, inputs: Any) -> dict[str, Any]:
+        """Propagate a symbolic field: closed form when known, logged numerical fallback otherwise."""
+        from lumos.symbolic.closed_forms import propagate_symbolic
+
+        out = propagate_symbolic(
+            inputs["in"], float(values.distance), output_grid=values.output_grid, method=values.method
+        )
+        return {"out": out}
+
 
 def _lens(values: Values, inputs: Any, element: str) -> dict[str, Any]:
     signal = _coherent(inputs["in"], element)
@@ -142,13 +152,9 @@ def _lens(values: Values, inputs: Any, element: str) -> dict[str, Any]:
 
 
 def _symbolic_lens(values: Values, inputs: Any) -> dict[str, Any]:
-    import sympy as sp
+    from lumos.symbolic.closed_forms import through_lens
 
-    from lumos.symbolic.symbols import lam, r
-
-    field = inputs["in"]
-    f = sp.Float(values.focal_length)
-    return {"out": field.multiply(sp.exp(-sp.I * sp.pi * r**2 / (lam * f)))}
+    return {"out": through_lens(inputs["in"], float(values.focal_length))}
 
 
 @register("lumos.optics.ThinLens")
