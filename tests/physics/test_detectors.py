@@ -206,3 +206,12 @@ def test_power_meter_reads_watts():
     assert float(read(meter, cube).data.to_value(u.W)) == pytest.approx(1e-3, rel=1e-12)
     modal = ModalField(np.sqrt([[1e15, 2e15]]), [LAM] * u.m, power_unit=u.photon / u.s)
     np.testing.assert_allclose(read(meter, modal).data.to_value(u.W), np.array([1e15, 2e15]) * H * C / LAM)
+
+
+def test_power_meter_on_one_guided_channel():
+    """A meter coupled to one output of a chip (step P12.10): it reads that channel only."""
+    modal = ModalField(np.sqrt([[1e15, 2e15, 5e14]]), [LAM] * u.m, power_unit=u.photon / u.s)
+    reading = read(PowerMeter(channel=1), modal).data.to_value(u.W)
+    np.testing.assert_allclose(reading, [2e15 * H * C / LAM])
+    with pytest.raises(ValueError, match="channel"):
+        read(PowerMeter(channel=5), modal)
