@@ -141,6 +141,16 @@ def _lens(values: Values, inputs: Any, element: str) -> dict[str, Any]:
     return {"out": _phase(signal, opd)}
 
 
+def _symbolic_lens(values: Values, inputs: Any) -> dict[str, Any]:
+    import sympy as sp
+
+    from lumos.symbolic.symbols import lam, r
+
+    field = inputs["in"]
+    f = sp.Float(values.focal_length)
+    return {"out": field.multiply(sp.exp(-sp.I * sp.pi * r**2 / (lam * f)))}
+
+
 @register("lumos.optics.ThinLens")
 class ThinLens(Element):
     r"""Thin lens: multiplies the field by :math:`\exp(-ik r^2 / 2f)` (converging for :math:`f > 0`)."""
@@ -153,6 +163,8 @@ class ThinLens(Element):
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
         """Apply the quadratic phase of the lens."""
         return _lens(values, inputs, "ThinLens")
+
+    transfer_symbolic = staticmethod(_symbolic_lens)
 
 
 @register("lumos.optics.ThinMirror")
@@ -167,6 +179,8 @@ class ThinMirror(Element):
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
         """Apply the quadratic phase of the mirror."""
         return _lens(values, inputs, "ThinMirror")
+
+    transfer_symbolic = staticmethod(_symbolic_lens)
 
 
 # --- Beam splitter, delay line, filter ----------------------------------------------------------------
@@ -190,6 +204,18 @@ class BeamSplitter(Element):
             return {"reflected": signal * r, "transmitted": signal * (1 - r)}
         return {"reflected": signal * (1j * r**0.5), "transmitted": signal * (1 - r) ** 0.5}
 
+    @staticmethod
+    def transfer_symbolic(values: Values, inputs: Any) -> dict[str, Any]:
+        r"""Split a symbolic field: :math:`i\sqrt{R}\,U` and :math:`\sqrt{1 - R}\,U`."""
+        import sympy as sp
+
+        field = inputs["in"]
+        reflectance = sp.Float(values.reflectance)
+        return {
+            "reflected": field.multiply(sp.I * sp.sqrt(reflectance)),
+            "transmitted": field.multiply(sp.sqrt(1 - reflectance)),
+        }
+
 
 @register("lumos.optics.DelayLine")
 class DelayLine(Element):
@@ -205,6 +231,15 @@ class DelayLine(Element):
         signal = _coherent(inputs["in"], "DelayLine")
         d = values.delay
         return {"out": chromatic_factor(signal, lambda lam, xp: xp.exp(1j * (2 * math.pi * d) / lam))}
+
+    @staticmethod
+    def transfer_symbolic(values: Values, inputs: Any) -> dict[str, Any]:
+        r"""Multiply a symbolic field by :math:`\exp(2i\pi d / \lambda)`."""
+        import sympy as sp
+
+        from lumos.symbolic.symbols import lam
+
+        return {"out": inputs["in"].multiply(sp.exp(sp.I * 2 * sp.pi * sp.Float(values.delay) / lam))}
 
 
 @register("lumos.optics.SpectralFilter")
@@ -234,6 +269,25 @@ class SpectralFilter(Element):
                 signal, lambda _lam, xp: get(signal.backend).asarray(amplitude)[:, None, None]
             )
         }
+
+    @staticmethod
+    def transfer_symbolic(values: Values, inputs: Any) -> dict[str, Any]:
+        """Multiply a symbolic field by the amplitude transmission of the band (``Piecewise`` in λ)."""
+        import sympy as sp
+
+        from lumos.symbolic.symbols import lam
+
+        field = inputs["in"]
+        amplitude = sp.sqrt(sp.Float(values.transmission))
+        half = values.width / 2 * (1 + 1e-12)
+        if not field.depends_on_wavelength and field.wavelength is not None:
+            wavelength = float(field.wavelength.to_value(u.m, equivalencies=u.spectral()))
+            factor = amplitude if abs(wavelength - values.center) <= half else sp.Integer(0)
+        else:
+            factor = sp.Piecewise(
+                (amplitude, sp.Abs(lam - sp.Float(values.center)) <= sp.Float(half)), (0, True)
+            )
+        return {"out": field.multiply(factor)}
 
 
 # --- Polarisation -----------------------------------------------------------------------------------

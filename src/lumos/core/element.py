@@ -143,11 +143,13 @@ class Element(ParamHost):
         """Collect fields and ports and check the class definition."""
         super().__init_subclass__(**kwargs)
 
-        transfer = cls.__dict__.get("transfer")
-        if transfer is not None and not isinstance(transfer, staticmethod):
-            raise TypeError(
-                f"{cls.__name__}.transfer must be a staticmethod (transfer functions are pure, ADR-0002)"
-            )
+        for attribute in ("transfer", "transfer_symbolic"):
+            function = cls.__dict__.get(attribute)
+            if function is not None and not isinstance(function, staticmethod):
+                raise TypeError(
+                    f"{cls.__name__}.{attribute} must be a staticmethod "
+                    "(transfer functions are pure, ADR-0002)"
+                )
 
         ports: dict[str, Port] = {}
         for klass in reversed(cls.__mro__):
@@ -325,6 +327,32 @@ class Element(ParamHost):
             Output signals by port name.
         """
         raise NotImplementedError("this element does not define a transfer function")
+
+    @staticmethod
+    def transfer_symbolic(values: Values, inputs: Mapping[str, Any]) -> Mapping[str, Any]:
+        """Compute symbolic outputs from :class:`~lumos.symbolic.SymbolicField` inputs (REQ-EL-9).
+
+        Elements with a closed-form transfer override this pure function, with the signature of
+        :meth:`transfer`. It raises :class:`NotImplementedError` when there is no closed form for the inputs.
+        """
+        raise NotImplementedError("this element has no symbolic transfer function")
+
+    @classmethod
+    def has_symbolic_transfer(cls) -> bool:
+        """Whether the element provides a symbolic transfer function."""
+        return cls.transfer_symbolic is not Element.transfer_symbolic
+
+    def apply_symbolic(self, **inputs: Any) -> Mapping[str, Any]:
+        """Run the symbolic transfer function on symbolic ``inputs``.
+
+        Raises
+        ------
+        NotImplementedError
+            If the element has no symbolic transfer, or no closed form for these inputs.
+        """
+        if not type(self).has_symbolic_transfer():
+            raise NotImplementedError(f"{type(self).__name__} has no symbolic transfer function")
+        return type(self).transfer_symbolic(self.values(), dict(inputs))
 
     def apply(self, **inputs: Any) -> Mapping[str, Any]:
         """Run the transfer function on ``inputs``, checking port names and signal types."""

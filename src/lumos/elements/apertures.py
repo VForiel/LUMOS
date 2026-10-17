@@ -99,6 +99,22 @@ class CircularAperture(Aperture):
     _mask = staticmethod(_circular)
     transfer = _transfer(_circular)
 
+    @staticmethod
+    def transfer_symbolic(values: Values, inputs: Any) -> dict[str, Any]:
+        """Multiply a symbolic field by the indicator of the annulus (no closed form with spiders)."""
+        import sympy as sp
+
+        from lumos.symbolic.symbols import r
+
+        if values.n_spiders and values.spider_width > 0:
+            raise NotImplementedError("circular apertures with spiders have no symbolic transfer")
+        outer = sp.Float(values.diameter / 2)
+        mask = sp.Piecewise((1, r <= outer), (0, True))
+        if values.obstruction > 0:
+            inner = sp.Float(values.obstruction / 2)
+            mask = sp.Piecewise((1, (r <= outer) & (r >= inner)), (0, True))
+        return {"out": inputs["in"].multiply(mask)}
+
 
 def _polygon(values: Values, grid: Grid) -> np.ndarray:
     return shapes.regular_polygon(
