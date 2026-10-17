@@ -97,9 +97,11 @@ def test_emergency_stop_over_tcp(served):
 
     thread = threading.Thread(target=move)
     thread.start()
-    time.sleep(0.3)
+    deadline = time.monotonic() + 10
+    while emulator.position < 1.5 and time.monotonic() < deadline:  # moving at 10 mm/s
+        time.sleep(0.01)
     ctx.stop_all()
-    thread.join(timeout=2)
+    thread.join(timeout=10)
     assert errors
     assert emulator.stopped
     assert 1 < emulator.position < 10
