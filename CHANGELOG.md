@@ -157,6 +157,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   operator on every route, sessions renewed at login and expiring, rate limits, audit journal, HTTPS required
   to log in or operate outside the local machine; routes of the operation (discovery, association, confirmed
   actions, emergency stop).
+- Deployment profiles of the web instance: `local` (localhost only, its user has every right) and `public`
+  (anonymous simulators, operation disabled, quotas); TOML configuration files (`lumos web --config`) with
+  command-line overrides; unsafe configurations refused at start-up. Compute quotas in the service, shared
+  with the MCP server: `max_grid_pixels`, `max_memory_mb`, `max_concurrent_runs`, and the time quota applied
+  to inspections.
 
 ### Changed
 
