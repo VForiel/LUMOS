@@ -26,6 +26,14 @@ Chaque entrée indique le contexte, ce que j'ai fait en attendant et ce dont j'a
 - [ ] **Scènes de laboratoire** : une carte de radiance à distance finie est vue comme à l'infini (pixels de
   `dx/d` rad, radiance conservée) ; la courbure des ondes d'un objet proche est négligée (ADR-0011). Les
   sources proches sont à modéliser comme champs (laser, lampe).
+- [ ] **Spectre solaire de référence** : j'ai utilisé le spectre CALSPEC `sun_reference_stis_002` (Bohlin et al.
+  2001, 0,12–2,7 µm) au lieu de la table ASTM E490 demandée (REQ-CAT-2), distribuée en tableur `.xls` par le
+  NREL. Si tu tiens à E490, il faudra choisir une source de fichier lisible (CSV) ou accepter `openpyxl`/`xlrd`.
+- [ ] **exoplanet.eu** : son serveur TAP (`voparis-tap-planeto.obspm.fr`) refusait les connexions le 16/10 ;
+  le fournisseur lit le catalogue CSV complet (3,7 Mo, mis en cache). À revoir si le TAP revient.
+- [ ] **Catalogues** : pas d'astroquery/pyvo (TAP et HTTP directs via la couche réseau sécurisée) ; l'extra
+  `[catalogs]` ne contient plus que `requests` (ADR-0012). Les tests rejouent des réponses réelles
+  enregistrées (`tools/record_catalog_fixtures.py`) ; aucun test `network` en direct n'existe pour l'instant.
 - [ ] **Stratégie d'imagerie étendue « auto »** : sonde numérique d'invariance par translation (PSF hors axe
   recentrée vs PSF sur l'axe, tolérance 1 %) plutôt que des règles par type d'élément (principe 2). Le
   mode anisoplanatique n'est jamais choisi automatiquement (seulement sur demande).
