@@ -37,6 +37,11 @@ call (elicitation, sampling) by results asking the client for input (`InputRequi
   their unit, grid, wavelength) and a PNG image, runs with one line naming the job and the next tool; the
   Pydantic model stays the structured content (`Annotated[CallToolResult, Model]`), without the figure bytes.
   The values shown are accepted back as they are, and a quantity without unit is refused with an example.
+- **HTTP** (P13.6): `lumos mcp --transport http` serves the streamable HTTP application of the SDK with
+  uvicorn on `127.0.0.1:8765/mcp`; `create_http_app` returns it for the web backend to mount. Without
+  authentication (P14), another address needs `--allow-remote`, and the operation of equipment is refused
+  for remote clients, who could confirm their own actions. The SDK protects loopback servers from DNS
+  rebinding.
 - Synchronous tools run in worker threads of the SDK; the service serialises the work of a session.
 - Groups are created in one call (`create_group`: elements, internal connections, exposed ports), added to the
   service as `Service.create_group`.

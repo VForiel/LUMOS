@@ -4,7 +4,8 @@
 - ``lumos emulators start [--devices ...] [--host H] [--port P] [--duration S]``: serve emulators over TCP,
   one port per device from ``P`` (``0``: free ports), until Ctrl+C or for ``S`` seconds;
 - ``lumos mcp [--archive-root DIR] [--presets-dir DIR] [--enable-operation]``: serve the MCP server for AI
-  assistants over stdio.
+  assistants over stdio, or over streamable HTTP with ``--transport http [--host H] [--port P] [--path /mcp]``
+  (local only unless ``--allow-remote``).
 """
 
 from __future__ import annotations
@@ -62,14 +63,36 @@ def _mcp(arguments: argparse.Namespace) -> int:
         return 2
     from lumos.service import ServiceConfig
 
-    # stdout carries the protocol: the logs go to stderr
+    local = arguments.host in ("127.0.0.1", "localhost", "::1")
+    if arguments.transport == "http" and not local:
+        if not arguments.allow_remote:
+            sys.stderr.write(
+                f"refusing to listen on {arguments.host}: the MCP server has no authentication before the\n"
+                "web instance; pass --allow-remote to accept requests from other machines anyway\n"
+            )
+            return 2
+        if arguments.enable_operation:
+            sys.stderr.write(
+                "the operation of equipment is never allowed to unauthenticated remote clients\n"
+            )
+            return 2
+    # stdout carries the stdio protocol: the logs go to stderr
     logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
     config = ServiceConfig(
         archive_root=arguments.archive_root,
         presets_dir=arguments.presets_dir,
         operation_enabled=arguments.enable_operation,
     )
-    create_server(config=config).run("stdio")
+    server = create_server(config=config)
+    if arguments.transport == "stdio":
+        server.run("stdio")
+    else:
+        import uvicorn
+
+        from lumos.mcp import create_http_app
+
+        app = create_http_app(server, path=arguments.path, host=arguments.host)
+        uvicorn.run(app, host=arguments.host, port=arguments.port, log_level="warning")
     return 0
 
 
@@ -87,6 +110,15 @@ def _parser() -> argparse.ArgumentParser:
     mcp = commands.add_parser("mcp", help="MCP server for AI assistants (Claude Code, Claude Desktop...)")
     mcp.add_argument("--archive-root", default=None, help="directory of the archives of the runs")
     mcp.add_argument("--presets-dir", default=None, help="directory of the preset .lumos files")
+    mcp.add_argument(
+        "--transport", choices=("stdio", "http"), default="stdio", help="stdio (default) or streamable HTTP"
+    )
+    mcp.add_argument("--host", default="127.0.0.1", help="HTTP: address to listen on (default: 127.0.0.1)")
+    mcp.add_argument("--port", type=int, default=8765, help="HTTP: port (default: 8765)")
+    mcp.add_argument("--path", default="/mcp", help="HTTP: path of the endpoint (default: /mcp)")
+    mcp.add_argument(
+        "--allow-remote", action="store_true", help="HTTP: accept a non-local address (no authentication)"
+    )
     mcp.add_argument(
         "--enable-operation",
         action="store_true",

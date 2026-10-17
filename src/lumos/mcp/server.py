@@ -41,7 +41,7 @@ from lumos.service.models import (
 )
 from lumos.service.summaries import job_text, summary_text
 
-__all__ = ["INSTRUCTIONS", "LumosTools", "create_server"]
+__all__ = ["INSTRUCTIONS", "LumosTools", "create_http_app", "create_server"]
 
 logger = logging.getLogger("lumos.mcp")
 
@@ -463,3 +463,13 @@ def create_server(
     register_prompts(server)
     server.lumos = state  # type: ignore[attr-defined]
     return server
+
+
+def create_http_app(server: MCPServer, *, path: str = "/mcp", host: str = "127.0.0.1") -> Any:
+    """Return the ASGI application serving ``server`` over streamable HTTP at ``path`` (step P13.6).
+
+    The web backend mounts this application (P14), which then adds the authentication of its users; until
+    then, serve it on the local machine only. ``host`` sets the protection against DNS rebinding: requests
+    must name a local host when it is a loopback address.
+    """
+    return server.streamable_http_app(streamable_http_path=path, host=host)

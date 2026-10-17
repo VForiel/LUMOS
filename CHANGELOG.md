@@ -135,6 +135,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   figure as an image; runs answer with one line; summaries of incoherent bundles (modes, power, grid).
 - The service always asks for the unit of a physical quantity (a bare number is refused); the values it
   shows, arrays (`"[1, 2] nm"`) and grids included, are accepted back by `set_param`.
+- `lumos mcp --transport http`: the MCP server over streamable HTTP (`lumos.mcp.create_http_app` gives the
+  ASGI application for the web instance); local only unless `--allow-remote`, never with the operation.
 - The journal of a context records each run (`kind: "run"`: outputs and duration).
 
 ### Changed
