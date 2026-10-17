@@ -161,3 +161,10 @@ def test_the_symbolic_notebook_exists():
     """Step P10.7: notebook of symbolic optics, with its preset of a Gaussian beam kept symbolic."""
     assert "07_symbolic_optics" in [path.stem for path in NOTEBOOKS]
     assert (EXAMPLES / "presets" / "symbolic_focus.lumos").is_file()
+
+
+def test_the_processing_notebooks_exist():
+    """Step P11.6 (acceptance of v0.4, UC7): a data pipeline and a detection-capability study."""
+    names = [path.stem for path in NOTEBOOKS]
+    assert "08_data_pipeline" in names
+    assert "09_detection_capability" in names
