@@ -78,6 +78,9 @@ dev = [
 ]
 all = ["lumos-maxima[jax,catalogs,hardware,web,mcp]"]
 
+[project.scripts]
+lumos = "lumos.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/VForiel/LUMOS"
 Repository = "https://github.com/VForiel/LUMOS"
