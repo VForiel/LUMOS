@@ -3,10 +3,11 @@
 - :mod:`~lumos.symbolic.symbols`: canonical variables ``x, y, theta_x, theta_y, lam, t``;
 - :class:`SymbolicField`: closed-form expressions of fields with their parameters;
 - :mod:`~lumos.symbolic.evaluate`: evaluation on grids (``field.to_wavefront(grid)``, ``to_wavecube``);
-- :mod:`~lumos.symbolic.closed_forms`: Gaussian beams through ABCD systems, tabulated transforms, fallback.
+- :mod:`~lumos.symbolic.closed_forms`: Gaussian beams through ABCD systems, tabulated transforms, fallback;
+- :mod:`~lumos.symbolic.reconstruct`: from grids to expressions (projections, fits, regressions).
 """
 
-from lumos.symbolic import closed_forms, evaluate
+from lumos.symbolic import closed_forms, evaluate, reconstruct
 from lumos.symbolic.closed_forms import gaussian_beam, plane_wave, rectangular_pupil
 from lumos.symbolic.evaluate import to_wavecube, to_wavefront
 from lumos.symbolic.field import PLANES, SymbolicField
@@ -22,6 +23,7 @@ __all__ = [
     "lam",
     "plane_wave",
     "r",
+    "reconstruct",
     "rectangular_pupil",
     "rho",
     "t",
