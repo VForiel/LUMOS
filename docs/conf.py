@@ -1,5 +1,6 @@
 """Sphinx configuration for the LUMOS documentation (English source, French translation)."""
 
+import json
 import os
 import shutil
 from datetime import UTC, datetime
@@ -17,13 +18,42 @@ version = release
 
 # -- Example notebooks -------------------------------------------------------
 # The notebooks live in examples/ (next to their presets); they are copied into the documentation tree so
-# that myst-nb renders them under "Examples".
+# that myst-nb executes and renders them under "Examples", with their figures. A first cell links to the
+# notebook on Colab and Binder. Catalogue queries are answered from the recorded cache (offline build).
 
 _examples = Path(__file__).resolve().parent.parent / "examples"
 _rendered = Path(__file__).resolve().parent / "examples" / "notebooks"
 _rendered.mkdir(exist_ok=True)
+_github = "VForiel/LUMOS"
+_branch = os.environ.get("READTHEDOCS_GIT_IDENTIFIER", "main")
+
+
+def _launch_cell(name: str) -> dict:
+    colab = f"https://colab.research.google.com/github/{_github}/blob/{_branch}/examples/{name}"
+    binder = f"https://mybinder.org/v2/gh/{_github}/{_branch}?labpath=examples%2F{name}"
+    source = (
+        f"[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab}) "
+        f"[![Launch on Binder](https://mybinder.org/badge_logo.svg)]({binder})"
+    )
+    return {
+        "cell_type": "markdown",
+        "id": "launch-buttons",
+        "metadata": {"tags": ["launch-buttons"]},
+        "source": source,
+    }
+
+
 for _notebook in sorted(_examples.glob("[0-9][0-9]_*.ipynb")):
-    shutil.copy2(_notebook, _rendered / _notebook.name)
+    _content = json.loads(_notebook.read_text(encoding="utf-8"))
+    _cells = _content["cells"]
+    # after the title cell, so that the page keeps the notebook title
+    _cells.insert(1 if _cells and _cells[0]["cell_type"] == "markdown" else 0, _launch_cell(_notebook.name))
+    (_rendered / _notebook.name).write_text(json.dumps(_content, indent=1), encoding="utf-8")
+shutil.copytree(_examples / "presets", _rendered / "presets", dirs_exist_ok=True)
+if (_examples / "catalog_cache").is_dir():
+    shutil.copytree(_examples / "catalog_cache", _rendered / "catalog_cache", dirs_exist_ok=True)
+    os.environ["LUMOS_CATALOGS_CACHE"] = str(_rendered / "catalog_cache")
+    os.environ["LUMOS_CATALOGS_OFFLINE"] = "1"
 
 # -- General -----------------------------------------------------------------
 
@@ -44,13 +74,17 @@ exclude_patterns = [
     "locales",
     "specs",  # internal requirements, written in French, not part of the user documentation
     "adr/0000-template.md",
+    "examples/notebooks/archives",  # run archives written by the executed notebooks
     "Thumbs.db",
     ".DS_Store",
 ]
 
 myst_enable_extensions = ["colon_fence", "deflist", "dollarmath", "amsmath", "fieldlist", "tasklist"]
 myst_heading_anchors = 3
-nb_execution_mode = "off"  # notebooks are executed by the test suite, not by the doc build (for now)
+nb_execution_mode = "cache"  # executed once per change of a notebook (jupyter-cache in _build/)
+nb_execution_timeout = 900
+nb_execution_raise_on_error = True  # a failing notebook fails the build
+nb_execution_excludepatterns = ["examples/notebooks/archives/**"]
 
 autodoc_typehints = "description"
 autodoc_member_order = "bysource"
