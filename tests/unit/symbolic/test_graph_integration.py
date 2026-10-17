@@ -121,7 +121,7 @@ def test_conversion_needs_a_grid():
 
 
 def test_chromatic_fields_are_sampled_at_the_observation_wavelengths():
-    grid = Grid(32, dx=0.1 * u.mm)
+    grid = Grid(64, dx=0.1 * u.mm)  # ±3.2 mm: the beam (w = 1 mm) is not truncated
     w = sp.Symbol("w", positive=True)
     chromatic = SymbolicField(
         sp.exp(-(x**2 + y**2) / w**2) * sp.sqrt(lam / sp.Float(1e-6)), parameters={w: 1 * u.mm}, grid=grid
