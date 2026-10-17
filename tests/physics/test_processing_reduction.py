@@ -264,3 +264,19 @@ def test_reduction_elements_in_a_context():
     np.testing.assert_allclose(out.uncertainty.to_value(E), 2 * 5.0)
     assert isinstance(reduction.Stack(name="s"), Element)
     assert isinstance(reduction.DarkSubtraction.dark, Input)
+
+
+def test_ccd_equation_with_the_error_of_the_background_estimate():
+    """Howell (2006), eq. 4.4 with the factor (1 + n/n_B) of a background measured over n_B pixels."""
+    signal, n_pix, n_back, background, read = 3000.0, 40, 200, 20.0, 5.0
+    snr = ccd_snr(
+        signal * E, n_pixels=n_pix, n_background=n_back, background=background * E, read_noise=read * E
+    )
+    assert snr == pytest.approx(
+        signal / math.sqrt(signal + n_pix * (1 + n_pix / n_back) * (background + read**2))
+    )
+    trials = 20000
+    sky = RNG.poisson(background, (trials, n_back)) + RNG.normal(0, read, (trials, n_back))
+    source = RNG.poisson(signal + n_pix * background, trials) + RNG.normal(0, read * math.sqrt(n_pix), trials)
+    measured = source - n_pix * sky.mean(axis=1)
+    assert signal / np.std(measured) == pytest.approx(snr, rel=0.03)
