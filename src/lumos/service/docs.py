@@ -55,7 +55,11 @@ def search(query: str, *, limit: int = 5) -> list[DocHit]:
             score += 10
         if score == 0:
             continue
-        position = lower.find(phrase) if phrase in lower else min(lower.find(w) for w in words if w in lower)
+        position = (
+            lower.find(phrase)
+            if phrase in lower
+            else min((lower.find(w) for w in words if w in lower), default=0)
+        )
         start = max(position - 120, 0)
         excerpt = " ".join(text[start : start + 360].split())
         hits.append(DocHit(title=title, path=path, excerpt=excerpt, score=float(score)))
