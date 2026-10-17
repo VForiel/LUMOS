@@ -106,6 +106,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   capability maps; phase fitting (gradient, scan, genetic), slanted-edge MTF and PSF measurements; processing
   elements with `DataProduct` ports and script blocks (ADR-0013); notebooks `08_data_pipeline` and
   `09_detection_capability`.
+- Operation mode (ADR-0014): drivers check software limits and confirmations for every command, support dry
+  runs, reconnect after lost connections, stop from any thread and reach a safe state (`ctx.stop_all()`,
+  `ctx.operation_guard()`); `lumos.hardware` with TCP, serial, VISA and in-process transports, the LumosLabs
+  ASCII protocol, emulators of nine devices with fault injection (`lumos emulators start`), their drivers,
+  discovery and association with elements, driver plugins (`lumos.drivers` entry points); lab elements
+  (`lumos.elements.lab`); digital twin with measured, simulated and residual outputs and emulators fed by the
+  twin; `ctx.link`; recorded sequences (`ctx.record()`, `ctx.replay()`); guides "Operating a bench" and
+  "Writing a driver"; notebook `10_bench_operation`.
+- `PowerMeter(channel=k)` reads one guided channel.
 - `lumos.elements.sources.Planet`: one planet of a star on a Keplerian orbit.
 - Source lists can be archived and read back.
 

@@ -251,16 +251,16 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 12 — Mode opération, LumosLabs et jumeau numérique
 
-- [ ] **P12.1 Interface `Driver` complète** — cycle de vie, erreurs, timeouts, reprise, arrêt d'urgence, bornes, *dry-run*, confirmations, état sûr sur interruption.
-- [ ] **P12.2 Transports** — série (y compris virtuelle), TCP, VISA ; abstraction testable.
-- [ ] **P12.3 Protocole LumosLabs** — spécification ASCII documentée (commandes, réponses, erreurs), commune à toute la gamme.
-- [ ] **P12.4 Émulateurs LumosLabs** — `LL-LS100`, `LL-RS360`, `LL-PZ3`, `LL-SH1`, `LL-FW6`, `LL-LD`, `LL-PM`, `LL-CAM`, `LL-PCU` (cahier des charges §5.8.1), avec latences, bruit, limites et injection de fautes ; lancés par `lumos emulators start`.
-- [ ] **P12.5 Drivers LumosLabs** — un driver par équipement, sur le transport réel.
-- [ ] **P12.6 Découverte** — énumération et association aux éléments.
-- [ ] **P12.7 Jumeau numérique** — commandes appliquées au réel et au simulé, sorties côte à côte, résidus ; `LL-CAM` et `LL-PM` reçoivent leurs mesures du jumeau avec un bruit et des défauts propres à l'émulateur, ce qui crée un écart réel/simulé contrôlé.
-- [ ] **P12.8 Séquences** — enregistrement et rejeu.
-- [ ] **P12.9 Plugins de drivers** — *entry points*, guide « Writing a driver » ; vérification que l'interface couvre les SDK Thorlabs (Kinesis, TSI, TLPM), en vue du premier driver constructeur.
-- [ ] **P12.10 Notebook** `10_bench_operation` (exécuté en CI contre les émulateurs).
+- [x] **P12.1 Interface `Driver` complète** — cycle de vie, erreurs, timeouts, reprise, arrêt d'urgence, bornes, *dry-run*, confirmations, état sûr sur interruption.
+- [x] **P12.2 Transports** — série (y compris virtuelle), TCP, VISA ; abstraction testable.
+- [x] **P12.3 Protocole LumosLabs** — spécification ASCII documentée (commandes, réponses, erreurs), commune à toute la gamme.
+- [x] **P12.4 Émulateurs LumosLabs** — `LL-LS100`, `LL-RS360`, `LL-PZ3`, `LL-SH1`, `LL-FW6`, `LL-LD`, `LL-PM`, `LL-CAM`, `LL-PCU` (cahier des charges §5.8.1), avec latences, bruit, limites et injection de fautes ; lancés par `lumos emulators start`.
+- [x] **P12.5 Drivers LumosLabs** — un driver par équipement, sur le transport réel.
+- [x] **P12.6 Découverte** — énumération et association aux éléments.
+- [x] **P12.7 Jumeau numérique** — commandes appliquées au réel et au simulé, sorties côte à côte, résidus ; `LL-CAM` et `LL-PM` reçoivent leurs mesures du jumeau avec un bruit et des défauts propres à l'émulateur, ce qui crée un écart réel/simulé contrôlé.
+- [x] **P12.8 Séquences** — enregistrement et rejeu.
+- [x] **P12.9 Plugins de drivers** — *entry points*, guide « Writing a driver » ; vérification que l'interface couvre les SDK Thorlabs (Kinesis, TSI, TLPM), en vue du premier driver constructeur.
+- [x] **P12.10 Notebook** `10_bench_operation` (exécuté en CI contre les émulateurs).
 
 **Tests écrits d'abord :** respect des bornes même sur une commande directe ; l'arrêt d'urgence interrompt un mouvement en cours ; reprise après une déconnexion injectée ; un même script donne un journal de commandes identique en simulation et en opération ; la durée réelle mesurée est cohérente avec la durée prédite.
 
