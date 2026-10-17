@@ -182,6 +182,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   actions of the elements (simulated when the operation is disabled), confirmation dialog naming the device,
   emergency stop in the toolbar; login dialog (password, or SSH challenge with the `ssh-keygen` command) and
   role shown in the toolbar.
+- MCP server of the web instance at `/mcp` (streamable HTTP, same authentication and same session as the
+  interface; tools of the operation for operators only; actions journaled with the origin `mcp`) and assistant
+  panel: Claude called from the browser with the API key of the user (kept in the tab), using the tools of the
+  instance on the open context. `create_server(session=..., can_operate=...)`, `lumos.service.service.acting_as`.
 
 ### Changed
 
