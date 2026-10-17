@@ -6,7 +6,8 @@
 - providers: :mod:`~lumos.catalogs.simbad`, :mod:`~lumos.catalogs.gaia`, :mod:`~lumos.catalogs.exoplanets`,
   :mod:`~lumos.catalogs.vizier`, :mod:`~lumos.catalogs.calspec`, :mod:`~lumos.catalogs.archives`,
   :mod:`~lumos.catalogs.solar_system`, :mod:`~lumos.catalogs.svo`, :mod:`~lumos.catalogs.models`,
-  :mod:`~lumos.catalogs.surveys`.
+  :mod:`~lumos.catalogs.surveys`;
+- :mod:`~lumos.catalogs.sed`: fusion and completion of spectral energy distributions.
 
 Importing this package registers the providers of LUMOS.
 """
@@ -20,6 +21,7 @@ from lumos.catalogs import (
     models,
     provider,
     records,
+    sed,
     simbad,
     solar_system,
     spectra,
@@ -45,6 +47,7 @@ __all__ = [
     "providers",
     "records",
     "register_provider",
+    "sed",
     "settings",
     "simbad",
     "solar_system",
