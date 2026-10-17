@@ -16,7 +16,7 @@ import {
   type IsValidConnection,
   type NodeChange,
 } from "@xyflow/react";
-import { MousePointerClick } from "lucide-react";
+import { MousePointerClick, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { useTranslation } from "react-i18next";
 import type { ContextSummary } from "../api";
@@ -28,6 +28,7 @@ import { useStore } from "../store";
 import { ElementNode, type ElementFlowNode } from "./ElementNode";
 import { FRAME_HEADER, FRAME_PAD, GroupFrame, type FrameFlowNode } from "./GroupFrame";
 import { BLOCK_TYPE, DRAG_TYPE } from "./Palette";
+import { PresetGallery } from "./Presets";
 
 const nodeTypes = { element: ElementNode, frame: GroupFrame };
 const NODE_WIDTH = 230;
@@ -73,6 +74,7 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
   const { addElement, connect, disconnect, removeElements, moved, select, setQuickAdd, insertBlock } = useStore.getState();
   const [nodes, setNodes] = useState<FlowNode[]>([]);
   const fitted = useRef<string | null>(null);
+  const welcome = useStore((s) => s.welcome);
 
   const types = useMemo(() => new Map((palette?.types ?? []).map((item) => [item.type_id, item])), [palette]);
   const running = Object.values(jobs).some((job) => job.context === context?.id && (job.status === "running" || job.status === "queued"));
@@ -383,7 +385,23 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
           nodeStrokeWidth={0}
         />
       </ReactFlow>
-      {empty && (
+      {(welcome && (empty || !context)) && (
+        <div className="pointer-events-none absolute inset-0 overflow-y-auto p-6">
+          <div className="pointer-events-auto relative mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+            <button
+              type="button"
+              onClick={() => useStore.setState({ welcome: false })}
+              className="absolute top-2 right-2 rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              aria-label={t("common.close")}
+              data-testid="hide-welcome"
+            >
+              <X className="size-4" />
+            </button>
+            <PresetGallery welcome />
+          </div>
+        </div>
+      )}
+      {empty && !welcome && (
         <div className="pointer-events-none absolute inset-0 grid place-items-center">
           <div className="max-w-sm rounded-2xl border border-dashed border-slate-300 bg-white/80 p-6 text-center backdrop-blur dark:border-slate-700 dark:bg-slate-900/80">
             <MousePointerClick className="mx-auto mb-2 size-8 text-accent-500" />

@@ -169,7 +169,7 @@ export function QuantityInput({
         {units.length > 1 || declared ? (
           <select
             data-testid={`unit-${field.name}`}
-            className={`${inputClass} w-[4.75rem] shrink-0 px-1`}
+            className={`${inputClass.replace("w-full ", "")} w-[4.75rem] shrink-0 px-1`}
             value={unit}
             disabled={disabled || units.length < 2}
             onChange={(event) => {
@@ -188,7 +188,7 @@ export function QuantityInput({
           >
             {units.map(([name]) => (
               <option key={name} value={name}>
-                {name || "—"}
+                {name ? name.replace(/(^|[^A-Za-z])u(?=(m|W|J|V|A|s|as|rad|Jy|K))/g, "$1µ") : "—"}
               </option>
             ))}
           </select>

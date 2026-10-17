@@ -87,7 +87,7 @@ export type PortSummary = {
   details: Record<string, string>;
 };
 
-export type Preset = { name: string; description: string; outputs: string[] };
+export type Preset = { name: string; title: string; description: string; outputs: string[]; elements: string[] };
 
 export type JournalEntry = {
   kind: string;

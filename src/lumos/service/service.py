@@ -301,10 +301,16 @@ class Service:
         """Preset contexts."""
         found = []
         for path in sorted(self.presets_dir().glob("*.lumos")):
-            meta = json.loads(path.read_text(encoding="utf-8")).get("meta", {})
+            document = json.loads(path.read_text(encoding="utf-8"))
+            meta = document.get("meta", {})
+            types = list(dict.fromkeys(str(entry.get("type", "")) for entry in document.get("elements", [])))
             found.append(
                 PresetInfo(
-                    name=path.stem, description=meta.get("description", ""), outputs=meta.get("outputs", [])
+                    name=path.stem,
+                    title=str(meta.get("name") or path.stem.replace("_", " ").capitalize()),
+                    description=meta.get("description", ""),
+                    outputs=meta.get("outputs", []),
+                    elements=types,
                 )
             )
         return found

@@ -15,7 +15,10 @@
     "python": "Python script",
     "undo": "Undo",
     "redo": "Redo",
-    "shortcuts": "Keyboard shortcuts"
+    "shortcuts": "Keyboard shortcuts",
+    "tour": "Guided tour",
+    "presets": "Presets: ready-made contexts",
+    "presetsShort": "Presets"
   },
   "theme": {
     "switch": "Switch to the {{theme}} theme",
@@ -189,5 +192,62 @@
   },
   "problems": {
     "none": "No problem found."
+  },
+  "presets": {
+    "title": "Presets",
+    "welcome": "Welcome to LUMOS",
+    "welcomeHint": "Simulate light from a source to a detector with blocks. Start from a preset, or take the guided tour.",
+    "tour": "Take the tour",
+    "orBuild": "…or build your own: drag elements from the palette on the left."
+  },
+  "tour": {
+    "next": "Next",
+    "previous": "Back",
+    "finish": "Finish",
+    "progress": "__current__ of __total__",
+    "welcome": {
+      "title": "Welcome to LUMOS",
+      "text": "LUMOS simulates how light travels through an instrument: from a source, through optical elements, to a detector. We have opened a first simulation for you."
+    },
+    "palette": {
+      "title": "The elements",
+      "text": "Every element of the library is here, by category: sources, telescopes, optics, detectors, processing… Drag one onto the canvas, or click it."
+    },
+    "canvas": {
+      "title": "The optical system",
+      "text": "Blocks are connected by wires: light flows from left to right. Drag from an output (right of a block) to an input (left) to connect; the colour of a port tells the kind of light it carries."
+    },
+    "block": {
+      "title": "A block",
+      "text": "Each block shows its name, its type and a few values. Click it to select it."
+    },
+    "inspector": {
+      "title": "Its parameters",
+      "text": "The inspector shows the parameters of the selected block, with their units: type a value (e.g. 3 mm) and press Enter. Ctrl+Z undoes any change."
+    },
+    "run": {
+      "title": "Run the simulation",
+      "text": "Run computes the outputs of the context. Press Next: we run it for you (Ctrl+Enter does it too)."
+    },
+    "results": {
+      "title": "The results",
+      "text": "Each output appears with its figure and its statistics, with units. Download the figure, the data or the whole signal."
+    },
+    "inspect": {
+      "title": "Look anywhere",
+      "text": "Click the name of any output of a block to see the light at that point, without running everything."
+    },
+    "files": {
+      "title": "Keep your work",
+      "text": "Save the context as a .lumos file, open one, or get the equivalent Python script."
+    },
+    "help": {
+      "title": "Help",
+      "text": "Replay this tour at any time, and press ? for the keyboard shortcuts."
+    },
+    "done": {
+      "title": "Your turn!",
+      "text": "Change a value and run again, or open another preset. The documentation explains the physics of every element."
+    }
   }
 }

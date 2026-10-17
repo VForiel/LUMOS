@@ -138,11 +138,13 @@ class ContextSummary(BaseModel):
 
 
 class PresetInfo(BaseModel):
-    """A preset context."""
+    """A preset context: file name, title, description, outputs and the types of its elements."""
 
     name: str
+    title: str = ""
     description: str
     outputs: list[str]
+    elements: list[str] = []
 
 
 class Issue(BaseModel):

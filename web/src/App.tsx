@@ -1,5 +1,5 @@
 import { ReactFlowProvider } from "@xyflow/react";
-import { Code2, FilePlus2, FolderOpen, Keyboard, Redo2, Save, Undo2 } from "lucide-react";
+import { Code2, FilePlus2, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { BottomPanel } from "./components/BottomPanel";
@@ -7,12 +7,14 @@ import { Canvas } from "./components/Canvas";
 import { Dialogs } from "./components/Dialogs";
 import { Inspector } from "./components/Inspector";
 import { Palette } from "./components/Palette";
+import { PresetsDialog } from "./components/Presets";
 import { QuickAdd } from "./components/QuickAdd";
 import { RunButton } from "./components/RunButton";
 import { Toasts } from "./components/Toasts";
 import { ToolButton, TopBar } from "./components/TopBar";
 import { connectEvents, disconnectEvents } from "./events";
 import { useShortcuts } from "./shortcuts";
+import { startTour } from "./tour";
 import { useStore } from "./store";
 
 function Separator() {
@@ -47,11 +49,18 @@ function Editor() {
           <>
             <RunButton />
             <Separator />
-            <ToolButton icon={<Keyboard className="size-4" />} label={t("toolbar.shortcuts")} onClick={() => store.setDialog({ kind: "shortcuts" })} shortcut="?" />
+            <div className="flex items-center" data-tour="help">
+              <ToolButton icon={<GraduationCap className="size-4" />} label={t("toolbar.tour")} onClick={() => void startTour()} testId="tour" />
+              <ToolButton icon={<Keyboard className="size-4" />} label={t("toolbar.shortcuts")} onClick={() => store.setDialog({ kind: "shortcuts" })} shortcut="?" />
+            </div>
           </>
         }
       >
         <Separator />
+        <ToolButton icon={<LayoutGrid className="size-4" />} label={t("toolbar.presets")} onClick={() => store.setDialog({ kind: "presets" })} testId="open-presets">
+          <span className="hidden xl:inline">{t("toolbar.presetsShort")}</span>
+        </ToolButton>
+        <div className="flex items-center" data-tour="files">
         <ToolButton icon={<FilePlus2 className="size-4" />} label={t("toolbar.new")} onClick={() => void store.newContext()} testId="new" disabled={!editable} />
         <ToolButton icon={<FolderOpen className="size-4" />} label={t("toolbar.open")} onClick={() => fileInput.current?.click()} testId="open" shortcut="Ctrl+O" />
         <input
@@ -68,6 +77,7 @@ function Editor() {
         />
         <ToolButton icon={<Save className="size-4" />} label={t("toolbar.save")} onClick={() => void store.save()} testId="save" shortcut="Ctrl+S" />
         <ToolButton icon={<Code2 className="size-4" />} label={t("toolbar.python")} onClick={() => void store.python()} testId="python" />
+        </div>
         <Separator />
         <ToolButton icon={<Undo2 className="size-4" />} label={t("toolbar.undo")} onClick={() => void store.undo()} testId="undo" disabled={!context?.can_undo || !editable} shortcut="Ctrl+Z" />
         <ToolButton icon={<Redo2 className="size-4" />} label={t("toolbar.redo")} onClick={() => void store.redo()} testId="redo" disabled={!context?.can_redo || !editable} shortcut="Ctrl+Shift+Z" />
@@ -81,7 +91,7 @@ function Editor() {
         <Inspector onInspect={inspect} />
       </div>
       <QuickAdd />
-      <Dialogs />
+      <Dialogs extra={(dialog) => (dialog.kind === "presets" ? <PresetsDialog /> : null)} />
       <Toasts />
     </div>
   );

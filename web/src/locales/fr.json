@@ -15,7 +15,10 @@
     "python": "Script Python",
     "undo": "Annuler",
     "redo": "Rétablir",
-    "shortcuts": "Raccourcis clavier"
+    "shortcuts": "Raccourcis clavier",
+    "tour": "Visite guidée",
+    "presets": "Préréglages : contextes prêts à l'emploi",
+    "presetsShort": "Préréglages"
   },
   "theme": {
     "switch": "Passer au thème {{theme}}",
@@ -189,5 +192,62 @@
   },
   "problems": {
     "none": "Aucun problème détecté."
+  },
+  "presets": {
+    "title": "Préréglages",
+    "welcome": "Bienvenue dans LUMOS",
+    "welcomeHint": "Simulez la lumière d'une source jusqu'à un détecteur avec des blocs. Partez d'un préréglage, ou suivez la visite guidée.",
+    "tour": "Faire la visite",
+    "orBuild": "…ou construisez le vôtre : glissez des éléments depuis la palette à gauche."
+  },
+  "tour": {
+    "next": "Suivant",
+    "previous": "Retour",
+    "finish": "Terminer",
+    "progress": "__current__ sur __total__",
+    "welcome": {
+      "title": "Bienvenue dans LUMOS",
+      "text": "LUMOS simule le trajet de la lumière dans un instrument : d'une source, à travers des éléments optiques, jusqu'à un détecteur. Nous avons ouvert une première simulation pour vous."
+    },
+    "palette": {
+      "title": "Les éléments",
+      "text": "Tous les éléments de la bibliothèque sont ici, par catégorie : sources, télescopes, optique, détecteurs, traitement… Glissez-en un sur le canevas, ou cliquez dessus."
+    },
+    "canvas": {
+      "title": "Le système optique",
+      "text": "Les blocs sont reliés par des fils : la lumière va de gauche à droite. Glissez d'une sortie (à droite d'un bloc) vers une entrée (à gauche) pour relier ; la couleur d'un port indique le type de lumière transporté."
+    },
+    "block": {
+      "title": "Un bloc",
+      "text": "Chaque bloc affiche son nom, son type et quelques valeurs. Cliquez dessus pour le sélectionner."
+    },
+    "inspector": {
+      "title": "Ses paramètres",
+      "text": "L'inspecteur affiche les paramètres du bloc sélectionné, avec leurs unités : tapez une valeur (par ex. 3 mm) puis Entrée. Ctrl+Z annule toute modification."
+    },
+    "run": {
+      "title": "Lancer la simulation",
+      "text": "« Lancer » calcule les sorties du contexte. Appuyez sur Suivant : nous le lançons pour vous (Ctrl+Entrée aussi)."
+    },
+    "results": {
+      "title": "Les résultats",
+      "text": "Chaque sortie s'affiche avec sa figure et ses statistiques, avec leurs unités. Téléchargez la figure, les données ou le signal complet."
+    },
+    "inspect": {
+      "title": "Regardez partout",
+      "text": "Cliquez sur le nom de n'importe quelle sortie d'un bloc pour voir la lumière à cet endroit, sans tout relancer."
+    },
+    "files": {
+      "title": "Gardez votre travail",
+      "text": "Enregistrez le contexte dans un fichier .lumos, ouvrez-en un, ou obtenez le script Python équivalent."
+    },
+    "help": {
+      "title": "Aide",
+      "text": "Rejouez cette visite à tout moment, et appuyez sur ? pour les raccourcis clavier."
+    },
+    "done": {
+      "title": "À vous !",
+      "text": "Changez une valeur et relancez, ou ouvrez un autre préréglage. La documentation explique la physique de chaque élément."
+    }
   }
 }

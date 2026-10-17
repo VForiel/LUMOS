@@ -50,6 +50,8 @@ type State = {
   results: Record<string, PortSummary>;
   archive: boolean;
   ready: boolean;
+  /** First visit: the empty canvas welcomes with the presets and the tour. */
+  welcome: boolean;
 };
 
 type Actions = {
@@ -200,6 +202,7 @@ export const useStore = create<State & Actions>((set, get) => {
     results: {},
     archive: storage()?.getItem("lumos.archive") === "1",
     ready: false,
+    welcome: false,
 
     async start() {
       try {
@@ -239,7 +242,7 @@ export const useStore = create<State & Actions>((set, get) => {
         }
       }
       if (isEditable(get().info)) await get().newContext();
-      else set({ dialog: { kind: "presets" } });
+      set({ welcome: true });
     },
 
     async show(summary) {
@@ -267,6 +270,7 @@ export const useStore = create<State & Actions>((set, get) => {
     },
 
     async newContext() {
+      set({ welcome: false });
       try {
         await get().open(await api.createContext("untitled"));
       } catch (error) {
