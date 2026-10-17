@@ -137,6 +137,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   shows, arrays (`"[1, 2] nm"`) and grids included, are accepted back by `set_param`.
 - `lumos mcp --transport http`: the MCP server over streamable HTTP (`lumos.mcp.create_http_app` gives the
   ASGI application for the web instance); local only unless `--allow-remote`, never with the operation.
+- Guide "AI assistant": setting up Claude Code, Claude Desktop and other MCP clients, example conversations,
+  reference of the tools, resources and prompts, safety; the server is tested against the MCP specification
+  with a raw JSON-RPC client.
 - The journal of a context records each run (`kind: "run"`: outputs and duration).
 
 ### Changed
@@ -150,6 +153,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Fixed
 
+- `explain_sampling` reports the propagation method forced by an element (it reported the planner's choice).
 - `Crop` centred on the origin by default fails no more on images with axes in lengths or angles.
 - Random streams of stochastic elements inside groups are keyed by their path `group.child`.
 
