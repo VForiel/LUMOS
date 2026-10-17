@@ -155,3 +155,9 @@ def test_the_catalogue_notebook_exists():
     """Step P9.9: notebook of targets from catalogues, with its recorded catalogue answers."""
     assert "06_targets_from_catalogs" in [path.stem for path in NOTEBOOKS]
     assert any(CATALOG_CACHE.glob("*.json"))
+
+
+def test_the_symbolic_notebook_exists():
+    """Step P10.7: notebook of symbolic optics, with its preset of a Gaussian beam kept symbolic."""
+    assert "07_symbolic_optics" in [path.stem for path in NOTEBOOKS]
+    assert (EXAMPLES / "presets" / "symbolic_focus.lumos").is_file()
