@@ -65,7 +65,8 @@ def test_stage_moves_with_the_predicted_duration(served):
     assert stage.position.to_value(u.mm) == pytest.approx(20, abs=1e-3)
     entry = ctx.journal.entries("action")[-1]
     predicted = 20 / 50 + 50 / 500
-    assert entry.predicted == pytest.approx(predicted, rel=1e-9)
+    # the move starts from the encoder reading after homing (noise of 10 nm, i.e. 2e-7 s at 50 mm/s)
+    assert entry.predicted == pytest.approx(predicted, abs=1e-6)
     assert entry.measured == pytest.approx(predicted, abs=0.06)  # polling period and latency
     assert emulator.velocity == pytest.approx(50)  # the driver sent the velocity of the element
 
