@@ -77,12 +77,15 @@ class FilterCurve:
         Transmission (dimensionless) at each wavelength.
     source
         Provider of the curve.
+    zero_point
+        Flux density of magnitude 0 in the photometric system of the filter, if known.
     """
 
     name: str
     wavelengths: u.Quantity
     transmission: np.ndarray
     source: str = ""
+    zero_point: u.Quantity | None = None
 
     def at(self, wavelength: u.Quantity) -> np.ndarray:
         """Return the transmission interpolated at ``wavelength`` (zero outside the curve)."""
