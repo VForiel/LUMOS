@@ -20,23 +20,18 @@ Le SDK MCP installé est la version 2 (`MCPServer`) : l'extra `mcp` demande dés
 
 ## Tâches que je ne peux pas faire moi-même
 
-- [ ] **Critère d'acceptation v0.6** : depuis Claude Code, construire, exécuter et analyser le préréglage
-  coronographe en langage naturel. Les tests le vérifient avec un client MCP scripté, mais pas avec Claude Code
-  lui-même. Pour l'essayer : `claude mcp add lumos -- D:\LUMOS\.venv\Scripts\lumos.exe mcp`, puis demander
+- [ ] **Connexion de `gh`** : GitHub CLI est installé (winget) mais doit être connecté une fois, de façon
+  interactive : `gh auth login` dans un nouveau terminal. Ensuite je pourrai suivre la CI.
+- [ ] **Critère d'acceptation v0.6** : la commande `claude` est maintenant installée (winget
+  `Anthropic.ClaudeCode`, dans un nouveau terminal). Pour valider :
+  `claude mcp add lumos -- D:\LUMOS\.venv\Scripts\lumos.exe mcp`, puis dans `claude` :
   « Charge le préréglage coronographe de LUMOS et donne-moi le contraste brut entre 3 et 4 λ/D ».
-- [ ] **Secret `ANTHROPIC_API_KEY`** dans les paramètres du dépôt GitHub, pour que le workflow hebdomadaire
-  « MCP evaluation » fasse résoudre les scénarios par Claude (sans lui, il ne lance que les solutions scriptées).
-- [ ] **Nouveau PC** : `gh` (GitHub CLI) n'est pas installé, je n'ai donc pas pu vérifier l'état de la CI. Le
-  `.venv` est recréé (Python 3.13, extras dev, docs, jax, catalogs, hardware, web, mcp, validation, hdf5 ;
-  `anthropic` en plus pour l'évaluation) ; pas de GPU, les tests GPU sont désélectionnés comme avant.
-- [ ] **CI à surveiller** : `pydantic` n'était pas déclaré alors que `lumos.service` l'utilise (corrigé) ; la CI
-  installe maintenant l'extra `mcp`. Pyright 1.1.414 signalait des erreurs dans des tests existants : j'ai assoupli
-  trois règles pour `tests/` seulement (commit `build:`).
+  Optionnel, même principe automatisé (consomme un peu de ton forfait) : `python tools/mcp_eval.py --claude-code`.
 
-## Choix techniques à valider
+## Décisions du 17/10 (2e série)
 
-- **Traductions françaises** : les nouvelles pages (`docs/assistant/*`) ne sont pas encore traduites, comme les
-  guides du matériel avant elles. Je propose de tout traduire en P15 (« docs EN/FR complètes »).
-- **HTTP sans authentification** : `lumos mcp --transport http` n'écoute que sur la machine locale, sauf
-  `--allow-remote`, et refuse toujours l'opération du matériel aux clients distants, jusqu'à l'authentification
-  de P14.
+- Pas de clé API Claude : l'évaluation hebdomadaire est supprimée ; les scénarios tournent à chaque CI avec
+  leurs solutions scriptées (gratuit) et, à la demande, avec Claude Code et ton abonnement (ADR-0017 amendé).
+- Traductions françaises des nouvelles pages : en P15.
+- HTTP local uniquement sans authentification jusqu'à P14 : validé.
+- Pyright assoupli pour `tests/` seulement : n'affecte ni le code de la bibliothèque ni ses vérifications.
