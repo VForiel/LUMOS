@@ -16,7 +16,7 @@ import lumos.io
 from lumos import Context
 from lumos.core.element import Element
 from lumos.core.port import Output, PortCompatibilityError
-from lumos.core.registry import UnknownTypeError
+from lumos.core.registry import UnknownTypeError, register
 from lumos.fields import DataProduct, Wavefront
 from lumos.processing.script import script
 
@@ -41,6 +41,7 @@ def split(frame):
     }
 
 
+@register("testlab.scripts.Frames")
 class Frames(Element):
     out = Output(DataProduct)
 
