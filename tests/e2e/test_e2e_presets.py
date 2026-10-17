@@ -38,17 +38,24 @@ def test_the_gallery_opens_from_the_toolbar(page):
 
 
 def tour(page):
+    """Press Next until the tour ends; return the titles of its steps."""
     popover = page.locator(".driver-popover")
     expect(popover).to_be_visible()
     titles = []
     for _ in range(30):
-        titles.append(popover.locator(".driver-popover-title").inner_text())
-        button = popover.locator(".driver-popover-next-btn")
-        if not button.is_visible():
-            break
-        button.click()
-        page.wait_for_timeout(250)
-        if not popover.is_visible():
+        title = popover.locator(".driver-popover-title").inner_text()
+        titles.append(title)
+        popover.locator(".driver-popover-next-btn").click()
+        # the next step (or the end of the tour) may take a run: wait for one of them, not a fixed delay
+        page.wait_for_function(
+            """(previous) => {
+                const current = document.querySelector('.driver-popover-title');
+                return !current || current.textContent !== previous;
+            }""",
+            arg=title,
+            timeout=60_000,
+        )
+        if page.locator(".driver-popover").count() == 0:
             break
     return titles
 
