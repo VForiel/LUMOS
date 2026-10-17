@@ -14,7 +14,7 @@ import tomllib
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, ValidationError, model_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from lumos.service.models import ServiceConfig
 
@@ -84,7 +84,8 @@ class WebConfig(BaseModel):
     tls_keyfile: str | None = Field(default=None, description="private key (PEM) of the certificate")
     users_file: str | None = Field(default=None, description="TOML file of the users (lumos users add)")
     anonymous_role: Role | None = Field(
-        default="operator", description="role of visitors who did not log in (None: they must log in)"
+        default="operator",
+        description='role of visitors who did not log in (None or "none": they must log in)',
     )
     session_idle_minutes: float = Field(
         default=12 * 60, gt=0, description="sessions expire after this idle time"
@@ -99,6 +100,11 @@ class WebConfig(BaseModel):
     audit_log: str | None = Field(default=None, description="JSON-lines file of the security events")
     assistant: bool = Field(default=True, description="offer the assistant panel (MCP over HTTP)")
     service: ServiceConfig = Field(default_factory=ServiceConfig)
+
+    @field_validator("anonymous_role", mode="before")
+    @classmethod
+    def _no_role(cls, value: Any) -> Any:
+        return None if value == "none" else value  # TOML has no null: "none" requires a login
 
     @model_validator(mode="after")
     def _profile_defaults(self) -> WebConfig:
