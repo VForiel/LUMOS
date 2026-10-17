@@ -46,8 +46,12 @@ class Scenario:
 
     Attributes
     ----------
-    name, use_case, title
-        Identifier, use case of the requirements (``"UC1"``...) and short title.
+    name
+        Identifier of the scenario.
+    use_case
+        Use case of the requirements (``"UC1"``...).
+    title
+        Short title.
     task
         What the assistant is asked, ending with the keys of the JSON answer.
     expected
