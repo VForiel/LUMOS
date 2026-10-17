@@ -188,6 +188,21 @@ class SymbolicField(OpticalSignal):
 
         return to_wavecube(self, grid, wavelengths, **options)
 
+    # --- Serialisation ------------------------------------------------------------------------------
+
+    def to_json(self) -> dict[str, Any]:
+        """Return the JSON form of the field (expression tree, see :mod:`lumos.symbolic.serialize`)."""
+        from lumos.symbolic.serialize import field_to_json
+
+        return field_to_json(self)
+
+    @classmethod
+    def from_json(cls, data: Mapping[str, Any]) -> SymbolicField:
+        """Return the field of a JSON form written by :meth:`to_json` (no code is evaluated)."""
+        from lumos.symbolic.serialize import field_from_json
+
+        return field_from_json(dict(data))
+
     # --- Rendering ----------------------------------------------------------------------------------
 
     def latex(self) -> str:

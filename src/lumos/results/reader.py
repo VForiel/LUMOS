@@ -61,7 +61,17 @@ def _signal_classes() -> dict[str, Any]:
     from lumos.fields import IncoherentBundle, ModalField, RadianceField, SourceList, Wavecube, Wavefront
 
     classes = (Wavefront, Wavecube, IncoherentBundle, RadianceField, ModalField, SourceList)
-    return {cls.__name__: cls for cls in classes}
+    known: dict[str, Any] = {cls.__name__: cls for cls in classes}
+    known["SymbolicField"] = _SymbolicFieldReader  # imports SymPy only for archives holding one
+    return known
+
+
+class _SymbolicFieldReader:
+    @staticmethod
+    def from_json(data: Any) -> Any:
+        from lumos.symbolic.serialize import field_from_json
+
+        return field_from_json(data)
 
 
 def _read_npz(path: Path) -> Any:

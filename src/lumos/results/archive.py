@@ -65,6 +65,7 @@ SIGNAL_CLASSES: tuple[str, ...] = (
     "RadianceField",
     "ModalField",
     "SourceList",
+    "SymbolicField",
 )
 
 
