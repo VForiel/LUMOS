@@ -36,6 +36,7 @@ dependencies = [
     "array-api-compat>=1.9",
     "jsonschema>=4.23",
     "psutil>=5.9",
+    "pydantic>=2.7",  # typed messages of the service layer (lumos.service)
 ]
 
 [project.optional-dependencies]
