@@ -133,21 +133,22 @@ def associate(
 
     assignments = dict(assignments or {})
     available = list(devices)
-    by_serial = {device.serial: device for device in available}
     chosen: dict[str, DeviceInfo] = {}
     pending: dict[str, list[str]] = {}
     elements = {path: element for path, element in ctx.walk() if _model(element)}
     for path, element in elements.items():
+        model = str(_model(element))
         if path in assignments:
             serial = assignments[path]
-            if serial not in by_serial:
-                raise DriverError(f"{path}: no device with the serial number {serial!r} was discovered")
-            chosen[path] = by_serial[serial]
+            matches = [d for d in available if d.model == model and d.serial == serial]
+            if not matches:
+                raise DriverError(f"{path}: no {model} with the serial number {serial!r} was discovered")
+            chosen[path] = matches[0]
         elif element.driver is None:
-            pending.setdefault(str(_model(element)), []).append(path)
-    used = {device.serial for device in chosen.values()}
+            pending.setdefault(model, []).append(path)
+    used = {device.url for device in chosen.values()}
     for model, paths in pending.items():
-        candidates = [d for d in available if d.model == model and d.serial not in used]
+        candidates = [d for d in available if d.model == model and d.url not in used]
         if not candidates:
             raise DriverError(f"no {model} device was discovered for {', '.join(paths)}")
         if len(paths) > 1 or len(candidates) > 1:
@@ -157,7 +158,7 @@ def associate(
                 f"give assignments={{path: serial}}"
             )
         chosen[paths[0]] = candidates[0]
-        used.add(candidates[0].serial)
+        used.add(candidates[0].url)
     for path, device in chosen.items():
         driver = driver_for(device.model)(device.url)  # type: ignore[call-arg]
         elements[path].driver = driver
