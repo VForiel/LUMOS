@@ -253,3 +253,20 @@ def test_the_name_and_description_of_a_context(service, session):
     assert meta["name"] == "Relay bench"
     assert meta["description"] == "A 4f relay."
     assert service.undo(session, ctx).name == "bench"
+
+
+def test_placing_a_new_block_is_part_of_its_addition(service, session):
+    ctx = service.create_context(session).id
+    service.add_element(session, ctx, LENS, name="lens")
+    service.update_ui(session, ctx, {"positions": {"lens": [100, 50]}}, record=False)
+    summary = service.undo(session, ctx)  # undoes the addition, not the placement
+    assert top(summary) == []
+    assert not summary.can_undo
+
+
+def test_the_summary_describes_the_inside_of_groups(service, session):
+    ctx = bench(service, session)
+    summary = service.group_elements(session, ctx, ["lens", "gap"], name="relay")
+    relay = summary.groups["relay"]
+    assert [c.model_dump() for c in relay.connections] == [{"source": "lens.out", "target": "gap.in"}]
+    assert relay.exposed == {"in": "lens.in", "out": "gap.out"}
