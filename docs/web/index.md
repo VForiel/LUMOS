@@ -15,5 +15,6 @@ The interface opens at <http://localhost:8000>. It only listens on your own mach
 ```{toctree}
 :maxdepth: 1
 
+accounts
 api
 ```

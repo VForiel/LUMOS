@@ -151,6 +151,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   layer — JSON API under `/api` (OpenAPI page at `/api/docs`), one service session per browser behind an
   HttpOnly cookie, runs and journals pushed over the WebSocket `/api/ws`, `localhost` by default with checks
   of the host name and of the origin of WebSockets; `Service.default_outputs`, `list_jobs`, `journal_since`.
+- Authentication and authorisation of the web instance (ADR-0019): users file with Argon2id password hashes
+  and SSH public keys (`lumos users add/remove/list`), login with a password or by signing a single-use
+  challenge with `ssh-keygen -Y sign -n lumos` (`lumos login`, bearer tokens), roles viewer, simulator and
+  operator on every route, sessions renewed at login and expiring, rate limits, audit journal, HTTPS required
+  to log in or operate outside the local machine; routes of the operation (discovery, association, confirmed
+  actions, emergency stop).
 
 ### Changed
 

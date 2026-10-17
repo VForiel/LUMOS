@@ -359,4 +359,13 @@
 
 .. automodule:: lumos.web.config
    :members:
+
+.. automodule:: lumos.web.auth
+   :members: ROLES, User, hash_password, verify_password, load_users, save_users, verify_ssh_signature, role_allows
+
+.. automodule:: lumos.web.login
+   :members:
+
+.. automodule:: lumos.web.security
+   :members:
 ```
