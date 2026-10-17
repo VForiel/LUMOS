@@ -287,7 +287,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 14 — Interface web
 
-- [ ] **P14.1 Backend HTTP** — adaptateur FastAPI de la couche de service, WebSocket, liaison `localhost` par défaut.
+- [x] **P14.1 Backend HTTP** — adaptateur FastAPI de la couche de service, WebSocket, liaison `localhost` par défaut.
 - [ ] **P14.2 Authentification et autorisation** — mot de passe (Argon2id), clé SSH (défi signé via `ssh-keygen -Y sign` ou `lumos login`), sessions expirantes, rôles, limitation de débit, journal d'audit, TLS obligatoire dès que l'opération est activée hors local. ADR-0008 « Modèle de sécurité de l'instance publique ».
 - [ ] **P14.3 Configuration de déploiement** — profils `local` et `public` ; opération interdite par défaut en `public` ; quotas de calcul.
 - [ ] **P14.4 Frontend : socle** — Vite, React, `@xyflow/react`, Tailwind, i18next (EN/FR) ; palette et nœuds générés depuis les schémas.

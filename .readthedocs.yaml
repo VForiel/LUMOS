@@ -18,3 +18,4 @@ python:
       extra_requirements:
         - docs
         - mcp
+        - web

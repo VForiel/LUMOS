@@ -147,6 +147,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Tool `radial_profile` (azimuthal mean of the intensity of a field) and the 1/e² beam radius in the summaries
   of fields.
 - The journal of a context records each run (`kind: "run"`: outputs and duration).
+- `lumos.web` and `lumos web` (ADR-0018): HTTP backend of the web interface, a FastAPI adapter of the service
+  layer — JSON API under `/api` (OpenAPI page at `/api/docs`), one service session per browser behind an
+  HttpOnly cookie, runs and journals pushed over the WebSocket `/api/ws`, `localhost` by default with checks
+  of the host name and of the origin of WebSockets; `Service.default_outputs`, `list_jobs`, `journal_since`.
 
 ### Changed
 
@@ -159,6 +163,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Fixed
 
+- The JSON Schema of an element gives the default of a quantity setting (`Crop.x`...) as `{value, unit}`.
+- `search_docs` no longer fails on a page matched by its title only.
 - `explain_sampling` reports the propagation method forced by an element (it reported the planner's choice).
 - `Crop` centred on the origin by default fails no more on images with axes in lengths or angles.
 - Random streams of stochastic elements inside groups are keyed by their path `group.child`.

@@ -349,3 +349,14 @@
 .. automodule:: lumos.mcp.evaluation
    :members: Scenario, EvaluationResult, SCENARIOS, parse_answer, run_reference, claude_code_command, run_with_claude_code
 ```
+
+## Web backend
+
+```{eval-rst}
+.. automodule:: lumos.web
+
+.. autofunction:: lumos.web.create_app
+
+.. automodule:: lumos.web.config
+   :members:
+```
