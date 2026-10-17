@@ -160,3 +160,61 @@ def test_reconstructions_report_their_error():
         to_wavefront(gaussian, grid), waist=0.2e-3 / math.sqrt(2) * math.sqrt(2) * u.m, max_order=0
     )
     assert exact.residual < 1e-8
+
+
+# --- Laguerre-Gauss and LP modes (REQ-SYM-3, completed on 17/10/2026) --------------------------------------
+# Laguerre-Gauss modes from ``scipy.special.genlaguerre`` with the textbook normalisation
+# sqrt(2 p! / (π (p + |l|)!)) / w (Siegman, Lasers, §16.5); LP modes of a step-index fibre from
+# ``lumos.physics.fibers`` (validated against Gloge 1971 in step P6.7), normalised to unit power on the grid.
+
+
+def lg(p, ell, w, xx, yy):
+    from scipy.special import genlaguerre
+
+    rr2 = xx**2 + yy**2
+    norm = math.sqrt(2 * math.factorial(p) / (math.pi * math.factorial(p + abs(ell)))) / w
+    radial = (np.sqrt(2 * rr2) / w) ** abs(ell) * genlaguerre(p, abs(ell))(2 * rr2 / w**2)
+    return norm * radial * np.exp(-rr2 / w**2) * np.exp(1j * ell * np.arctan2(yy, xx))
+
+
+def test_laguerre_gauss_projection():
+    from lumos.symbolic.reconstruct import project_laguerre_gauss
+
+    grid = Grid(128, dx=20 * u.um)
+    xx, yy = (np.asarray(c) for c in grid.coords(backend="numpy"))
+    w = 0.3e-3
+    data = lg(0, 0, w, xx, yy) + 0.5 * lg(0, 1, w, xx, yy) - 0.25j * lg(1, -2, w, xx, yy)
+    result = project_laguerre_gauss(Wavefront(data, grid, LAM * u.m), waist=w * u.m, max_order=4)
+    assert result.method == "laguerre-gauss"
+    assert result.coefficients[(0, 0)] == pytest.approx(1.0, abs=1e-8)
+    assert result.coefficients[(0, 1)] == pytest.approx(0.5, abs=1e-8)
+    assert result.coefficients[(1, -2)] == pytest.approx(-0.25j, abs=1e-8)
+    assert abs(result.coefficients[(0, -1)]) < 1e-8
+    assert result.residual < 1e-8
+    values = np.asarray(to_wavefront(result.field, grid).field)
+    np.testing.assert_allclose(values, data, atol=1e-6 * np.abs(data).max())
+
+
+def test_lp_mode_projection():
+    from lumos.physics.fibers import lp_modes, lp_radial
+    from lumos.symbolic.reconstruct import project_lp
+
+    grid = Grid(96, dx=0.25 * u.um)
+    xx, yy = (np.asarray(c) for c in grid.coords(backend="numpy"))
+    core, v = 4e-6, 3.5
+    modes = {(m.ell, m.m): m for m in lp_modes(v)}
+    rho, phi = np.hypot(xx, yy) / core, np.arctan2(yy, xx)
+    area = grid.dx_si * grid.dy_si
+
+    def unit(field):
+        return field / math.sqrt(np.sum(np.abs(field) ** 2) * area)
+
+    lp01 = unit(lp_radial(modes[(0, 1)], rho))
+    lp11c = unit(lp_radial(modes[(1, 1)], rho) * np.cos(phi))
+    data = (0.8 * lp01 + 0.6j * lp11c).astype(complex)
+    result = project_lp(Wavefront(data, grid, LAM * u.m), core_radius=core * u.m, v_number=v)
+    assert result.method == "lp"
+    assert result.coefficients[("LP01", "cos")] == pytest.approx(0.8, abs=1e-8)
+    assert result.coefficients[("LP11", "cos")] == pytest.approx(0.6j, abs=1e-8)
+    assert abs(result.coefficients[("LP11", "sin")]) < 1e-8
+    assert result.residual < 1e-8
