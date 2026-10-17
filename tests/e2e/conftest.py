@@ -95,3 +95,11 @@ def errors(page):
     page.on("console", lambda message: found.append(message.text) if message.type == "error" else None)
     page.on("pageerror", lambda error: found.append(str(error)))
     return found
+
+
+@pytest.fixture
+def public_server(tmp_path):
+    """An instance with the public profile (anonymous simulators, quotas, no operation)."""
+    process, url = start_server(tmp_path, "--profile", "public", "--host", "127.0.0.1")
+    yield url
+    stop_server(process)
