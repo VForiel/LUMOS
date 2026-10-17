@@ -115,3 +115,23 @@ def test_a_directory_without_metadata_is_not_an_archive(tmp_path):
 def test_archive_can_be_given_as_an_archive_object(tmp_path):
     archive = new_archive(bench(), root=tmp_path)
     assert lumos.load_archive(archive).metadata["seed"] == 3
+
+
+def test_source_lists_are_archived_and_read_back(tmp_path):
+    """Outputs of sources at infinity (SourceList) are saved in data/ and read back (REQ-RES-5)."""
+    from lumos.elements.sources import PointSource
+    from lumos.fields import SourceList
+
+    ctx = Context(seed=1)
+    ctx.observation.band = (1 * u.um, 2 * u.um)
+    ctx.observation.n_wavelengths = 3
+    ctx.add(PointSource(name="star", flux_density=2 * u.Jy, theta_x=1 * u.mas))
+    result = ctx.run(["star.out"], archive="sources", archive_root=tmp_path)
+    loaded = lumos.load_archive(result.archive.path)
+    sources = loaded.data["star.out"]
+    assert isinstance(sources, SourceList)
+    original = result["star.out"]
+    np.testing.assert_allclose(sources.flux.value, original.flux.value, rtol=1e-12)
+    np.testing.assert_allclose(sources.theta_x.to_value(u.rad), original.theta_x.to_value(u.rad))
+    np.testing.assert_allclose(sources.wavelengths.to_value(u.m), original.wavelengths.to_value(u.m))
+    assert sources.names == original.names
