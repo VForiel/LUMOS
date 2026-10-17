@@ -7,7 +7,8 @@
   :mod:`~lumos.catalogs.vizier`, :mod:`~lumos.catalogs.calspec`, :mod:`~lumos.catalogs.archives`,
   :mod:`~lumos.catalogs.solar_system`, :mod:`~lumos.catalogs.svo`, :mod:`~lumos.catalogs.models`,
   :mod:`~lumos.catalogs.surveys`;
-- :mod:`~lumos.catalogs.sed`: fusion and completion of spectral energy distributions.
+- :mod:`~lumos.catalogs.sed`: fusion and completion of spectral energy distributions;
+- :func:`resolve`: from a name to a typed record.
 
 Importing this package registers the providers of LUMOS.
 """
@@ -32,6 +33,7 @@ from lumos.catalogs import (
 )
 from lumos.catalogs.http import CatalogError, OfflineError, settings
 from lumos.catalogs.provider import Provider, providers, register_provider
+from lumos.catalogs.resolve import resolve
 
 __all__ = [
     "CatalogError",
@@ -47,6 +49,7 @@ __all__ = [
     "providers",
     "records",
     "register_provider",
+    "resolve",
     "sed",
     "settings",
     "simbad",

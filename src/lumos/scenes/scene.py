@@ -155,6 +155,46 @@ class Scene(ElementGroup):
         self.expose("sources", combiner.port("sources"))
         self.expose("radiance", combiner.port("radiance"))
 
+    @classmethod
+    def from_catalog(cls, name: str, *, planets: bool = True, **settings: Any) -> Scene:
+        """Create the celestial scene of the star ``name`` and of its known planets (REQ-CAT-6).
+
+        The pointing comes from SIMBAD. When the NASA Exoplanet Archive knows planets around ``name``, the
+        star takes the parameters of the archive (temperature, radius, distance) and each planet becomes a
+        :class:`~lumos.elements.sources.Planet`; otherwise the star comes from
+        :meth:`~lumos.elements.sources.Star.from_catalog`. ``settings`` are passed to the scene (grid...).
+        """
+        from lumos.catalogs.exoplanets import NasaExoplanetArchive
+        from lumos.catalogs.http import CatalogError
+        from lumos.catalogs.simbad import Simbad
+        from lumos.elements.sources import Planet, Star
+
+        record = Simbad().star(name)
+        scene = cls(name=name, frame="celestial", ra=record.ra, dec=record.dec, **settings)
+        system = []
+        if planets:
+            try:
+                system = NasaExoplanetArchive().system(name)
+            except CatalogError:
+                system = []
+        if system:
+            host = system[0]
+            values: dict[str, Any] = {}
+            for key, field in (
+                ("host_teff", "temperature"),
+                ("host_radius", "radius"),
+                ("host_distance", "distance"),
+            ):
+                if key in host:
+                    values[field] = host[key].value
+            star = Star(name=name, **values) if len(values) == 3 else Star.from_catalog(name, record=record)
+        else:
+            star = Star.from_catalog(name, record=record)
+        scene.add(star)
+        for planet in system:
+            scene.add(Planet.from_catalog(planet.name, record=planet))
+        return scene
+
     @property
     def combiner(self) -> SceneCombiner:
         """The child holding the frame and grid of the scene."""

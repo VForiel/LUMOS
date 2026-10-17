@@ -40,7 +40,7 @@ from lumos.physics.orbits import kepler_position_3d, orbital_period_si
 from lumos.physics.photometry import BANDS, lambert_phase, photon_flux_from_fnu_si
 from lumos.units import to_si
 
-__all__ = ["GaussianLaser", "IncoherentLamp", "PlanetarySystem", "PointSource", "Star"]
+__all__ = ["GaussianLaser", "IncoherentLamp", "Planet", "PlanetarySystem", "PointSource", "Star"]
 
 _H = 6.62607015e-34
 _C = 299_792_458.0
@@ -125,10 +125,59 @@ class Star(Element):
         )
         return {"out": _sources(values.theta_x, values.theta_y, lam, bw, flux)}
 
+    @classmethod
+    def from_catalog(cls, name: str, *, record: Any = None, **values: Any) -> Star:
+        """Create the star ``name`` from SIMBAD (or from a star ``record``).
 
-@register("lumos.sources.PlanetarySystem")
-class PlanetarySystem(Element):
-    """A star and one planet on a Keplerian orbit; the planet moves with the context clock."""
+        The temperature is the catalogue effective temperature; the flux is scaled to the V magnitude when it
+        is known (else to the radius and distance). The distance comes from the parallax. ``values`` override
+        the catalogue.
+        """
+        from lumos.catalogs.simbad import Simbad
+
+        record = record if record is not None else Simbad().star(name)
+        found: dict[str, Any] = {}
+        if "teff" in record:
+            found["temperature"] = record.teff
+        if "radius" in record:
+            found["radius"] = record.radius
+        if "distance" in record or "parallax" in record:
+            found["distance"] = record.distance_estimate().value
+        magnitudes = record.magnitudes()
+        if "V" in magnitudes and "radius" not in record:
+            found["band"] = "V"
+            found["magnitude"] = float(magnitudes["V"].value.to_value(u.mag))
+        return cls(name=name, **{**found, **values})
+
+
+def _star_and_planet(values: Any, lam: np.ndarray) -> tuple[np.ndarray, np.ndarray, list[float], list[float]]:
+    """Photon fluxes of the star and of its planet, and the directions of both, at the current time."""
+    star = _stellar_photon_flux(values.star_temperature, values.star_radius, values.distance, "", 0.0, lam)
+    period = orbital_period_si(values.semi_major_axis, values.star_mass)
+    x, y, z = kepler_position_3d(
+        values.time,
+        period=period,
+        a=values.semi_major_axis,
+        e=values.eccentricity,
+        inclination=values.inclination,
+        argument_periapsis=values.argument_periapsis,
+        longitude_node=values.longitude_node,
+        time_periapsis=-values.mean_anomaly / (2 * math.pi) * period,
+    )
+    r = math.sqrt(x * x + y * y + z * z)
+    phase = math.acos(max(-1.0, min(1.0, -z / r)))
+    reflected = star * values.albedo * float(lambert_phase(phase * u.rad)) * (values.planet_radius / r) ** 2
+    t_eq = values.star_temperature * math.sqrt(values.star_radius / (2 * r)) * (1 - values.albedo) ** 0.25
+    thermal = _photon(
+        math.pi * planck_lambda_si(lam, t_eq) * (values.planet_radius / values.distance) ** 2, lam
+    )
+    tx = [values.theta_x, values.theta_x + x / values.distance]
+    ty = [values.theta_y, values.theta_y + y / values.distance]
+    return star, reflected + thermal, tx, ty
+
+
+class _StarAndOrbit(Element):
+    """Fields shared by :class:`PlanetarySystem` and :class:`Planet`: a star and a Keplerian orbit."""
 
     observation_dependent = True
     time_dependent = True
@@ -148,37 +197,64 @@ class PlanetarySystem(Element):
     theta_y = Param(unit=u.rad, default=0 * u.rad, doc="direction of the star along y")
     out = Output(SourceList)
 
+
+@register("lumos.sources.PlanetarySystem")
+class PlanetarySystem(_StarAndOrbit):
+    """A star and one planet on a Keplerian orbit; the planet moves with the context clock."""
+
     @staticmethod
     def transfer(values: Any, inputs: Any) -> dict[str, Any]:
         """Return the star and the planet at the current time."""
         lam, bw = _channels(values)
-        star = _stellar_photon_flux(
-            values.star_temperature, values.star_radius, values.distance, "", 0.0, lam
-        )
-        period = orbital_period_si(values.semi_major_axis, values.star_mass)
-        x, y, z = kepler_position_3d(
-            values.time,
-            period=period,
-            a=values.semi_major_axis,
-            e=values.eccentricity,
-            inclination=values.inclination,
-            argument_periapsis=values.argument_periapsis,
-            longitude_node=values.longitude_node,
-            time_periapsis=-values.mean_anomaly / (2 * math.pi) * period,
-        )
-        r = math.sqrt(x * x + y * y + z * z)
-        phase = math.acos(max(-1.0, min(1.0, -z / r)))
-        reflected = (
-            star * values.albedo * float(lambert_phase(phase * u.rad)) * (values.planet_radius / r) ** 2
-        )
-        t_eq = values.star_temperature * math.sqrt(values.star_radius / (2 * r)) * (1 - values.albedo) ** 0.25
-        thermal = _photon(
-            math.pi * planck_lambda_si(lam, t_eq) * (values.planet_radius / values.distance) ** 2, lam
-        )
-        planet = reflected + thermal
-        tx = [values.theta_x, values.theta_x + x / values.distance]
-        ty = [values.theta_y, values.theta_y + y / values.distance]
+        star, planet, tx, ty = _star_and_planet(values, lam)
         return {"out": _sources(tx, ty, lam, bw, np.stack([star, planet]))}
+
+
+@register("lumos.sources.Planet")
+class Planet(_StarAndOrbit):
+    """A planet on a Keplerian orbit around its star (the star itself is not emitted).
+
+    Use it with a :class:`Star` for systems of several planets (:meth:`lumos.scenes.Scene.from_catalog`).
+    """
+
+    @staticmethod
+    def transfer(values: Any, inputs: Any) -> dict[str, Any]:
+        """Return the planet at the current time."""
+        lam, bw = _channels(values)
+        _, planet, tx, ty = _star_and_planet(values, lam)
+        return {"out": _sources(tx[1:], ty[1:], lam, bw, planet[None])}
+
+    @classmethod
+    def from_catalog(cls, name: str, *, record: Any = None, **values: Any) -> Planet:
+        """Create the planet ``name`` from the NASA Exoplanet Archive (or from an exoplanet ``record``).
+
+        Missing parameters keep their defaults; ``values`` override the catalogue.
+        """
+        from lumos.catalogs.exoplanets import NasaExoplanetArchive
+
+        record = record if record is not None else NasaExoplanetArchive().planet(name)
+        return cls(name=record.name, **{**_planet_values(record), **values})
+
+
+def _planet_values(record: Any) -> dict[str, Any]:
+    """Fields of :class:`Planet` from an :class:`~lumos.catalogs.records.ExoplanetRecord`."""
+    mapping = {
+        "host_teff": "star_temperature",
+        "host_radius": "star_radius",
+        "host_mass": "star_mass",
+        "host_distance": "distance",
+        "radius": "planet_radius",
+        "semi_major_axis": "semi_major_axis",
+        "eccentricity": "eccentricity",
+        "inclination": "inclination",
+        "argument_periastron": "argument_periapsis",
+    }
+    found: dict[str, Any] = {}
+    for key, field in mapping.items():
+        if key in record:
+            value = record[key].value
+            found[field] = float(value) if field == "eccentricity" else value
+    return found
 
 
 @register("lumos.sources.GaussianLaser")
