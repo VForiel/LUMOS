@@ -19,7 +19,7 @@ import itertools
 import logging
 import math
 import time
-from collections.abc import Iterable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Literal, cast
@@ -163,6 +163,7 @@ class Context:
         self._parallel: list[list[float]] = []
         self._overrides: dict[int, str] = {}
         self._twin_states: dict[int, dict[str, Any]] = {}
+        self._links: list[tuple[str, str, Any, Any, Any]] = []
         self.journal = Journal()
         self._origins: list[str] = ["python"]
         self.mode = mode
@@ -303,6 +304,7 @@ class Context:
             Directory of the archive (default: next to the executed script or notebook).
         """
         targets = [self.port(t) if isinstance(t, str) and "." in t else t for t in outputs]
+        self.apply_links()
         root = logging.getLogger("lumos")
         handler = _Capture(self.journal, self._entry)
         previous_level = root.level
@@ -316,12 +318,85 @@ class Context:
             else:
                 with use(self._backend):
                     result = self._graph.run(targets)
+            if self._mode == "operation":
+                self._measure(result)
         finally:
             root.removeHandler(handler)
             root.setLevel(previous_level)
         if archive:
             self._archive_run(result, archive, archive_root, time.perf_counter() - started)
         return result
+
+    # --- Digital twin ----------------------------------------------------------------------------
+
+    def link(
+        self,
+        source: str,
+        target: str,
+        *,
+        scale: Any = 1.0,
+        offset: Any = None,
+        function: Callable[[Any], Any] | None = None,
+    ) -> None:
+        """Make the field ``target`` follow the field ``source`` (paths ``"element.field"``).
+
+        ``target = offset + scale * source``, or ``function(source)``: a stage carrying a lens drives a
+        propagation distance, a phase controller drives phase shifters. Links are applied after every action
+        and before every run, so that the digital twin follows the bench.
+        """
+        self._parameter(source)
+        self._parameter(target)
+        self._links.append((source, target, scale, offset, function))
+        self.apply_links()
+
+    def apply_links(self) -> None:
+        """Copy the linked fields to their targets."""
+        for source, target, scale, offset, function in self._links:
+            owner, field = self._parameter(source)
+            value = getattr(owner, field)
+            value = function(value) if function is not None else value * scale
+            if offset is not None and function is None:
+                value = offset + value
+            element, name = self._parameter(target)
+            current = getattr(element, name)
+            try:
+                same = bool(np.all(current == value))
+            except (TypeError, ValueError, u.UnitsError):
+                same = False
+            if not same:
+                setattr(element, name, value)
+
+    def _measure(self, result: Result) -> None:
+        """Replace the outputs of measuring elements by their measurements (operation mode)."""
+        for key in list(result):
+            element = key.owner
+            driver = getattr(element, "driver", None)
+            if driver is None or not hasattr(driver, "acquire") or self.mode_of(element) != "operation":
+                continue
+            simulated = dict.__getitem__(result, key)
+            if self._twin:
+                self._feed(element, driver, simulated)
+            measured = driver.acquire()
+            result[key] = measured
+            if self._twin:
+                result.twin[key] = simulated
+                residual = _residual(measured, simulated)
+                if residual is not None:
+                    result.residuals[key] = residual
+
+    def _feed(self, element: Any, driver: Any, simulated: Any) -> None:
+        """Send the prediction of the twin to an emulated measuring device."""
+        hook = getattr(element, "twin_feed", None)
+        if hook is None or not hasattr(driver, "feed"):
+            return
+        inputs = self._graph._inputs(element, {})
+        data = hook(inputs, simulated)
+        if data is None:
+            return
+        try:
+            driver.feed(data)
+        except DriverError as error:  # a physical device does not accept simulation commands
+            logger.info("%s does not take the data of the twin: %s", self.path_of(element), error)
 
     def _archive_run(self, result: Result, archive: bool | str, root: Any, seconds: float) -> None:
         from lumos.results.archive import new_archive
@@ -516,6 +591,7 @@ class Context:
         entry.predicted = predicted
         if entry.mode == "simulation":
             result = spec.method(element, *args, **kwargs)
+            self.apply_links()
             self._log(entry, "%s.%s simulated (%.6g s)", path, spec.name, predicted)
             self._advance(predicted)
             return result
@@ -531,6 +607,7 @@ class Context:
         if self._twin:
             result = spec.method(element, *args, **kwargs)
             self._twin_states[id(element)] = dict(reply.state)
+            self.apply_links()
         else:
             result = reply.value
             for name, value in reply.state.items():
@@ -683,3 +760,18 @@ class Context:
         """Summarise the context."""
         name = f" {self.name!r}" if self.name else ""
         return f"<Context{name} mode={self._mode} elements={len(self)}>"
+
+
+def _residual(measured: Any, simulated: Any) -> Any:
+    """Measured minus simulated data, on the axes of the measurement (``None`` if not comparable)."""
+    from lumos.fields.dataproduct import DataProduct
+
+    if not (isinstance(measured, DataProduct) and isinstance(simulated, DataProduct)):
+        return None
+    if measured.data.size != simulated.data.size:
+        return None
+    try:
+        difference = measured.data - simulated.data.to(measured.unit).reshape(measured.shape)
+    except u.UnitsError:
+        return None
+    return DataProduct(cast(u.Quantity, difference), axes=measured.axes, meta={"residual": True})

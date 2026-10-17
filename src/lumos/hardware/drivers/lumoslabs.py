@@ -365,8 +365,11 @@ class CameraDriver(LumosLabsDriver):
         )
 
     def acquire(self) -> DataProduct:
-        """Take an exposure and return the image."""
+        """Take an exposure with the settings of the element (exposure, gain) and return the image."""
         self._require_connection()
+        element = self.element
+        if element is not None and hasattr(element, "exposure"):
+            self.configure(exposure=element.exposure, gain=float(element.gain.to_value(u.electron / u.adu)))
         self.do_expose()
         return self.frame()
 

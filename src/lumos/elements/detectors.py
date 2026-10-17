@@ -160,6 +160,14 @@ class Camera(Element):
     in_ = Input(OpticalSignal)
     out = Output(DataProduct)
 
+    def twin_feed(self, inputs: Any, simulated: Any) -> Any:
+        """Return the expected signal of each pixel in e⁻/s (without dark current), for an emulated camera."""
+        signal = inputs["in"]
+        values = self.values()
+        lams, weights, power, unit = _spectral_power(signal)
+        rates = _weighted(weights * _quantum_efficiency(values, lams), _photon_rates(lams, power, unit))
+        return np.asarray(rates, dtype=float) * u.electron / u.s
+
     @action(duration=lambda self: self.exposure)
     def expose(self) -> None:
         """Take an exposure: the clock advances by the exposure time and a new frame is drawn."""
@@ -253,6 +261,10 @@ class PowerMeter(Element):
 
     in_ = Input(OpticalSignal)
     out = Output(DataProduct)
+
+    def twin_feed(self, inputs: Any, simulated: Any) -> Any:
+        """Return the total simulated power, for an emulated power meter."""
+        return float(np.sum(simulated.data.to_value(u.W))) * u.W
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:

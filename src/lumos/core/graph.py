@@ -332,16 +332,37 @@ class Result(dict[PortRef, Any]):
     ----------
     archive
         The :class:`~lumos.results.RunArchive` written by ``ctx.run(..., archive=...)``, or ``None``.
+    twin
+        In operation with the digital twin, the simulated outputs of the measuring elements (the result
+        itself holds the measurements).
+    residuals
+        Measured minus simulated outputs, where both are comparable data products.
     """
 
     def __init__(self, graph: Graph) -> None:
         super().__init__()
         self._graph = graph
         self.archive: Any = None
+        self.twin = PortMap(graph)
+        self.residuals = PortMap(graph)
 
     def name_of(self, key: PortRef) -> str:
         """Return ``"id.port"`` for an output port of the graph."""
         return f"{self._graph.id_of(key.owner)}.{key.name}"
+
+    def __getitem__(self, key: Any) -> Any:
+        """Return the signal of an output port given as a reference or as ``"id.port"``."""
+        if isinstance(key, str):
+            key = self._graph.resolve(key)
+        return super().__getitem__(key)
+
+
+class PortMap(dict[PortRef, Any]):
+    """Signals by output port, also reachable by ``"id.port"``."""
+
+    def __init__(self, graph: Graph) -> None:
+        super().__init__()
+        self._graph = graph
 
     def __getitem__(self, key: Any) -> Any:
         """Return the signal of an output port given as a reference or as ``"id.port"``."""
