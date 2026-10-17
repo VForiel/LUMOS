@@ -240,6 +240,10 @@ class Context:
         self._graph.remove(element)
         element._lumos_container = None
 
+    def disconnect(self, source: PortRef, target: PortRef) -> None:
+        """Remove the connection ``source`` → ``target``."""
+        self._graph.disconnect(source, target)
+
     def connect(self, source: PortRef, target: PortRef) -> None:
         """Connect an output port to an input port (adding the target element if needed)."""
         if target.owner not in self._graph:
@@ -288,6 +292,7 @@ class Context:
         *,
         archive: bool | str = False,
         archive_root: Any = None,
+        progress: Callable[[int, int, str], None] | None = None,
     ) -> Result:
         """Compute the requested outputs (ports, elements or ``"id.port"`` strings), see :meth:`Graph.run`.
 
@@ -304,6 +309,8 @@ class Context:
             returned as ``result.archive``.
         archive_root
             Directory of the archive (default: next to the executed script or notebook).
+        progress
+            Called as ``progress(done, total, element_id)`` after each element.
         """
         targets = [self.port(t) if isinstance(t, str) and "." in t else t for t in outputs]
         self.apply_links()
@@ -316,10 +323,10 @@ class Context:
         started = time.perf_counter()
         try:
             if self._backend == "auto":
-                result = self._graph.run(targets)
+                result = self._graph.run(targets, progress=progress)
             else:
                 with use(self._backend):
-                    result = self._graph.run(targets)
+                    result = self._graph.run(targets, progress=progress)
             if self._mode == "operation":
                 self._measure(result)
         finally:

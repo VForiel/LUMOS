@@ -99,8 +99,12 @@ local_scheme = "no-local-version"
 [tool.hatch.build.targets.wheel]
 packages = ["src/lumos"]
 
+[tool.hatch.build.targets.wheel.force-include]
+# the presets shared by the notebooks, the web interface and the MCP server (lumos.service)
+"examples/presets" = "lumos/presets"
+
 [tool.hatch.build.targets.sdist]
-include = ["src/lumos", "tests", "LICENSE", "README.md", "CHANGELOG.md"]
+include = ["src/lumos", "tests", "examples/presets", "LICENSE", "README.md", "CHANGELOG.md"]
 
 # --- Lint and format ---------------------------------------------------------
 

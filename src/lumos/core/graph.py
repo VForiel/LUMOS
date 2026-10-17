@@ -13,7 +13,7 @@ or a connection, invalidates the cache of that element and of everything downstr
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from typing import Any
 
@@ -294,7 +294,13 @@ class Graph:
     def _compute(self, element: Any, feeds: Mapping[PortRef, Any]) -> Mapping[str, Any]:
         return element.apply(**self._inputs(element, feeds))
 
-    def run(self, targets: Iterable[Any], *, feeds: Mapping[PortRef, Any] | None = None) -> Result:
+    def run(
+        self,
+        targets: Iterable[Any],
+        *,
+        feeds: Mapping[PortRef, Any] | None = None,
+        progress: Callable[[int, int, str], None] | None = None,
+    ) -> Result:
         """Compute the requested outputs.
 
         Parameters
@@ -304,6 +310,8 @@ class Graph:
         feeds
             Signals given directly to unconnected input ports (used by groups for their exposed inputs).
             The caller invalidates the elements whose feeds changed.
+        progress
+            Called as ``progress(done, total, element_id)`` after each element (for long runs).
 
         Returns
         -------
@@ -312,9 +320,12 @@ class Graph:
         """
         resolved = [self.resolve(t) for t in targets]
         feeds = {} if feeds is None else feeds
-        for element in self.required(resolved):
+        required = self.required(resolved)
+        for index, element in enumerate(required, start=1):
             if id_(element) not in self._cache:
                 self._cache[id_(element)] = dict(self._compute(element, feeds))
+            if progress is not None:
+                progress(index, len(required), self.id_of(element))
         result = Result(self)
         for target in resolved:
             if isinstance(target, PortRef):
