@@ -33,6 +33,10 @@ call (elicitation, sampling) by results asking the client for input (`InputRequi
   `contexts/{id}` and `contexts/{id}/journal`, `archives` and `archives/{+path}` (relative to the archive
   directory; the SDK rejects `..` and absolute paths). **Prompts** guide four use cases: `design_instrument`,
   `estimate_detection`, `calibrate_bench`, `diagnose_simulation`.
+- **Responses** (P13.5): signals are answered with a short text summary (kind, shape, range and mean with
+  their unit, grid, wavelength) and a PNG image, runs with one line naming the job and the next tool; the
+  Pydantic model stays the structured content (`Annotated[CallToolResult, Model]`), without the figure bytes.
+  The values shown are accepted back as they are, and a quantity without unit is refused with an example.
 - Synchronous tools run in worker threads of the SDK; the service serialises the work of a session.
 - Groups are created in one call (`create_group`: elements, internal connections, exposed ports), added to the
   service as `Service.create_group`.

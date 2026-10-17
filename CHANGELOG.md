@@ -131,6 +131,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `device_status`, `stop_all`, and `discover_devices` and `associate_devices` once enabled; every action on
   real equipment is confirmed by the user through an MCP elicitation asked by the server; limits and the
   emergency stop are enforced by the server; actions are journaled with the origin `mcp`.
+- Responses for language models: `inspect_port` and `get_result` return a short summary with units and the
+  figure as an image; runs answer with one line; summaries of incoherent bundles (modes, power, grid).
+- The service always asks for the unit of a physical quantity (a bare number is refused); the values it
+  shows, arrays (`"[1, 2] nm"`) and grids included, are accepted back by `set_param`.
 - The journal of a context records each run (`kind: "run"`: outputs and duration).
 
 ### Changed

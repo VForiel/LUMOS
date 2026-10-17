@@ -333,7 +333,12 @@ class Service:
         for name, declared in cls.declared().items():
             value = getattr(element, name)
             unit = getattr(declared, "unit", None)
-            groups[declared.kind][name] = format_value(value, unit)
+            if declared.kind == "setting" and not isinstance(
+                value, u.Quantity | bool | int | float | str | None
+            ):
+                groups["setting"][name] = declared.encode(value)  # JSON form, accepted back by set_param
+            else:
+                groups[declared.kind][name] = format_value(value, unit)
         ports = element.instance_ports()
         if isinstance(element, ElementGroup):
             type_id = group_type_of(element) or GROUP_TYPE

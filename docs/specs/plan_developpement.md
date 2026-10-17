@@ -274,7 +274,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P13.2 Serveur MCP (stdio)** — outils de découverte, construction, vérification, exécution et résultats (REQ-MCP-2) ; commande `lumos mcp`.
 - [x] **P13.3 Ressources et prompts** — docs, schémas, préréglages, contexte courant, journaux ; prompts par cas d'usage.
 - [x] **P13.4 Outils d'opération** — désactivés par défaut ; confirmation humaine par *elicitation* ; bornes côté serveur ; traçabilité de l'origine MCP.
-- [ ] **P13.5 Réponses adaptées aux LLM** — résumés, unités, erreurs exploitables, figures renvoyées en image.
+- [x] **P13.5 Réponses adaptées aux LLM** — résumés, unités, erreurs exploitables, figures renvoyées en image.
 - [ ] **P13.6 Transport HTTP *streamable*** — prêt à être adossé à l'instance web (authentification en P14).
 - [ ] **P13.7 Doc « AI assistant »** — configuration pas à pas de Claude Code et Claude Desktop, exemples de conversations ; test de conformité générique au protocole MCP pour les autres clients.
 - [ ] **P13.8 Évaluation** — scénarios types (UC1, UC8, UC9) avec résultat attendu vérifiable.

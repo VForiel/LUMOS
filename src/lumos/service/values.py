@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import re
 from typing import Any, cast
 
 import numpy as np
@@ -13,20 +15,39 @@ from lumos.service.errors import ServiceError
 __all__ = ["format_value", "parse_quantity", "parse_value"]
 
 
+_ARRAY = re.compile(r"^\s*(\[.*\])\s*([^\]]*)$", re.DOTALL)
+
+
+def _dimensionless(unit: Any) -> bool:
+    return unit is None or u.Unit(unit).physical_type == "dimensionless"
+
+
 def parse_quantity(value: Any, unit: Any = None, *, name: str = "value") -> u.Quantity:
-    """Parse ``"5 mm"``, ``{"value": 5, "unit": "mm"}``, a quantity, or a number in ``unit``."""
+    """Parse ``"5 mm"``, ``"[1, 2] nm"``, ``{"value": 5, "unit": "mm"}`` or a quantity.
+
+    A plain number (or list of numbers) is only accepted when ``unit`` is dimensionless or not given: the unit
+    of a physical quantity is always explicit (REQ-MCP-5).
+    """
+    if isinstance(value, bool | int | float | list | tuple | np.ndarray) and not _dimensionless(unit):
+        example = f"{value} {u.Unit(unit).to_string()}" if np.isscalar(value) else f"{list(value)} {unit}"
+        raise ServiceError(
+            f"{name}: {value!r} has no unit",
+            hint=f"write the quantity with its unit, e.g. '{example}'",
+        )
     try:
         if isinstance(value, u.Quantity):
             quantity = value
         elif isinstance(value, dict):
             quantity = u.Quantity(value["value"], value.get("unit", ""))
+        elif isinstance(value, str) and (array := _ARRAY.match(value)):
+            quantity = u.Quantity(json.loads(array.group(1)), array.group(2).strip())
         elif isinstance(value, str):
             quantity = u.Quantity(value)
         elif isinstance(value, list | tuple | int | float | np.ndarray):
             quantity = u.Quantity(value, unit if unit is not None else "")
         else:
             raise TypeError(f"unsupported value {value!r}")
-    except (TypeError, ValueError, KeyError) as error:
+    except (TypeError, ValueError, KeyError, json.JSONDecodeError) as error:
         expected = f"e.g. '1 {unit}'" if unit is not None else "e.g. '5 mm'"
         raise ServiceError(
             f"{name}: cannot read {value!r} as a quantity", hint=f"write it as text, {expected}"
@@ -67,6 +88,9 @@ def parse_value(field: Any, value: Any, *, name: str) -> Any:
     return value
 
 
+_MAX_SHOWN = 16
+
+
 def _number(value: float) -> str:
     return f"{value:.6g}"
 
@@ -79,10 +103,12 @@ def format_value(value: Any, unit: Any = None) -> Any:
         unit_text = cast(u.UnitBase, value.unit).to_string()
         if value.isscalar:
             return f"{_number(float(np.asarray(value.value)))} {unit_text}".strip()
-        flat = np.asarray(value.value, dtype=float).ravel()
-        shown = [float(f"{v:.6g}") for v in flat[:16]]
-        suffix = "..." if flat.size > 16 else ""
-        return f"{shown}{suffix} {unit_text}".strip()
+        array = np.asarray(value.value, dtype=float)
+        if array.size <= _MAX_SHOWN:  # nested lists, readable back by parse_quantity
+            shown = np.vectorize(lambda v: float(_number(v)), otypes=[float])(array).tolist()
+            return f"{json.dumps(shown)} {unit_text}".strip()
+        flat = [float(_number(v)) for v in array.ravel()[:_MAX_SHOWN]]
+        return f"{flat}... {unit_text} (shape {list(array.shape)})".strip()
     if isinstance(value, np.generic):
         return value.item()
     if isinstance(value, bool | int | float | str) or value is None:

@@ -12,7 +12,7 @@ from lumos.backend import to_numpy
 from lumos.service.models import PortSummary
 from lumos.service.values import format_value
 
-__all__ = ["figure_png", "summarize"]
+__all__ = ["figure_png", "job_text", "summarize", "summary_text"]
 
 _MAX_VALUES = 16
 
@@ -34,9 +34,20 @@ def _grid_text(grid: Any) -> str:
     return f"{grid.nx} x {grid.ny} pixels of {format_value(grid.dx_si * u.Unit(unit))}"
 
 
+def _wavelengths(signal: Any) -> dict[str, str]:
+    if hasattr(signal, "wavelengths"):
+        waves = signal.wavelengths.to(u.nm)
+        if waves.size == 1:
+            return {"wavelength": format_value(waves[0])}
+        return {
+            "wavelengths": f"{waves.size} from {format_value(waves.min())} to {format_value(waves.max())}"
+        }
+    return {"wavelength": format_value(signal.wavelength.to(u.nm))}
+
+
 def summarize(port: str, signal: Any, *, figure: bool = False) -> PortSummary:
     """Return the :class:`PortSummary` of ``signal``, with a PNG figure if requested and possible."""
-    from lumos.fields import DataProduct, ModalField, Wavecube, Wavefront
+    from lumos.fields import DataProduct, IncoherentBundle, ModalField, Wavecube, Wavefront
 
     kind = type(signal).__name__
     summary = PortSummary(port=port, kind=kind)
@@ -51,19 +62,27 @@ def summarize(port: str, signal: Any, *, figure: bool = False) -> PortSummary:
         if signal.uncertainty is not None:
             summary.details["uncertainty"] = "per sample"
     elif isinstance(signal, Wavefront | Wavecube):
-        field = np.asarray(to_numpy(signal.field))
-        intensity = np.abs(field) ** 2
-        summary.unit = f"{signal.power_unit.to_string()} / m2"
-        summary.shape = list(field.shape)
+        intensity = np.asarray(to_numpy(signal.intensity), dtype=float)
+        summary.unit = signal.intensity_unit.to_string()
+        summary.shape = list(np.shape(to_numpy(signal.field)))
         summary.statistics = _statistics(intensity)
         summary.details = {
             "grid": _grid_text(signal.grid),
             "power": format_value(signal.power if isinstance(signal, Wavefront) else signal.power.sum()),
         }
-        if isinstance(signal, Wavefront):
-            summary.details["wavelength"] = format_value(signal.wavelength.to(u.nm))
-        else:
-            summary.details["wavelengths"] = format_value(signal.wavelengths.to(u.nm))
+        summary.details.update(_wavelengths(signal))
+    elif isinstance(signal, IncoherentBundle):
+        intensity = np.asarray(to_numpy(signal.intensity), dtype=float)
+        summary.unit = signal.intensity_unit.to_string()
+        summary.shape = list(signal.shape)
+        summary.statistics = _statistics(intensity)
+        summary.details = {
+            "grid": _grid_text(signal.grid),
+            "modes": str(signal.n_modes),
+            "power": format_value(signal.total_power),
+            "power per mode": format_value(signal.power),
+        }
+        summary.details.update(_wavelengths(signal[0]))
     elif isinstance(signal, ModalField):
         power = np.asarray(to_numpy(np.abs(signal.amplitudes) ** 2), dtype=float)
         per_channel = power.reshape(-1, power.shape[-1]).sum(axis=0)
@@ -103,3 +122,44 @@ def figure_png(signal: Any) -> bytes | None:
     buffer = io.BytesIO()
     fig.savefig(buffer, format="png")
     return buffer.getvalue()
+
+
+def _g(value: float) -> str:
+    return f"{value:.4g}"
+
+
+def summary_text(summary: PortSummary) -> str:
+    """One short paragraph describing a :class:`PortSummary`, with units, for a language model."""
+    unit = f" {summary.unit}" if summary.unit else ""
+    shape = " x ".join(str(n) for n in summary.shape)
+    parts = [f"{summary.port}: {summary.kind}" + (f" of shape {shape}" if shape else "")]
+    if summary.statistics:
+        stats = summary.statistics
+        parts.append(
+            f"values from {_g(stats['min'])} to {_g(stats['max'])}{unit} (mean {_g(stats['mean'])}{unit})"
+        )
+    if summary.values is not None and len(summary.values) <= 8:
+        parts.append(f"values {[float(_g(v)) for v in summary.values]}{unit}")
+    parts.extend(f"{key} {value}" for key, value in summary.details.items() if key != "latex")
+    if "latex" in summary.details:
+        parts.append(f"expression {summary.details['latex']}")
+    text = "; ".join(parts) + "."
+    if summary.figure_png is not None:
+        text += " The figure follows."
+    return text
+
+
+def job_text(job: Any) -> str:
+    """One line describing a run (:class:`~lumos.service.models.JobInfo`) for a language model."""
+    text = f"job {job.id} {job.status}: {', '.join(job.outputs)}"
+    if job.status in ("queued", "running"):
+        text += f" ({job.progress:.0%}, {job.message or 'waiting'}); follow it with get_job"
+    if job.seconds is not None:
+        text += f" in {job.seconds:.3g} s"
+    if job.error:
+        text += f". Error: {job.error}. Hint: {job.hint}"
+    elif job.status == "done":
+        text += f". Read the outputs with get_result(job='{job.id}', port=...)"
+    if job.archive:
+        text += f". Archived in {job.archive}"
+    return text + "."

@@ -8,17 +8,19 @@ are in the service, so that the assistant, the web interface and Python give the
 
 from __future__ import annotations
 
+import base64
 import functools
 import inspect
 import logging
 import time
 from collections.abc import Callable
-from typing import Any
+from typing import Annotated, Any
 
 import anyio
 from mcp.server.mcpserver import Context as MCPContext
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
+from mcp.types import CallToolResult, ImageContent, TextContent
 
 from lumos.mcp.operation import register_operation_tools
 from lumos.mcp.prompts import register_prompts
@@ -37,6 +39,7 @@ from lumos.service.models import (
     PortSummary,
     PresetInfo,
 )
+from lumos.service.summaries import job_text, summary_text
 
 __all__ = ["INSTRUCTIONS", "LumosTools", "create_server"]
 
@@ -94,6 +97,23 @@ def _guarded(fn: Callable[..., Any]) -> Callable[..., Any]:
             raise _tool_error(error) from error
 
     return run
+
+
+def _job_result(job: JobInfo) -> CallToolResult:
+    """Return a run as one line of text, with the :class:`JobInfo` as structured content."""
+    return CallToolResult(
+        content=[TextContent(type="text", text=job_text(job))], structured_content=job.model_dump(mode="json")
+    )
+
+
+def _port_result(summary: PortSummary) -> CallToolResult:
+    """Return a signal as a short text and a PNG figure, with its :class:`PortSummary` as structured data."""
+    content: list[Any] = [TextContent(type="text", text=summary_text(summary))]
+    if summary.figure_png is not None:
+        data = base64.b64encode(summary.figure_png).decode("ascii")
+        content.append(ImageContent(type="image", data=data, mime_type="image/png"))
+    structured = summary.model_dump(mode="json", exclude={"figure_png"})
+    return CallToolResult(content=content, structured_content=structured)
 
 
 class LumosTools:
@@ -347,7 +367,7 @@ def create_server(
         archive: bool | str = False,
         wait_seconds: float = 300.0,
         context: str | None = None,
-    ) -> JobInfo:
+    ) -> Annotated[CallToolResult, JobInfo]:
         """Compute output ports (e.g. ``["camera.out"]``) and report the progress.
 
         Without ``outputs``, the main outputs of the context (those of its preset) are computed. ``archive``
@@ -369,27 +389,35 @@ def create_server(
             job = service.get_job(session, job.id)
         if job.status == "done":
             await ctx.report_progress(1.0, 1.0, "done")
-        return job
+        return _job_result(job)
 
     @tool
-    def get_job(job: str) -> JobInfo:
+    def get_job(job: str) -> Annotated[CallToolResult, JobInfo]:
         """Status, progress, duration and error (with a hint) of a run."""
-        return service.get_job(session, job)
+        return _job_result(service.get_job(session, job))
 
     @tool
-    def wait_job(job: str, timeout_seconds: float = 60.0) -> JobInfo:
+    def wait_job(job: str, timeout_seconds: float = 60.0) -> Annotated[CallToolResult, JobInfo]:
         """Wait for the end of a run (at most ``timeout_seconds``)."""
-        return service.wait_job(session, job, timeout=timeout_seconds)
+        return _job_result(service.wait_job(session, job, timeout=timeout_seconds))
 
     @tool
-    def get_result(job: str, port: str) -> PortSummary:
-        """Summary of an output computed by a run: kind, unit, shape, statistics, values when few."""
-        return service.get_result(session, job, port)
+    def get_result(job: str, port: str, figure: bool = False) -> Annotated[CallToolResult, PortSummary]:
+        """Summary of an output computed by a run: kind, unit, shape, statistics, values when few.
+
+        ``figure=true`` adds a picture of the signal (intensity, image or curve).
+        """
+        return _port_result(service.get_result(session, job, port, figure=figure))
 
     @tool
-    def inspect_port(port: str, context: str | None = None) -> PortSummary:
-        """Compute (or reuse) the signal of an output port ``"element.port"`` and summarise it, with units."""
-        return service.inspect_port(session, state.context(context), port, figure=False)
+    def inspect_port(
+        port: str, figure: bool = True, context: str | None = None
+    ) -> Annotated[CallToolResult, PortSummary]:
+        """Compute (or reuse) the signal of an output port ``"element.port"`` and summarise it, with units.
+
+        A picture of the signal is returned too, unless ``figure=false``.
+        """
+        return _port_result(service.inspect_port(session, state.context(context), port, figure=figure))
 
     @tool
     def get_journal(
