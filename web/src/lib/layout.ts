@@ -1,6 +1,6 @@
 // Automatic layout of a context without saved positions: columns by depth along the light path.
 
-export const COLUMN = 290;
+export const COLUMN = 265;
 export const ROW = 170;
 
 /** Positions ``[x, y]`` of ``nodes``: each node one column to the right of the deepest node feeding it. */

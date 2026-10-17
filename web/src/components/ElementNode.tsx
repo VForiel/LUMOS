@@ -52,7 +52,7 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
 
   return (
     <div
-      className={`w-[230px] overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-shadow dark:bg-slate-900 ${
+      className={`w-[210px] overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-shadow dark:bg-slate-900 ${
         selected ? "shadow-lg" : "hover:shadow-md"
       } ${errors ? "border-red-300 dark:border-red-800" : "border-slate-200 dark:border-slate-700"} ${
         data.running ? "animate-pulse" : ""

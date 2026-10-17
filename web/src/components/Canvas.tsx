@@ -31,7 +31,7 @@ import { BLOCK_TYPE, DRAG_TYPE } from "./Palette";
 import { PresetGallery } from "./Presets";
 
 const nodeTypes = { element: ElementNode, frame: GroupFrame };
-const NODE_WIDTH = 230;
+const NODE_WIDTH = 210;
 const NODE_HEIGHT = 170;
 const NONE: Record<string, boolean> = {};
 const DELETE_KEYS = ["Delete", "Backspace"];
@@ -377,6 +377,7 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
           pannable
           zoomable
           position="bottom-right"
+          style={{ width: 150, height: 96 }}
           className="!rounded-lg !border !border-slate-200 dark:!border-slate-700"
           nodeColor={(node) => {
             const data = node.data as { element?: { type_id: string } };

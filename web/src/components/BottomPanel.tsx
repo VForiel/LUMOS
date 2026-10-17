@@ -29,7 +29,12 @@ function Statistics({ summary }: { summary: PortSummary }) {
       <p className="text-slate-500 dark:text-slate-400">
         {summary.kind}
         {summary.shape.length > 0 && ` · ${summary.shape.join(" × ")}`}
-        {summary.unit && ` · ${summary.unit}`}
+        {summary.unit && (
+          <>
+            {" · "}
+            <span className="font-mono text-slate-600 dark:text-slate-300">{summary.unit}</span>
+          </>
+        )}
       </p>
       {summary.values && summary.values.length <= 8 && (
         <p className="font-mono text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -42,10 +47,7 @@ function Statistics({ summary }: { summary: PortSummary }) {
           {Object.entries(summary.statistics).map(([key, value]) => (
             <div key={key} className="contents">
               <dt className="text-slate-400">{t(`results.${key}`, { defaultValue: key })}</dt>
-              <dd className="text-slate-700 dark:text-slate-200">
-                {formatNumber(value)}
-                {unit}
-              </dd>
+              <dd className="whitespace-nowrap text-slate-700 dark:text-slate-200">{formatNumber(value)}</dd>
             </div>
           ))}
         </dl>
