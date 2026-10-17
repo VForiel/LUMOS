@@ -109,6 +109,12 @@ class Registry:
         self._by_id[type_id] = entry
         self._by_class[cls] = entry
 
+    def unregister(self, type_id: str) -> None:
+        """Remove ``type_id`` (used to redefine a script block, e.g. when a notebook cell runs again)."""
+        entry = self._entry(type_id)
+        del self._by_id[type_id]
+        self._by_class.pop(entry.cls, None)
+
     def _entry(self, type_id: str) -> RegistryEntry:
         try:
             return self._by_id[type_id]
