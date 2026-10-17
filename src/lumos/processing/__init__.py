@@ -9,10 +9,11 @@ the same graph as the optics (REQ-PIPE-1).
   radial profiles;
 - :mod:`~lumos.processing.interferometry`: null depths, kernel observables, transmission maps;
 - :mod:`~lumos.processing.detection`: test statistics, ROC curves, contrast limits, detection capability;
+- :mod:`~lumos.processing.calibration`: phase fitting, slanted-edge MTF, PSF measurements;
 - :func:`radial_profile`: azimuthal averages of maps sampled on a grid.
 """
 
-from lumos.processing import detection, interferometry, photometry, reduction
+from lumos.processing import calibration, detection, interferometry, photometry, reduction
 from lumos.processing.profiles import radial_profile
 
-__all__ = ["detection", "interferometry", "photometry", "radial_profile", "reduction"]
+__all__ = ["calibration", "detection", "interferometry", "photometry", "radial_profile", "reduction"]
