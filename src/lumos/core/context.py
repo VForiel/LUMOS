@@ -164,6 +164,8 @@ class Context:
         self._overrides: dict[int, str] = {}
         self._twin_states: dict[int, dict[str, Any]] = {}
         self._links: list[tuple[str, str, Any, Any, Any]] = []
+        self._recording: Any = None
+        self._recording_start = 0.0
         self.journal = Journal()
         self._origins: list[str] = ["python"]
         self.mode = mode
@@ -326,6 +328,35 @@ class Context:
         if archive:
             self._archive_run(result, archive, archive_root, time.perf_counter() - started)
         return result
+
+    # --- Sequences -------------------------------------------------------------------------------
+
+    @contextmanager
+    def record(self) -> Iterator[Any]:
+        """Record the actions of the block: ``with ctx.record() as sequence: ...`` (REQ-HW-7)."""
+        from lumos.core.sequence import Sequence
+
+        sequence = Sequence()
+        previous, previous_start = self._recording, self._recording_start
+        self._recording, self._recording_start = sequence, self.clock.elapsed_si
+        try:
+            yield sequence
+        finally:
+            self._recording, self._recording_start = previous, previous_start
+
+    def replay(self, sequence: Any) -> list[Any]:
+        """Execute the actions of a recorded sequence in the current mode; return their results."""
+        results = []
+        for step in sequence:
+            command = step.command
+            try:
+                element = self[command.element]
+            except (KeyError, GraphError) as error:
+                raise KeyError(
+                    f"the sequence needs the element {command.element!r}, absent from the context"
+                ) from error
+            results.append(getattr(element, command.action)(*command.args, **command.kwargs))
+        return results
 
     # --- Digital twin ----------------------------------------------------------------------------
 
@@ -584,6 +615,8 @@ class Context:
         predicted = spec.duration_si(element, args, kwargs)
         path = self.path_of(element)
         command = Command(path, spec.name, tuple(args), dict(kwargs))
+        if self._recording is not None:
+            self._recording.append((self.clock.elapsed_si - self._recording_start) * u.s, command)
         entry = self._entry("action")
         entry.element, entry.action, entry.command = path, spec.name, command
         entry.args = ", ".join([str(a) for a in args] + [f"{k}={v}" for k, v in kwargs.items()])
