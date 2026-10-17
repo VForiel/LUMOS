@@ -270,7 +270,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 13 — Couche de service et serveur MCP
 
-- [ ] **P13.1 `lumos.service`** — sessions, contextes, édition, exécution asynchrone avec progression, inspection, catalogues, archives, opération ; API typée (Pydantic). ADR-0007 « Couche de service ».
+- [x] **P13.1 `lumos.service`** — sessions, contextes, édition, exécution asynchrone avec progression, inspection, catalogues, archives, opération ; API typée (Pydantic). ADR-0007 « Couche de service ».
 - [ ] **P13.2 Serveur MCP (stdio)** — outils de découverte, construction, vérification, exécution et résultats (REQ-MCP-2) ; commande `lumos mcp`.
 - [ ] **P13.3 Ressources et prompts** — docs, schémas, préréglages, contexte courant, journaux ; prompts par cas d'usage.
 - [ ] **P13.4 Outils d'opération** — désactivés par défaut ; confirmation humaine par *elicitation* ; bornes côté serveur ; traçabilité de l'origine MCP.

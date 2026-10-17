@@ -117,6 +117,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `PowerMeter(channel=k)` reads one guided channel.
 - `lumos.elements.sources.Planet`: one planet of a star on a Keplerian orbit.
 - Source lists can be archived and read back.
+- `lumos.service` (ADR-0015): the service layer shared by the web backend and the MCP server — sessions with
+  an origin, contexts and presets, editing with quantities written as text (`"0.5 mm"`), validation with
+  hints, runs in the background with progress and quotas, port summaries with figures, catalogues, archives
+  and the gated operation of equipment; errors say how to fix the request.
 
 ### Changed
 

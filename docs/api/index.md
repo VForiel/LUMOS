@@ -323,3 +323,16 @@
 .. automodule:: lumos.catalogs.tap
    :members:
 ```
+
+## Service layer
+
+```{eval-rst}
+.. automodule:: lumos.service.service
+   :members: Service
+
+.. automodule:: lumos.service.models
+   :members:
+
+.. automodule:: lumos.service.errors
+   :members:
+```
