@@ -351,7 +351,7 @@ class Rebin(Element):
 def _on_axis(value: u.Quantity, axis: u.Quantity) -> u.Quantity:
     """Express ``value`` in the unit of ``axis``; zero (the default centre, ``0 pix``) fits every unit."""
     if value.value == 0:
-        return 0 * axis.unit
+        return u.Quantity(0.0, axis.unit)
     return value.to(axis.unit)
 
 
