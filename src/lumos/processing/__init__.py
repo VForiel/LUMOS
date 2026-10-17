@@ -8,10 +8,11 @@ the same graph as the optics (REQ-PIPE-1).
 - :mod:`~lumos.processing.photometry`: aperture photometry, CCD signal-to-noise ratio, contrast curves,
   radial profiles;
 - :mod:`~lumos.processing.interferometry`: null depths, kernel observables, transmission maps;
+- :mod:`~lumos.processing.detection`: test statistics, ROC curves, contrast limits, detection capability;
 - :func:`radial_profile`: azimuthal averages of maps sampled on a grid.
 """
 
-from lumos.processing import interferometry, photometry, reduction
+from lumos.processing import detection, interferometry, photometry, reduction
 from lumos.processing.profiles import radial_profile
 
-__all__ = ["interferometry", "photometry", "radial_profile", "reduction"]
+__all__ = ["detection", "interferometry", "photometry", "radial_profile", "reduction"]
