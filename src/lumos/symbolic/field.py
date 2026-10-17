@@ -174,6 +174,20 @@ class SymbolicField(OpticalSignal):
         """Return the field multiplied by the expression ``factor`` (a mask, a phase...)."""
         return self.with_expression(self._expression * sp.sympify(factor), parameters=parameters)
 
+    # --- Evaluation ---------------------------------------------------------------------------------
+
+    def to_wavefront(self, grid: Any, **options: Any) -> Any:
+        """Sample the field on ``grid`` (see :func:`lumos.symbolic.evaluate.to_wavefront`)."""
+        from lumos.symbolic.evaluate import to_wavefront
+
+        return to_wavefront(self, grid, **options)
+
+    def to_wavecube(self, grid: Any, wavelengths: u.Quantity, **options: Any) -> Any:
+        """Sample the field on ``grid`` at ``wavelengths`` (:func:`lumos.symbolic.evaluate.to_wavecube`)."""
+        from lumos.symbolic.evaluate import to_wavecube
+
+        return to_wavecube(self, grid, wavelengths, **options)
+
     # --- Rendering ----------------------------------------------------------------------------------
 
     def latex(self) -> str:
