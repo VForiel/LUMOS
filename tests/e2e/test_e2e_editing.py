@@ -28,10 +28,12 @@ def handle(page, element, port):
 
 
 def drag(page, source, target):
+    target.hover()  # as a user does, look at the target first: its block is laid out and measured
     source.hover()
     page.mouse.down()
     box = target.bounding_box()
     page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=12)
+    page.wait_for_timeout(150)
     page.mouse.up()
 
 
