@@ -108,3 +108,22 @@ def test_missing_devices_are_reported(bench):
     ctx.add(LinearStage(name="stage"))
     with pytest.raises(DriverError, match="LL-LS100"):
         associate(ctx, devices, connect=False)
+
+
+def test_devices_of_different_models_may_share_a_serial_number():
+    servers = [
+        EmulatorServer(create_emulator(m, serial="SN0001", latency=0.0)).start() for m in ("LL-SH1", "LL-PM")
+    ]
+    try:
+        devices = discover(tcp=[s.url for s in servers], timeout=0.5)
+        ctx = Context(mode="operation")
+        ctx.add(Shutter(name="shutter"))
+        from lumos.elements.detectors import PowerMeter
+
+        ctx.add(PowerMeter(name="meter"))
+        found = associate(ctx, devices, assignments={"meter": "SN0001"}, connect=False)
+        assert found["shutter"].model == "LL-SH1"
+        assert found["meter"].model == "LL-PM"
+    finally:
+        for server in servers:
+            server.stop()
