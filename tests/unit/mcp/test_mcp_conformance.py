@@ -70,7 +70,10 @@ class RawClient:
         finally:
             if self.process.poll() is None:
                 self.process.kill()
-            self.process.communicate()
+                self.process.wait()
+            # not communicate(): on Python 3.12 it flushes the stdin closed above and raises
+            self.process.stdout.close()
+            self.process.stderr.close()
 
 
 @pytest.fixture(scope="module")
