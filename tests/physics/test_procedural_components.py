@@ -124,3 +124,55 @@ def test_spatial_targets_for_laboratory_scenes():
     result = run(star)
     assert result.grid.plane == "spatial"
     assert result.grid.dx.to_value(u.um) == pytest.approx(10.0)
+
+
+# --- Sizes of test targets in physical units (amendment of P8.6, 17/10/2026) ------------------------------
+# Sizes may be given as an angle on angular grids, a length on spatial grids or in pixels (``u.pix`` or a
+# plain number, as above): a size s on a grid of pixel p covers s / p pixels (definition of the grid).
+
+
+def test_sizes_as_angles_on_sky_grids():
+    in_pixels = brightness(
+        run(SiemensStar(name="s", n_spokes=8, n_pixels=128, pixel_scale=2 * u.mas, radius=20.0))
+    )
+    as_angle = brightness(
+        run(SiemensStar(name="s", n_spokes=8, n_pixels=128, pixel_scale=2 * u.mas, radius=40 * u.mas))
+    )
+    np.testing.assert_array_equal(as_angle, in_pixels)
+
+
+def test_sizes_as_lengths_on_laboratory_grids():
+    in_pixels = brightness(run(Checkerboard(name="b", period=8.0, n_pixels=64, pixel_size=5 * u.um)))
+    as_length = brightness(run(Checkerboard(name="b", period=40 * u.um, n_pixels=64, pixel_size=5 * u.um)))
+    np.testing.assert_array_equal(as_length, in_pixels)
+    bars_pixels = brightness(
+        run(BarTarget(name="t", period=10.0, length=24.0, n_pixels=64, pixel_size=5 * u.um))
+    )
+    bars_lengths = brightness(
+        run(BarTarget(name="t", period=0.05 * u.mm, length=120 * u.um, n_pixels=64, pixel_size=5 * u.um))
+    )
+    np.testing.assert_array_equal(bars_lengths, bars_pixels)
+
+
+def test_sizes_in_pixel_units():
+    plain = brightness(run(Checkerboard(name="b", period=8.0, n_pixels=32, pixel_scale=1 * u.mas)))
+    pix = brightness(run(Checkerboard(name="b", period=8 * u.pix, n_pixels=32, pixel_scale=1 * u.mas)))
+    np.testing.assert_array_equal(pix, plain)
+
+
+def test_a_size_must_match_the_kind_of_grid():
+    with pytest.raises(ValueError, match="angular"):
+        run(SiemensStar(name="s", n_pixels=32, pixel_size=10 * u.um, radius=1 * u.mas))
+    with pytest.raises(ValueError, match="spatial"):
+        run(SiemensStar(name="s", n_pixels=32, pixel_scale=1 * u.mas, radius=10 * u.um))
+    with pytest.raises((TypeError, u.UnitsError)):
+        SiemensStar(name="s", radius=3 * u.kg)
+
+
+def test_physical_sizes_are_saved(tmp_path):
+    import lumos.io
+
+    star = SiemensStar(name="s", n_pixels=32, pixel_scale=1 * u.mas, radius=12 * u.mas)
+    lumos.io.save(star, tmp_path / "star.lumos")
+    loaded = lumos.io.load(tmp_path / "star.lumos")
+    assert u.allclose(loaded.radius, 12 * u.mas)

@@ -1,0 +1,4 @@
+#!/bin/bash
+# Binder (repo2docker) runs this from the repository root after creating the environment.
+set -euo pipefail
+python -m pip install --no-cache-dir -e ".[catalogs]"
