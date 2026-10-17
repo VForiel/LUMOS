@@ -426,6 +426,11 @@ class Context:
             if getattr(type(element), "observation_dependent", False):
                 element._on_field_changed("observation")
 
+    def walk(self) -> Iterator[tuple[str, Any]]:
+        """Every element of the context with its path, including the children of groups."""
+        for element in self._walk():
+            yield self.path_of(element), element
+
     def _walk(self) -> Iterator[Any]:
         """Every element of the context, including the children of groups."""
         stack = list(self._graph)
