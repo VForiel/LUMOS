@@ -107,8 +107,8 @@ def test_tools(client):
         assert tool["inputSchema"]["type"] == "object"
     called = client.request("tools/call", {"name": "list_presets", "arguments": {}})["result"]
     assert called["isError"] is False
-    assert called["content"][0]["type"] == "text"
-    assert "coronagraph" in called["content"][0]["text"]
+    assert all(block["type"] == "text" for block in called["content"])
+    assert "coronagraph" in " ".join(block["text"] for block in called["content"])
 
 
 def test_a_failing_tool_call_is_a_tool_error(client):
