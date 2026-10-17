@@ -135,7 +135,11 @@ def associate(
     available = list(devices)
     chosen: dict[str, DeviceInfo] = {}
     pending: dict[str, list[str]] = {}
-    elements = {path: element for path, element in ctx.walk() if _model(element)}
+    elements = {
+        path: element
+        for path, element in ctx.walk()
+        if _model(element) and ctx.mode_of(element) == "operation"  # not the elements forced to simulation
+    }
     for path, element in elements.items():
         model = str(_model(element))
         if path in assignments:
