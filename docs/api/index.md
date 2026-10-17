@@ -268,3 +268,58 @@
 .. automodule:: lumos.physics.radiometry
    :members:
 ```
+
+## Catalogues
+
+```{eval-rst}
+.. automodule:: lumos.catalogs.http
+   :members:
+
+.. automodule:: lumos.catalogs.provider
+   :members:
+
+.. automodule:: lumos.catalogs.records
+   :members:
+
+.. automodule:: lumos.catalogs.resolve
+   :members:
+
+.. automodule:: lumos.catalogs.simbad
+   :members:
+
+.. automodule:: lumos.catalogs.gaia
+   :members:
+
+.. automodule:: lumos.catalogs.exoplanets
+   :members:
+
+.. automodule:: lumos.catalogs.vizier
+   :members:
+
+.. automodule:: lumos.catalogs.sed
+   :members:
+
+.. automodule:: lumos.catalogs.calspec
+   :members:
+
+.. automodule:: lumos.catalogs.models
+   :members:
+
+.. automodule:: lumos.catalogs.svo
+   :members:
+
+.. automodule:: lumos.catalogs.solar_system
+   :members:
+
+.. automodule:: lumos.catalogs.archives
+   :members:
+
+.. automodule:: lumos.catalogs.surveys
+   :members:
+
+.. automodule:: lumos.catalogs.spectra
+   :members:
+
+.. automodule:: lumos.catalogs.tap
+   :members:
+```

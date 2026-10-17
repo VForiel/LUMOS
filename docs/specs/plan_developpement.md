@@ -204,15 +204,15 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 9 — Catalogues astronomiques
 
-- [ ] **P9.1 Infrastructure** — `Provider`, cache utilisateur, mode hors-ligne, TLS vérifié, timeouts par requête.
-- [ ] **P9.2 Enregistrements typés** avec provenance par champ.
-- [ ] **P9.3 Fournisseurs stellaires et exoplanétaires** — SIMBAD, VizieR, Gaia DR3, CALSPEC, ESO, IRSA, MAST, NASA Exoplanet Archive, exoplanet.eu.
-- [ ] **P9.4 Système solaire** — JPL Horizons, spectre solaire de référence.
-- [ ] **P9.5 Bandes et modèles** — SVO Filter Profile Service, bibliothèques de spectres modèles.
-- [ ] **P9.6 Objets diffus** — images et cubes (SkyView, hips2fits, archives) → composants cartographiés.
-- [ ] **P9.7 Fusion de SED et complétion.**
-- [ ] **P9.8 Résolution et constructeurs** — `resolve`, `Star.from_catalog`, `Scene.from_catalog`, `MappedComponent.from_survey`.
-- [ ] **P9.9 Notebook** `06_targets_from_catalogs`.
+- [x] **P9.1 Infrastructure** — `Provider`, cache utilisateur, mode hors-ligne, TLS vérifié, timeouts par requête.
+- [x] **P9.2 Enregistrements typés** avec provenance par champ.
+- [x] **P9.3 Fournisseurs stellaires et exoplanétaires** — SIMBAD, VizieR, Gaia DR3, CALSPEC, ESO, IRSA, MAST, NASA Exoplanet Archive, exoplanet.eu.
+- [x] **P9.4 Système solaire** — JPL Horizons, spectre solaire de référence.
+- [x] **P9.5 Bandes et modèles** — SVO Filter Profile Service, bibliothèques de spectres modèles.
+- [x] **P9.6 Objets diffus** — images et cubes (SkyView, hips2fits, archives) → composants cartographiés.
+- [x] **P9.7 Fusion de SED et complétion.**
+- [x] **P9.8 Résolution et constructeurs** — `resolve`, `Star.from_catalog`, `Scene.from_catalog`, `MappedComponent.from_survey`.
+- [x] **P9.9 Notebook** `06_targets_from_catalogs`.
 
 **Tests écrits d'abord :** sur des réponses enregistrées (aucun réseau en CI) ; valeurs attendues relevées manuellement dans les catalogues et citées ; vérification que TLS n'est jamais désactivé ; comportement hors-ligne.
 
@@ -353,4 +353,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 9** (P9.1).
+Lancer la **phase 10** (P10.1).

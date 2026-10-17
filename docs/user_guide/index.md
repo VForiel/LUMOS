@@ -10,6 +10,7 @@ This guide will explain the concepts of LUMOS:
 - the **element library**: sources, optics, telescopes, atmosphere, coronagraphs, fibres, photonic chips and
   detectors;
 - **scenes**: point and extended objects in a frame, and the imaging of extended scenes;
+- **catalogues**: typed records from SIMBAD, Gaia, exoplanet archives, surveys... and scenes built from them;
 - **results**: figures, data files and archives of runs.
 
 ```{toctree}
@@ -19,5 +20,6 @@ fields
 context
 elements
 scenes
+catalogs
 results
 ```

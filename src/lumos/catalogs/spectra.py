@@ -30,8 +30,12 @@ class Spectrum:
         Spectral flux density (per unit wavelength or frequency).
     uncertainty
         Uncertainty of the flux, or ``None``.
-    name, source, reference
-        Name of the object, provider and reference (file, bibcode).
+    name
+        Name of the object.
+    source
+        Provider of the spectrum.
+    reference
+        Reference of the spectrum (file, bibcode).
     """
 
     wavelengths: u.Quantity

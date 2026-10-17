@@ -86,6 +86,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Imaging of extended scenes by convolution, field-dependent PSFs or decomposition into point sources, chosen
   automatically by probing the shift invariance of the system and logged (`image_scene`, `SceneToSources`,
   ADR-0011); notebook `05_extended_scenes` and the `debris_disk` preset.
+- `lumos.catalogs` (ADR-0012): HTTPS layer with verified TLS, timeouts, user cache and offline mode;
+  typed records with provenance per field; SIMBAD, Gaia DR3, NASA Exoplanet Archive, exoplanet.eu, VizieR
+  photometry, CALSPEC, Pickles, SVO filters, JPL Horizons, solar spectrum, ESO, MAST, IRSA, SkyView and
+  hips2fits providers; SED fusion and blackbody completion; `resolve`, `Star.from_catalog`,
+  `Planet.from_catalog`, `Scene.from_catalog`, `MappedComponent.from_survey`; notebook
+  `06_targets_from_catalogs` running offline on recorded answers.
+- `lumos.elements.sources.Planet`: one planet of a star on a Keplerian orbit.
+- Source lists can be archived and read back.
 
 ### Changed
 
