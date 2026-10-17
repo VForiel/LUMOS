@@ -79,12 +79,21 @@ def test_notebooks_are_stored_without_outputs():
                 assert cell.execution_count is None
 
 
-def execute(path, workdir):
+CATALOG_CACHE = EXAMPLES / "catalog_cache"
+
+
+def execute(path, workdir, monkeypatch=None):
     copy = workdir / path.name
     shutil.copy(path, copy)
     for preset in PRESETS:
         (workdir / "presets").mkdir(exist_ok=True)
         shutil.copy(preset, workdir / "presets" / preset.name)
+    if monkeypatch is not None and CATALOG_CACHE.is_dir():
+        # catalogue answers recorded from the services: the notebooks run offline (no network in CI)
+        cache = workdir / "catalog_cache"
+        shutil.copytree(CATALOG_CACHE, cache)
+        monkeypatch.setenv("LUMOS_CATALOGS_CACHE", str(cache))
+        monkeypatch.setenv("LUMOS_CATALOGS_OFFLINE", "1")
     notebook = nbformat.read(copy, as_version=4)
     client = NotebookClient(
         notebook, timeout=900, kernel_name="python3", resources={"metadata": {"path": str(workdir)}}
@@ -95,8 +104,8 @@ def execute(path, workdir):
 
 @pytest.mark.slow
 @pytest.mark.parametrize("path", NOTEBOOKS, ids=[p.stem for p in NOTEBOOKS])
-def test_notebook_runs_and_archives_its_results(path, tmp_path):
-    execute(path, tmp_path)
+def test_notebook_runs_and_archives_its_results(path, tmp_path, monkeypatch):
+    execute(path, tmp_path, monkeypatch)
     archives = list(tmp_path.glob("archives/*/*/metadata.yml"))
     assert archives, f"{path.name} did not create an archive next to the notebook"
     for metadata_file in archives:
@@ -140,3 +149,9 @@ def test_the_extended_scenes_notebook_exists():
     names = [path.stem for path in NOTEBOOKS]
     assert "05_extended_scenes" in names
     assert (EXAMPLES / "presets" / "debris_disk.lumos").is_file()
+
+
+def test_the_catalogue_notebook_exists():
+    """Step P9.9: notebook of targets from catalogues, with its recorded catalogue answers."""
+    assert "06_targets_from_catalogs" in [path.stem for path in NOTEBOOKS]
+    assert any(CATALOG_CACHE.glob("*.json"))
