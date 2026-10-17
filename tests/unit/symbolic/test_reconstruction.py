@@ -137,10 +137,6 @@ def test_sparse_regression_finds_the_terms():
     assert result.field.expression.free_symbols <= {x, y}
 
 
-def test_pysr_is_optional():
-    pytest.importorskip("pysr", reason="PySR installed: nothing to check about its absence")
-
-
 def test_symbolic_regression_without_pysr():
     try:
         import pysr  # noqa: F401
