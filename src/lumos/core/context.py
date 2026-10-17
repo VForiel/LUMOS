@@ -461,6 +461,40 @@ class Context:
             node = container
         return ".".join(reversed(parts))
 
+    def drivers(self) -> dict[str, Any]:
+        """Drivers attached to the elements, by element path."""
+        found = {}
+        for element in self._walk():
+            driver = getattr(element, "driver", None)
+            if driver is not None:
+                found[self.path_of(element)] = driver
+        return found
+
+    def stop_all(self) -> None:
+        """Emergency stop: stop every driver, then bring the equipment to its safe state (REQ-HW-4)."""
+        drivers = self.drivers()
+        for driver in drivers.values():
+            try:
+                driver.stop()
+            except Exception:  # keep stopping the others
+                logger.exception("stop of %s failed", type(driver).__name__)
+        for driver in drivers.values():
+            try:
+                driver.safe_state()
+            except Exception:
+                logger.exception("safe state of %s failed", type(driver).__name__)
+        entry = self._entry("log")
+        self._log(entry, "emergency stop of %d driver(s)", len(drivers))
+
+    @contextmanager
+    def operation_guard(self) -> Iterator[Context]:
+        """Run a block of operations; on ``KeyboardInterrupt`` or any error, stop everything and secure it."""
+        try:
+            yield self
+        except BaseException:
+            self.stop_all()
+            raise
+
     def twin_state(self, element: Any) -> dict[str, Any]:
         """State measured on the equipment at the last command, next to the twin's simulated state."""
         return dict(self._twin_states.get(id(element), {}))
