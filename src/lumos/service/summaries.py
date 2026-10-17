@@ -34,6 +34,22 @@ def _grid_text(grid: Any) -> str:
     return f"{grid.nx} x {grid.ny} pixels of {format_value(grid.dx_si * u.Unit(unit))}"
 
 
+def _beam_radius(intensity: np.ndarray, grid: Any) -> str:
+    """1/e² radii along x and y from the second moments, ``w = 2 σ`` (exact for a Gaussian beam)."""
+    intensity = intensity.reshape(-1, *intensity.shape[-2:]).sum(axis=0)  # wavelengths or modes summed
+    total = float(intensity.sum())
+    if not total > 0:
+        return "undefined (no light)"
+    x = grid.x.si.value
+    y = grid.y.si.value
+    px, py = intensity.sum(axis=0) / total, intensity.sum(axis=1) / total
+    sx = np.sqrt(max(float(np.sum(px * (x - np.sum(px * x)) ** 2)), 0.0))
+    sy = np.sqrt(max(float(np.sum(py * (y - np.sum(py * y)) ** 2)), 0.0))
+    unit = u.mas if grid.plane == "angular" else u.mm
+    wx, wy = ((2 * s * (u.rad if grid.plane == "angular" else u.m)).to_value(unit) for s in (sx, sy))
+    return f"{wx:.4g}, {wy:.4g} {unit.to_string()}"
+
+
 def _wavelengths(signal: Any) -> dict[str, str]:
     if hasattr(signal, "wavelengths"):
         waves = signal.wavelengths.to(u.nm)
@@ -69,6 +85,7 @@ def summarize(port: str, signal: Any, *, figure: bool = False) -> PortSummary:
         summary.details = {
             "grid": _grid_text(signal.grid),
             "power": format_value(signal.power if isinstance(signal, Wavefront) else signal.power.sum()),
+            "beam radius": _beam_radius(intensity, signal.grid),
         }
         summary.details.update(_wavelengths(signal))
     elif isinstance(signal, IncoherentBundle):
@@ -81,6 +98,7 @@ def summarize(port: str, signal: Any, *, figure: bool = False) -> PortSummary:
             "modes": str(signal.n_modes),
             "power": format_value(signal.total_power),
             "power per mode": format_value(signal.power),
+            "beam radius": _beam_radius(intensity, signal.grid),
         }
         summary.details.update(_wavelengths(signal[0]))
     elif isinstance(signal, ModalField):

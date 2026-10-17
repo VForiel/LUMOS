@@ -277,7 +277,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P13.5 Réponses adaptées aux LLM** — résumés, unités, erreurs exploitables, figures renvoyées en image.
 - [x] **P13.6 Transport HTTP *streamable*** — prêt à être adossé à l'instance web (authentification en P14).
 - [x] **P13.7 Doc « AI assistant »** — configuration pas à pas de Claude Code et Claude Desktop, exemples de conversations ; test de conformité générique au protocole MCP pour les autres clients.
-- [ ] **P13.8 Évaluation** — scénarios types (UC1, UC8, UC9) avec résultat attendu vérifiable.
+- [x] **P13.8 Évaluation** — scénarios types (UC1, UC8, UC9) avec résultat attendu vérifiable.
 
 **Tests écrits d'abord :** chaque outil est appelé via un client MCP de test ; parité entre service, MCP et API Python (même `.lumos` et même résultat) ; refus d'une action matérielle sans confirmation ; refus en mode désactivé.
 

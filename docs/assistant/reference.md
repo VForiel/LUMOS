@@ -63,6 +63,7 @@ also listed by any MCP client (`/mcp` in Claude Code).
 | `wait_job` | Wait for the end of a run. |
 | `get_result` | Summary of a computed output, optionally with its figure. |
 | `inspect_port` | Compute an output and return its summary and figure. |
+| `radial_profile` | Azimuthal mean of the intensity of a field, ring by ring (contrast curves). |
 | `get_journal` | Last entries of the journal of a context. |
 | `list_archives` | Archived runs. |
 | `read_archive_metadata` | Metadata of an archived run. |
@@ -110,6 +111,14 @@ also listed by any MCP client (`/mcp` in Claude Code).
 | `estimate_detection` | `target`, `instrument` | Decide whether an instrument can detect a target. |
 | `calibrate_bench` | `bench` | Calibrate a bench step by step, with confirmed actions on equipment. |
 | `diagnose_simulation` | `problem`, `context` | Find why a simulation is wrong, slow or suspicious. |
+
+## Evaluation
+
+The scenarios of `lumos.mcp.evaluation` check that an assistant reaches verifiable results through the server:
+the transmission map of a Bracewell nuller (UC1), a Gaussian beam propagated with two methods (UC8) and the
+raw contrast of a vortex coronagraph (UC9), each compared with its analytic solution. `tools/mcp_eval.py
+--reference` solves them with scripted tool calls (as the tests do); without `--reference`, Claude solves them
+through the Claude API (extra `eval` and an API key), as the weekly workflow `MCP evaluation` does.
 
 ## Safety
 

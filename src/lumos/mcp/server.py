@@ -21,6 +21,7 @@ from mcp.server.mcpserver import Context as MCPContext
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import CallToolResult, ImageContent, TextContent
+from starlette.applications import Starlette
 
 from lumos.mcp.operation import register_operation_tools
 from lumos.mcp.prompts import register_prompts
@@ -420,6 +421,24 @@ def create_server(
         return _port_result(service.inspect_port(session, state.context(context), port, figure=figure))
 
     @tool
+    def radial_profile(
+        port: str,
+        bin_width: str | None = None,
+        center: list[str] | None = None,
+        normalize: str | None = None,
+        context: str | None = None,
+    ) -> dict[str, Any]:
+        """Azimuthal mean of the intensity of a field at ``port``, ring by ring around ``center``.
+
+        ``bin_width`` is the width of the rings in the unit of the grid (e.g. ``"20 um"`` in a focal plane,
+        ``"10 mas"`` on the sky; default one pixel). ``normalize="peak"`` divides by the maximum intensity,
+        which gives contrasts. Radii are the middles of the rings.
+        """
+        return service.radial_profile(
+            session, state.context(context), port, bin_width=bin_width, center=center, normalize=normalize
+        )
+
+    @tool
     def get_journal(
         kind: str | None = None, limit: int = 50, context: str | None = None
     ) -> list[dict[str, Any]]:
@@ -465,7 +484,7 @@ def create_server(
     return server
 
 
-def create_http_app(server: MCPServer, *, path: str = "/mcp", host: str = "127.0.0.1") -> Any:
+def create_http_app(server: MCPServer, *, path: str = "/mcp", host: str = "127.0.0.1") -> Starlette:
     """Return the ASGI application serving ``server`` over streamable HTTP at ``path`` (step P13.6).
 
     The web backend mounts this application (P14), which then adds the authentication of its users; until

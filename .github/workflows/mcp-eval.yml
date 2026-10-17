@@ -1,0 +1,33 @@
+# Periodic evaluation of the MCP server with Claude (step P13.8, REQ-MCP-7, ADR-0017).
+# Needs the repository secret ANTHROPIC_API_KEY; without it the job only runs the scripted solutions.
+name: MCP evaluation
+
+on:
+  schedule:
+    - cron: "0 4 * * 1"  # Mondays, 04:00 UTC
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e ".[mcp,eval]"
+      - name: Scripted solutions
+        run: python tools/mcp_eval.py --reference
+      - name: Claude
+        if: env.ANTHROPIC_API_KEY != ''
+        run: python tools/mcp_eval.py --report mcp-eval.json
+      - uses: actions/upload-artifact@v4
+        if: always() && env.ANTHROPIC_API_KEY != ''
+        with:
+          name: mcp-eval
+          path: mcp-eval.json
+          if-no-files-found: ignore

@@ -18,18 +18,20 @@ The assistant loads the preset and reads it:
 It works out the scale of the image: λ/D = 1.6 µm / 8 m = 0.2 µrad (41 mas), that is
 f λ/D = 20 µm or 4 pixels in the focal plane, so 3 λ/D lies 12 pixels from the star.
 
-To measure the raw contrast, it switches the companion off, then compares the light left at 3 λ/D with the
-peak of the star seen without the coronagraph:
+To measure the raw contrast, it switches the companion off, then compares the light left around 3 λ/D with
+the peak of the star seen without the coronagraph:
 
 - `set_param(path="planet.flux_density", value="0 Jy")`
 - `inspect_port(port="image.out")`: the coronagraphic image of the star alone, with its figure;
+- `radial_profile(port="image.out", bin_width="20 um")`: the mean intensity in rings 1 λ/D wide;
 - `disconnect(source="telescope.out", target="coronagraph.in")`,
   `disconnect(source="coronagraph.out", target="lens.in")`,
-  `connect(source="telescope.out", target="lens.in")`, then `inspect_port(port="image.out")`: the
-  point-spread function without coronagraph, whose maximum is the reference peak.
+  `connect(source="telescope.out", target="lens.in")`, then `inspect_port(port="image.out")` and
+  `radial_profile(port="image.out", bin_width="20 um")`: the point-spread function without coronagraph,
+  whose maximum is the reference peak.
 
-> **Assistant:** At 3 λ/D (124 mas, 12 pixels from the star) the coronagraphic image of the star is several
-> orders of magnitude below the peak of the star without coronagraph. This is expected: a charge-2 vortex
+> **Assistant:** Between 3 and 4 λ/D (124 to 165 mas from the star), the mean intensity is about 2 × 10⁻¹⁰ of
+> the peak of the star with the coronagraph, against 9 × 10⁻⁴ without it (the Airy rings of the telescope). This is expected: a charge-2 vortex
 > cancels the light of an on-axis star for a circular unobstructed pupil (Mawet et al. 2005), and what remains
 > comes from the sampling of the simulation. With a central obstruction, spiders or wavefront errors the
 > contrast would degrade; I can add them if you want.

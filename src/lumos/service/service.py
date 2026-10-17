@@ -692,6 +692,70 @@ class Service:
             raise ServiceError(str(error), hint=_hint_for(error), code="failed") from error
         return summarize(port, signal, figure=figure)
 
+    def radial_profile(
+        self,
+        session: str,
+        context: str,
+        port: str,
+        *,
+        bin_width: Any = None,
+        center: Any = None,
+        normalize: str | None = None,
+    ) -> dict[str, Any]:
+        """Azimuthal mean of the intensity of a field at ``port``, in rings of width ``bin_width``.
+
+        ``center`` is ``[x, y]`` (default: the origin of the grid); ``normalize="peak"`` divides by the
+        maximum of the intensity, which gives contrasts. Radii are the middles of the rings, in SI
+        units of the grid.
+        """
+        import numpy as np
+
+        from lumos.backend import to_numpy
+        from lumos.fields import IncoherentBundle, Wavecube, Wavefront
+        from lumos.processing.profiles import radial_profile
+
+        state = self._session(session)
+        ctx = self._context(session, context)
+        reference = self._port(ctx, port)
+        try:
+            with state.lock, ctx.as_origin(state.info.origin):
+                signal = ctx.run([reference])[reference]
+        except Exception as error:
+            raise ServiceError(str(error), hint=_hint_for(error), code="failed") from error
+        if not isinstance(signal, Wavefront | Wavecube | IncoherentBundle):
+            raise ServiceError(
+                f"{port} carries a {type(signal).__name__}, not a field",
+                hint="give the output of an optical element (a wavefront, a wavecube or a bundle)",
+            )
+        grid = signal.grid
+        unit = u.rad if grid.plane == "angular" else u.m
+        intensity = np.asarray(to_numpy(signal.intensity), dtype=float)
+        intensity = intensity.reshape(-1, *intensity.shape[-2:]).sum(axis=0)
+        width = None if bin_width is None else parse_quantity(bin_width, unit, name="bin_width")
+        centre = None
+        if center is not None:
+            centre = tuple(parse_quantity(c, unit, name="center") for c in center)
+        try:
+            radii, profile = radial_profile(intensity, grid, center=centre, bin_width=width)  # type: ignore[arg-type]
+        except ValueError as error:
+            raise ServiceError(
+                str(error), hint="give a positive bin_width in the unit of the grid"
+            ) from error
+        value_unit = signal.intensity_unit.to_string()
+        if normalize == "peak":
+            profile = profile / intensity.max()
+            value_unit = "fraction of the peak"
+        elif normalize is not None:
+            raise ServiceError(f"unknown normalisation {normalize!r}", hint="use 'peak' or nothing")
+        return {
+            "port": port,
+            "radii": [float(f"{r:.6g}") for r in np.atleast_1d(radii.to_value(unit))],
+            "radius_unit": unit.to_string(),
+            "values": [None if not np.isfinite(v) else float(f"{v:.6g}") for v in profile],
+            "unit": value_unit,
+            "bin_width": format_value(radii[0] * 2),
+        }
+
     def journal(
         self, session: str, context: str, *, kind: str | None = None, limit: int = 50
     ) -> list[dict[str, Any]]:

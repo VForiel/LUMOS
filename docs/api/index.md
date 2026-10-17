@@ -343,4 +343,9 @@
 .. automodule:: lumos.mcp
 
 .. autofunction:: lumos.mcp.create_server
+
+.. autofunction:: lumos.mcp.create_http_app
+
+.. automodule:: lumos.mcp.evaluation
+   :members: Scenario, EvaluationResult, SCENARIOS, parse_answer, run_reference, run_with_claude
 ```
