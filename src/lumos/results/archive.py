@@ -58,7 +58,14 @@ DEPENDENCIES: tuple[str, ...] = (
 )
 
 #: Signal classes saved as JSON files in ``data/`` (they define ``to_json`` and ``from_json``).
-SIGNAL_CLASSES: tuple[str, ...] = ("Wavefront", "Wavecube", "IncoherentBundle", "RadianceField", "ModalField")
+SIGNAL_CLASSES: tuple[str, ...] = (
+    "Wavefront",
+    "Wavecube",
+    "IncoherentBundle",
+    "RadianceField",
+    "ModalField",
+    "SourceList",
+)
 
 
 def default_archive_root() -> Path:

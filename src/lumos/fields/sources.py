@@ -18,7 +18,7 @@ import numpy as np
 from astropy import units as u
 
 from lumos.core.signal import OpticalSignal
-from lumos.units import require_unit, to_si
+from lumos.units import quantity_from_json, quantity_to_json, require_unit, to_si
 
 __all__ = ["PHOTON_FLUX_DENSITY", "SourceList"]
 
@@ -137,3 +137,26 @@ class SourceList(OpticalSignal):
     def __repr__(self) -> str:
         """Summarise the list."""
         return f"SourceList(n_sources={self.n_sources}, n_wavelengths={len(self._lam)}, names={self._names})"
+
+    def to_json(self) -> dict[str, Any]:
+        """Encode the list as a strict-JSON-compatible dictionary."""
+        return {
+            "theta_x": quantity_to_json(self._tx * u.rad),
+            "theta_y": quantity_to_json(self._ty * u.rad),
+            "wavelengths": quantity_to_json(self._lam * u.m),
+            "bandwidths": quantity_to_json(self._bw * u.m),
+            "flux": quantity_to_json(self._flux * PHOTON_FLUX_DENSITY),
+            "names": list(self._names),
+        }
+
+    @classmethod
+    def from_json(cls, data: dict[str, Any]) -> SourceList:
+        """Decode a dictionary produced by :meth:`to_json`."""
+        return cls(
+            quantity_from_json(data["theta_x"]),
+            quantity_from_json(data["theta_y"]),
+            quantity_from_json(data["wavelengths"]),
+            quantity_from_json(data["bandwidths"]),
+            quantity_from_json(data["flux"]),
+            names=list(data["names"]),
+        )

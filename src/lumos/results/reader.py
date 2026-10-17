@@ -58,9 +58,10 @@ class LoadedArchive:
 
 
 def _signal_classes() -> dict[str, Any]:
-    from lumos.fields import IncoherentBundle, ModalField, RadianceField, Wavecube, Wavefront
+    from lumos.fields import IncoherentBundle, ModalField, RadianceField, SourceList, Wavecube, Wavefront
 
-    return {cls.__name__: cls for cls in (Wavefront, Wavecube, IncoherentBundle, RadianceField, ModalField)}
+    classes = (Wavefront, Wavecube, IncoherentBundle, RadianceField, ModalField, SourceList)
+    return {cls.__name__: cls for cls in classes}
 
 
 def _read_npz(path: Path) -> Any:
