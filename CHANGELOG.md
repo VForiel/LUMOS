@@ -92,6 +92,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   hips2fits providers; SED fusion and blackbody completion; `resolve`, `Star.from_catalog`,
   `Planet.from_catalog`, `Scene.from_catalog`, `MappedComponent.from_survey`; notebook
   `06_targets_from_catalogs` running offline on recorded answers.
+- `lumos.symbolic`: symbolic fields with parameters and LaTeX rendering; evaluation on grids (cached
+  `lambdify`, anti-aliasing); symbolic transfers of lenses, mirrors, delay lines, splitters, filters and
+  apertures; Gaussian, HG and LG beams through ABCD systems and tabulated circ/rect transforms with logged
+  numerical fallback; reconstructions from grids (Zernike, HG, LG, LP and Fourier projections, Gaussian and
+  Airy fits, sparse regression, optional PySR); `SymbolicSource` and automatic, logged conversion to numbers in
+  contexts; safe JSON form in `.lumos` files and archives; notebook `07_symbolic_optics` and the
+  `symbolic_focus` preset.
 - `lumos.elements.sources.Planet`: one planet of a star on a Keplerian orbit.
 - Source lists can be archived and read back.
 

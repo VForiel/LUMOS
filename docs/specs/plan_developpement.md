@@ -222,13 +222,13 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 10 — Symbolique
 
-- [ ] **P10.1 `SymbolicField`**, rendu LaTeX.
-- [ ] **P10.2 Symbols → grid** — `lambdify` par backend, anti-crénelage.
-- [ ] **P10.3 Transferts symboliques** des éléments simples.
-- [ ] **P10.4 Formes closes** — gaussiens, HG et LG via ABCD ; transformées tabulées ; repli numérique journalisé.
-- [ ] **P10.5 Grid → symbols** — projections modales, ajustements, régression parcimonieuse, PySR en option.
-- [ ] **P10.6 Intégration au graphe** — conversion automatique symbolique → numérique.
-- [ ] **P10.7 Notebook** `07_symbolic_optics`.
+- [x] **P10.1 `SymbolicField`**, rendu LaTeX.
+- [x] **P10.2 Symbols → grid** — `lambdify` par backend, anti-crénelage.
+- [x] **P10.3 Transferts symboliques** des éléments simples.
+- [x] **P10.4 Formes closes** — gaussiens, HG et LG via ABCD ; transformées tabulées ; repli numérique journalisé.
+- [x] **P10.5 Grid → symbols** — projections modales, ajustements, régression parcimonieuse, PySR en option.
+- [x] **P10.6 Intégration au graphe** — conversion automatique symbolique → numérique.
+- [x] **P10.7 Notebook** `07_symbolic_optics`.
 
 **Tests écrits d'abord :** gaussien → lentille → espace libre comparé à la solution ABCD analytique ; évaluation symbolique et numérique concordantes à 1e-6 ; coefficients de Zernike injectés retrouvés ; repli déclenché et journalisé quand il n'y a pas de forme close.
 

@@ -3,7 +3,8 @@
 Each preset is a ``.lumos`` context whose ``meta`` holds a ``description`` and the list of ``outputs`` to
 compute. Run after changing a preset::
 
-    python tools/build_presets.py
+    python tools/build_presets.py               # every preset
+    python tools/build_presets.py symbolic_focus  # some of them
 """
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ from lumos.elements.telescopes import Telescope, TelescopeArray
 from lumos.fields import Grid
 from lumos.scenes import Scene, SceneToSources
 from lumos.scenes.diffuse import InclinedRing
+from lumos.symbolic import SymbolicSource
 
 PRESETS = Path(__file__).resolve().parents[1] / "examples" / "presets"
 START = Time("2026-01-01T00:00:00", scale="utc")
@@ -216,6 +218,35 @@ def debris_disk() -> Context:
     return ctx
 
 
+def symbolic_focus() -> Context:
+    """Gaussian beam focused by a lens, kept symbolic up to its new waist (closed form by ABCD)."""
+    import math
+
+    lam, w0, f = 1.064e-6, 2e-3, 0.5
+    z_r = math.pi * w0**2 / lam
+    distance = f / (1 + (f / z_r) ** 2)  # new waist (Self 1983)
+    waist = lam * f / (math.pi * w0) / math.sqrt(1 + (f / z_r) ** 2)
+    ctx = _context(
+        "symbolic focus",
+        "Nd:YAG Gaussian beam focused by a lens, propagated in closed form to its new waist; a power meter "
+        "receives the field converted to numbers.",
+        ["gap.out", "meter.out"],
+    )
+    beam = ctx.add(
+        SymbolicSource.gaussian_beam(
+            name="beam",
+            waist=w0 * u.m,
+            wavelength=lam * u.m,
+            power=0.01 * u.W,  # in W, as the sampled fields (|U|² in W/m²)
+            grid=Grid(128, dx=waist / 8 * u.m),
+        )
+    )
+    lens = ctx.add(ThinLens(name="lens", focal_length=f * u.m))
+    gap = ctx.add(FreeSpace(name="gap", distance=distance * u.m))
+    beam >> lens >> gap >> ctx.add(PowerMeter(name="meter"))
+    return ctx
+
+
 BUILDERS: dict[str, Callable[[], Context]] = {
     "first_simulation": first_simulation,
     "propagation_methods": propagation_methods,
@@ -224,12 +255,15 @@ BUILDERS: dict[str, Callable[[], Context]] = {
     "kernel_nuller": kernel_nuller_preset,
     "bracewell": bracewell_preset,
     "debris_disk": debris_disk,
+    "symbolic_focus": symbolic_focus,
 }
 
 
-def main() -> None:
+def main(names: list[str]) -> None:
     PRESETS.mkdir(parents=True, exist_ok=True)
     for name, build in BUILDERS.items():
+        if names and name not in names:
+            continue
         ctx = build()
         ctx.run(ctx.meta["outputs"])  # fail early on an invalid preset
         lumos.io.save(ctx, PRESETS / f"{name}.lumos")
@@ -237,4 +271,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    main(sys.argv[1:])

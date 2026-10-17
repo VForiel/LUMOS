@@ -11,6 +11,7 @@ This guide will explain the concepts of LUMOS:
   detectors;
 - **scenes**: point and extended objects in a frame, and the imaging of extended scenes;
 - **catalogues**: typed records from SIMBAD, Gaia, exoplanet archives, surveys... and scenes built from them;
+- **symbolic optics**: closed-form fields carried through the graph, and expressions recovered from grids;
 - **results**: figures, data files and archives of runs.
 
 ```{toctree}
@@ -21,5 +22,6 @@ context
 elements
 scenes
 catalogs
+symbolic
 results
 ```

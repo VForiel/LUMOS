@@ -1,0 +1,230 @@
+{
+  "lumos_format": "1.0",
+  "kind": "context",
+  "lumos_version": "0.0.2.dev16",
+  "created_at": "2026-10-17T06:03:41Z",
+  "meta": {
+    "name": "symbolic focus",
+    "description": "Nd:YAG Gaussian beam focused by a lens, propagated in closed form to its new waist; a power meter receives the field converted to numbers.",
+    "outputs": [
+      "gap.out",
+      "meter.out"
+    ],
+    "author": "LUMOS"
+  },
+  "context": {
+    "mode": "simulation",
+    "twin": true,
+    "seed": 1,
+    "backend": {
+      "preferred": "auto"
+    },
+    "clock": {
+      "start": "2026-01-01T00:00:00.000",
+      "elapsed": {
+        "value": 0.0,
+        "unit": "s"
+      }
+    },
+    "observation": {
+      "band": null,
+      "n": 1,
+      "rule": "midpoint",
+      "extra": {}
+    },
+    "simulate": []
+  },
+  "elements": [
+    {
+      "id": "beam",
+      "type": "lumos.symbolic.SymbolicSource",
+      "type_version": 1,
+      "name": "beam",
+      "params": {},
+      "settings": {
+        "field": {
+          "expression": {
+            "op": "Mul",
+            "args": [
+              {
+                "float": "39.89422804014328"
+              },
+              {
+                "op": "exp",
+                "args": [
+                  {
+                    "op": "Add",
+                    "args": [
+                      {
+                        "op": "Mul",
+                        "args": [
+                          {
+                            "float": "-250000.0"
+                          },
+                          {
+                            "op": "Pow",
+                            "args": [
+                              {
+                                "symbol": "x",
+                                "assumptions": {
+                                  "commutative": true,
+                                  "complex": true,
+                                  "extended_real": true,
+                                  "finite": true,
+                                  "hermitian": true,
+                                  "imaginary": false,
+                                  "infinite": false,
+                                  "real": true
+                                }
+                              },
+                              {
+                                "int": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "op": "Mul",
+                        "args": [
+                          {
+                            "float": "-250000.0"
+                          },
+                          {
+                            "op": "Pow",
+                            "args": [
+                              {
+                                "symbol": "y",
+                                "assumptions": {
+                                  "commutative": true,
+                                  "complex": true,
+                                  "extended_real": true,
+                                  "finite": true,
+                                  "hermitian": true,
+                                  "imaginary": false,
+                                  "infinite": false,
+                                  "real": true
+                                }
+                              },
+                              {
+                                "int": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "plane": "spatial",
+          "parameters": [],
+          "wavelength": {
+            "value": 1.064e-06,
+            "unit": "m"
+          },
+          "power_unit": "W",
+          "grid": {
+            "nx": 128,
+            "ny": 128,
+            "dx": {
+              "value": 1.0574331926564834e-05,
+              "unit": "m"
+            },
+            "dy": {
+              "value": 1.0574331926564834e-05,
+              "unit": "m"
+            },
+            "x0": {
+              "value": 0.0,
+              "unit": "m"
+            },
+            "y0": {
+              "value": 0.0,
+              "unit": "m"
+            }
+          },
+          "form": {
+            "kind": "gaussian",
+            "q": [
+              0.0,
+              -11.810498697705988
+            ],
+            "wavelength": 1.064e-06,
+            "power": 0.01,
+            "family": "hg",
+            "indices": [
+              0,
+              0
+            ],
+            "gouy": 0.0,
+            "phase": 0.0,
+            "power_unit": "W"
+          }
+        }
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "lens",
+      "type": "lumos.optics.ThinLens",
+      "type_version": 1,
+      "name": "lens",
+      "params": {
+        "focal_length": {
+          "value": 0.5,
+          "unit": "m"
+        }
+      },
+      "settings": {},
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "gap",
+      "type": "lumos.optics.FreeSpace",
+      "type_version": 1,
+      "name": "gap",
+      "params": {
+        "distance": {
+          "value": 0.49910546803445466,
+          "unit": "m"
+        }
+      },
+      "settings": {
+        "method": "auto",
+        "output_grid": null
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "meter",
+      "type": "lumos.detectors.PowerMeter",
+      "type_version": 1,
+      "name": "meter",
+      "params": {},
+      "settings": {},
+      "state": {},
+      "free": {}
+    }
+  ],
+  "connections": [
+    {
+      "from": "beam.out",
+      "to": "lens.in"
+    },
+    {
+      "from": "lens.out",
+      "to": "gap.in"
+    },
+    {
+      "from": "gap.out",
+      "to": "meter.in"
+    }
+  ],
+  "ui": {}
+}
