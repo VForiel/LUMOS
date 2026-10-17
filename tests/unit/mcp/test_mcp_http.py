@@ -57,7 +57,7 @@ def http_server(tmp_path):
         yield f"http://127.0.0.1:{port}/mcp"
     finally:
         process.terminate()
-        process.wait(timeout=30)
+        process.communicate(timeout=30)  # waits and closes the pipes
 
 
 def test_lumos_mcp_serves_over_streamable_http(http_server):
