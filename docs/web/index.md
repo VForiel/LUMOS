@@ -18,4 +18,5 @@ The interface opens at <http://localhost:8000>. It only listens on your own mach
 configuration
 accounts
 api
+development
 ```

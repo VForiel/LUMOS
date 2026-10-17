@@ -162,6 +162,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   command-line overrides; unsafe configurations refused at start-up. Compute quotas in the service, shared
   with the MCP server: `max_grid_pixels`, `max_memory_mb`, `max_concurrent_runs`, and the time quota applied
   to inspections.
+- Web frontend (`web/`, ADR-0018): Vite, React, `@xyflow/react`, Tailwind CSS and i18next; palette, blocks,
+  ports coloured by signal and typed connections generated from `/api/palette` (schemas, signal classes, units
+  with their factors); English and French; light and dark themes; the last context is restored after a
+  restart of the server. Unit tests with Vitest, browser tests with Playwright (`pytest -m e2e`).
 
 ### Changed
 
