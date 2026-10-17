@@ -186,6 +186,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   interface; tools of the operation for operators only; actions journaled with the origin `mcp`) and assistant
   panel: Claude called from the browser with the API key of the user (kept in the tab), using the tools of the
   instance on the open context. `create_server(session=..., can_operate=...)`, `lumos.service.service.acting_as`.
+- Deployment of the web instance: Docker image (`deploy/Dockerfile`, local profile with `--listen-all` on a
+  port published locally, unprivileged user, health check `/api/health`), compose files for a single machine and
+  for a public instance behind Caddy (TLS), example configuration with quotas, hosting guide; wheels ship the
+  built interface.
 
 ### Changed
 

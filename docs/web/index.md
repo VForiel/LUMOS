@@ -29,6 +29,7 @@ operation
 assistant
 configuration
 accounts
+hosting
 api
 development
 ```

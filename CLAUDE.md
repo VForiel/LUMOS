@@ -37,7 +37,7 @@ Only allowed when the objective changed (recorded in the specs or an ADR) or the
 - **Arrays**: backend arrays (NumPy, JAX, …) through the Array API (`lumos.backend.current().xp`); no units inside performance-critical arrays; compile pure kernels with `lumos.jit`.
 - **Pure transfers**: element transfer functions are pure (state passed explicitly) so they can be JIT-compiled and differentiated.
 - **No** `print` (use `logging`), **no** `pickle` for user files, **no** disabling TLS verification, **no** arbitrary imports when loading `.lumos` files.
-- **Layout**: `src/lumos/` source only, `tests/` tests only, `examples/` notebooks and presets, `tools/` dev scripts, `docs/` documentation. Do not create files at the repository root; use `tmp/` (git-ignored) as a scratchpad.
+- **Layout**: `src/lumos/` source only, `tests/` tests only (frontend unit tests in `tests/frontend`, browser tests in `tests/e2e`), `web/` the web interface (built into `src/lumos/web/static/`, not versioned), `deploy/` Docker and hosting files, `examples/` notebooks and presets, `tools/` dev scripts, `docs/` documentation. Do not create files at the repository root; use `tmp/` (git-ignored) as a scratchpad.
 - **Commits**: Conventional Commits with the plan step as scope, e.g. `feat(P4.3): add matrix Fourier transform`.
 
 ## Commands (Windows paths; use `.venv/bin/` on Linux/macOS)
@@ -51,4 +51,6 @@ Only allowed when the objective changed (recorded in the specs or an ADR) or the
 .venv\Scripts\python.exe -m sphinx -W -b html docs docs/_build/html/en
 .venv\Scripts\python.exe -m sphinx -W -b html -D language=fr docs docs/_build/html/fr
 .venv\Scripts\python.exe tools/check_test_integrity.py origin/main..HEAD
+cd web ; npm ci ; npm test ; npm run build          # web interface
+.venv\Scripts\python.exe -m pytest -m e2e tests/e2e  # browser tests (built interface, playwright install chromium)
 ```

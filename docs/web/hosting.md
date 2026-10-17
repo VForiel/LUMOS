@@ -1,0 +1,88 @@
+# Hosting
+
+## On your machine, with Docker
+
+The image holds the backend and the interface. From the root of the repository:
+
+```console
+$ docker compose -f deploy/compose.yaml up --build
+```
+
+The interface is at <http://localhost:8000>. The image runs the **local** profile: inside the container the
+server listens on all interfaces (`--listen-all`), and the compose file publishes its port on `127.0.0.1` only,
+so no other machine can reach it. Archives of the runs are kept in the `lumos-data` volume. Without compose:
+
+```console
+$ docker build -f deploy/Dockerfile -t lumos .
+$ docker run --rm -p 127.0.0.1:8000:8000 -v lumos-data:/data lumos
+```
+
+Never publish the port of the local profile on another address (`-p 8000:8000`): its user has every right.
+
+## A public instance on a VPS
+
+The public instance serves anonymous visitors (simulators by default) with quotas, behind a reverse proxy
+that terminates TLS. `deploy/public/` holds a working setup with [Caddy](https://caddyserver.com), which obtains
+and renews the certificates by itself.
+
+### Requirements
+
+- A VPS with Docker and Docker Compose; 4 cores and 8 GB of memory serve a few dozen simultaneous visitors with
+  the default quotas (the computations are the limit, not the interface).
+- A DNS name pointing to the VPS (`lumos.example.org` below); ports 80 and 443 open.
+
+### Steps
+
+1. Copy the repository to the VPS (or only `deploy/` with an image built elsewhere).
+2. Replace `lumos.example.org` by your host name in `deploy/public/lumos.toml` (`allowed_hosts`) and
+   `deploy/public/Caddyfile`.
+3. Adapt the quotas of `lumos.toml` to the machine (see below).
+4. Start it:
+
+   ```console
+   $ docker compose -f deploy/public/compose.yaml up -d --build
+   $ docker compose -f deploy/public/compose.yaml logs -f lumos
+   ```
+
+5. Open `https://lumos.example.org`. `https://lumos.example.org/api/health` answers `{"status": "ok"}`.
+
+### Sizing the quotas
+
+The quotas bound what one visitor and all visitors together may compute ([Configuration](configuration.md)):
+
+| Setting | Rule of thumb |
+|---------|---------------|
+| `max_workers`, `max_concurrent_runs` | number of cores minus one |
+| `max_memory_mb` | memory of the machine divided by `max_concurrent_runs`, minus a margin |
+| `max_grid_pixels` | 1024 (a 1024 × 1024 complex field takes 16 MB per wavelength) |
+| `max_run_seconds` | 60 for interactive use |
+| `max_sessions`, `requests_per_minute` | a few hundred |
+
+The compose file also limits the CPU and memory of the container, so that the proxy stays responsive.
+
+### Accounts
+
+Anonymous visitors need no account. To give some users more rights (or to require a login with
+`anonymous_role = "none"`), create the users file in the volume and point `users_file` to it:
+
+```console
+$ docker compose -f deploy/public/compose.yaml exec lumos lumos users add alice --role simulator --password --file /data/users.toml
+```
+
+See [Accounts and security](accounts.md).
+
+### Operating equipment from a public instance
+
+It stays disabled unless you decide otherwise: set `operation_enabled = true`, keep the instance behind TLS
+(`trust_proxy = true` with the proxy above) and register at least one operator. The server refuses to start
+when one of these is missing. Every action is confirmed in the interface and written to the audit journal.
+
+### Maintenance
+
+- **Updates**: pull the new version, then `docker compose -f deploy/public/compose.yaml up -d --build`.
+  Sessions are kept in memory: a restart logs everybody out (the interface restores the context of each
+  visitor from their browser).
+- **Backups**: the `lumos-data` volume holds the users file, the audit journal and the archives.
+- **Logs**: `docker compose logs lumos`; security events are in `/data/audit.log` (one JSON object per line).
+- **Checklist**: HTTPS only (Caddy redirects HTTP), `allowed_hosts` set, operation disabled or guarded,
+  quotas adapted, volume backed up, the image updated with LUMOS.
