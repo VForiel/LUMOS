@@ -178,6 +178,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Presets and tour in the web interface: gallery of the presets (title, description, types of elements) on a
   first visit and from the toolbar; step-by-step guided tour overlaid on the interface (driver.js, English and
   French) from a preset to its results. `PresetInfo` gives `title` and `elements`.
+- Operation panel of the web interface: devices and their state, discovery and association (operators),
+  actions of the elements (simulated when the operation is disabled), confirmation dialog naming the device,
+  emergency stop in the toolbar; login dialog (password, or SSH challenge with the `ssh-keygen` command) and
+  role shown in the toolbar.
 
 ### Changed
 

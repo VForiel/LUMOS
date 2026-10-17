@@ -35,7 +35,7 @@ read again when it changes: no restart is needed to add a user.
 
 ## Logging in
 
-- **With a password**: the *Log in* button of the interface.
+- **With a password**: the *Log in* button of the toolbar (shown when the instance has users).
 - **With an SSH key**: the interface shows a challenge and the command that signs it; paste the signature it
   prints:
 
