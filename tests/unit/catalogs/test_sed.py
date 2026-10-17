@@ -7,9 +7,14 @@ Independent references:
 
 - Planck's law with the CODATA constants (``scipy.constants``): ``F_ν = Ω B_ν(T)`` for a blackbody of solid
   angle Ω;
-- Vega: effective temperature 9602 ± 180 K (Yoon et al. 2010, ApJ 708, 71); its photometry (VizieR, recorded)
-  fitted by a blackbody between 0.4 and 2.5 µm gives a temperature within 10 % of it; its mean radius is
-  between the polar (2.36 R☉) and equatorial (2.82 R☉) radii of Yoon et al. (2010), ±10 % for a blackbody fit.
+- Vega: V = 0.03 and K = 0.13 mag (SIMBAD) with the zero points 3636 Jy (V) and 640 Jy (K) of Bessell,
+  Castelli & Plez (1998, A&A 333, 231, table A2): 3536 Jy and 568 Jy. A blackbody fitted to its photometry
+  between 0.4 and 2.5 µm reproduces them within 10 %; its temperature is not the effective temperature (the
+  Balmer jump and the Paschen continuum of an A star are not those of a blackbody), so only the photometry
+  is compared;
+- Vega: effective temperature 9602 ± 180 K and mean radius between the polar (2.36 R☉) and equatorial
+  (2.82 R☉) radii (Yoon et al. 2010, ApJ 708, 71); with the measured temperature, the solid angle fitted to
+  the photometry gives a radius in this range within ±10 %.
 """
 
 import math
@@ -115,10 +120,11 @@ def test_completion_is_flagged_as_estimated():
     assert all(source == "lumos" for source, flag in zip(completed.sources, estimated, strict=True) if flag)
 
 
-def test_vega_blackbody_temperature(replay):
+def test_vega_blackbody_fit_reproduces_the_photometry(replay):
     sed = fuse(VizierPhotometry().sed("Vega"))
-    temperature, _ = fit_blackbody(sed, wavelength_range=(0.4 * u.um, 2.5 * u.um))
-    assert temperature.to_value(u.K) == pytest.approx(9602, rel=0.10)
+    temperature, omega = fit_blackbody(sed, wavelength_range=(0.4 * u.um, 2.5 * u.um))
+    model = planck_nu_jy(np.array([0.545e-6, 2.19e-6]), temperature.to_value(u.K), omega.to_value(u.sr))
+    np.testing.assert_allclose(model, [3536.0, 568.0], rtol=0.10)
 
 
 def test_complete_star_estimates_temperature_and_radius(replay):
@@ -128,8 +134,7 @@ def test_complete_star_estimates_temperature_and_radius(replay):
     assert completed["teff"].estimated
     assert completed["radius"].estimated
     assert completed["distance"].estimated
-    radius = completed.radius.to_value(u.R_sun)
-    assert 2.36 * 0.9 < radius < 2.82 * 1.1
+    assert math.isfinite(completed.radius.to_value(u.R_sun))
     assert "teff" not in vega  # the original record is unchanged
 
 
@@ -143,4 +148,5 @@ def test_complete_star_keeps_measured_values(replay):
     completed = complete_star(vega, sed, wavelength_range=(0.4 * u.um, 2.5 * u.um))
     assert completed["teff"].estimated is False
     assert completed.teff == 9602 * u.K
-    assert math.isfinite(completed.radius.to_value(u.R_sun))
+    radius = completed.radius.to_value(u.R_sun)  # solid angle fitted at the measured temperature
+    assert 2.36 * 0.9 < radius < 2.82 * 1.1
