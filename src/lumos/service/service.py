@@ -33,6 +33,7 @@ from lumos.core.context import Context
 from lumos.core.driver import DriverError, LimitError
 from lumos.core.element import Element
 from lumos.core.graph import GraphError, Result
+from lumos.core.group import GROUP_TYPE, ElementGroup, group_type_of
 from lumos.core.port import PortCompatibilityError
 from lumos.core.registry import UnknownTypeError, registry
 from lumos.io.lumos_format import from_document
@@ -153,11 +154,14 @@ class Service:
                 f"unknown context {context!r}", hint=f"known contexts: {known}", code="not_found"
             ) from None
 
-    def _element(self, ctx: Context, path: str) -> Any:
+    def _element(self, ctx: Context | ElementGroup, path: str) -> Any:
         try:
             return ctx[path]
         except (KeyError, GraphError):
-            known = ", ".join(path for path, _ in ctx.walk())
+            walk = getattr(ctx, "walk", None)
+            known = (
+                ", ".join(path for path, _ in walk()) if walk else ", ".join(ctx.id_of(e) for e in ctx.graph)
+            )
             raise ServiceError(f"no element {path!r}", hint=f"elements: {known}", code="not_found") from None
 
     def _register(self, session: str, ctx: Context) -> ContextSummary:
@@ -331,10 +335,13 @@ class Service:
             unit = getattr(declared, "unit", None)
             groups[declared.kind][name] = format_value(value, unit)
         ports = element.instance_ports()
-        try:
-            type_id = registry.type_id(cls)
-        except UnknownTypeError:
-            type_id = cls.__name__
+        if isinstance(element, ElementGroup):
+            type_id = group_type_of(element) or GROUP_TYPE
+        else:
+            try:
+                type_id = registry.type_id(cls)
+            except UnknownTypeError:
+                type_id = cls.__name__
         return ElementSummary(
             id=path,
             type_id=type_id,
@@ -359,6 +366,14 @@ class Service:
     ) -> ElementSummary:
         """Add an element of ``type_id`` with the given parameter values (``"2 mW"``...)."""
         ctx = self._context(session, context)
+        element = self._new_element(type_id, name, params)
+        try:
+            ctx.add(element)
+        except GraphError as error:
+            raise ServiceError(str(error), hint=_hint_for(error)) from error
+        return self._element_summary(ctx.id_of(element), element)
+
+    def _new_element(self, type_id: str, name: str | None, params: Mapping[str, Any] | None) -> Element:
         cls = self._type(type_id)
         declared = cls.declared()
         values = {}
@@ -369,18 +384,48 @@ class Service:
                 )
             values[key] = parse_value(declared[key], value, name=key)
         try:
-            element = cls(name=name, **values)
-            ctx.add(element)
-        except (TypeError, ValueError, u.UnitsError, GraphError) as error:
+            return cls(name=name, **values)
+        except (TypeError, ValueError, u.UnitsError) as error:
             raise ServiceError(str(error), hint=_hint_for(error)) from error
-        return self._element_summary(ctx.id_of(element), element)
+
+    def create_group(
+        self,
+        session: str,
+        context: str,
+        name: str,
+        *,
+        elements: Iterable[Mapping[str, Any]] = (),
+        connections: Iterable[tuple[str, str] | list[str]] = (),
+        expose: Mapping[str, str] | None = None,
+    ) -> ElementSummary:
+        """Add a group of elements that behaves as one element (REQ-CTX-7).
+
+        ``elements`` are ``{"type": type_id, "name": ..., "params": {...}}``, ``connections`` are pairs
+        ``["child.port", "child.port"]`` inside the group and ``expose`` maps the names of the ports of the
+        group to internal ports (``{"out": "laser.out"}``). Nothing is added if any part is invalid.
+        """
+        ctx = self._context(session, context)
+        group = ElementGroup(name=name)
+        for spec in elements:
+            group.add(self._new_element(str(spec["type"]), spec.get("name"), spec.get("params")))
+        try:
+            for source, target in connections:
+                group.connect(self._port(group, source), self._port(group, target))
+            for port, internal in (expose or {}).items():
+                group.expose(port, self._port(group, internal))
+            ctx.add(group)
+        except (PortCompatibilityError, GraphError, TypeError) as error:
+            raise ServiceError(
+                str(error), hint="connect and expose ports of the elements of the group ('child.port')"
+            ) from error
+        return self._element_summary(ctx.id_of(group), group)
 
     def remove_element(self, session: str, context: str, element: str) -> None:
         """Remove an element and its connections."""
         ctx = self._context(session, context)
         ctx.remove(self._element(ctx, element))
 
-    def _port(self, ctx: Context, reference: str) -> Any:
+    def _port(self, ctx: Context | ElementGroup, reference: str) -> Any:
         owner, _, port = reference.rpartition(".")
         if not owner:
             raise ServiceError(

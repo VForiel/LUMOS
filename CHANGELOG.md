@@ -120,7 +120,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `lumos.service` (ADR-0015): the service layer shared by the web backend and the MCP server — sessions with
   an origin, contexts and presets, editing with quantities written as text (`"0.5 mm"`), validation with
   hints, runs in the background with progress and quotas, port summaries with figures, catalogues, archives
-  and the gated operation of equipment; errors say how to fix the request.
+  and the gated operation of equipment; errors say how to fix the request; groups created in one call.
+- `lumos.mcp` and `lumos mcp` (ADR-0016): MCP server over stdio for AI assistants, with tools to discover
+  element types and documentation, build and edit contexts, validate them, run them with progress and read
+  their results, resolve catalogue objects, build processing pipelines, evaluate detection limits and read
+  archives; the context defaults to the last one used.
 
 ### Changed
 
@@ -133,6 +137,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Fixed
 
+- `Crop` centred on the origin by default fails no more on images with axes in lengths or angles.
 - Random streams of stochastic elements inside groups are keyed by their path `group.child`.
 
 - The JAX import hook is no longer consumed by `importlib.util.find_spec("jax")`, so `Values` is registered as

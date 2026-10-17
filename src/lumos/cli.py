@@ -2,7 +2,8 @@
 
 - ``lumos emulators list``: the LumosLabs devices that can be emulated;
 - ``lumos emulators start [--devices ...] [--host H] [--port P] [--duration S]``: serve emulators over TCP,
-  one port per device from ``P`` (``0``: free ports), until Ctrl+C or for ``S`` seconds.
+  one port per device from ``P`` (``0``: free ports), until Ctrl+C or for ``S`` seconds;
+- ``lumos mcp [--archive-root DIR] [--presets-dir DIR]``: serve the MCP server for AI assistants over stdio.
 """
 
 from __future__ import annotations
@@ -50,6 +51,23 @@ def _emulators(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def _mcp(arguments: argparse.Namespace) -> int:
+    import logging
+
+    try:
+        from lumos.mcp import create_server
+    except ImportError as error:  # pragma: no cover - depends on the installed extras
+        sys.stderr.write(f"the MCP server needs the extra 'mcp': pip install 'lumos-maxima[mcp]' ({error})\n")
+        return 2
+    from lumos.service import ServiceConfig
+
+    # stdout carries the protocol: the logs go to stderr
+    logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
+    config = ServiceConfig(archive_root=arguments.archive_root, presets_dir=arguments.presets_dir)
+    create_server(config=config).run("stdio")
+    return 0
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="lumos", description="LUMOS command line")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -61,6 +79,9 @@ def _parser() -> argparse.ArgumentParser:
     emulators.add_argument(
         "--duration", type=float, default=None, help="seconds to run (default: until Ctrl+C)"
     )
+    mcp = commands.add_parser("mcp", help="MCP server for AI assistants (Claude Code, Claude Desktop...)")
+    mcp.add_argument("--archive-root", default=None, help="directory of the archives of the runs")
+    mcp.add_argument("--presets-dir", default=None, help="directory of the preset .lumos files")
     return parser
 
 
@@ -69,6 +90,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     arguments = _parser().parse_args(argv)
     if arguments.command == "emulators":
         return _emulators(arguments)
+    if arguments.command == "mcp":
+        return _mcp(arguments)
     return 1  # pragma: no cover - argparse requires a command
 
 

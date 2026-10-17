@@ -336,3 +336,11 @@
 .. automodule:: lumos.service.errors
    :members:
 ```
+
+## MCP server
+
+```{eval-rst}
+.. automodule:: lumos.mcp
+
+.. autofunction:: lumos.mcp.create_server
+```
