@@ -19,6 +19,12 @@ Windows, since the client does not activate the environment.
 ## Claude Code
 
 1. Install [Claude Code](https://docs.claude.com/en/docs/claude-code) and LUMOS with the extra `mcp`.
+
+   :::{note}
+   The Claude Code extension of VS Code does not put the command `claude` on the `PATH`. On Windows, install
+   the command line with `winget install Anthropic.ClaudeCode` (or `npm install -g @anthropic-ai/claude-code`)
+   and open a new terminal; `claude --version` must answer.
+   :::
 2. Register the server:
 
    ```console

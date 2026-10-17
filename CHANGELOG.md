@@ -142,7 +142,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   with a raw JSON-RPC client.
 - Evaluation of the MCP server (`lumos.mcp.evaluation`, `tools/mcp_eval.py`, ADR-0017): scenarios UC1 (nuller
   transmission), UC8 (propagation methods) and UC9 (coronagraph contrast) with analytic expected values,
-  scripted reference solutions run by the tests, and a weekly run with Claude (extra `eval`).
+  scripted reference solutions run by the tests, and runs on demand with Claude Code
+  (`tools/mcp_eval.py --claude-code`, no API key).
 - Tool `radial_profile` (azimuthal mean of the intensity of a field) and the 1/e² beam radius in the summaries
   of fields.
 - The journal of a context records each run (`kind: "run"`: outputs and duration).

@@ -47,7 +47,6 @@ catalogs = ["requests>=2.32"]
 hardware = ["pyserial>=3.5", "pyvisa>=1.14"]
 web = ["fastapi>=0.115", "uvicorn[standard]>=0.30", "argon2-cffi>=23.1"]
 mcp = ["mcp>=2.3,<3"]  # MCPServer API of the SDK 2 (ADR-0016)
-eval = ["lumos-maxima[mcp]", "anthropic>=1.15"]  # evaluation of the MCP server with Claude (ADR-0017)
 ai = ["numpyro>=0.15", "optax>=0.2", "blackjax>=1.2"]
 validation = ["poppy>=1.1", "hcipy>=0.6"]
 hdf5 = ["h5py>=3.10"]

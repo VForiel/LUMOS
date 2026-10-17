@@ -6,8 +6,9 @@ assistant ends its answer with a JSON object holding the requested values; :func
 
 - :func:`run_reference` solves a scenario with a scripted sequence of MCP tool calls. It runs in the tests: it
   proves that the scenario can be solved with the tools, and that the checks accept a right answer.
-- :func:`run_with_claude` gives the task to Claude through the Claude API, with the tools of the server, and
-  checks its answer. ``tools/mcp_eval.py`` runs it periodically (extra ``eval``, an API key).
+- :func:`run_with_claude_code` gives the task to Claude Code (``claude -p``, the subscription of the user, no
+  API key) with the tools of the server, and checks its answer. ``tools/mcp_eval.py --claude-code`` runs it on
+  demand.
 """
 
 from __future__ import annotations
@@ -15,24 +16,24 @@ from __future__ import annotations
 import json
 import math
 import re
+import subprocess
+import sys
 from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from scipy import integrate, special
 
 __all__ = [
-    "DEFAULT_MODEL",
     "SCENARIOS",
     "EvaluationResult",
     "Scenario",
+    "claude_code_command",
     "parse_answer",
     "run_reference",
-    "run_with_claude",
+    "run_with_claude_code",
 ]
-
-#: Model used by :func:`run_with_claude` unless another one is given.
-DEFAULT_MODEL = "claude-opus-5-5"
 
 _ANSWER = (
     "\n\nEnd your answer with a JSON object holding exactly these keys, with plain numbers as values "
@@ -295,73 +296,69 @@ async def run_reference(scenario: Scenario, client: Any) -> EvaluationResult:
     return EvaluationResult(scenario.name, answer, scenario.check(answer), text=json.dumps(answer))
 
 
-def _tool_result_content(result: Any) -> list[dict[str, Any]]:
-    """Content blocks of an MCP tool result, in the format of the Claude API."""
-    blocks: list[dict[str, Any]] = []
-    for block in result.content:
-        if block.type == "text":
-            blocks.append({"type": "text", "text": block.text})
-        elif block.type == "image":
-            source = {"type": "base64", "media_type": block.mime_type, "data": block.data}
-            blocks.append({"type": "image", "source": source})
-    return blocks or [{"type": "text", "text": "(no content)"}]
+def claude_code_command(
+    scenario: Scenario, *, archive_root: str | Path, model: str | None = None, executable: str = "claude"
+) -> list[str]:
+    """Command running Claude Code on ``scenario`` with the MCP server of LUMOS as its only tools.
 
-
-async def run_with_claude(
-    scenario: Scenario, client: Any, *, model: str = DEFAULT_MODEL, max_turns: int = 60
-) -> EvaluationResult:
-    """Give ``scenario`` to Claude with the tools of the MCP server behind ``client`` and check its answer.
-
-    Needs the package ``anthropic`` (extra ``eval``) and credentials of the Claude API (``ANTHROPIC_API_KEY``
-    or a profile of ``ant auth login``).
+    The server is started with the current Python interpreter (``python -m lumos.cli mcp``), so it does not
+    depend on the ``PATH``; ``--strict-mcp-config`` ignores the other MCP servers of the user and
+    ``--allowedTools mcp__lumos`` lets Claude Code call the tools of LUMOS without asking.
     """
-    import anthropic  # pyright: ignore[reportMissingImports]
-
-    api = anthropic.AsyncAnthropic()
-    listed = await client.list_tools()
-    tools: list[Any] = [
-        {"name": tool.name, "description": tool.description or "", "input_schema": tool.input_schema}
-        for tool in listed.tools
+    server = {
+        "command": sys.executable,
+        "args": ["-m", "lumos.cli", "mcp", "--archive-root", str(archive_root)],
+    }
+    command = [
+        executable,
+        "-p",
+        scenario.task,
+        "--mcp-config",
+        json.dumps({"mcpServers": {"lumos": server}}),
+        "--strict-mcp-config",
+        "--allowedTools",
+        "mcp__lumos",
+        "--output-format",
+        "json",
     ]
-    messages: list[Any] = [{"role": "user", "content": scenario.task}]
-    calls = 0
-    response = None
-    for _ in range(max_turns):
-        response = await api.beta.messages.create(
-            model=model,
-            max_tokens=16000,
-            system=client.instructions or "",
-            tools=tools,
-            messages=messages,
-            output_config={"effort": "high"},
-            betas=["server-side-fallback-2026-07-01"],
-            fallbacks="default",
+    if model:
+        command += ["--model", model]
+    return command
+
+
+def run_with_claude_code(
+    scenario: Scenario,
+    *,
+    archive_root: str | Path,
+    model: str | None = None,
+    executable: str = "claude",
+    timeout: float = 1800.0,
+    run: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+) -> EvaluationResult:
+    """Give ``scenario`` to Claude Code (``claude -p``) with the tools of LUMOS and check its answer.
+
+    Claude Code runs with the account of the user (a Claude subscription, no API key). ``run`` replaces
+    :func:`subprocess.run` in the tests.
+    """
+    command = claude_code_command(scenario, archive_root=archive_root, model=model, executable=executable)
+    try:
+        finished = run(command, capture_output=True, text=True, encoding="utf-8", timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return EvaluationResult(scenario.name, {}, [f"Claude Code did not run: {error}"])
+    if finished.returncode != 0:
+        reason = (finished.stderr or finished.stdout).strip() or f"exit status {finished.returncode}"
+        return EvaluationResult(scenario.name, {}, [f"Claude Code failed: {reason}"])
+    try:
+        output = json.loads(finished.stdout)
+    except json.JSONDecodeError:
+        return EvaluationResult(
+            scenario.name, {}, ["Claude Code did not answer in JSON"], text=finished.stdout
         )
-        messages.append({"role": "assistant", "content": response.content})
-        if response.stop_reason == "pause_turn":
-            continue
-        if response.stop_reason != "tool_use":
-            break
-        results = []
-        for block in response.content:
-            if block.type != "tool_use":
-                continue
-            calls += 1
-            result = await client.call_tool(block.name, block.input)
-            results.append(
-                {
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": _tool_result_content(result),
-                    "is_error": bool(result.is_error),
-                }
-            )
-        messages.append({"role": "user", "content": results})
-    text = "" if response is None else "".join(b.text for b in response.content if b.type == "text")
+    text = str(output.get("result", ""))
     answer = parse_answer(text)
     failures = scenario.check(answer)
-    if response is not None and response.stop_reason == "refusal":
-        failures.insert(0, "the model declined the task")
-    elif response is not None and response.stop_reason == "tool_use":
-        failures.insert(0, f"no final answer after {max_turns} turns")
-    return EvaluationResult(scenario.name, answer, failures, text=text, tool_calls=calls)
+    if output.get("is_error"):
+        failures.insert(0, f"Claude Code stopped: {output.get('subtype', 'error')}")
+    return EvaluationResult(
+        scenario.name, answer, failures, text=text, tool_calls=int(output.get("num_turns", 0))
+    )

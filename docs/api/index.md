@@ -347,5 +347,5 @@
 .. autofunction:: lumos.mcp.create_http_app
 
 .. automodule:: lumos.mcp.evaluation
-   :members: Scenario, EvaluationResult, SCENARIOS, parse_answer, run_reference, run_with_claude
+   :members: Scenario, EvaluationResult, SCENARIOS, parse_answer, run_reference, claude_code_command, run_with_claude_code
 ```
