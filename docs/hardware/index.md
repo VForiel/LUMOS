@@ -7,5 +7,7 @@ real transports, so that every feature can be tried without equipment.
 ```{toctree}
 :maxdepth: 1
 
+operation
 lumoslabs_protocol
+writing_a_driver
 ```
