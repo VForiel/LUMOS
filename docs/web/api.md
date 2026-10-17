@@ -63,9 +63,13 @@ import httpx
 
 with httpx.Client(base_url="http://localhost:8000") as client:
     cid = client.post("/api/contexts", json={"name": "bench"}).json()["id"]
-    client.post(f"/api/contexts/{cid}/elements",
-                json={"type_id": "lumos.sources.GaussianLaser", "name": "laser", "params": {"power": "2 mW"}})
-    client.post(f"/api/contexts/{cid}/elements", json={"type_id": "lumos.detectors.PowerMeter", "name": "meter"})
+    client.post(
+        f"/api/contexts/{cid}/elements",
+        json={"type_id": "lumos.sources.GaussianLaser", "name": "laser", "params": {"power": "2 mW"}},
+    )
+    client.post(
+        f"/api/contexts/{cid}/elements", json={"type_id": "lumos.detectors.PowerMeter", "name": "meter"}
+    )
     client.post(f"/api/contexts/{cid}/connections", json={"source": "laser.out", "target": "meter.in"})
     job = client.post(f"/api/contexts/{cid}/runs", json={"outputs": ["meter.out"]}).json()
     # ... poll GET /api/jobs/{id} (or listen on /api/ws), then:
