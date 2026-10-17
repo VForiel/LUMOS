@@ -5,7 +5,9 @@
   one port per device from ``P`` (``0``: free ports), until Ctrl+C or for ``S`` seconds;
 - ``lumos mcp [--archive-root DIR] [--presets-dir DIR] [--enable-operation]``: serve the MCP server for AI
   assistants over stdio, or over streamable HTTP with ``--transport http [--host H] [--port P] [--path /mcp]``
-  (local only unless ``--allow-remote``).
+  (local only unless ``--allow-remote``);
+- ``lumos web [--host H] [--port P] [--profile local|public] [--open]``: serve the web interface
+  (``http://127.0.0.1:8000`` by default).
 """
 
 from __future__ import annotations
@@ -96,6 +98,41 @@ def _mcp(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def _web(arguments: argparse.Namespace) -> int:
+    import logging
+
+    try:
+        import uvicorn
+
+        from lumos.web import WebConfig, create_app
+    except ImportError as error:  # pragma: no cover - depends on the installed extras
+        sys.stderr.write(
+            f"the web interface needs the extra 'web': pip install 'lumos-maxima[web]' ({error})\n"
+        )
+        return 2
+    from lumos.service import ServiceConfig
+
+    logging.basicConfig(stream=sys.stderr, level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    config = WebConfig(
+        profile=arguments.profile,
+        host=arguments.host,
+        port=arguments.port,
+        service=ServiceConfig(archive_root=arguments.archive_root, presets_dir=arguments.presets_dir),
+    )
+    app = create_app(config)
+    url = (
+        f"http://{'localhost' if arguments.host in ('127.0.0.1', '::1') else arguments.host}:{arguments.port}"
+    )
+    sys.stderr.write(f"LUMOS web interface on {url} (press Ctrl+C to stop)\n")
+    if arguments.open:
+        import threading
+        import webbrowser
+
+        threading.Timer(1.0, webbrowser.open, args=(url,)).start()
+    uvicorn.run(app, host=arguments.host, port=arguments.port, log_level="warning")
+    return 0
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="lumos", description="LUMOS command line")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -124,6 +161,15 @@ def _parser() -> argparse.ArgumentParser:
         action="store_true",
         help="allow actions on real equipment, each one confirmed by the user (default: disabled)",
     )
+    web = commands.add_parser("web", help="web interface (visual editor)")
+    web.add_argument("--host", default="127.0.0.1", help="address to listen on (default: 127.0.0.1)")
+    web.add_argument("--port", type=int, default=8000, help="port (default: 8000)")
+    web.add_argument(
+        "--profile", choices=("local", "public"), default="local", help="deployment profile (default: local)"
+    )
+    web.add_argument("--archive-root", default=None, help="directory of the archives of the runs")
+    web.add_argument("--presets-dir", default=None, help="directory of the preset .lumos files")
+    web.add_argument("--open", action="store_true", help="open the interface in the default browser")
     return parser
 
 
@@ -134,6 +180,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _emulators(arguments)
     if arguments.command == "mcp":
         return _mcp(arguments)
+    if arguments.command == "web":
+        return _web(arguments)
     return 1  # pragma: no cover - argparse requires a command
 
 

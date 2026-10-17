@@ -642,6 +642,28 @@ class Service:
         job.future = self._executor.submit(work)
         return job.info.model_copy()
 
+    def default_outputs(self, session: str, context: str) -> list[str]:
+        """Return the outputs to run when none is named.
+
+        Those listed by the context (``meta.outputs``), else the unconnected outputs of its elements.
+        """
+        ctx = self._context(session, context)
+        listed = [str(name) for name in ctx.meta.get("outputs", [])]
+        if listed:
+            return listed
+        used = {(id(c.source.owner), c.source.name) for c in ctx._graph.connections}
+        free = []
+        for element in ctx.graph:
+            path = ctx.id_of(element)
+            for name, port in element.instance_ports().items():
+                if port.direction == "out" and (id(element), name) not in used:
+                    free.append(f"{path}.{name}")
+        return free
+
+    def list_jobs(self, session: str) -> list[JobInfo]:
+        """Return the runs of the session, oldest first."""
+        return [job.info.model_copy() for job in self._session(session).jobs.values()]
+
     def get_job(self, session: str, job: str) -> JobInfo:
         """Status, progress and outcome of a run."""
         state = self._session(session)
@@ -764,6 +786,11 @@ class Service:
         if kind is not None:
             entries = [e for e in entries if e.get("kind") == kind]
         return json.loads(json.dumps(entries[-limit:], default=str))
+
+    def journal_since(self, session: str, context: str, start: int = 0) -> list[dict[str, Any]]:
+        """Entries of the journal of a context from index ``start`` (to follow it as it grows)."""
+        entries = list(self._context(session, context).journal)[start:]
+        return json.loads(json.dumps([e.to_json() for e in entries], default=str))
 
     # --- Catalogues and processing -------------------------------------------------------------------------
 
