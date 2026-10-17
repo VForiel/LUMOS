@@ -16,7 +16,7 @@ from __future__ import annotations
 import base64
 import re
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -99,7 +99,7 @@ def format_token(value: Any) -> str:
     if isinstance(value, u.Quantity):
         if not value.isscalar:
             raise ProtocolError("only scalar quantities are tokens; send arrays with encode_array")
-        unit = value.unit.to_string().replace(" ", "")
+        unit = cast(u.UnitBase, value.unit).to_string().replace(" ", "")
         return f"{_number(float(np.asarray(value.value)))}[{unit}]"
     if isinstance(value, bool | np.bool_):
         return "1" if value else "0"
