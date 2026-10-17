@@ -541,7 +541,7 @@ def _field_schema(field: Field) -> dict[str, Any]:
         if field.choices is not None:
             schema["enum"] = list(field.choices)
         if field.default is not MISSING:
-            schema["default"] = field.default
+            schema["default"] = field.encode(field.default)  # JSON form, as in a .lumos file
         return schema
 
     assert isinstance(field, Param)
