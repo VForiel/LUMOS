@@ -65,7 +65,7 @@ POINTS = [(0.0, 0.0), (0.2e-3, 0.0), (0.0, 0.5e-3), (0.4e-3, 0.3e-3), (0.9e-3, -
 def test_gaussian_beam_at_its_waist():
     field = gaussian_beam(waist=W0 * u.m, wavelength=LAM * u.m, power=P * u.W)
     assert isinstance(field.form, GaussianBeamForm)
-    grid = Grid(256, dx=10 * u.um)
+    grid = Grid(512, dx=10 * u.um)
     assert to_wavefront(field, grid).power.to_value(u.W) == pytest.approx(P, rel=1e-9)
     values = evaluate(field, POINTS)
     r2 = np.array([px**2 + py**2 for px, py in POINTS])
@@ -131,7 +131,7 @@ def test_laguerre_gauss_ring():
     radii = np.linspace(0.01, 2.0, 2000) * W0
     intensity = np.abs(evaluate(field, [(r, 0.0) for r in radii])) ** 2
     assert radii[np.argmax(intensity)] == pytest.approx(W0 / math.sqrt(2), rel=2e-3)
-    assert to_wavefront(field, Grid(256, dx=10 * u.um)).power.to_value(u.W) == pytest.approx(P, rel=1e-6)
+    assert to_wavefront(field, Grid(512, dx=10 * u.um)).power.to_value(u.W) == pytest.approx(P, rel=1e-6)
 
 
 # --- Tabulated transforms ----------------------------------------------------------------------------------
