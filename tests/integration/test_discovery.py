@@ -127,3 +127,15 @@ def test_devices_of_different_models_may_share_a_serial_number():
     finally:
         for server in servers:
             server.stop()
+
+
+def test_elements_forced_to_simulation_need_no_device(bench):
+    devices = discover(tcp=bench[2:3], timeout=0.5)  # the shutter only
+    ctx = Context(mode="operation")
+    shutter = ctx.add(Shutter(name="shutter"))
+    stage = ctx.add(LinearStage(name="stage"))
+    ctx.simulate(stage)
+    found = associate(ctx, devices, connect=False)
+    assert set(found) == {"shutter"}
+    assert stage.driver is None
+    assert isinstance(shutter.driver, ShutterDriver)
