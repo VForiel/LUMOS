@@ -122,3 +122,9 @@ def test_the_quotas_of_a_public_instance_reach_the_service():
         response = client.get(f"/api/contexts/{cid}/ports/laser.out")
         assert response.status_code == 429
         assert response.json()["code"] == "quota"
+
+
+def test_a_configuration_file_can_require_a_login(tmp_path):
+    path = tmp_path / "lumos-web.toml"
+    path.write_text('profile = "public"\nanonymous_role = "none"\n', encoding="utf-8")  # TOML has no null
+    assert load_config(path).anonymous_role is None
