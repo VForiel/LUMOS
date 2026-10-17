@@ -113,6 +113,12 @@ def client_for(config, base_url=HOST):
     return TestClient(create_app(config), base_url=base_url)
 
 
+def two_clients(config):
+    """Two clients (a browser and a script, or a user and an attacker) of the same instance."""
+    app = create_app(config)
+    return TestClient(app, base_url=HOST), TestClient(app, base_url=HOST)
+
+
 def login(client, name, password=None):
     return client.post("/api/auth/login", json={"username": name, "password": password or PASSWORDS[name]})
 
@@ -223,12 +229,11 @@ def test_authenticated_sessions_expire_after_their_lifetime_even_when_used(users
 
 
 def test_a_bearer_token_authenticates_api_clients(users_file, tmp_path):
-    config = public_config(users_file, tmp_path)
-    with client_for(config) as browser:
+    browser, script = two_clients(public_config(users_file, tmp_path))
+    with browser, script:
         token = browser.post(
             "/api/auth/login", json={"username": "simon", "password": PASSWORDS["simon"], "bearer": True}
         ).json()["token"]
-    with client_for(config) as script:
         me = script.get("/api/auth/me", headers={"authorization": f"Bearer {token}"}).json()
         assert me == {"user": "simon", "role": "simulator"}
 
@@ -326,7 +331,7 @@ def test_only_operators_drive_equipment_and_every_action_is_confirmed(users_file
         assert client.post(f"/api/contexts/{cid}/devices/associate", json={}).status_code == 200
         confirmation = client.get(f"/api/contexts/{cid}/elements/stage/confirmation").json()
         assert confirmation["device"]  # the interface names the device in its confirmation dialog
-        action = {"element": "stage", "action": "move", "args": ["5 mm"]}
+        action = {"element": "stage", "action": "home"}
         unconfirmed = client.post(f"/api/contexts/{cid}/actions", json=action)
         assert unconfirmed.status_code == 403
         done = client.post(f"/api/contexts/{cid}/actions", json={**action, "confirmed": True})
@@ -363,7 +368,7 @@ def test_the_local_profile_lets_its_user_operate_with_a_confirmation(stage):
         cid = operation_bench(client, stage.url)
         assert client.post("/api/devices/discover", json={"tcp": [stage.url]}).status_code == 200
         assert client.post(f"/api/contexts/{cid}/devices/associate", json={}).status_code == 200
-        action = {"element": "stage", "action": "move", "args": ["5 mm"]}
+        action = {"element": "stage", "action": "home"}
         assert client.post(f"/api/contexts/{cid}/actions", json=action).status_code == 403
         assert (
             client.post(f"/api/contexts/{cid}/actions", json={**action, "confirmed": True}).status_code == 200
@@ -465,12 +470,11 @@ def test_login_with_an_ssh_key(users_file, tmp_path, keys):
 
 @needs_ssh
 def test_a_challenge_cannot_be_replayed(users_file, tmp_path, keys):
-    config = public_config(users_file, tmp_path)
-    with client_for(config) as client:
+    client, attacker = two_clients(public_config(users_file, tmp_path))
+    with client, attacker:
         challenge, first = ssh_login(client, "olga", keys["olga"])
         assert first.status_code == 200
         signature = ssh_sign(keys["olga"], challenge["challenge"])
-    with client_for(config) as attacker:
         replay = attacker.post(
             "/api/auth/ssh",
             json={"username": "olga", "challenge": challenge["challenge"], "signature": signature},
@@ -512,10 +516,9 @@ def test_challenges_are_given_for_unknown_users_too(users_file, tmp_path):
 def test_lumos_login_signs_the_challenge_with_ssh_keygen(users_file, tmp_path, keys):
     from lumos.web.login import login as ssh_keygen_login
 
-    config = public_config(users_file, tmp_path)
-    with client_for(config) as client:
+    client, script = two_clients(public_config(users_file, tmp_path))
+    with client, script:
         token = ssh_keygen_login(HOST, "olga", keys["olga"], client=client)
-    with client_for(config) as script:
         me = script.get("/api/auth/me", headers={"authorization": f"Bearer {token}"}).json()
         assert me == {"user": "olga", "role": "operator"}
 
