@@ -559,7 +559,7 @@ class Service:
         return issues
 
     def explain_sampling(self, session: str, context: str, element: str) -> dict[str, str]:
-        """How a propagation element will be computed: method chosen by the planner and why (ADR-0005)."""
+        """How a propagation element will be computed: method (forced or chosen by the planner) and why."""
         from lumos.propagation.planner import plan_for
 
         ctx = self._context(session, context)
@@ -573,10 +573,17 @@ class Service:
         signal = ctx.run([source])[source]
         output_grid = target.output_grid or signal.grid
         plan = plan_for(signal, float(target.distance.to_value(u.m)), output_grid)
+        forced = getattr(target, "method", "auto")
+        method, reason = plan.method, plan.reason
+        if forced != "auto":
+            method = forced
+            reason = f"forced by the element (method={forced!r}); the planner would choose {plan.method}"
         return {
-            "method": plan.method,
-            "reason": plan.reason,
-            "cost": f"{plan.cost:.3g} operations",
+            "method": method,
+            "reason": reason,
+            "planner_method": plan.method,
+            "planner_reason": plan.reason,
+            "cost": f"{plan.cost:.3g} operations (planner choice)",
             "input_grid": f"{signal.grid}",
             "output_grid": f"{plan.output_grid}",
         }
