@@ -270,3 +270,11 @@ def test_the_summary_describes_the_inside_of_groups(service, session):
     relay = summary.groups["relay"]
     assert [c.model_dump() for c in relay.connections] == [{"source": "lens.out", "target": "gap.in"}]
     assert relay.exposed == {"in": "lens.in", "out": "gap.out"}
+
+
+def test_grouping_elements_around_an_outside_one_is_explained(service, session):
+    ctx = bench(service, session)
+    with pytest.raises(ServiceError) as error:
+        service.group_elements(session, ctx, ["laser", "gap"], name="ends")  # the lens lies between them
+    assert "between" in error.value.hint
+    assert top(service.describe_context(session, ctx)) == ["gap", "laser", "lens", "meter"]
