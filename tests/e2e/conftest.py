@@ -103,3 +103,36 @@ def public_server(tmp_path):
     process, url = start_server(tmp_path, "--profile", "public", "--host", "127.0.0.1")
     yield url
     stop_server(process)
+
+
+@pytest.fixture
+def operation_server(tmp_path):
+    """A local instance where the operation of equipment is enabled."""
+    process, url = start_server(tmp_path, "--enable-operation")
+    yield url
+    stop_server(process)
+
+
+@pytest.fixture
+def stage_emulator():
+    """A LumosLabs LL-LS100 linear stage emulated over TCP."""
+    from lumos.hardware.emulators import EmulatorServer, create_emulator
+
+    server = EmulatorServer(create_emulator("LL-LS100", latency=0.0)).start()
+    yield server
+    server.stop()
+
+
+@pytest.fixture
+def users_server(tmp_path):
+    """A local instance with a users file: simon (simulator, password "simulator password")."""
+    from argon2 import PasswordHasher
+
+    users = tmp_path / "users.toml"
+    users.write_text(
+        f'[users.simon]\nrole = "simulator"\npassword = "{PasswordHasher().hash("simulator password")}"\n',
+        encoding="utf-8",
+    )
+    process, url = start_server(tmp_path, "--users", str(users))
+    yield url
+    stop_server(process)
