@@ -259,6 +259,7 @@ class PowerMeter(Element):
 
     lumoslabs_model = "LL-PM"
 
+    channel = Setting(int, default=-1, doc="guided channel read (-1: every channel)")
     in_ = Input(OpticalSignal)
     out = Output(DataProduct)
 
@@ -268,8 +269,13 @@ class PowerMeter(Element):
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
-        """Return the power in W (one value per guided channel for modal fields)."""
+        """Return the power in W (one value per guided channel for modal fields, or the selected channel)."""
         signal = inputs["in"]
         lams, weights, power, unit = _spectral_power(signal)
         watts = np.asarray(_totals(signal, _weighted(weights, _watts(lams, power, unit))), dtype=float)
+        channel = int(values.channel)
+        if channel >= 0 and isinstance(signal, ModalField):
+            if channel >= watts.size:
+                raise ValueError(f"the power meter reads channel {channel}, but the field has {watts.size}")
+            return {"out": DataProduct(np.atleast_1d(watts[channel]) * u.W)}
         return {"out": DataProduct(watts * u.W, axes=_channel_axes(signal, watts.size))}
