@@ -46,6 +46,9 @@ PUBLIC_SERVICE_DEFAULTS: dict[str, Any] = {
     "max_contexts_per_session": 5,
     "max_jobs_per_session": 1,
     "max_run_seconds": 60.0,
+    "max_grid_pixels": 1024,
+    "max_memory_mb": 2048.0,
+    "max_concurrent_runs": 4,
 }
 
 

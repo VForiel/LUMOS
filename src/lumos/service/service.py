@@ -81,6 +81,24 @@ class _Session:
     lock: threading.RLock = field(default_factory=threading.RLock)
 
 
+#: Working copies of a field held at once by a computation, in the memory estimate of the quotas.
+MEMORY_COPIES = 4
+
+
+def _grid_sides(element: Any) -> list[tuple[str, int]]:
+    """Grid sides (in pixels) set by an element: ``n_pixels`` settings and grid settings."""
+    sides = []
+    for name, declared in type(element).declared().items():
+        if declared.kind != "setting":
+            continue
+        value = getattr(element, name)
+        if name == "n_pixels" and isinstance(value, int):
+            sides.append((name, value))
+        elif hasattr(value, "nx") and hasattr(value, "ny"):
+            sides.append((name, max(int(value.nx), int(value.ny))))
+    return sides
+
+
 def _hint_for(error: BaseException) -> str:
     text = str(error)
     if "not connected" in text:
@@ -570,7 +588,7 @@ class Service:
         if not incoming:
             raise ServiceError(f"{element}.in is not connected", hint=_hint_for(GraphError("not connected")))
         source = incoming[0].source
-        signal = ctx.run([source])[source]
+        signal = self._compute(session, ctx, [source])[source]
         output_grid = target.output_grid or signal.grid
         plan = plan_for(signal, float(target.distance.to_value(u.m)), output_grid)
         forced = getattr(target, "method", "auto")
@@ -607,6 +625,20 @@ class Service:
                 hint="wait for the running jobs (wait_job) before starting another one",
                 code="quota",
             )
+        limit = self.config.max_concurrent_runs
+        if limit is not None:
+            busy = sum(
+                job.info.status in ("queued", "running")
+                for s in self._sessions.values()
+                for job in s.jobs.values()
+            )
+            if busy >= limit:
+                raise ServiceError(
+                    f"the instance is busy: {busy} runs in progress (at most {limit})",
+                    hint="try again when a run has ended",
+                    code="quota",
+                )
+        self._check_quotas(ctx)
         names = list(outputs)
         job = _Job(
             JobInfo(id=uuid.uuid4().hex[:10], context=context, outputs=names, status="queued"), session
@@ -664,6 +696,51 @@ class Service:
         """Return the runs of the session, oldest first."""
         return [job.info.model_copy() for job in self._session(session).jobs.values()]
 
+    def _check_quotas(self, ctx: Context) -> None:
+        """Refuse a computation whose grids or memory exceed the quotas of the configuration."""
+        largest, where = 0, ""
+        for path, element in ctx.walk():
+            for name, side in _grid_sides(element):
+                if side > largest:
+                    largest, where = side, f"{path}.{name}"
+                limit = self.config.max_grid_pixels
+                if limit is not None and side > limit:
+                    raise ServiceError(
+                        f"{path}.{name} asks for a grid of {side} pixels per side",
+                        hint=f"this instance computes grids of at most {limit} pixels per side",
+                        code="quota",
+                    )
+        budget = self.config.max_memory_mb
+        if budget is None or not largest:
+            return
+        n_wavelengths = max(int(ctx.observation.n_wavelengths), 1)
+        needed = largest**2 * 16 * n_wavelengths * MEMORY_COPIES / 1e6
+        if needed > budget:
+            raise ServiceError(
+                f"the computation needs about {needed:.0f} MB of memory ({where}: {largest}² pixels, "
+                f"{n_wavelengths} wavelength(s)), more than the {budget:g} MB allowed",
+                hint="use fewer pixels or fewer wavelengths",
+                code="quota",
+            )
+
+    def _compute(self, session: str, ctx: Context, references: list[Any]) -> Any:
+        """Compute ports synchronously within the quotas (grids, memory, time); errors become ServiceError."""
+        state = self._session(session)
+        self._check_quotas(ctx)
+        started = time.perf_counter()
+
+        def progress(done: int, total: int, element: str) -> None:
+            if time.perf_counter() - started > self.config.max_run_seconds:
+                raise TimeoutError(f"the computation exceeded {self.config.max_run_seconds:g} s")
+
+        try:
+            with state.lock, ctx.as_origin(state.info.origin):
+                return ctx.run(references, progress=progress)
+        except ServiceError:
+            raise
+        except Exception as error:
+            raise ServiceError(str(error), hint=_hint_for(error), code="failed") from error
+
     def get_job(self, session: str, job: str) -> JobInfo:
         """Status, progress and outcome of a run."""
         state = self._session(session)
@@ -704,14 +781,9 @@ class Service:
 
     def inspect_port(self, session: str, context: str, port: str, *, figure: bool = True) -> PortSummary:
         """Compute (or reuse) the signal of an output port and summarise it, with a figure."""
-        state = self._session(session)
         ctx = self._context(session, context)
         reference = self._port(ctx, port)
-        try:
-            with state.lock, ctx.as_origin(state.info.origin):
-                signal = ctx.run([reference])[reference]
-        except Exception as error:
-            raise ServiceError(str(error), hint=_hint_for(error), code="failed") from error
+        signal = self._compute(session, ctx, [reference])[reference]
         return summarize(port, signal, figure=figure)
 
     def radial_profile(
@@ -736,14 +808,9 @@ class Service:
         from lumos.fields import IncoherentBundle, Wavecube, Wavefront
         from lumos.processing.profiles import radial_profile
 
-        state = self._session(session)
         ctx = self._context(session, context)
         reference = self._port(ctx, port)
-        try:
-            with state.lock, ctx.as_origin(state.info.origin):
-                signal = ctx.run([reference])[reference]
-        except Exception as error:
-            raise ServiceError(str(error), hint=_hint_for(error), code="failed") from error
+        signal = self._compute(session, ctx, [reference])[reference]
         if not isinstance(signal, Wavefront | Wavecube | IncoherentBundle):
             raise ServiceError(
                 f"{port} carries a {type(signal).__name__}, not a field",
@@ -817,11 +884,9 @@ class Service:
         """Contrast curve (detection limit versus separation) of the residual image of ``port``."""
         from lumos.processing.photometry import contrast_curve
 
-        state = self._session(session)
         ctx = self._context(session, context)
         reference = self._port(ctx, port)
-        with state.lock:
-            image = ctx.run([reference])[reference]
+        image = self._compute(session, ctx, [reference])[reference]
         curve = contrast_curve(
             image,
             peak=parse_quantity(peak, name="peak"),

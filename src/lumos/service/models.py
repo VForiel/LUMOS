@@ -36,7 +36,16 @@ class ServiceConfig(BaseModel):
     max_contexts_per_session: int = Field(default=20, ge=1)
     max_jobs_per_session: int = Field(default=2, ge=1, description="runs in progress at the same time")
     max_workers: int = Field(default=4, ge=1, description="threads executing the runs")
-    max_run_seconds: float = Field(default=600.0, gt=0, description="time allowed to a run")
+    max_run_seconds: float = Field(default=600.0, gt=0, description="time allowed to a run or an inspection")
+    max_grid_pixels: int | None = Field(
+        default=None, ge=1, description="largest grid side, in pixels, of the elements of a computed context"
+    )
+    max_memory_mb: float | None = Field(
+        default=None, gt=0, description="largest estimated memory of the fields of a computation, in MB"
+    )
+    max_concurrent_runs: int | None = Field(
+        default=None, ge=1, description="runs queued or in progress at the same time, all sessions together"
+    )
     archive_root: str | None = Field(default=None, description="directory of the archives of the runs")
     presets_dir: str | None = Field(default=None, description="directory of the preset .lumos files")
 
