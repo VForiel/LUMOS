@@ -824,6 +824,23 @@ class Service:
             raise ServiceError(f"{element} has no driver", hint="associate devices with associate_devices")
         return json.loads(json.dumps(driver.status(), default=str))
 
+    def confirmation_needed(self, session: str, context: str, element: str) -> str | None:
+        """Return the device that an action of ``element`` would drive, if it needs a human confirmation.
+
+        ``None`` when the action only changes the simulation, or when the operation is disabled (the action is
+        then refused by :meth:`execute_action`).
+        """
+        ctx = self._context(session, context)
+        target = self._element(ctx, element)
+        if not self.config.operation_enabled or ctx.mode_of(target) != "operation":
+            return None
+        driver = target.driver
+        if driver is None:
+            return f"of {element} (no driver attached)"
+        status = driver.status()
+        model, serial = status.get("model"), status.get("serial")
+        return " ".join(str(v) for v in (model, serial) if v) or type(driver).__name__
+
     def execute_action(
         self,
         session: str,

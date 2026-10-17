@@ -20,6 +20,7 @@ from mcp.server.mcpserver import Context as MCPContext
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
+from lumos.mcp.operation import register_operation_tools
 from lumos.mcp.prompts import register_prompts
 from lumos.mcp.resources import register_resources
 from lumos.service import Service, ServiceConfig, ServiceError
@@ -429,6 +430,7 @@ def create_server(
         """Metadata of an archived run (parameters, versions, origin, outputs); path from list_archives."""
         return service.read_archive_metadata(path)
 
+    register_operation_tools(server, state, tool)
     register_resources(server, state)
     register_prompts(server)
     server.lumos = state  # type: ignore[attr-defined]

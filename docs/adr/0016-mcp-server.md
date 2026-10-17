@@ -36,8 +36,14 @@ call (elicitation, sampling) by results asking the client for input (`InputRequi
 - Synchronous tools run in worker threads of the SDK; the service serialises the work of a session.
 - Groups are created in one call (`create_group`: elements, internal connections, exposed ports), added to the
   service as `Service.create_group`.
-- Confirmations of actions on equipment (P13.4) use the resolvers of the SDK (`Resolve` returning `Elicit`),
-  which work with both protocol revisions (input-required results, or elicitation requests before 2026-07-28).
+- **Operation** (P13.4): `execute_action`, `list_devices`, `device_status` and `stop_all` are always offered;
+  `discover_devices` and `associate_devices` only when the server runs with `--enable-operation`. Actions on
+  simulated elements run directly. An action on real equipment is confirmed by the user: a resolver of the SDK
+  (`Resolve` returning `Elicit`) asks the question, which works with both protocol revisions (input-required
+  results from 2026-07-28, elicitation requests before). The flag `confirmed` of the service is set from the
+  answer and never appears in the input schema of the tool, so the model cannot set it. A client without the
+  elicitation capability gets a tool error and cannot act on equipment. Limits and the emergency stop stay in
+  the drivers (ADR-0014); `stop_all` never asks.
 
 ## Alternatives considered
 

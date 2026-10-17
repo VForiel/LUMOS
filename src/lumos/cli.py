@@ -3,7 +3,8 @@
 - ``lumos emulators list``: the LumosLabs devices that can be emulated;
 - ``lumos emulators start [--devices ...] [--host H] [--port P] [--duration S]``: serve emulators over TCP,
   one port per device from ``P`` (``0``: free ports), until Ctrl+C or for ``S`` seconds;
-- ``lumos mcp [--archive-root DIR] [--presets-dir DIR]``: serve the MCP server for AI assistants over stdio.
+- ``lumos mcp [--archive-root DIR] [--presets-dir DIR] [--enable-operation]``: serve the MCP server for AI
+  assistants over stdio.
 """
 
 from __future__ import annotations
@@ -63,7 +64,11 @@ def _mcp(arguments: argparse.Namespace) -> int:
 
     # stdout carries the protocol: the logs go to stderr
     logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
-    config = ServiceConfig(archive_root=arguments.archive_root, presets_dir=arguments.presets_dir)
+    config = ServiceConfig(
+        archive_root=arguments.archive_root,
+        presets_dir=arguments.presets_dir,
+        operation_enabled=arguments.enable_operation,
+    )
     create_server(config=config).run("stdio")
     return 0
 
@@ -82,6 +87,11 @@ def _parser() -> argparse.ArgumentParser:
     mcp = commands.add_parser("mcp", help="MCP server for AI assistants (Claude Code, Claude Desktop...)")
     mcp.add_argument("--archive-root", default=None, help="directory of the archives of the runs")
     mcp.add_argument("--presets-dir", default=None, help="directory of the preset .lumos files")
+    mcp.add_argument(
+        "--enable-operation",
+        action="store_true",
+        help="allow actions on real equipment, each one confirmed by the user (default: disabled)",
+    )
     return parser
 
 

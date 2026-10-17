@@ -127,6 +127,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   archives; the context defaults to the last one used. Resources (`lumos://docs`, `lumos://elements`,
   `lumos://presets`, `lumos://context/current`, journals, `lumos://archives`) and prompts for four use cases
   (`design_instrument`, `estimate_detection`, `calibrate_bench`, `diagnose_simulation`).
+- Operation through MCP (`lumos mcp --enable-operation`): tools `execute_action`, `list_devices`,
+  `device_status`, `stop_all`, and `discover_devices` and `associate_devices` once enabled; every action on
+  real equipment is confirmed by the user through an MCP elicitation asked by the server; limits and the
+  emergency stop are enforced by the server; actions are journaled with the origin `mcp`.
 - The journal of a context records each run (`kind: "run"`: outputs and duration).
 
 ### Changed
