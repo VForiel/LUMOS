@@ -166,6 +166,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   ports coloured by signal and typed connections generated from `/api/palette` (schemas, signal classes, units
   with their factors); English and French; light and dark themes; the last context is restored after a
   restart of the server. Unit tests with Vitest, browser tests with Playwright (`pytest -m e2e`).
+- Editing in the web interface: forms generated from the schemas (units with conversion, bounds, defaults),
+  undo and redo of every edit, renaming, groups made from a selection (expandable, ungroupable), copy and
+  paste, reusable blocks (`.lumos` files of kind `group`), quick add by name or from a dropped wire, keyboard
+  shortcuts, `.lumos` files opened and saved, equivalent Python script. Service: `undo`, `redo`,
+  `update_ui`, `rename_element`, `group_elements`, `ungroup`, `copy_elements`, `paste_elements`,
+  `export_element`, `import_element`, `set_context`; summaries give the inside of groups and the undo state.
 
 ### Changed
 
