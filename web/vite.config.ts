@@ -9,6 +9,8 @@ const backend = process.env.LUMOS_BACKEND ?? "http://127.0.0.1:8000";
 // The interface is built into the Python package, which serves it at "/" (lumos web).
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // absolute: the tests run from the root of the repository (test.root)
+  cacheDir: fileURLToPath(new URL("./node_modules/.vite", import.meta.url)),
   build: {
     outDir: fileURLToPath(new URL("../src/lumos/web/static", import.meta.url)),
     emptyOutDir: true,

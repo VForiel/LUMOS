@@ -19,6 +19,7 @@ __all__ = [
     "DocHit",
     "ElementSummary",
     "ElementTypeInfo",
+    "GroupInfo",
     "Issue",
     "JobInfo",
     "Page",
@@ -109,6 +110,13 @@ class ConnectionInfo(BaseModel):
     target: str
 
 
+class GroupInfo(BaseModel):
+    """The inside of a group: connections of its elements and exposed ports (``port: "child.port"``)."""
+
+    connections: list[ConnectionInfo]
+    exposed: dict[str, str]
+
+
 class ContextSummary(BaseModel):
     """A context: its elements, connections, mode and observation band."""
 
@@ -122,6 +130,10 @@ class ContextSummary(BaseModel):
     elements: list[ElementSummary]
     connections: list[ConnectionInfo]
     outputs: list[str] = []
+    groups: dict[str, GroupInfo] = {}
+    ui: dict[str, Any] = {}
+    can_undo: bool = False
+    can_redo: bool = False
 
 
 class PresetInfo(BaseModel):

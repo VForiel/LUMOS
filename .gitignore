@@ -43,3 +43,4 @@ Thumbs.db
 web/node_modules/
 src/lumos/web/static/
 test-results/
+/node_modules/

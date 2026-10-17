@@ -19,7 +19,7 @@ import logging
 import threading
 import time
 import uuid
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -36,8 +36,9 @@ from lumos.core.graph import GraphError, Result
 from lumos.core.group import GROUP_TYPE, ElementGroup, group_type_of
 from lumos.core.port import PortCompatibilityError
 from lumos.core.registry import UnknownTypeError, registry
-from lumos.io.lumos_format import from_document
+from lumos.io.lumos_format import entry_of, from_document
 from lumos.service import docs
+from lumos.service import editing as edits
 from lumos.service.errors import ServiceError
 from lumos.service.models import (
     ActionResult,
@@ -48,6 +49,7 @@ from lumos.service.models import (
     DocHit,
     ElementSummary,
     ElementTypeInfo,
+    GroupInfo,
     Issue,
     JobInfo,
     Page,
@@ -71,6 +73,17 @@ class _Job:
     result: Result | None = None
     future: concurrent.futures.Future[Any] | None = None
     started: float = 0.0
+
+
+#: Edits kept for undo, per context.
+HISTORY_DEPTH = 100
+
+
+@dataclass
+class _History:
+    undo: list[dict[str, Any]] = field(default_factory=list)
+    redo: list[dict[str, Any]] = field(default_factory=list)
+    depth: int = 0  # nesting of edits: only the outermost one is recorded
 
 
 @dataclass
@@ -132,6 +145,7 @@ class Service:
             max_workers=self.config.max_workers, thread_name_prefix="lumos-run"
         )
         self._devices: list[Any] = []
+        self._histories: dict[str, _History] = {}
 
     # --- Sessions ------------------------------------------------------------------------------------------
 
@@ -262,6 +276,7 @@ class Service:
         """Forget a context."""
         self._context(session, context)
         del self._session(session).contexts[context]
+        self._histories.pop(context, None)
 
     def presets_dir(self) -> Path:
         """Directory of the preset ``.lumos`` files."""
@@ -343,7 +358,25 @@ class Service:
             elements=elements,
             connections=connections,
             outputs=list(ctx.meta.get("outputs", [])),
+            groups=self._groups(ctx),
+            ui=json.loads(json.dumps(ctx.ui, default=str)),
+            can_undo=bool(self._histories.get(identifier, _History()).undo),
+            can_redo=bool(self._histories.get(identifier, _History()).redo),
         )
+
+    def _groups(self, ctx: Context) -> dict[str, GroupInfo]:
+        groups = {}
+        for path, element in ctx.walk():
+            if not isinstance(element, ElementGroup):
+                continue
+            document = entry_of(element)
+            groups[path] = GroupInfo(
+                connections=[
+                    ConnectionInfo(source=c["from"], target=c["to"]) for c in document.get("connections", [])
+                ],
+                exposed=dict(document.get("exposed_ports", {})),
+            )
+        return groups
 
     def _element_summary(self, path: str, element: Any) -> ElementSummary:
         cls = type(element)
@@ -376,6 +409,97 @@ class Service:
             actions=sorted(actions_of(cls)),
         )
 
+    # --- History -------------------------------------------------------------------------------------------
+
+    @contextlib.contextmanager
+    def _editing(self, session: str, context: str) -> Iterator[Context]:
+        """Edit a context; a successful outermost edit is recorded for undo."""
+        ctx = self._context(session, context)
+        history = self._histories.setdefault(context, _History())
+        before = lumos.io.to_document(ctx) if history.depth == 0 else None
+        history.depth += 1
+        try:
+            yield ctx
+        finally:
+            history.depth -= 1
+        if before is not None:
+            history.undo.append(before)
+            del history.undo[:-HISTORY_DEPTH]
+            history.redo.clear()
+
+    def _rebuild(self, session: str, context: str, document: Mapping[str, Any]) -> ContextSummary:
+        """Replace a context by the one ``document`` describes (same identifier)."""
+        try:
+            ctx = from_document(document)
+        except (ValueError, KeyError, TypeError, GraphError, PortCompatibilityError) as error:
+            raise ServiceError(
+                f"the edit gives an invalid context: {error}", hint="check the elements involved"
+            ) from error
+        self._session(session).contexts[context] = ctx
+        return self._summary(context, ctx)
+
+    def _edit_document(
+        self, session: str, context: str, change: Callable[[dict[str, Any]], dict[str, Any]]
+    ) -> ContextSummary:
+        with self._editing(session, context) as ctx:
+            if ctx.drivers():
+                raise ServiceError(
+                    "this edit is not available while devices are attached",
+                    hint="edit the context before associating the devices",
+                )
+            return self._rebuild(session, context, change(lumos.io.to_document(ctx)))
+
+    def _step(self, session: str, context: str, *, forward: bool) -> ContextSummary:
+        ctx = self._context(session, context)
+        history = self._histories.setdefault(context, _History())
+        source, target = (history.redo, history.undo) if forward else (history.undo, history.redo)
+        if not source:
+            word = "redo" if forward else "undo"
+            raise ServiceError(
+                f"nothing to {word}", hint="edit the context first" if not forward else "undo an edit first"
+            )
+        if ctx.drivers():
+            raise ServiceError(
+                "undo and redo are not available while devices are attached",
+                hint="detach the devices, or undo before associating them",
+            )
+        target.append(lumos.io.to_document(ctx))
+        return self._rebuild(session, context, source.pop())
+
+    def undo(self, session: str, context: str) -> ContextSummary:
+        """Undo the last edit of a context."""
+        return self._step(session, context, forward=False)
+
+    def redo(self, session: str, context: str) -> ContextSummary:
+        """Redo the last undone edit of a context."""
+        return self._step(session, context, forward=True)
+
+    def update_ui(
+        self, session: str, context: str, ui: Mapping[str, Any], *, record: bool = True
+    ) -> ContextSummary:
+        """Merge ``ui`` into the interface data of a context (positions of the blocks...).
+
+        The library ignores these data; the ``.lumos`` file keeps them. With ``record=False`` the change is
+        not an edit of its own for undo (e.g. the placement of a block just added).
+        """
+        ctx = self._context(session, context)
+        with self._editing(session, context) if record else contextlib.nullcontext():
+            merged = dict(ctx.ui)
+            merged.update(json.loads(json.dumps(dict(ui))))
+            ctx.ui = merged
+        return self._summary(context, self._context(session, context))
+
+    def set_context(
+        self, session: str, context: str, *, name: str | None = None, description: str | None = None
+    ) -> ContextSummary:
+        """Rename a context or change its description."""
+        with self._editing(session, context) as ctx:
+            if name is not None:
+                ctx.name = name
+            if description is not None:
+                ctx.meta["description"] = description
+        return self._summary(context, self._context(session, context))
+
     # --- Editing -------------------------------------------------------------------------------------------
 
     def add_element(
@@ -388,12 +512,12 @@ class Service:
         params: Mapping[str, Any] | None = None,
     ) -> ElementSummary:
         """Add an element of ``type_id`` with the given parameter values (``"2 mW"``...)."""
-        ctx = self._context(session, context)
         element = self._new_element(type_id, name, params)
-        try:
-            ctx.add(element)
-        except GraphError as error:
-            raise ServiceError(str(error), hint=_hint_for(error)) from error
+        with self._editing(session, context) as ctx:
+            try:
+                ctx.add(element)
+            except GraphError as error:
+                raise ServiceError(str(error), hint=_hint_for(error)) from error
         return self._element_summary(ctx.id_of(element), element)
 
     def _new_element(self, type_id: str, name: str | None, params: Mapping[str, Any] | None) -> Element:
@@ -436,7 +560,8 @@ class Service:
                 group.connect(self._port(group, source), self._port(group, target))
             for port, internal in (expose or {}).items():
                 group.expose(port, self._port(group, internal))
-            ctx.add(group)
+            with self._editing(session, context):
+                ctx.add(group)
         except (PortCompatibilityError, GraphError, TypeError) as error:
             raise ServiceError(
                 str(error), hint="connect and expose ports of the elements of the group ('child.port')"
@@ -446,7 +571,9 @@ class Service:
     def remove_element(self, session: str, context: str, element: str) -> None:
         """Remove an element and its connections."""
         ctx = self._context(session, context)
-        ctx.remove(self._element(ctx, element))
+        target = self._element(ctx, element)
+        with self._editing(session, context):
+            ctx.remove(target)
 
     def _port(self, ctx: Context | ElementGroup, reference: str) -> Any:
         owner, _, port = reference.rpartition(".")
@@ -467,7 +594,9 @@ class Service:
         """Connect the output ``source`` to the input ``target`` (``"id.port"``)."""
         ctx = self._context(session, context)
         try:
-            ctx.connect(self._port(ctx, source), self._port(ctx, target))
+            ports = self._port(ctx, source), self._port(ctx, target)
+            with self._editing(session, context):
+                ctx.connect(*ports)
         except (PortCompatibilityError, GraphError, TypeError) as error:
             raise ServiceError(str(error), hint=_hint_for(error)) from error
         return ConnectionInfo(source=source, target=target)
@@ -476,7 +605,9 @@ class Service:
         """Remove a connection."""
         ctx = self._context(session, context)
         try:
-            ctx.disconnect(self._port(ctx, source), self._port(ctx, target))
+            ports = self._port(ctx, source), self._port(ctx, target)
+            with self._editing(session, context):
+                ctx.disconnect(*ports)
         except (GraphError, KeyError) as error:
             raise ServiceError(str(error), hint="list the connections with describe_context") from error
 
@@ -490,7 +621,8 @@ class Service:
             raise ServiceError(f"{owner} has no field {name!r}", hint=f"fields: {', '.join(declared)}")
         parsed = parse_value(declared[name], value, name=path)
         try:
-            setattr(element, name, parsed)
+            with self._editing(session, context):
+                setattr(element, name, parsed)
         except (TypeError, ValueError, u.UnitsError) as error:
             raise ServiceError(str(error), hint=_hint_for(error)) from error
         return self._element_summary(owner, element)
@@ -502,9 +634,14 @@ class Service:
         ctx = self._context(session, context)
         low = parse_quantity(minimum, u.m, name="minimum")
         high = parse_quantity(maximum, u.m, name="maximum")
+        if not 0 < low < high or int(n_wavelengths) < 1:
+            raise ServiceError(
+                "invalid observation band", hint="give 0 < minimum < maximum and n_wavelengths >= 1"
+            )
         try:
-            ctx.observation.band = (low, high)
-            ctx.observation.n_wavelengths = int(n_wavelengths)
+            with self._editing(session, context):
+                ctx.observation.band = (low, high)
+                ctx.observation.n_wavelengths = int(n_wavelengths)
         except ValueError as error:
             raise ServiceError(str(error), hint="give 0 < minimum < maximum") from error
         return self._summary(context, ctx)
@@ -521,6 +658,12 @@ class Service:
 
         added = []
         previous = source
+        with self._editing(session, context):
+            return self._chain(session, context, previous, steps, added)
+
+    def _chain(
+        self, session: str, context: str, previous: str, steps: Iterable[Mapping[str, Any]], added: list
+    ) -> list[ElementSummary]:
         for step in steps:
             summary = self.add_element(
                 session, context, str(step["type"]), name=step.get("name"), params=step.get("params")
@@ -533,6 +676,83 @@ class Service:
             previous = f"{summary.id}.{summary.outputs[0]}"
             added.append(summary)
         return added
+
+    def rename_element(self, session: str, context: str, element: str, name: str) -> ContextSummary:
+        """Rename an element (``"laser"`` or ``"group.child"``), keeping its connections and position."""
+        return self._edit_document(session, context, lambda document: edits.rename(document, element, name))
+
+    def group_elements(
+        self, session: str, context: str, elements: Iterable[str], *, name: str
+    ) -> ContextSummary:
+        """Move elements of the context into a new group exposing their free ports (REQ-WEB-4)."""
+        ctx = self._context(session, context)
+        chosen = list(elements)
+        ports = {}
+        for identifier in chosen:
+            if identifier in ctx.elements:
+                found = ctx.elements[identifier].instance_ports()
+                ports[identifier] = (
+                    [n for n, p in found.items() if p.direction == "in"],
+                    [n for n, p in found.items() if p.direction == "out"],
+                )
+        try:
+            return self._edit_document(
+                session, context, lambda document: edits.group(document, chosen, name, ports)
+            )
+        except ServiceError as error:
+            if "cycle" not in error.message:
+                raise
+            raise ServiceError(
+                "these elements cannot form a group: the light would leave the group and come back into it",
+                hint="group elements that follow each other; an element between them must be grouped too",
+            ) from error
+
+    def ungroup(self, session: str, context: str, group: str) -> ContextSummary:
+        """Dissolve a group: its elements join the context and keep their connections."""
+        return self._edit_document(session, context, lambda document: edits.ungroup(document, group))
+
+    def copy_elements(self, session: str, context: str, elements: Iterable[str]) -> dict[str, Any]:
+        """Return a fragment holding ``elements``, the connections between them and their positions."""
+        return edits.fragment_of(lumos.io.to_document(self._context(session, context)), list(elements))
+
+    def paste_elements(self, session: str, context: str, fragment: Mapping[str, Any]) -> list[str]:
+        """Add the elements of a fragment (from :meth:`copy_elements`) with free names; return the names."""
+        pasted: list[str] = []
+
+        def change(document: dict[str, Any]) -> dict[str, Any]:
+            result, names = edits.paste(document, fragment)
+            pasted.extend(names)
+            return result
+
+        self._edit_document(session, context, change)
+        return pasted
+
+    def export_element(self, session: str, context: str, element: str) -> str:
+        """Return the ``.lumos`` document of an element or a group (a reusable block for lumos.io)."""
+        target = self._element(self._context(session, context), element)
+        return json.dumps(lumos.io.to_document(target), indent=2, ensure_ascii=False)
+
+    def import_element(self, session: str, context: str, document: str | Mapping[str, Any]) -> ElementSummary:
+        """Insert the element or group of a ``.lumos`` document (a block), renamed if its name is taken."""
+        try:
+            data = json.loads(document) if isinstance(document, str) else dict(document)
+        except ValueError as error:
+            raise ServiceError(
+                f"invalid .lumos document: {error}", hint="give a block exported by LUMOS"
+            ) from error
+        kind = data.get("kind")
+        if kind not in ("element", "group") or not isinstance(data.get(kind), Mapping):
+            raise ServiceError(
+                "the document is not a block",
+                hint="give the .lumos file of an element or a group, not of a context",
+            )
+        entry = dict(data[kind])
+        name = str(entry.get("name") or "")
+        base = name if edits.NAME.match(name) else "block"
+        entry["id"] = base
+        names = self.paste_elements(session, context, {"elements": [entry], "connections": []})
+        ctx = self._context(session, context)
+        return self._element_summary(names[0], ctx[names[0]])
 
     # --- Verification --------------------------------------------------------------------------------------
 

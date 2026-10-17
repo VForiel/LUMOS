@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import copy
 import logging
 import re
 import secrets
@@ -171,6 +172,38 @@ class SshLogin(BaseModel):
     bearer: bool = False
 
 
+class ContextChange(BaseModel):
+    """Body of ``PATCH /api/contexts/{id}``."""
+
+    name: str | None = None
+    description: str | None = None
+
+
+class Rename(BaseModel):
+    """Body of ``POST /api/contexts/{id}/elements/{path}/rename``."""
+
+    name: str
+
+
+class Grouping(BaseModel):
+    """Body of ``POST /api/contexts/{id}/groups``."""
+
+    elements: list[str]
+    name: str
+
+
+class Selection(BaseModel):
+    """Body of ``POST /api/contexts/{id}/copy``."""
+
+    elements: list[str]
+
+
+class Paste(BaseModel):
+    """Body of ``POST /api/contexts/{id}/paste``: a fragment from ``/copy``."""
+
+    fragment: dict[str, Any]
+
+
 class Discovery(BaseModel):
     """Body of ``POST /api/devices/discover``."""
 
@@ -242,6 +275,28 @@ def _units_of(types: list[dict[str, Any]]) -> set[str]:
                 if isinstance(default, dict) and isinstance(default.get("unit"), str):
                     found.add(default["unit"])
     return found
+
+
+def _bounds_in_unit(schema: dict[str, Any]) -> dict[str, Any]:
+    """Copy a schema, adding the bounds of each parameter in its unit (``x-lumos-bounds-value``)."""
+    import numpy as np
+    from astropy import units as u
+
+    result = copy.deepcopy(schema)
+    for group in ("params", "state"):
+        for field in result["properties"][group]["properties"].values():
+            if "x-lumos-unit" not in field:
+                continue
+            unit = u.Unit(field["x-lumos-unit"])
+            values: list[float | None] = []
+            for bound in field.get("x-lumos-bounds") or [None, None]:
+                if bound is None:
+                    values.append(None)
+                    continue
+                quantity = u.Quantity(float(bound["value"]), bound["unit"])
+                values.append(float(np.asarray(quantity.to_value(unit, equivalencies=u.spectral()))))
+            field["x-lumos-bounds-value"] = values
+    return result
 
 
 def _is_loopback(host: str | None) -> bool:
@@ -534,7 +589,7 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
                 {
                     **item.model_dump(),
                     "category": item.type_id.split(".")[1] if item.type_id.count(".") >= 2 else "other",
-                    "schema": service.get_element_schema(item.type_id),
+                    "schema": _bounds_in_unit(service.get_element_schema(item.type_id)),
                 }
                 for item in listing.items
             ]
@@ -694,6 +749,52 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         return service.set_observation(
             sid(request), cid, minimum=body.minimum, maximum=body.maximum, n_wavelengths=body.n_wavelengths
         )
+
+    @app.patch("/api/contexts/{cid}", dependencies=[simulator])
+    def change_context(request: Request, cid: str, body: ContextChange) -> ContextSummary:
+        return service.set_context(sid(request), cid, name=body.name, description=body.description)
+
+    @app.put("/api/contexts/{cid}/ui", dependencies=[simulator])
+    def update_ui(request: Request, cid: str, body: dict[str, Any], record: bool = True) -> ContextSummary:
+        return service.update_ui(sid(request), cid, body, record=record)
+
+    @app.post("/api/contexts/{cid}/undo", dependencies=[simulator])
+    def undo(request: Request, cid: str) -> ContextSummary:
+        return service.undo(sid(request), cid)
+
+    @app.post("/api/contexts/{cid}/redo", dependencies=[simulator])
+    def redo(request: Request, cid: str) -> ContextSummary:
+        return service.redo(sid(request), cid)
+
+    @app.post("/api/contexts/{cid}/elements/{path:path}/rename", dependencies=[simulator])
+    def rename(request: Request, cid: str, path: str, body: Rename) -> ContextSummary:
+        return service.rename_element(sid(request), cid, path, body.name)
+
+    @app.get("/api/contexts/{cid}/elements/{path:path}/export.lumos", dependencies=[viewer])
+    def export_element(request: Request, cid: str, path: str) -> Response:
+        text = service.export_element(sid(request), cid, path)
+        return _attachment(text, _filename(path.rpartition(".")[2], ".lumos"), "application/json")
+
+    @app.post("/api/contexts/{cid}/groups", dependencies=[simulator])
+    def group(request: Request, cid: str, body: Grouping) -> ContextSummary:
+        return service.group_elements(sid(request), cid, body.elements, name=body.name)
+
+    @app.post("/api/contexts/{cid}/groups/{path:path}/ungroup", dependencies=[simulator])
+    def ungroup(request: Request, cid: str, path: str) -> ContextSummary:
+        return service.ungroup(sid(request), cid, path)
+
+    @app.post("/api/contexts/{cid}/copy", dependencies=[viewer])
+    def copy_elements(request: Request, cid: str, body: Selection) -> dict[str, Any]:
+        return service.copy_elements(sid(request), cid, body.elements)
+
+    @app.post("/api/contexts/{cid}/paste", dependencies=[simulator])
+    def paste(request: Request, cid: str, body: Paste) -> dict[str, list[str]]:
+        return {"ids": service.paste_elements(sid(request), cid, body.fragment)}
+
+    @app.post("/api/contexts/{cid}/blocks", status_code=201, dependencies=[simulator])
+    async def insert_block(request: Request, cid: str) -> ElementSummary:
+        text = (await request.body()).decode("utf-8", errors="replace")
+        return await asyncio.to_thread(service.import_element, sid(request), cid, text)
 
     # --- Verification ----------------------------------------------------------------------------------
 

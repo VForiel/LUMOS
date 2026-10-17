@@ -8,7 +8,14 @@
     "loading": "Chargement…"
   },
   "toolbar": {
-    "language": "Langue"
+    "language": "Langue",
+    "new": "Nouveau contexte",
+    "open": "Ouvrir un fichier .lumos",
+    "save": "Enregistrer en .lumos",
+    "python": "Script Python",
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "shortcuts": "Raccourcis clavier"
   },
   "theme": {
     "switch": "Passer au thème {{theme}}",
@@ -23,7 +30,11 @@
     "title": "Éléments",
     "search": "Rechercher un élément…",
     "empty": "Aucun élément ne correspond à votre recherche.",
-    "hint": "Glissez-le sur le canevas, ou cliquez pour l'ajouter."
+    "hint": "Glissez-le sur le canevas, ou cliquez pour l'ajouter.",
+    "blocks": "Mes blocs",
+    "importBlock": "Insérer un bloc depuis un fichier .lumos",
+    "blocksHint": "Enregistrez un groupe comme bloc pour le réutiliser ici.",
+    "forgetBlock": "Retirer de mes blocs"
   },
   "categories": {
     "sources": "Sources",
@@ -51,6 +62,91 @@
     "inspect": "Inspecter {{port}}"
   },
   "toast": {
-    "restored": "Votre dernier contexte a été restauré."
+    "restored": "Votre dernier contexte a été restauré.",
+    "opened": "{{name}} ouvert.",
+    "copied_one": "{{count}} élément copié.",
+    "copied_other": "{{count}} éléments copiés.",
+    "blockSaved": "Bloc {{name}} enregistré dans Mes blocs."
+  },
+  "fields": {
+    "free": "paramètre libre (ajusté par calibration)",
+    "reset": "Revenir à la valeur par défaut ({{value}})",
+    "unit": "Unité",
+    "notANumber": "Donnez un nombre, éventuellement avec une unité (par ex. 3 mm).",
+    "notAnInteger": "Donnez un nombre entier.",
+    "unknownUnit": "L'unité {{unit}} ne convient pas à cette valeur.",
+    "atLeast": "Doit valoir au moins {{bound}}.",
+    "above": "Doit être supérieur à {{bound}}.",
+    "atMost": "Doit valoir au plus {{bound}}.",
+    "below": "Doit être inférieur à {{bound}}.",
+    "invalidJson": "JSON invalide."
+  },
+  "inspector": {
+    "title": "Inspecteur",
+    "show": "Afficher l'inspecteur",
+    "hide": "Masquer l'inspecteur",
+    "params": "Paramètres",
+    "settings": "Réglages",
+    "state": "État",
+    "ports": "Ports",
+    "inspect": "Inspecter",
+    "group": "Groupe d'éléments",
+    "expand": "Déplier",
+    "collapse": "Replier",
+    "ungroup": "Dégrouper",
+    "saveBlock": "Enregistrer comme bloc",
+    "downloadBlock": "Télécharger",
+    "copy": "Copier",
+    "delete": "Supprimer",
+    "summary_one": "{{count}} élément · {{mode}}",
+    "summary_other": "{{count}} éléments · {{mode}}",
+    "description": "Description",
+    "describe": "Que simule ce contexte ?",
+    "observation": "Bande d'observation",
+    "observationHint": "Longueurs d'onde échantillonnées par les éléments qui dépendent de la bande (étoiles, scènes, lampes).",
+    "outputs": "Sorties",
+    "selected_one": "{{count}} élément sélectionné",
+    "selected_other": "{{count}} éléments sélectionnés",
+    "groupSelection": "Grouper",
+    "selectionHint": "Maj+clic ajoute à la sélection ; Maj+glisser sélectionne une zone."
+  },
+  "mode": {
+    "simulation": "simulation",
+    "operation": "opération"
+  },
+  "dialog": {
+    "group": {
+      "title": "Grouper la sélection",
+      "label": "Nom du groupe",
+      "confirm": "Grouper"
+    },
+    "python": {
+      "title": "Script Python équivalent",
+      "hint": "Ce script construit le même contexte avec la bibliothèque LUMOS.",
+      "copy": "Copier",
+      "copied": "Copié",
+      "download": "Télécharger le .py"
+    }
+  },
+  "shortcuts": {
+    "title": "Raccourcis clavier",
+    "add": "Ajouter un élément par son nom",
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "copy": "Copier, coller",
+    "duplicate": "Dupliquer la sélection",
+    "group": "Grouper la sélection",
+    "delete": "Supprimer la sélection",
+    "selectAll": "Sélectionner tous les éléments",
+    "save": "Enregistrer en .lumos",
+    "open": "Ouvrir un fichier .lumos",
+    "run": "Lancer le calcul",
+    "fit": "Ajuster la vue",
+    "box": "Sélectionner une zone",
+    "help": "Afficher ces raccourcis"
+  },
+  "quickAdd": {
+    "placeholder": "Élément à ajouter… (par ex. thin lens, camera)",
+    "compatible": "Élément à relier à {{port}}…"
   }
 }

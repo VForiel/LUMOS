@@ -15,6 +15,9 @@ export type ElementData = {
   issues: Issue[];
   running: boolean;
   onInspect?: (port: string) => void;
+  /** Name shown instead of the path (elements inside an expanded group). */
+  label?: string;
+  group?: boolean;
 };
 
 export type ElementFlowNode = Node<ElementData, "element">;
@@ -38,7 +41,7 @@ function preview(element: ElementSummary): [string, string][] {
 export const ElementNode = memo(function ElementNode({ data, selected }: NodeProps<ElementFlowNode>) {
   const { t } = useTranslation();
   const { element, type, issues } = data;
-  const group = element.type_id === "lumos.group" || element.type_id.startsWith("lumos.group");
+  const group = Boolean(data.group) || element.type_id.startsWith("lumos.group");
   const name = group ? "group" : categoryOf(element.type_id);
   const { icon: Icon, color } = category(name);
   const { inputs, outputs } = ports(element, type);
@@ -63,7 +66,7 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm leading-tight font-semibold text-slate-800 dark:text-slate-100">
-            {element.id}
+            {data.label ?? element.id}
           </span>
           <span className="block truncate text-[11px] leading-tight text-slate-500 dark:text-slate-400">{title}</span>
         </span>

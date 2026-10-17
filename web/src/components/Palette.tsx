@@ -1,7 +1,7 @@
 // Palette of element types, generated from the registry (REQ-WEB-2): search, categories, drag or click to add.
 
 import { useReactFlow } from "@xyflow/react";
-import { ChevronDown, ChevronRight, Search, X } from "lucide-react";
+import { ChevronDown, ChevronRight, FileUp, Package, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ElementType } from "../api";
@@ -9,6 +9,7 @@ import { category, CATEGORY_ORDER } from "../lib/categories";
 import { useStore } from "../store";
 
 export const DRAG_TYPE = "application/x-lumos-type";
+export const BLOCK_TYPE = "application/x-lumos-block";
 
 /** Docstring text without reStructuredText markup (``code``, :math:`x`). */
 export function plain(text: string): string {
@@ -20,14 +21,31 @@ function matches(item: ElementType, words: string[]): boolean {
   return words.every((word) => text.includes(word));
 }
 
-/** Centre of the visible canvas, in flow coordinates. */
+/** A free spot near the centre of the visible canvas, in flow coordinates (new blocks never overlap). */
+export function freeSpot(centre: [number, number], taken: [number, number][]): [number, number] {
+  const [cx, cy] = centre;
+  const free = ([x, y]: [number, number]) => taken.every(([tx, ty]) => Math.abs(tx - x) > 250 || Math.abs(ty - y) > 180);
+  for (let ring = 0; ring < 12; ring += 1) {
+    for (let dx = -ring; dx <= ring; dx += 1) {
+      for (let dy = -ring; dy <= ring; dy += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== ring) continue;
+        const spot: [number, number] = [Math.round(cx + dx * 270), Math.round(cy + dy * 200)];
+        if (free(spot)) return spot;
+      }
+    }
+  }
+  return [Math.round(cx), Math.round(cy)];
+}
+
 export function useCanvasCentre(): () => [number, number] {
   const flow = useReactFlow();
   return () => {
     const canvas = document.querySelector('[data-testid="canvas"]')?.getBoundingClientRect();
     if (!canvas) return [0, 0];
     const point = flow.screenToFlowPosition({ x: canvas.left + canvas.width / 2, y: canvas.top + canvas.height / 2 });
-    return [point.x - 110 + (Math.random() - 0.5) * 60, point.y - 40 + (Math.random() - 0.5) * 60];
+    const positions = useStore.getState().positions;
+    const taken = Object.entries(positions).filter(([id]) => !id.includes(".")).map(([, xy]) => xy);
+    return freeSpot([point.x - 115, point.y - 60], taken);
   };
 }
 
@@ -55,6 +73,9 @@ export function Palette() {
   }, [palette, query]);
 
   const editable = role !== "viewer";
+  const blocks = useStore((s) => s.blocks);
+  const { insertBlock, forgetBlock } = useStore.getState();
+  const shownBlocks = blocks.filter((b) => !query || b.name.toLowerCase().includes(query.toLowerCase()));
 
   return (
     <aside
@@ -92,6 +113,59 @@ export function Palette() {
         </label>
       </div>
       <div className="scrollbar-thin flex-1 overflow-y-auto p-2">
+        {editable && (
+          <section className="mb-2 rounded-lg border border-dashed border-slate-200 p-1 dark:border-slate-700" data-testid="blocks">
+            <div className="flex items-center gap-2 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <Package className="size-4 text-indigo-500" />
+              <span className="flex-1">{t("palette.blocks")}</span>
+              <label className="cursor-pointer rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800" title={t("palette.importBlock")}>
+                <FileUp className="size-3.5" />
+                <input
+                  type="file"
+                  accept=".lumos,application/json"
+                  className="hidden"
+                  data-testid="import-block"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) void file.text().then((text) => insertBlock(text, centre()));
+                    event.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
+            {shownBlocks.length === 0 ? (
+              <p className="px-2 pb-1 text-[11px] text-slate-400">{t("palette.blocksHint")}</p>
+            ) : (
+              <ul className="space-y-0.5">
+                {shownBlocks.map((block) => (
+                  <li key={block.name} className="group flex items-center">
+                    <button
+                      type="button"
+                      data-testid="block-item"
+                      draggable
+                      onDragStart={(event) => {
+                        event.dataTransfer.setData(BLOCK_TYPE, block.name);
+                        event.dataTransfer.effectAllowed = "copy";
+                      }}
+                      onClick={() => void insertBlock(block.document, centre())}
+                      className="flex-1 truncate rounded-md px-2 py-1 pl-7 text-left text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      {block.name}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => forgetBlock(block.name)}
+                      title={t("palette.forgetBlock")}
+                      className="invisible rounded p-1 text-slate-400 group-hover:visible hover:text-red-500"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
         {groups.length === 0 && <p className="p-3 text-sm text-slate-500">{t("palette.empty")}</p>}
         {groups.map(([name, items]) => {
           const { icon: Icon, color } = category(name);

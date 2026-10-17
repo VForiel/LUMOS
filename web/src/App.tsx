@@ -1,11 +1,75 @@
 import { ReactFlowProvider } from "@xyflow/react";
-import { useCallback, useEffect } from "react";
+import { Code2, FilePlus2, FolderOpen, Keyboard, Redo2, Save, Undo2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Canvas } from "./components/Canvas";
+import { Dialogs } from "./components/Dialogs";
+import { Inspector } from "./components/Inspector";
 import { Palette } from "./components/Palette";
+import { QuickAdd } from "./components/QuickAdd";
 import { Toasts } from "./components/Toasts";
-import { TopBar } from "./components/TopBar";
+import { ToolButton, TopBar } from "./components/TopBar";
 import { connectEvents, disconnectEvents } from "./events";
+import { useShortcuts } from "./shortcuts";
 import { useStore } from "./store";
+
+function Separator() {
+  return <div className="mx-1 h-5 w-px bg-slate-200 dark:bg-slate-700" />;
+}
+
+function Editor() {
+  const { t } = useTranslation();
+  const context = useStore((s) => s.context);
+  const role = useStore((s) => s.info?.role);
+  const store = useStore.getState();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const editable = role !== "viewer";
+
+  const inspect = useCallback((port: string) => {
+    useStore.getState().toast({ kind: "info", title: port });
+  }, []);
+  const actions = useMemo(() => ({ open: () => fileInput.current?.click() }), []);
+  useShortcuts(actions);
+
+  return (
+    <div className="flex h-full flex-col">
+      <TopBar
+        right={<ToolButton icon={<Keyboard className="size-4" />} label={t("toolbar.shortcuts")} onClick={() => store.setDialog({ kind: "shortcuts" })} shortcut="?" />}
+      >
+        <Separator />
+        <ToolButton icon={<FilePlus2 className="size-4" />} label={t("toolbar.new")} onClick={() => void store.newContext()} testId="new" disabled={!editable} />
+        <ToolButton icon={<FolderOpen className="size-4" />} label={t("toolbar.open")} onClick={() => fileInput.current?.click()} testId="open" shortcut="Ctrl+O" />
+        <input
+          ref={fileInput}
+          type="file"
+          accept=".lumos,application/json"
+          className="hidden"
+          data-testid="open-file"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) void store.openFile(file);
+            event.target.value = "";
+          }}
+        />
+        <ToolButton icon={<Save className="size-4" />} label={t("toolbar.save")} onClick={() => void store.save()} testId="save" shortcut="Ctrl+S" />
+        <ToolButton icon={<Code2 className="size-4" />} label={t("toolbar.python")} onClick={() => void store.python()} testId="python" />
+        <Separator />
+        <ToolButton icon={<Undo2 className="size-4" />} label={t("toolbar.undo")} onClick={() => void store.undo()} testId="undo" disabled={!context?.can_undo || !editable} shortcut="Ctrl+Z" />
+        <ToolButton icon={<Redo2 className="size-4" />} label={t("toolbar.redo")} onClick={() => void store.redo()} testId="redo" disabled={!context?.can_redo || !editable} shortcut="Ctrl+Shift+Z" />
+      </TopBar>
+      <div className="flex min-h-0 flex-1">
+        <Palette />
+        <main className="relative flex min-w-0 flex-1 flex-col">
+          <Canvas onInspect={inspect} />
+        </main>
+        <Inspector onInspect={inspect} />
+      </div>
+      <QuickAdd />
+      <Dialogs />
+      <Toasts />
+    </div>
+  );
+}
 
 export function App() {
   useEffect(() => {
@@ -22,22 +86,9 @@ export function App() {
     };
   }, []);
 
-  const inspect = useCallback((port: string) => {
-    useStore.getState().toast({ kind: "info", title: port });
-  }, []);
-
   return (
     <ReactFlowProvider>
-      <div className="flex h-full flex-col">
-        <TopBar />
-        <div className="flex min-h-0 flex-1">
-          <Palette />
-          <main className="relative flex min-w-0 flex-1 flex-col">
-            <Canvas onInspect={inspect} />
-          </main>
-        </div>
-        <Toasts />
-      </div>
+      <Editor />
     </ReactFlowProvider>
   );
 }

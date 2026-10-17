@@ -1,4 +1,5 @@
-// The graph editor (REQ-WEB-1): blocks, typed connections coloured by signal, drag and drop from the palette.
+// The graph editor (REQ-WEB-1, REQ-WEB-4): blocks, typed connections coloured by signal, drag and drop from
+// the palette, groups shown collapsed (one block) or expanded (a frame holding their elements).
 
 import {
   applyNodeChanges,
@@ -10,25 +11,52 @@ import {
   useReactFlow,
   type Connection,
   type Edge,
+  type FinalConnectionState,
   type IsValidConnection,
   type NodeChange,
 } from "@xyflow/react";
 import { MousePointerClick } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { useTranslation } from "react-i18next";
+import type { ContextSummary } from "../api";
 import { category, categoryOf } from "../lib/categories";
-import { portsOf } from "../lib/schema";
+import { autoLayout } from "../lib/layout";
+import { signalOfPort, splitPort } from "../lib/ports";
 import { compatible, signalColor } from "../lib/signals";
 import { useStore } from "../store";
 import { ElementNode, type ElementFlowNode } from "./ElementNode";
-import { DRAG_TYPE } from "./Palette";
+import { FRAME_HEADER, FRAME_PAD, GroupFrame, type FrameFlowNode } from "./GroupFrame";
+import { BLOCK_TYPE, DRAG_TYPE } from "./Palette";
 
-const nodeTypes = { element: ElementNode };
+const nodeTypes = { element: ElementNode, frame: GroupFrame };
+const NODE_WIDTH = 230;
+const NODE_HEIGHT = 170;
+const NONE: Record<string, boolean> = {};
+const DELETE_KEYS = ["Delete", "Backspace"];
+const MULTI_KEYS = ["Shift", "Meta", "Control"];
+const SNAP: [number, number] = [10, 10];
+const EDGE_OPTIONS = { interactionWidth: 18 };
 
-/** "laser.out" → ["laser", "out"] (element paths may contain dots inside groups). */
-export function splitPort(reference: string): [string, string] {
-  const index = reference.lastIndexOf(".");
-  return [reference.slice(0, index), reference.slice(index + 1)];
+type FlowNode = ElementFlowNode | FrameFlowNode;
+
+export { splitPort };
+
+/** Positions of the elements of an expanded group, relative to its frame. */
+function insideLayout(context: ContextSummary, group: string): Record<string, [number, number]> {
+  const children = context.elements.filter((e) => e.id.startsWith(`${group}.`) && !e.id.slice(group.length + 1).includes("."));
+  const saved = context.ui.positions ?? {};
+  const names = children.map((c) => c.id.slice(group.length + 1));
+  let layout: Record<string, [number, number]>;
+  if (names.every((name) => saved[`${group}.${name}`])) {
+    layout = Object.fromEntries(names.map((name) => [name, saved[`${group}.${name}`]]));
+  } else {
+    const edges = (context.groups[group]?.connections ?? []).map((c) => [splitPort(c.source)[0], splitPort(c.target)[0]] as [string, string]);
+    layout = autoLayout(names, edges);
+  }
+  const xs = Object.values(layout).map(([x]) => x);
+  const ys = Object.values(layout).map(([, y]) => y);
+  const [x0, y0] = [Math.min(...xs), Math.min(...ys)];
+  return Object.fromEntries(Object.entries(layout).map(([name, [x, y]]) => [name, [x - x0 + FRAME_PAD + 70, y - y0 + FRAME_HEADER]]));
 }
 
 export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
@@ -41,40 +69,84 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
   const issues = useStore((s) => s.issues);
   const jobs = useStore((s) => s.jobs);
   const role = useStore((s) => s.info?.role);
-  const { addElement, connect, disconnect, removeElements, move, select } = useStore.getState();
-  const [nodes, setNodes] = useState<ElementFlowNode[]>([]);
+  const { addElement, connect, disconnect, removeElements, moved, select, setQuickAdd, insertBlock } = useStore.getState();
+  const [nodes, setNodes] = useState<FlowNode[]>([]);
   const fitted = useRef<string | null>(null);
 
   const types = useMemo(() => new Map((palette?.types ?? []).map((item) => [item.type_id, item])), [palette]);
-  const running = Object.values(jobs).some(
-    (job) => job.context === context?.id && (job.status === "running" || job.status === "queued"),
-  );
+  const running = Object.values(jobs).some((job) => job.context === context?.id && (job.status === "running" || job.status === "queued"));
   const editable = role !== "viewer";
+  const expanded = context?.ui.expanded ?? NONE;
+
+  const signalOf = useCallback(
+    (path: string, port: string, direction: "inputs" | "outputs") => signalOfPort(context, types, path, port, direction),
+    [context, types],
+  );
 
   useEffect(() => {
-    const elements = (context?.elements ?? []).filter((element) => !element.id.includes("."));
-    setNodes((previous) => {
-      const known = new Map(previous.map((node) => [node.id, node]));
-      return elements.map((element) => {
-        const old = known.get(element.id);
-        const [x, y] = positions[element.id] ?? [0, 0];
-        return {
-          ...(old ?? {}),
+    if (!context) {
+      setNodes([]);
+      return;
+    }
+    const built: FlowNode[] = [];
+    const nodeIssues = (id: string) => issues.filter((issue) => issue.element === id);
+    for (const element of context.elements.filter((e) => !e.id.includes("."))) {
+      const [x, y] = positions[element.id] ?? [0, 0];
+      const isGroup = Boolean(context.groups?.[element.id]);
+      if (isGroup && expanded[element.id]) {
+        const inside = insideLayout(context, element.id);
+        const xs = Object.values(inside).map(([cx]) => cx);
+        const ys = Object.values(inside).map(([, cy]) => cy);
+        const signals = Object.fromEntries([
+          ...element.inputs.map((p) => [p, signalOf(element.id, p, "inputs")]),
+          ...element.outputs.map((p) => [p, signalOf(element.id, p, "outputs")]),
+        ]);
+        built.push({
           id: element.id,
-          type: "element" as const,
+          type: "frame",
           position: { x, y },
           selected: selection.includes(element.id),
+          zIndex: -1,
           data: {
             element,
-            type: types.get(element.type_id),
-            issues: issues.filter((issue) => issue.element === element.id),
-            running,
-            onInspect,
+            signals,
+            width: Math.max(...xs, 0) + NODE_WIDTH + FRAME_PAD + 70,
+            height: Math.max(...ys, 0) + NODE_HEIGHT + FRAME_PAD,
           },
-        };
+        });
+        for (const child of context.elements.filter((e) => e.id.startsWith(`${element.id}.`) && !e.id.slice(element.id.length + 1).includes("."))) {
+          const name = child.id.slice(element.id.length + 1);
+          const [cx, cy] = inside[name] ?? [FRAME_PAD, FRAME_HEADER];
+          built.push({
+            id: child.id,
+            type: "element",
+            parentId: element.id,
+            extent: "parent",
+            position: { x: cx, y: cy },
+            connectable: false,
+            deletable: false,
+            selected: selection.includes(child.id),
+            data: { element: child, type: types.get(child.type_id), issues: nodeIssues(child.id), running, onInspect, label: name },
+          });
+        }
+      } else {
+        built.push({
+          id: element.id,
+          type: "element",
+          position: { x, y },
+          selected: selection.includes(element.id),
+          data: { element, type: types.get(element.type_id), issues: nodeIssues(element.id), running, onInspect, group: isGroup },
+        });
+      }
+    }
+    setNodes((previous) => {
+      const known = new Map(previous.map((node) => [node.id, node]));
+      return built.map((node) => {
+        const old = known.get(node.id);
+        return old && old.type === node.type ? ({ ...old, ...node, measured: old.measured } as FlowNode) : node;
       });
     });
-  }, [context, positions, selection, issues, types, running, onInspect]);
+  }, [context, positions, selection, issues, types, running, onInspect, expanded, signalOf]);
 
   useEffect(() => {
     if (context && nodes.length && fitted.current !== context.id) {
@@ -83,35 +155,42 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
     }
   }, [context, nodes.length, flow]);
 
-  const signalOf = useCallback(
-    (node: string, handle: string, direction: "inputs" | "outputs") => {
-      const element = context?.elements.find((e) => e.id === node);
-      const type = element && types.get(element.type_id);
-      const port = type ? portsOf(type.schema)[direction].find((p) => p.name === handle) : undefined;
-      return port?.signal ?? "Signal";
-    },
-    [context, types],
-  );
-
-  const edges: Edge[] = useMemo(
-    () =>
-      (context?.connections ?? []).map(({ source, target }) => {
+  const edges: Edge[] = useMemo(() => {
+    if (!context) return [];
+    const list: Edge[] = context.connections.map(({ source, target }) => {
+      const [sourceNode, sourceHandle] = splitPort(source);
+      const [targetNode, targetHandle] = splitPort(target);
+      return {
+        id: `${source}->${target}`,
+        source: sourceNode,
+        sourceHandle,
+        target: targetNode,
+        targetHandle,
+        className: running ? "running" : undefined,
+        style: { stroke: signalColor(signalOf(sourceNode, sourceHandle, "outputs")) },
+        data: { source, target },
+      };
+    });
+    for (const [group, info] of Object.entries(context.groups ?? {})) {
+      if (!expanded[group]) continue;
+      for (const { source, target } of info.connections) {
         const [sourceNode, sourceHandle] = splitPort(source);
         const [targetNode, targetHandle] = splitPort(target);
-        const color = signalColor(signalOf(sourceNode, sourceHandle, "outputs"));
-        return {
-          id: `${source}->${target}`,
-          source: sourceNode,
+        list.push({
+          id: `${group}:${source}->${target}`,
+          source: `${group}.${sourceNode}`,
           sourceHandle,
-          target: targetNode,
+          target: `${group}.${targetNode}`,
           targetHandle,
-          className: running ? "running" : undefined,
-          style: { stroke: color },
-          data: { source, target },
-        };
-      }),
-    [context, signalOf, running],
-  );
+          deletable: false,
+          selectable: false,
+          zIndex: 1,
+          style: { stroke: signalColor(signalOf(`${group}.${sourceNode}`, sourceHandle, "outputs")), strokeDasharray: "4 3" },
+        });
+      }
+    }
+    return list;
+  }, [context, signalOf, running, expanded]);
 
   const isValidConnection: IsValidConnection = useCallback(
     (connection) => {
@@ -123,16 +202,43 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
     [palette, signalOf],
   );
 
-  const onNodesChange = useCallback(
-    (changes: NodeChange<ElementFlowNode>[]) => {
-      setNodes((current) => applyNodeChanges(changes, current));
-      for (const change of changes) {
-        if (change.type === "position" && change.position && !change.dragging) {
-          move(change.id, [Math.round(change.position.x), Math.round(change.position.y)]);
+  const onNodesChange = useCallback((changes: NodeChange<FlowNode>[]) => {
+    setNodes((current) => applyNodeChanges(changes, current));
+  }, []);
+
+  const onNodeDragStop = useCallback(
+    (_: unknown, __: FlowNode, dragged: FlowNode[]) => {
+      if (!context) return;
+      const updates: Record<string, [number, number]> = {};
+      for (const node of dragged) {
+        const position: [number, number] = [Math.round(node.position.x), Math.round(node.position.y)];
+        if (node.parentId) {
+          const group = node.parentId;
+          const inside = insideLayout(context, group);
+          const saved = context.ui.positions ?? {};
+          const names = Object.keys(inside);
+          if (names.some((name) => !saved[`${group}.${name}`])) {
+            // first move inside this group: save the whole arrangement in frame coordinates
+            for (const [name, xy] of Object.entries(inside)) updates[`${group}.${name}`] = xy;
+            updates[node.id] = position;
+          } else {
+            const name = node.id.slice(group.length + 1);
+            const [ix, iy] = inside[name];
+            const [sx, sy] = saved[node.id];
+            updates[node.id] = [sx + position[0] - ix, sy + position[1] - iy];
+          }
+        } else {
+          updates[node.id] = position;
         }
       }
+      void moved(updates);
     },
-    [move],
+    [context, moved],
+  );
+
+  const onSelectionChange = useCallback(
+    ({ nodes: chosen }: { nodes: FlowNode[] }) => select(chosen.map((node) => node.id).sort()),
+    [select],
   );
 
   const onConnect = useCallback(
@@ -142,34 +248,67 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
     [connect],
   );
 
+  const onConnectEnd = useCallback(
+    (event: MouseEvent | TouchEvent, state: FinalConnectionState) => {
+      if (state.isValid || state.toNode || !state.fromNode || !state.fromHandle || !editable) return;
+      const point = "changedTouches" in event ? event.changedTouches[0] : event;
+      const position = flow.screenToFlowPosition({ x: point.clientX, y: point.clientY });
+      const direction = state.fromHandle.type === "source" ? "out" : "in";
+      const port = `${state.fromNode.id}.${state.fromHandle.id}`;
+      const signal = signalOf(state.fromNode.id, state.fromHandle.id ?? "", direction === "out" ? "outputs" : "inputs");
+      setQuickAdd({
+        position: [position.x - (direction === "out" ? 0 : NODE_WIDTH), position.y - 30],
+        from: { port, direction, signal },
+      });
+    },
+    [flow, signalOf, setQuickAdd, editable],
+  );
+
   const onDrop = useCallback(
     (event: DragEvent) => {
-      const typeId = event.dataTransfer.getData(DRAG_TYPE);
-      if (!typeId) return;
-      event.preventDefault();
       const point = flow.screenToFlowPosition({ x: event.clientX, y: event.clientY });
-      void addElement(typeId, [Math.round(point.x - 115), Math.round(point.y - 30)]);
+      const position: [number, number] = [Math.round(point.x - NODE_WIDTH / 2), Math.round(point.y - 30)];
+      const typeId = event.dataTransfer.getData(DRAG_TYPE);
+      const block = event.dataTransfer.getData(BLOCK_TYPE);
+      if (!typeId && !block) return;
+      event.preventDefault();
+      if (typeId) void addElement(typeId, position);
+      else {
+        const found = useStore.getState().blocks.find((b) => b.name === block);
+        if (found) void insertBlock(found.document, position);
+      }
     },
-    [flow, addElement],
+    [flow, addElement, insertBlock],
   );
 
   const empty = (context?.elements.length ?? 0) === 0;
 
   return (
-    <div data-testid="canvas" data-tour="canvas" className="relative min-h-0 flex-1">
+    <div
+      data-testid="canvas"
+      data-tour="canvas"
+      className="relative min-h-0 flex-1"
+      onDoubleClick={(event) => {
+        if (!editable || !(event.target as HTMLElement).classList.contains("react-flow__pane")) return;
+        const point = flow.screenToFlowPosition({ x: event.clientX, y: event.clientY });
+        setQuickAdd({ position: [point.x - NODE_WIDTH / 2, point.y - 30] });
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
+        onNodeDragStop={onNodeDragStop}
         onConnect={onConnect}
+        onConnectEnd={onConnectEnd}
         isValidConnection={isValidConnection}
-        onSelectionChange={({ nodes: chosen }) => select(chosen.map((node) => node.id))}
-        onNodesDelete={(deleted) => void removeElements(deleted.map((node) => node.id))}
+        onSelectionChange={onSelectionChange}
+        onNodesDelete={(deleted) => void removeElements(deleted.filter((node) => !node.parentId).map((node) => node.id))}
         onEdgesDelete={(deleted) => {
           for (const edge of deleted) {
-            const data = edge.data as { source: string; target: string };
-            void disconnect(data.source, data.target);
+            const data = edge.data as { source: string; target: string } | undefined;
+            if (data) void disconnect(data.source, data.target);
           }
         }}
         onDragOver={(event) => {
@@ -177,16 +316,18 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
           event.dataTransfer.dropEffect = "copy";
         }}
         onDrop={onDrop}
-        deleteKeyCode={editable ? ["Delete", "Backspace"] : null}
+        deleteKeyCode={editable ? DELETE_KEYS : null}
         nodesConnectable={editable}
-        multiSelectionKeyCode={["Shift", "Meta", "Control"]}
+        nodesDraggable={editable}
+        multiSelectionKeyCode={MULTI_KEYS}
         selectionKeyCode="Shift"
+        zoomOnDoubleClick={false}
         snapToGrid
-        snapGrid={[10, 10]}
+        snapGrid={SNAP}
         minZoom={0.15}
         maxZoom={2.5}
-        proOptions={{ hideAttribution: true }}
-        defaultEdgeOptions={{ interactionWidth: 18 }}
+        attributionPosition="top-right"
+        defaultEdgeOptions={EDGE_OPTIONS}
         connectionRadius={28}
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1.4} color="var(--canvas-dots)" />
@@ -196,7 +337,10 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
           zoomable
           position="bottom-right"
           className="!rounded-lg !border !border-slate-200 dark:!border-slate-700"
-          nodeColor={(node) => category(categoryOf((node as ElementFlowNode).data.element.type_id)).color}
+          nodeColor={(node) => {
+            const data = node.data as { element?: { type_id: string } };
+            return node.type === "frame" ? "#c7d2fe" : category(categoryOf(data.element?.type_id ?? "")).color;
+          }}
           nodeStrokeWidth={0}
         />
       </ReactFlow>

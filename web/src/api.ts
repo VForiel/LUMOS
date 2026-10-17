@@ -41,6 +41,10 @@ export type ElementSummary = {
   actions: string[];
 };
 
+export type Connection = { source: string; target: string };
+
+export type GroupInfo = { connections: Connection[]; exposed: Record<string, string> };
+
 export type ContextSummary = {
   id: string;
   name: string;
@@ -50,11 +54,12 @@ export type ContextSummary = {
   band: string[] | null;
   n_wavelengths: number;
   elements: ElementSummary[];
-  connections: { source: string; target: string }[];
+  connections: Connection[];
   outputs: string[];
-  ui?: { positions?: Record<string, [number, number]>; [key: string]: unknown };
-  can_undo?: boolean;
-  can_redo?: boolean;
+  groups: Record<string, GroupInfo>;
+  ui: { positions?: Record<string, [number, number]>; expanded?: Record<string, boolean>; [key: string]: unknown };
+  can_undo: boolean;
+  can_redo: boolean;
 };
 
 export type Issue = { severity: string; element: string | null; message: string; hint: string };
@@ -101,6 +106,13 @@ export type JournalEntry = {
   wall_time?: string;
 };
 
+export type Fragment = {
+  kind: "fragment";
+  elements: unknown[];
+  connections: { from: string; to: string }[];
+  positions: Record<string, [number, number]>;
+};
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -115,13 +127,8 @@ export class ApiError extends Error {
 async function request<T>(method: string, path: string, body?: unknown, raw = false): Promise<T> {
   const init: RequestInit = { method, credentials: "same-origin", headers: {} };
   if (body !== undefined) {
-    if (typeof body === "string") {
-      init.body = body;
-      (init.headers as Record<string, string>)["content-type"] = "application/json";
-    } else {
-      init.body = JSON.stringify(body);
-      (init.headers as Record<string, string>)["content-type"] = "application/json";
-    }
+    init.body = typeof body === "string" ? body : JSON.stringify(body);
+    (init.headers as Record<string, string>)["content-type"] = "application/json";
   }
   const response = await fetch(path, init);
   if (!response.ok) {
@@ -150,6 +157,8 @@ export const api = {
   createContext: (name = "", mode = "simulation") => request<ContextSummary>("POST", "/api/contexts", { name, mode }),
   describe: (id: string) => request<ContextSummary>("GET", ctx(id)),
   close: (id: string) => request<void>("DELETE", ctx(id)),
+  setContext: (id: string, change: { name?: string; description?: string }) =>
+    request<ContextSummary>("PATCH", ctx(id), change),
   importLumos: (text: string) => request<ContextSummary>("POST", "/api/contexts/import", text),
   exportLumos: (id: string) => request<string>("GET", `${ctx(id)}/export.lumos`, undefined, true),
   exportPython: (id: string) => request<string>("GET", `${ctx(id)}/export.py`, undefined, true),
@@ -164,6 +173,20 @@ export const api = {
     request<ElementSummary>("PATCH", `${ctx(id)}/params`, { path, value }),
   setObservation: (id: string, minimum: string, maximum: string, n_wavelengths: number) =>
     request<ContextSummary>("PUT", `${ctx(id)}/observation`, { minimum, maximum, n_wavelengths }),
+  updateUi: (id: string, ui: Record<string, unknown>, record = true) =>
+    request<ContextSummary>("PUT", `${ctx(id)}/ui${record ? "" : "?record=false"}`, ui),
+  undo: (id: string) => request<ContextSummary>("POST", `${ctx(id)}/undo`),
+  redo: (id: string) => request<ContextSummary>("POST", `${ctx(id)}/redo`),
+  rename: (id: string, path: string, name: string) =>
+    request<ContextSummary>("POST", `${ctx(id)}/elements/${path}/rename`, { name }),
+  group: (id: string, elements: string[], name: string) =>
+    request<ContextSummary>("POST", `${ctx(id)}/groups`, { elements, name }),
+  ungroup: (id: string, path: string) => request<ContextSummary>("POST", `${ctx(id)}/groups/${path}/ungroup`),
+  copy: (id: string, elements: string[]) => request<Fragment>("POST", `${ctx(id)}/copy`, { elements }),
+  paste: (id: string, fragment: Fragment) => request<{ ids: string[] }>("POST", `${ctx(id)}/paste`, { fragment }),
+  exportElement: (id: string, path: string) =>
+    request<string>("GET", `${ctx(id)}/elements/${path}/export.lumos`, undefined, true),
+  insertBlock: (id: string, text: string) => request<ElementSummary>("POST", `${ctx(id)}/blocks`, text),
   validate: (id: string) => request<Issue[]>("GET", `${ctx(id)}/validate`),
   run: (id: string, outputs: string[] = [], archive = false) =>
     request<JobInfo>("POST", `${ctx(id)}/runs`, { outputs, archive }),
@@ -183,3 +206,22 @@ export const api = {
     request<{ user: string; role: Role }>("POST", "/api/auth/ssh", { username, challenge, signature }),
   logout: () => request<void>("POST", "/api/auth/logout"),
 };
+
+/** Save ``content`` as a file in the downloads of the browser. */
+export function download(filename: string, content: string | Blob, type = "application/json"): void {
+  const blob = content instanceof Blob ? content : new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/** A file name from a context name: "Vortex coronagraph" → "Vortex_coronagraph". */
+export function fileName(name: string, suffix: string): string {
+  const stem = name.replace(/[^A-Za-z0-9_.-]+/g, "_").replace(/^[_.]+|[_.]+$/g, "") || "context";
+  return `${stem}${suffix}`;
+}

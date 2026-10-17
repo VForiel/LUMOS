@@ -8,7 +8,14 @@
     "loading": "Loading…"
   },
   "toolbar": {
-    "language": "Language"
+    "language": "Language",
+    "new": "New context",
+    "open": "Open a .lumos file",
+    "save": "Save as .lumos",
+    "python": "Python script",
+    "undo": "Undo",
+    "redo": "Redo",
+    "shortcuts": "Keyboard shortcuts"
   },
   "theme": {
     "switch": "Switch to the {{theme}} theme",
@@ -23,7 +30,11 @@
     "title": "Elements",
     "search": "Search elements…",
     "empty": "No element matches your search.",
-    "hint": "Drag onto the canvas, or click to add."
+    "hint": "Drag onto the canvas, or click to add.",
+    "blocks": "My blocks",
+    "importBlock": "Insert a block from a .lumos file",
+    "blocksHint": "Save a group as a block to reuse it here.",
+    "forgetBlock": "Remove from my blocks"
   },
   "categories": {
     "sources": "Sources",
@@ -51,6 +62,91 @@
     "inspect": "Inspect {{port}}"
   },
   "toast": {
-    "restored": "Your last context was restored."
+    "restored": "Your last context was restored.",
+    "opened": "{{name}} opened.",
+    "copied_one": "{{count}} element copied.",
+    "copied_other": "{{count}} elements copied.",
+    "blockSaved": "Block {{name}} saved in My blocks."
+  },
+  "fields": {
+    "free": "free parameter (fitted by calibration)",
+    "reset": "Back to the default value ({{value}})",
+    "unit": "Unit",
+    "notANumber": "Give a number, optionally with a unit (e.g. 3 mm).",
+    "notAnInteger": "Give a whole number.",
+    "unknownUnit": "The unit {{unit}} does not fit this value.",
+    "atLeast": "Must be at least {{bound}}.",
+    "above": "Must be greater than {{bound}}.",
+    "atMost": "Must be at most {{bound}}.",
+    "below": "Must be less than {{bound}}.",
+    "invalidJson": "Invalid JSON."
+  },
+  "inspector": {
+    "title": "Inspector",
+    "show": "Show the inspector",
+    "hide": "Hide the inspector",
+    "params": "Parameters",
+    "settings": "Settings",
+    "state": "State",
+    "ports": "Ports",
+    "inspect": "Inspect",
+    "group": "Group of elements",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "ungroup": "Ungroup",
+    "saveBlock": "Save as block",
+    "downloadBlock": "Download",
+    "copy": "Copy",
+    "delete": "Delete",
+    "summary_one": "{{count}} element · {{mode}}",
+    "summary_other": "{{count}} elements · {{mode}}",
+    "description": "Description",
+    "describe": "What does this context simulate?",
+    "observation": "Observation band",
+    "observationHint": "Wavelengths sampled by the elements that depend on the band (stars, scenes, lamps).",
+    "outputs": "Outputs",
+    "selected_one": "{{count}} element selected",
+    "selected_other": "{{count}} elements selected",
+    "groupSelection": "Group",
+    "selectionHint": "Shift+click adds to the selection; Shift+drag selects a region."
+  },
+  "mode": {
+    "simulation": "simulation",
+    "operation": "operation"
+  },
+  "dialog": {
+    "group": {
+      "title": "Group the selection",
+      "label": "Name of the group",
+      "confirm": "Group"
+    },
+    "python": {
+      "title": "Equivalent Python script",
+      "hint": "This script builds the same context with the LUMOS library.",
+      "copy": "Copy",
+      "copied": "Copied",
+      "download": "Download .py"
+    }
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "add": "Add an element by name",
+    "undo": "Undo",
+    "redo": "Redo",
+    "copy": "Copy, paste",
+    "duplicate": "Duplicate the selection",
+    "group": "Group the selection",
+    "delete": "Delete the selection",
+    "selectAll": "Select every element",
+    "save": "Save as .lumos",
+    "open": "Open a .lumos file",
+    "run": "Run",
+    "fit": "Fit the view",
+    "box": "Select a region",
+    "help": "Show these shortcuts"
+  },
+  "quickAdd": {
+    "placeholder": "Element to add… (e.g. thin lens, camera)",
+    "compatible": "Element to connect to {{port}}…"
   }
 }

@@ -28,7 +28,7 @@ export function Toasts() {
           >
             <Icon className="mt-0.5 size-4 shrink-0" />
             <div className="min-w-0 flex-1">
-              <p className="font-medium break-words">{t(`toast.${toast.title}`, { defaultValue: toast.title })}</p>
+              <p className="font-medium break-words">{t(`toast.${toast.title}`, { defaultValue: toast.title, ...toast.values })}</p>
               {toast.hint && <p className="mt-0.5 break-words opacity-80">{toast.hint}</p>}
             </div>
             <button type="button" onClick={() => dismiss(toast.id)} aria-label={t("common.close")} className="opacity-60 hover:opacity-100">
