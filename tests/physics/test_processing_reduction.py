@@ -139,6 +139,19 @@ def test_crop_keeps_coordinates():
     )
 
 
+def test_crop_element_defaults_to_the_origin_of_any_axis():
+    """The default centre (0 pix) is the origin whatever the unit of the axes (zero has every unit)."""
+    from lumos.processing.reduction import Crop
+
+    image = image_product()
+    block = Crop(nx=8, ny=6)
+    cropped = Crop.transfer(block.values(), {"in": image})["out"]
+    expected = reduction.crop(image, center=(0 * u.um, 0 * u.um), size=(8, 6))
+    np.testing.assert_array_equal(cropped.data.value, expected.data.value)
+    with pytest.raises(u.UnitsError):
+        Crop.transfer(Crop(nx=8, ny=6, x=3 * u.pix).values(), {"in": image})
+
+
 def test_rebin_conserves_the_sum_and_adds_uncertainties_in_quadrature():
     image = image_product()
     binned = reduction.rebin(image, 4)
