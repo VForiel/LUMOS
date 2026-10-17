@@ -168,3 +168,8 @@ def test_the_processing_notebooks_exist():
     names = [path.stem for path in NOTEBOOKS]
     assert "08_data_pipeline" in names
     assert "09_detection_capability" in names
+
+
+def test_the_bench_operation_notebook_exists():
+    """Step P12.10 (acceptance of v0.5, UC3 and UC4): operation of a bench against the LumosLabs emulators."""
+    assert "10_bench_operation" in [path.stem for path in NOTEBOOKS]
