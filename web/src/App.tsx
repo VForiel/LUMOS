@@ -1,11 +1,13 @@
 import { ReactFlowProvider } from "@xyflow/react";
-import { Code2, FilePlus2, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
+import { Code2, Cpu, FilePlus2, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { AccountMenu, LoginDialog } from "./components/Account";
 import { BottomPanel } from "./components/BottomPanel";
 import { Canvas } from "./components/Canvas";
 import { Dialogs } from "./components/Dialogs";
 import { Inspector } from "./components/Inspector";
+import { ConfirmAction, EmergencyStop, OperationPanel } from "./components/Operation";
 import { Palette } from "./components/Palette";
 import { PresetsDialog } from "./components/Presets";
 import { QuickAdd } from "./components/QuickAdd";
@@ -28,6 +30,8 @@ function Editor() {
   const store = useStore.getState();
   const fileInput = useRef<HTMLInputElement>(null);
   const ready = useStore((s) => s.ready);
+  const info = useStore((s) => s.info);
+  const showOperation = Boolean(info?.operation || context?.mode === "operation" || context?.elements.some((e) => e.actions.length));
   const editable = role !== "viewer";
 
   const inspect = useCallback((port: string) => void useStore.getState().inspect(port), []);
@@ -47,12 +51,14 @@ function Editor() {
       <TopBar
         right={
           <>
+            {(info?.operation || context?.mode === "operation") && <EmergencyStop />}
             <RunButton />
             <Separator />
             <div className="flex items-center" data-tour="help">
               <ToolButton icon={<GraduationCap className="size-4" />} label={t("toolbar.tour")} onClick={() => void startTour()} testId="tour" />
               <ToolButton icon={<Keyboard className="size-4" />} label={t("toolbar.shortcuts")} onClick={() => store.setDialog({ kind: "shortcuts" })} shortcut="?" />
             </div>
+            <AccountMenu />
           </>
         }
       >
@@ -86,12 +92,25 @@ function Editor() {
         <Palette />
         <main className="relative flex min-w-0 flex-1 flex-col">
           <Canvas onInspect={inspect} />
-          <BottomPanel />
+          <BottomPanel
+            extraTabs={showOperation ? [{ tab: "operation", icon: Cpu, label: "tabs.operation" }] : []}
+            renderExtra={(tab) => (tab === "operation" ? <OperationPanel /> : null)}
+          />
         </main>
         <Inspector onInspect={inspect} />
       </div>
       <QuickAdd />
-      <Dialogs extra={(dialog) => (dialog.kind === "presets" ? <PresetsDialog /> : null)} />
+      <Dialogs
+        extra={(dialog) =>
+          dialog.kind === "presets" ? (
+            <PresetsDialog />
+          ) : dialog.kind === "login" ? (
+            <LoginDialog />
+          ) : dialog.kind === "confirm-action" ? (
+            <ConfirmAction element={dialog.element} action={dialog.action} device={dialog.device} onConfirm={dialog.onConfirm} />
+          ) : null
+        }
+      />
       <Toasts />
     </div>
   );

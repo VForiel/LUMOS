@@ -66,7 +66,9 @@ function NameInput({ path, editable }: { path: string; editable: boolean }) {
   const rename = useStore((s) => s.rename);
   const name = path.split(".").pop()!;
   const [text, setText] = useState(name);
-  useEffect(() => setText(name), [name]);
+  useEffect(() => {
+    setText(name);
+  }, [name]);
   const commit = () => {
     if (text && text !== name) void rename(path, text);
     else setText(name);
@@ -219,8 +221,12 @@ function ContextPanel({ context }: { context: ContextSummary }) {
   const editable = role !== "viewer";
   const [name, setName] = useState(context.name);
   const [description, setDescription] = useState(context.description);
-  useEffect(() => setName(context.name), [context.name]);
-  useEffect(() => setDescription(context.description), [context.description]);
+  useEffect(() => {
+    setName(context.name);
+  }, [context.name]);
+  useEffect(() => {
+    setDescription(context.description);
+  }, [context.description]);
   const band = context.band?.map((value) => parseQuantity(value)) ?? null;
   const toMicrons = (q: { value: number; unit: string } | null | undefined) => {
     if (!q) return null;

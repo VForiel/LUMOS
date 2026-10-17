@@ -113,6 +113,10 @@ export type Fragment = {
   positions: Record<string, [number, number]>;
 };
 
+export type Device = { vendor: string; model: string; serial: string; firmware: string; url: string };
+export type DeviceStatus = { element: string; driver?: string; connected?: boolean; state?: string; [key: string]: unknown };
+export type ActionResult = { element: string; action: string; mode: string; predicted_s: number; measured_s: number | null; value: string | null };
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -201,6 +205,15 @@ export const api = {
   archiveUrl: (path: string) => `/api/archives/download?path=${enc(path)}`,
   cancel: (job: string) => request<JobInfo>("POST", `/api/jobs/${enc(job)}/cancel`),
   journal: (id: string, limit = 200) => request<JournalEntry[]>("GET", `${ctx(id)}/journal?limit=${limit}`),
+  discover: (tcp: string[], serial = false, visa = false) =>
+    request<Device[]>("POST", "/api/devices/discover", { tcp, serial, visa }),
+  associate: (id: string) => request<Record<string, Device>>("POST", `${ctx(id)}/devices/associate`, {}),
+  devices: (id: string) => request<DeviceStatus[]>("GET", `${ctx(id)}/devices`),
+  confirmation: (id: string, element: string) =>
+    request<{ device: string | null }>("GET", `${ctx(id)}/elements/${element}/confirmation`),
+  action: (id: string, element: string, action: string, args: unknown[], confirmed: boolean) =>
+    request<ActionResult>("POST", `${ctx(id)}/actions`, { element, action, args, kwargs: {}, confirmed }),
+  stop: (id: string) => request<void>("POST", `${ctx(id)}/stop`),
   me: () => request<{ user: string | null; role: Role | null }>("GET", "/api/auth/me"),
   login: (username: string, password: string) =>
     request<{ user: string; role: Role }>("POST", "/api/auth/login", { username, password }),

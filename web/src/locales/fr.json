@@ -70,7 +70,9 @@
     "copied_one": "{{count}} élément copié.",
     "copied_other": "{{count}} éléments copiés.",
     "blockSaved": "Bloc {{name}} enregistré dans Mes blocs.",
-    "runDone": "Calcul terminé en {{seconds}} s."
+    "runDone": "Calcul terminé en {{seconds}} s.",
+    "actionDone": "{{action}} effectuée ({{mode}}, {{seconds}} s)",
+    "stopped": "Arrêt d'urgence envoyé à tous les appareils du contexte."
   },
   "fields": {
     "free": "paramètre libre (ajusté par calibration)",
@@ -166,7 +168,8 @@
     "journal": "Journal",
     "problems": "Problèmes",
     "show": "Afficher le panneau",
-    "hide": "Masquer le panneau"
+    "hide": "Masquer le panneau",
+    "operation": "Opération"
   },
   "results": {
     "inspected": "Port",
@@ -248,6 +251,40 @@
     "done": {
       "title": "À vous !",
       "text": "Changez une valeur et relancez, ou ouvrez un autre préréglage. La documentation explique la physique de chaque élément."
+    }
+  },
+  "operation": {
+    "equipment": "Équipements",
+    "disabled": "Le pilotage d'équipements est désactivé sur cette instance : les actions ne modifient que la simulation (jumeau numérique).",
+    "operatorOnly": "Seuls les opérateurs pilotent les équipements : connectez-vous en opérateur.",
+    "addresses": "Adresses des appareils (une par ligne)",
+    "discover": "Découvrir",
+    "associate": "Associer",
+    "devices": "Appareils du contexte",
+    "refresh": "Actualiser",
+    "noDevice": "Aucun appareil attaché.",
+    "actions": "Actions",
+    "noAction": "Aucun élément de ce contexte n'a d'actions.",
+    "arguments": "arguments, par ex. 5 mm",
+    "stop": "ARRÊT",
+    "stopHint": "Arrêt d'urgence de tous les appareils du contexte",
+    "confirmTitle": "Agir sur un équipement réel ?",
+    "confirmText": "{{action}} va piloter l'appareil {{device}}. Vérifiez que le banc est en sécurité.",
+    "confirm": "Piloter l'appareil"
+  },
+  "account": {
+    "login": "Se connecter",
+    "logout": "Se déconnecter",
+    "user": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "sshKey": "Clé SSH",
+    "getChallenge": "Obtenir un défi à signer",
+    "signHint": "Signez ce défi avec votre clé SSH (valable 2 minutes, une seule fois) :",
+    "loginHint": "Collez ci-dessous la signature affichée par ssh-keygen.",
+    "roles": {
+      "viewer": "lecteur",
+      "simulator": "simulateur",
+      "operator": "opérateur"
     }
   }
 }

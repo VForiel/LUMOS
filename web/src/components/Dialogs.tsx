@@ -58,7 +58,9 @@ function PromptDialog({ dialog }: { dialog: Extract<Dialog, { kind: "prompt" }> 
   const close = () => useStore.getState().setDialog(null);
   const [value, setValue] = useState(dialog.value);
   const input = useRef<HTMLInputElement>(null);
-  useEffect(() => input.current?.select(), []);
+  useEffect(() => {
+    input.current?.select();
+  }, []);
   const confirm = () => {
     if (!value.trim()) return;
     close();

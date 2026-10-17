@@ -28,6 +28,30 @@ export type Dialog =
   | { kind: "presets" }
   | { kind: "login" }
   | { kind: "confirm-action"; element: string; action: string; device: string; onConfirm: () => void };
+
+/** Run an action of an element; on equipment, only after the user confirmed it in a dialog. */
+export async function runAction(element: string, action: string, args: unknown[]): Promise<void> {
+  const store = useStore.getState();
+  const context = store.context;
+  if (!context) return;
+  const execute = async (confirmed: boolean) => {
+    try {
+      const result = await api.action(context.id, element, action, args, confirmed);
+      const seconds = (result.measured_s ?? result.predicted_s).toFixed(2);
+      store.toast({ kind: "success", title: "actionDone", values: { action: `${element}.${action}`, mode: result.mode, seconds } });
+      await store.refresh();
+    } catch (error) {
+      store.fail(error);
+    }
+  };
+  try {
+    const { device } = await api.confirmation(context.id, element);
+    if (device === null) await execute(false);
+    else store.setDialog({ kind: "confirm-action", element, action, device, onConfirm: () => void execute(true) });
+  } catch (error) {
+    store.fail(error);
+  }
+}
 export type QuickAdd = { position: [number, number]; from?: { port: string; direction: "out" | "in"; signal: string } };
 export type Block = { name: string; document: string; saved: string };
 

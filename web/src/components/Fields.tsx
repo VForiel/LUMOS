@@ -268,7 +268,9 @@ function JsonInput({ field, value, disabled, onCommit }: { field: Field; value: 
   const initial = value === null || value === undefined ? "null" : JSON.stringify(value, null, 1);
   const [text, setText] = useState(initial);
   const [problem, setProblem] = useState<string | null>(null);
-  useEffect(() => setText(initial), [initial]);
+  useEffect(() => {
+    setText(initial);
+  }, [initial]);
   return (
     <>
       <textarea

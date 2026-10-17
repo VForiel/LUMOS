@@ -80,7 +80,9 @@ function Downloads({ make, figure }: { make: (format: string) => string; figure:
 
 function Figure({ src, alt }: { src: string | null; alt: string }) {
   const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [src]);
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
   if (!src || failed) return null;
   return (
     <a href={src} target="_blank" rel="noreferrer" className="block shrink-0">
@@ -179,10 +181,16 @@ function Journal() {
   // read again when a run ends: its entries may precede the live connection
   const finished = useStore((s) => Object.values(s.jobs).filter((j) => j.context === s.context?.id && j.status !== "queued" && j.status !== "running").length);
   useEffect(() => {
-    if (context) void api.journal(context.id).then(setHistory).catch(() => setHistory([]));
+    if (!context) return;
+    const read = () => void api.journal(context.id).then(setHistory).catch(() => undefined);
+    read();
+    const timer = window.setInterval(read, 2000); // also when the live connection is down
+    return () => window.clearInterval(timer);
   }, [context?.id, finished]); // eslint-disable-line react-hooks/exhaustive-deps
   const entries = [...history.filter((h) => !live.some((l) => l.wall_time === h.wall_time && l.kind === h.kind)), ...live];
-  useEffect(() => end.current?.scrollIntoView({ block: "end" }), [entries.length]);
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: "end" });
+  }, [entries.length]);
   return (
     <div data-testid="journal" className="h-full overflow-y-auto p-2 font-mono text-xs">
       {entries.length === 0 && <p className="p-2 font-sans text-sm text-slate-500">{t("journal.empty")}</p>}

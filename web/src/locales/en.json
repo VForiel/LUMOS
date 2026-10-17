@@ -70,7 +70,9 @@
     "copied_one": "{{count}} element copied.",
     "copied_other": "{{count}} elements copied.",
     "blockSaved": "Block {{name}} saved in My blocks.",
-    "runDone": "Run finished in {{seconds}} s."
+    "runDone": "Run finished in {{seconds}} s.",
+    "actionDone": "{{action}} done ({{mode}}, {{seconds}} s)",
+    "stopped": "Emergency stop sent to every device of the context."
   },
   "fields": {
     "free": "free parameter (fitted by calibration)",
@@ -166,7 +168,8 @@
     "journal": "Journal",
     "problems": "Problems",
     "show": "Show the panel",
-    "hide": "Hide the panel"
+    "hide": "Hide the panel",
+    "operation": "Operation"
   },
   "results": {
     "inspected": "Port",
@@ -248,6 +251,40 @@
     "done": {
       "title": "Your turn!",
       "text": "Change a value and run again, or open another preset. The documentation explains the physics of every element."
+    }
+  },
+  "operation": {
+    "equipment": "Equipment",
+    "disabled": "The operation of equipment is disabled on this instance: actions only change the simulation (digital twin).",
+    "operatorOnly": "Only operators drive equipment: log in as an operator.",
+    "addresses": "Addresses of the devices (one per line)",
+    "discover": "Discover",
+    "associate": "Associate",
+    "devices": "Devices of the context",
+    "refresh": "Refresh",
+    "noDevice": "No device attached.",
+    "actions": "Actions",
+    "noAction": "No element of this context has actions.",
+    "arguments": "arguments, e.g. 5 mm",
+    "stop": "STOP",
+    "stopHint": "Emergency stop of every device of the context",
+    "confirmTitle": "Act on real equipment?",
+    "confirmText": "{{action}} will drive the device {{device}}. Check that the bench is safe.",
+    "confirm": "Drive the device"
+  },
+  "account": {
+    "login": "Log in",
+    "logout": "Log out",
+    "user": "User name",
+    "password": "Password",
+    "sshKey": "SSH key",
+    "getChallenge": "Get a challenge to sign",
+    "signHint": "Sign this challenge with your SSH key (valid 2 minutes, once):",
+    "loginHint": "Paste the signature printed by ssh-keygen below.",
+    "roles": {
+      "viewer": "viewer",
+      "simulator": "simulator",
+      "operator": "operator"
     }
   }
 }
