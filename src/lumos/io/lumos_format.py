@@ -28,6 +28,7 @@ reading a document. Older type versions are upgraded with the registered migrati
 from __future__ import annotations
 
 import base64
+import importlib
 import json
 import re
 from collections.abc import Mapping
@@ -268,6 +269,18 @@ def _context_from_document(document: Mapping[str, Any], reg: Registry) -> Contex
     return ctx
 
 
+#: Built-in element modules imported only when a document uses them (SymPy is slow to import).
+_LAZY_TYPES = {"lumos.symbolic.": "lumos.symbolic.source"}
+
+
+def _import_lazy_types(type_id: Any) -> None:
+    if not isinstance(type_id, str):
+        return
+    for prefix, module in _LAZY_TYPES.items():
+        if type_id.startswith(prefix):
+            importlib.import_module(module)
+
+
 def from_entry(entry: Any, *, registry: Registry | None = None) -> Element:
     """Create the element or group described by a document entry."""
     reg = _registry(registry)
@@ -276,6 +289,7 @@ def from_entry(entry: Any, *, registry: Registry | None = None) -> Element:
     if not isinstance(entry, Mapping) or "type" not in entry or "type_version" not in entry:
         raise LumosFormatError("the element entry needs 'type' and 'type_version'")
     type_id = entry["type"]
+    _import_lazy_types(type_id)
     cls = reg.get(type_id)
     version = entry["type_version"]
     if isinstance(version, bool) or not isinstance(version, int) or version < 1:
