@@ -219,6 +219,8 @@ def test_sessions_expire_after_their_idle_time(users_file, tmp_path):
 def test_authenticated_sessions_expire_after_their_lifetime_even_when_used(users_file, tmp_path):
     with client_for(public_config(users_file, tmp_path, session_max_hours=0.6 / 3600)) as client:
         login(client, "simon")
+        me = client.get("/api/auth/me").json()
+        assert me["user"] == "simon"
         deadline = time.monotonic() + 1.5
         while time.monotonic() < deadline:
             me = client.get("/api/auth/me").json()
