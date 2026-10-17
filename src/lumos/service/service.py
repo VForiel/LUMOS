@@ -734,7 +734,8 @@ class Service:
 
     # --- Archives ------------------------------------------------------------------------------------------
 
-    def _archive_root(self) -> Path:
+    def archive_root(self) -> Path:
+        """Directory of the archives of the runs."""
         from lumos.results import default_archive_root
 
         return Path(self.config.archive_root) if self.config.archive_root else default_archive_root()
@@ -743,7 +744,7 @@ class Service:
         """Return the archives of the runs, most recent first."""
         import yaml
 
-        root = self._archive_root()
+        root = self.archive_root()
         found = []
         for metadata in sorted(root.glob("*/*/metadata.yml"), reverse=True)[:limit]:
             data = yaml.safe_load(metadata.read_text(encoding="utf-8")) or {}
@@ -761,7 +762,7 @@ class Service:
         """``metadata.yml`` of an archive (only inside the archive directory of the service)."""
         import yaml
 
-        root = self._archive_root().resolve()
+        root = self.archive_root().resolve()
         target = Path(path).resolve()
         if root not in target.parents and target != root:
             raise ServiceError(

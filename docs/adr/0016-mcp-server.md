@@ -28,6 +28,11 @@ call (elicitation, sampling) by results asking the client for input (`InputRequi
 - **Runs**: `run` starts a job of the service, reports its progress with MCP progress notifications while it
   waits (up to `wait_seconds`) and returns the job; longer runs continue in the background (`get_job`,
   `wait_job`). Without `outputs`, the main outputs of the context (those of its preset) are computed.
+- **Resources** (P13.3) use the scheme `lumos://`: `docs` and `docs/{+path}`, `elements` and
+  `elements/{type_id}`, `presets` and `presets/{name}`, `context/current` (and its `journal`),
+  `contexts/{id}` and `contexts/{id}/journal`, `archives` and `archives/{+path}` (relative to the archive
+  directory; the SDK rejects `..` and absolute paths). **Prompts** guide four use cases: `design_instrument`,
+  `estimate_detection`, `calibrate_bench`, `diagnose_simulation`.
 - Synchronous tools run in worker threads of the SDK; the service serialises the work of a session.
 - Groups are created in one call (`create_group`: elements, internal connections, exposed ports), added to the
   service as `Service.create_group`.

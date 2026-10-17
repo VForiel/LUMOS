@@ -124,7 +124,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `lumos.mcp` and `lumos mcp` (ADR-0016): MCP server over stdio for AI assistants, with tools to discover
   element types and documentation, build and edit contexts, validate them, run them with progress and read
   their results, resolve catalogue objects, build processing pipelines, evaluate detection limits and read
-  archives; the context defaults to the last one used.
+  archives; the context defaults to the last one used. Resources (`lumos://docs`, `lumos://elements`,
+  `lumos://presets`, `lumos://context/current`, journals, `lumos://archives`) and prompts for four use cases
+  (`design_instrument`, `estimate_detection`, `calibrate_bench`, `diagnose_simulation`).
+- The journal of a context records each run (`kind: "run"`: outputs and duration).
 
 ### Changed
 

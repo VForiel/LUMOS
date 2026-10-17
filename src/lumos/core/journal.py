@@ -33,7 +33,8 @@ class JournalEntry:
     Attributes
     ----------
     kind
-        ``"action"``, ``"wait"`` or ``"log"`` (records of other LUMOS loggers during a run).
+        ``"action"``, ``"wait"``, ``"run"`` (outputs computed, in ``args``, with the duration of the
+        computation in ``measured``) or ``"log"`` (records of other LUMOS loggers during a run).
     elapsed
         Elapsed time of the context clock when the event started, in seconds.
     date

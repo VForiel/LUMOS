@@ -332,6 +332,11 @@ class Context:
         finally:
             root.removeHandler(handler)
             root.setLevel(previous_level)
+        entry = self._entry("run")
+        entry.args = ", ".join(result.name_of(t) if isinstance(t, PortRef) else str(t) for t in targets)
+        entry.measured = time.perf_counter() - started
+        entry.message = f"computed {entry.args} in {entry.measured:.3g} s"
+        self.journal.append(entry)
         if archive:
             self._archive_run(result, archive, archive_root, time.perf_counter() - started)
         return result
