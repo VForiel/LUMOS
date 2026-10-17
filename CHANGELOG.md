@@ -175,6 +175,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Runs in the web interface: progress, cancellation, archives; results with figures and statistics; any port
   inspected without a run; downloads as PNG, PltEdit, NPZ and JSON; live journal; problems leading to the
   element. Service: `port_file`, `result_file`, `archive_zip`, `cancel_job` (status `cancelled`).
+- Presets and tour in the web interface: gallery of the presets (title, description, types of elements) on a
+  first visit and from the toolbar; step-by-step guided tour overlaid on the interface (driver.js, English and
+  French) from a preset to its results. `PresetInfo` gives `title` and `elements`.
 
 ### Changed
 

@@ -293,7 +293,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P14.4 Frontend : socle** — Vite, React, `@xyflow/react`, Tailwind, i18next (EN/FR) ; palette et nœuds générés depuis les schémas.
 - [x] **P14.5 Édition** — blocs, connexions typées, formulaires avec unités, annulation et rétablissement, groupes.
 - [x] **P14.6 Exécution et inspection** — progression, visualisations de port, téléchargements.
-- [ ] **P14.7 Préréglages et tutoriel** pas à pas.
+- [x] **P14.7 Préréglages et tutoriel** pas à pas.
 - [ ] **P14.8 Panneau opération** — équipements, état, actions, arrêt d'urgence (selon les droits).
 - [ ] **P14.9 Panneau assistant** (optionnel) connecté au MCP HTTP.
 - [ ] **P14.10 Déploiement** — Docker (machine unique, profil `local` utilisé jusqu'à la v1.0) ; documentation d'hébergement de l'instance publique sur un VPS (reverse proxy, TLS, quotas adaptés à la machine).
