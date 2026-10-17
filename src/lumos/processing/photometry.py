@@ -5,8 +5,10 @@ r"""Photometry, signal-to-noise ratio and contrast curves (step P11.1, REQ-PIPE-
   background of an optional annulus. The variance of the flux adds the pixel variances (weighted) and the
   error of the background level, :math:`A^2\,\sigma_b^2/n_b` (:math:`A` aperture area, :math:`n_b` annulus
   area in pixels).
-- :func:`ccd_snr`: the CCD equation :math:`S/\sqrt{S + n(B + D + R^2)}` (Howell 2006, *Handbook of CCD
-  Astronomy*, eq. 4.4), all terms in electrons over the exposure.
+- :func:`ccd_snr`: the CCD equation :math:`S/\sqrt{S + n(1 + n/n_B)(B + D + R^2)}` (Howell 2006, *Handbook
+  of CCD Astronomy*, eq. 4.4), all terms in electrons over the exposure; the factor :math:`1 + n/n_B` is the
+  error of a background measured as the mean of :math:`n_B` pixels (omitted when ``n_background`` is not
+  given; a median background raises :math:`n/n_B` by about :math:`\pi/2`).
 - :func:`contrast_curve`: detection limit in contrast versus separation, for resolution elements of size
   ``resolution`` (λ/D in pixels or in the unit of the image axes). At separation :math:`r` the noise
   :math:`\sigma_r` is the standard deviation of the pixels of the annulus :math:`[r - \lambda/D/2,
@@ -191,6 +193,7 @@ def ccd_snr(
     signal: u.Quantity,
     *,
     n_pixels: float,
+    n_background: float | None = None,
     background: u.Quantity = 0 * u.electron,
     dark: u.Quantity = 0 * u.electron,
     read_noise: u.Quantity = 0 * u.electron,
@@ -198,7 +201,9 @@ def ccd_snr(
     """Signal-to-noise ratio of the CCD equation (all inputs in electrons, per pixel for the noises)."""
     e = u.electron
     s = _f(signal, e)
-    noise = s + float(n_pixels) * (_f(background, e) + _f(dark, e) + _f(read_noise, e) ** 2)
+    n = float(n_pixels)
+    factor = 1.0 if n_background is None else 1.0 + n / float(n_background)
+    noise = s + n * factor * (_f(background, e) + _f(dark, e) + _f(read_noise, e) ** 2)
     return s / math.sqrt(noise)
 
 
