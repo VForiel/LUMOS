@@ -27,6 +27,7 @@ from __future__ import annotations
 import difflib
 import html
 import inspect
+import sys
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from typing import Any, ClassVar
 
@@ -371,13 +372,20 @@ class Element(ParamHost):
             if port.multiple and not isinstance(signals, Sequence):
                 raise TypeError(f"{self!r}: input {name!r} accepts several signals and expects a sequence")
             for signal in signals:
-                if not isinstance(signal, port.signal_type):
+                if not isinstance(signal, port.signal_type) and not _is_symbolic(signal):  # converted below
                     raise TypeError(
                         f"{self!r}: input {name!r} expects {port.signal_type.__name__}, "
                         f"got {type(signal).__name__}"
                     )
 
-        outputs = type(self).transfer(self.values(), dict(inputs))
+        outputs = None
+        if any(_is_symbolic(signal) for signal in inputs.values()):
+            # symbolic fields: closed forms when the element has them, else logged conversion (P10.6)
+            from lumos.symbolic.integration import dispatch
+
+            outputs, inputs = dispatch(self, inputs)
+        if outputs is None:
+            outputs = type(self).transfer(self.values(), dict(inputs))
         if not isinstance(outputs, Mapping) or set(outputs) != set(output_ports):
             produced = sorted(outputs) if isinstance(outputs, Mapping) else type(outputs).__name__
             raise TypeError(
@@ -594,3 +602,12 @@ def _connect_shorthand(left: Any, right: Any) -> Any:
 
 
 _RESERVED_NAMES = {name for name in dir(Element) if not name.startswith("_")} | {"name"}
+
+
+def _is_symbolic(signal: Any) -> bool:
+    """Whether ``signal`` (or a signal of a list) is a symbolic field, without importing SymPy."""
+    module = sys.modules.get("lumos.symbolic.field")
+    if module is None:  # no symbolic field can exist before lumos.symbolic is imported
+        return False
+    signals = signal if isinstance(signal, list | tuple) else [signal]
+    return any(isinstance(s, module.SymbolicField) for s in signals)

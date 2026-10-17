@@ -169,10 +169,20 @@ def _incompatibility(source: Port | PortRef, target: Port | PortRef) -> str | No
         return f"{source!r} is an input; connections start from an output"
     if dst.direction != "in":
         return f"{target!r} is an output; connections end on an input"
-    if not issubclass(src.signal_type, dst.signal_type):
+    if not issubclass(src.signal_type, dst.signal_type) and not _converted(src.signal_type, dst.signal_type):
         produced, expected = src.signal_type.__name__, dst.signal_type.__name__
         return f"{source!r} produces {produced} but {target!r} expects {expected}"
     return None
+
+
+def _converted(produced: type, expected: type) -> bool:
+    """Whether a symbolic field (``produced``) is converted to the numerical field ``expected`` (P10.6)."""
+    if produced.__module__ != "lumos.symbolic.field":
+        return False
+    from lumos.fields.wavecube import Wavecube
+    from lumos.fields.wavefront import Wavefront
+
+    return issubclass(Wavefront, expected) or issubclass(Wavecube, expected)
 
 
 def compatible(source: Port | PortRef, target: Port | PortRef) -> bool:
