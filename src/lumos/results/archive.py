@@ -257,8 +257,7 @@ def new_archive(
     metadata
         Extra entries of ``metadata.yml``.
     """
-    from vfscitools import archive as vfst_archive
-
+    from lumos._vendor import vfst_archive
     from lumos.io import save
 
     base = Path(root) if root is not None else default_archive_root()

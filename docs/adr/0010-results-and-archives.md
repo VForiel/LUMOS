@@ -40,6 +40,15 @@ files (NF-7).
 
 ## Consequences
 
-- VFSciTools must be published on PyPI before LUMOS can be installed from PyPI or tested in CI (tracked in
-  `todo.md`).
+- ~~VFSciTools must be published on PyPI before LUMOS can be installed from PyPI or tested in CI.~~ See the
+  amendment below.
 - The archive tests probe the real git repository and hardware; the hardware report is cached per process.
+
+## Amendment (2026-10-17): VFSciTools is vendored
+
+Installing LUMOS on Read the Docs and in CI failed because `vfscitools` is not on PyPI. At the author's request,
+the two parts LUMOS uses are copied into `lumos._vendor` (MIT license, same author): `pltedit` (`save`, `load`,
+`set_style`; same `.plt` format, the files still open in the PltEdit application) and `vfst_archive`
+(`vfst.archive.new`). They are kept as upstream except for their imports, excluded from ruff and pyright, and
+updated by copying them again. `vfscitools` is no longer a dependency; once it is on PyPI, LUMOS may depend on it
+again and drop the copies.

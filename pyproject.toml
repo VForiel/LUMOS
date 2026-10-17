@@ -36,7 +36,6 @@ dependencies = [
     "array-api-compat>=1.9",
     "jsonschema>=4.23",
     "psutil>=5.9",
-    "vfscitools>=0.1",
 ]
 
 [project.optional-dependencies]
@@ -59,6 +58,8 @@ docs = [
     "sphinx-copybutton>=0.5",
     "sphinx-intl>=2.2",
     "linkify-it-py>=2.0",
+    "ipykernel>=6.29",  # execution of the example notebooks
+    "requests>=2.32",  # catalogue layer used by the notebooks (answers from the recorded cache)
 ]
 dev = [
     "pytest>=8.0",
@@ -103,7 +104,8 @@ include = ["src/lumos", "tests", "LICENSE", "README.md", "CHANGELOG.md"]
 [tool.ruff]
 line-length = 110
 target-version = "py312"
-extend-exclude = ["docs/_build"]
+extend-exclude = ["docs/_build", "src/lumos/_vendor"]  # vendored code kept as upstream
+force-exclude = true  # also when pre-commit passes the files explicitly
 
 [tool.ruff.lint]
 select = [
@@ -145,6 +147,7 @@ convention = "numpy"
 
 [tool.pyright]
 include = ["src", "tests", "tools"]
+exclude = ["src/lumos/_vendor"]  # vendored code kept as upstream
 pythonVersion = "3.12"
 typeCheckingMode = "standard"
 venvPath = "."

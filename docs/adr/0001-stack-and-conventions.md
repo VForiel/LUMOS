@@ -32,6 +32,7 @@ orientations; this ADR records the concrete tooling chosen in phase 0.
 `vfscitools` (archives and `.plt` figures, REQ-RES-*) is **not published on PyPI**, and a package published on
 PyPI cannot depend on a git URL. It is therefore not declared yet. It must be published on PyPI before step P7.3,
 when LUMOS starts using it.
+*Superseded on 2026-10-17: the parts used are vendored in `lumos._vendor` (ADR-0010, amendment).*
 
 ### Amendment (2026-10-16, step P1.1): no pyright strict mode
 

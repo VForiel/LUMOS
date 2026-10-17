@@ -76,7 +76,7 @@ def save_figure(
     for fmt in wanted:
         target = stem.with_name(f"{stem.name}.{fmt}")
         if fmt == "plt":
-            import pltedit
+            from lumos._vendor import pltedit
 
             pltedit.save(figure, target)
         else:
