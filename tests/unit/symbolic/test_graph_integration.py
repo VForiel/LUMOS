@@ -198,3 +198,26 @@ def test_loading_refuses_unknown_functions(tmp_path):
     path.write_text(text, encoding="utf-8")
     with pytest.raises(ValueError, match="__import__"):
         lumos.io.load(path)
+
+
+def test_symbolic_outputs_are_archived_and_read_back(tmp_path):
+    """REQ-RES-*: every computed output is archived; a symbolic field as its JSON expression tree."""
+    import lumos
+
+    grid = Grid(32, dx=0.1 * u.mm)
+    ctx = Context()
+    source = ctx.add(
+        SymbolicSource.gaussian_beam(
+            name="beam", waist=1 * u.mm, wavelength=1 * u.um, power=1 * u.mW, grid=grid
+        )
+    )
+    source >> ctx.add(ThinLens(name="lens", focal_length=0.5 * u.m))
+    result = ctx.run(["lens.out"], archive="symbolic", archive_root=tmp_path)
+    loaded = lumos.load_archive(result.archive.path)
+    restored = loaded.data["lens.out"]
+    assert isinstance(restored, SymbolicField)
+    np.testing.assert_allclose(
+        np.asarray(to_numpy(to_wavefront(restored, grid).field)),
+        np.asarray(to_numpy(to_wavefront(result["lens.out"], grid).field)),
+        rtol=1e-12,
+    )
