@@ -113,7 +113,7 @@ visible. Every point tells its realization (`point.realization`), and `progress(
 studies.
 
 ```python
-noise_only = ctx.sample(200, outputs=["cam.out"])            # photon noise alone, 200 realizations
+noise_only = ctx.sample(200, outputs=["cam.out"])  # photon noise alone, 200 realizations
 fixed = ctx.sample(100, outputs=["cam.out"], noise="fixed")  # priors only, the noise of the context
 ```
 
