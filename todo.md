@@ -22,6 +22,38 @@ Pour répondre : un commit distant modifiant ce fichier, dont le message commenc
 - [ ] **WSL n'est pas installé** sur ta machine (`wsl -l` : « Le sous-système Windows pour Linux n'est pas
   installé »). Après `wsl --install`, dans WSL : `mkdir -p ~/.ssh && cp /mnt/c/Users/vince/.ssh/{config,id_ed25519_vps1*} ~/.ssh/ && chmod 600 ~/.ssh/id_ed25519_vps1 ~/.ssh/config`.
 
+## Retours du 18/10 traités (P14.12 à P14.15)
+
+- **Éditeur** : mode de pointage (main/sélection, touches H et V), badge « Non sauvegardé » + confirmation
+  (nouveau contexte, fichier, préréglage, visite, fermeture de la page), suppression d'un lien seul (bouton au
+  milieu du lien sélectionné), panneaux gauche/droite/bas redimensionnables et masquables (tailles mémorisées).
+- **Études** : graine du contexte dans l'inspecteur (saisie ou tirage), paramètres libres avec a priori (bouton
+  dé), dialogue *Étude* : balayage (plages lin/log, grille ou paires), Monte-Carlo (bruit indépendant par
+  tirage), onglet *Étude* (courbe, histogramme, tableau, CSV). Préréglage **Monte-Carlo tolerancing** et
+  notebook 11 (l'accord avec la loi du faisceau gaussien est vérifié).
+- **Boucles** : il n'existait aucune vraie boucle de rétroaction. Ajout des rétroactions (ADR-0020, format
+  `.lumos` 1.1), de `ctx.loop`, d'un analyseur Shack-Hartmann et d'un contrôleur intégrateur. Préréglage
+  **Adaptive optics loop** (8,2 m, bande H) et notebook 12 : résidu 468 → 123 nm, l'erreur de fitting attendue
+  étant 121 nm ; pic de la PSF ×14.
+- **Assistant** : Claude, OpenAI, Gemini, OpenRouter et tout point d'accès compatible OpenAI (clés gardées dans
+  l'onglet). Réponse à ta question sur la connexion sans clé : **ni Anthropic ni OpenAI ni Google ne
+  permettent à une application tierce d'utiliser un abonnement** (Claude.ai, ChatGPT, Gemini) ; seules les clés
+  d'API y donnent accès. J'ai donc fait les deux choses possibles :
+  - **connexion OpenRouter** (vrai OAuth, pas de clé à copier ; OpenRouter donne accès à Claude, GPT, Gemini…) ;
+  - **lien de connecteur** : LUMOS s'ajoute comme connecteur MCP dans Claude.ai ou ChatGPT, dont l'assistant
+    travaille alors sur ton contexte ouvert (tu vois ses modifications en direct) **avec ton abonnement**.
+    Cela demande l'instance publique en HTTPS (Claude.ai et ChatGPT doivent l'atteindre) : à tester dès que le
+    VPS sera en ligne.
+
+## Décisions du 18/10 (à valider)
+
+- Les retours ont été traités comme des étapes P14.12 à P14.15 avant la phase 15 (plan mis à jour).
+- Format `.lumos` passé en **1.1** (rétroactions) avant le gel de la v1.0 ; les fichiers 1.0 restent lus.
+- Une graine tirée au hasard fait désormais 32 bits (128 bits auparavant : inexacte en JSON et dans le navigateur).
+- Un balayage garde le même bruit à chaque point par défaut ; un Monte-Carlo tire un bruit indépendant par point.
+- Une boucle garde son état final (commandes du miroir, horloge) ; *Annuler* le rétablit.
+- Notebooks de la phase 16 renumérotés 13 et 14.
+
 ## Réponses du 17/10 traitées
 
 VFSciTools intégré, push après chaque étape, notebooks exécutés dans la doc, tailles des mires, spectre solaire
@@ -52,7 +84,8 @@ sans `pyvisa`, formatage).
 - [ ] **Critère d'acceptation v0.7 « UC5 sur l'instance publique »** : il faut un VPS et un nom DNS. Tout est
   prêt dans `deploy/public/` (Caddy + TLS automatique, quotas pour 4 cœurs) et décrit dans
   `docs/web/hosting.md`. Le même parcours est testé en CI sur une instance au profil `public` locale.
-- [ ] **Docker** n'est pas installé sur ta machine : l'image est construite et démarrée par le job CI `docker`
+- [x] ~~**Docker**~~ : tu m'autorises à l'installer moi-même ; je le fais sur le VPS (pas besoin sur ta machine).
+- [ ] (ancien) **Docker** n'est pas installé sur ta machine : l'image est construite et démarrée par le job CI `docker`
   seulement. Si tu veux la tester : installer Docker Desktop puis la commande compose ci-dessus.
 - [ ] **Panneau assistant** : il demande une clé API Anthropic (gardée dans l'onglet du navigateur, facturée sur
   le compte de la clé). Tu as indiqué ne pas en avoir : le panneau reste optionnel (désactivable avec
