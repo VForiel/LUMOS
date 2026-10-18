@@ -35,6 +35,7 @@ def residuals(study):
 
 def test_the_adaptive_optics_preset_closes_its_loop(service, session):
     ctx = service.load_preset(session, "adaptive_optics")
+    initial = next(e for e in ctx.elements if e.id == "dm").state["commands"]
     assert [(f.source, f.target, f.mode) for f in ctx.feedbacks] == [("ctrl.commands", "dm.commands", "add")]
     job = service.run_loop(session, ctx.id, steps=10, period="2 ms", outputs=["wfs.residual"])
     assert job.kind == "loop"
@@ -49,10 +50,10 @@ def test_the_adaptive_optics_preset_closes_its_loop(service, session):
     assert service.study_csv(session, job.id).splitlines()[0].startswith("point,realization,time [s]")
     # the loop has run: the mirror keeps its commands, the clock has advanced; undo puts them back
     dm = next(e for e in service.describe_context(session, ctx.id).elements if e.id == "dm")
-    assert dm.state["commands"] != "0 nm"
+    assert dm.state["commands"] != initial
     service.undo(session, ctx.id)
     dm = next(e for e in service.describe_context(session, ctx.id).elements if e.id == "dm")
-    assert dm.state["commands"] in ("0 nm", "[0] nm")
+    assert dm.state["commands"] == initial
 
 
 def test_feedbacks_are_edited_saved_and_undone(service, session):
