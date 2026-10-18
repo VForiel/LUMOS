@@ -46,7 +46,9 @@ layer, so the API, the Python library and the AI assistant give the same results
 | `PATCH /api/contexts/{id}` | name, description, seed (`{"seed": 42}`) |
 | `PUT /api/contexts/{id}/free` | free a parameter (`{"path", "free", "prior": {"kind": "normal", "mean", "std"}}`) |
 | `POST /api/contexts/{id}/studies` | start a sweep (`{"kind": "sweep", "parameters", "mode"}`) or a Monte-Carlo run (`{"kind": "sample", "n"}`) |
-| `GET /api/jobs/{job}/study`, `study.csv` | points of a study, as JSON or CSV |
+| `POST, DELETE /api/contexts/{id}/feedbacks` | close a loop (`{"source", "target", "mode"}`), open it (query) |
+| `POST /api/contexts/{id}/loops` | run a loop (`{"steps": 30, "period": "2 ms", "outputs": [...]}`) |
+| `GET /api/jobs/{job}/study`, `study.csv` | points of a study or steps of a loop, as JSON or CSV |
 | `GET /api/contexts/{id}/ports/{port}` | summary of the signal of any output |
 | `GET /api/contexts/{id}/ports/{port}/figure.png` | its figure |
 | `GET /api/contexts/{id}/journal` | journal (actions, runs, logs) |

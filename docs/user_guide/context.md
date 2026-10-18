@@ -117,6 +117,25 @@ noise_only = ctx.sample(200, outputs=["cam.out"])            # photon noise alon
 fixed = ctx.sample(100, outputs=["cam.out"], noise="fixed")  # priors only, the noise of the context
 ```
 
+## Feedback loops
+
+The graph of a context has no cycle: a loop (adaptive optics, a servo, an iterative calibration) is a series
+of **time iterations** of the context (ADR-0020). A *feedback* sends the value of an output port to a field at
+the next iteration; `ctx.loop` runs the iterations, the clock advancing by the period at each one.
+
+```python
+ctx.feedback("ctrl.commands", "dm.commands", mode="add")  # "add": integrate; "set": replace
+steps = ctx.loop(50, period=2 * u.ms, outputs=["wfs.residual"])
+for step in steps:
+    print(step.step, step.time, step.outputs["wfs.residual"].data)
+```
+
+Iteration `k` computes the outputs at `t0 + k·period`, then applies the feedbacks, then advances the clock: a
+correction always acts one period later, like a real loop. The fields driven by the feedbacks and the clock keep
+their final values (`restore=True` puts them back). Feedbacks are listed by `ctx.feedbacks`, removed by
+`ctx.remove_feedback`, saved in `.lumos` files and written by `ctx.to_python()`. An element may refuse a target:
+an `AOController` drives only a mirror of its own geometry.
+
 ## Files and scripts
 
 `lumos.io.save(ctx, "bench.lumos")` writes the whole context: settings, clock, elements, groups and

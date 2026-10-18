@@ -10,7 +10,7 @@ context, connected with `>>`, saved in a `.lumos` file and rebuilt by the genera
 | Apertures | `lumos.elements.apertures` | `CircularAperture`, `PolygonAperture`, `HexSegmentedAperture`; presets `vlt()`, `jwst()`, `elt()` |
 | Bulk optics | `lumos.elements.optics` | `FreeSpace`, `ThinLens`, `ThinMirror`, `BeamSplitter`, `DelayLine`, `SpectralFilter`, `Polarizer`, `WavePlate`, `PhasePlate` |
 | Telescopes | `lumos.elements.telescopes` | `Telescope`, `TelescopeArray`; presets `vlti()`, `life()` |
-| Atmosphere and AO | `lumos.elements.atmosphere` | `Atmosphere`, `DeformableMirror` |
+| Atmosphere and AO | `lumos.elements.atmosphere` | `Atmosphere`, `DeformableMirror`, `WavefrontSensor`, `AOController` |
 | Coronagraphs | `lumos.elements.coronagraphs` | `VortexCoronagraph`, `FourQuadrantPhaseMask`, `LyotCoronagraph` |
 | Guided optics | `lumos.elements.fibers` | `Fiber` |
 | Integrated photonics | `lumos.elements.photonics` | `Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`; chips `bracewell()`, `kernel_nuller()` |
@@ -59,6 +59,27 @@ Bulk optics act on wavefronts, wavecubes and incoherent bundles alike, channel b
 from the reproducible random stream of the element: the same seed gives the same screens. Its
 `corrected_modes` setting removes the first Zernike modes over the pupil, a simple model of adaptive optics.
 `DeformableMirror` is a grid of actuators whose commands can be fitted to an optical path map.
+
+A **closed adaptive optics loop** uses two more elements and a feedback of the context (see
+[Feedback loops](context.md#feedback-loops)). `WavefrontSensor` is an ideal Shack-Hartmann: it measures the
+mean gradient of the optical path in each sub-aperture (in radians, independent of the wavelength, even for
+wavefronts of many waves) and the RMS residual optical path over the pupil (valid below about λ/4).
+`AOController` turns the slopes into command increments of a mirror of the same geometry, `Δc = -g R s`, with
+the regularised pseudo-inverse of the interaction matrix of the mirror (computed from its influence functions).
+
+```python
+dm = ctx.add(DeformableMirror(name="dm", n_actuators=17, diameter=8.2 * u.m))
+wfs = ctx.add(WavefrontSensor(name="wfs", diameter=8.2 * u.m, n_subapertures=16))
+ctrl = ctx.add(AOController(name="ctrl", n_actuators=17, diameter=8.2 * u.m, gain=0.4))
+atmosphere >> dm >> wfs
+ctx.connect(wfs.slopes, ctrl.slopes)
+ctx.feedback("ctrl.commands", "dm.commands", mode="add")  # the integrator
+steps = ctx.loop(30, period=2 * u.ms, outputs=["wfs.residual", "camera.out"])
+```
+
+The error of an aberration the mirror can reproduce decreases as `(1 - g)^k`; on turbulence the loop settles
+at the fitting error of the mirror, about `0.3 (d/r0)^(5/3)` rad² for a pitch `d`. The *Adaptive optics loop*
+preset is a complete example.
 
 Coronagraphs receive the pupil field, apply their focal-plane mask and return the field after the Lyot stop.
 Ideal masks (even-charge vortex, four-quadrant phase mask) reject an on-axis star down to the sampling error

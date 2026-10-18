@@ -300,7 +300,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P14.11 Tests** — API, sécurité (accès refusé sans authentification, élévation de rôle, rejeu de défi SSH), parcours de bout en bout (Playwright) en EN et FR.
 - [x] **P14.12 Ergonomie de l'éditeur** (retours du 18/10) — mode de pointage (déplacer le canevas ou sélectionner une zone), indicateur de modifications non sauvegardées et confirmation avant de les perdre, suppression d'un lien seul, panneaux redimensionnables et masquables (gauche, droite, bas).
 - [x] **P14.13 Études** — graine du contexte, paramètres libres et a priori, balayages (grille, zip) et Monte-Carlo (REQ-CTX-10) dans le service, l'API web, le MCP et l'éditeur ; préréglage Monte-Carlo.
-- [ ] **P14.14 Boucles de rétroaction** (REQ-CTX-2) — itérations temporelles pilotées par le contexte, rétroactions d'un port vers un champ, analyseur de surface d'onde et contrôleur intégrateur ; préréglage d'optique adaptative en boucle fermée.
+- [x] **P14.14 Boucles de rétroaction** (REQ-CTX-2) — itérations temporelles pilotées par le contexte, rétroactions d'un port vers un champ, analyseur de surface d'onde et contrôleur intégrateur ; préréglage d'optique adaptative en boucle fermée.
 - [ ] **P14.15 Assistant multi-fournisseurs** — connexion OpenRouter (OAuth PKCE), clés API Anthropic, OpenAI, Google Gemini et de tout point d'accès compatible OpenAI.
 
 **Critères d'acceptation (v0.7) :** UC5 réalisé sur l'instance publique ; opération impossible sur l'instance publique sans configuration et authentification ; parité web, Python et MCP vérifiée.

@@ -203,6 +203,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   routes, MCP tools `set_seed`, `set_free_parameter`, `run_sweep`, `run_monte_carlo`, `get_study`; in the editor,
   the seed of the context, free parameters with priors, the study dialog and tab (curve, histogram, table,
   CSV); preset *Monte-Carlo tolerancing*.
+- Feedback loops (P14.14, ADR-0020): `Context.feedback`, `remove_feedback`, `feedbacks` and `Context.loop`
+  (time iterations, feedbacks applied between them); `.lumos` format 1.1 (1.0 still read) and its JSON schema;
+  `WavefrontSensor` (ideal Shack-Hartmann) and `AOController` (integrator with the regularised pseudo-inverse of
+  the interaction matrix of its mirror); service `add_feedback`, `remove_feedback`, `run_loop`, HTTP routes and
+  MCP tools; in the editor, feedback curves, the feedback section of the inspector and loops in the study
+  dialog; preset *Adaptive optics loop*.
 
 ### Changed
 

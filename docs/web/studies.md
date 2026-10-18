@@ -1,8 +1,9 @@
-# Studies: sweeps and Monte-Carlo runs
+# Studies: sweeps, Monte-Carlo runs and loops
 
-A study runs the context many times: a **sweep** over ranges of some parameters, or a **Monte-Carlo run**
-drawing its free parameters, and its noise, again and again. Open it with **Study** in the toolbar; the
-**Monte-Carlo tolerancing** preset opens with one ready.
+A study runs the context many times: a **sweep** over ranges of some parameters, a **Monte-Carlo run**
+drawing its free parameters, and its noise, again and again, or a **loop** that feeds outputs back to the
+context step by step. Open it with **Study** in the toolbar; the **Monte-Carlo tolerancing** and **Adaptive
+optics loop** presets open with one ready.
 
 ## Randomness and the seed
 
@@ -35,12 +36,25 @@ Choose **Monte-Carlo** and the number of draws. Each draw takes the free paramet
 by default, its own noise realization: the spread of the results combines the tolerances and the noise.
 Without free parameters, the draws repeat the run with independent noise (a noise study).
 
+## Feedback loops
+
+A loop feeds an output back to a field at the next step: the correction computed by an adaptive optics
+controller drives the commands of its deformable mirror. Select the block that computes the correction: the
+*Feedback loops* section of the inspector lists its feedbacks and closes a new one (its output, the field it
+drives, and the mode: *add* integrates, *set* replaces). A feedback is drawn as a dashed amber curve back to
+the block it drives; select it to remove it.
+
+Choose **Loop** in the study dialog, the number of steps and the period (`2 ms`): each step computes the
+outputs, applies the feedbacks, then advances the clock by the period. The study tab plots the outputs
+against time (the residual of the wavefront sensor falls as the loop closes). The loop keeps its final state,
+the commands of the mirror for instance; **Undo** puts back the state before the loop.
+
 ## Results
 
 The **Study** tab of the bottom panel follows the progress, then shows:
 
-- a **curve** for a sweep (one curve per value of the other parameters), or a **histogram** for a Monte-Carlo
-  run with the mean (dashed line) and the standard deviation of the values;
+- a **curve** for a sweep (one curve per value of the other parameters) or a loop (against time), or a
+  **histogram** for a Monte-Carlo run with the mean (dashed line) and the standard deviation of the values;
 - the **value plotted**: the value of a scalar output (a power meter), or a statistic of an image or a field
   (maximum, mean, minimum, sum);
 - a **table** of every point (parameters, noise realization, outputs), downloaded as **CSV**.
@@ -56,6 +70,7 @@ ctx["lens"].set_free("focal_length", True, Normal(200 * u.mm, 2 * u.mm))
 draws = ctx.sample(100, outputs=["camera.out"])
 ```
 
-AI assistants use the MCP tools `set_seed`, `set_free_parameter`, `run_sweep`, `run_monte_carlo` and
-`get_study` (see the [reference](../assistant/reference.md)); the HTTP API has `POST /api/contexts/{id}/studies`
-and `GET /api/jobs/{job}/study` (see [HTTP API](api.md)).
+AI assistants use the MCP tools `set_seed`, `set_free_parameter`, `run_sweep`, `run_monte_carlo`,
+`add_feedback`, `run_loop` and `get_study` (see the [reference](../assistant/reference.md)); the HTTP API has
+`POST /api/contexts/{id}/studies`, `POST /api/contexts/{id}/loops` and `GET /api/jobs/{job}/study` (see
+[HTTP API](api.md)).
