@@ -119,5 +119,5 @@ def test_public_subpackages_list_their_names():
 
 def test_the_api_reference_documents_every_public_subpackage():
     text = REFERENCE.read_text(encoding="utf-8")
-    missing = [name for name in PUBLIC if f"lumos.{name}" not in text]
+    missing = [name for name in PUBLIC if not re.search(rf"automodule:: lumos\.{name}\b", text)]
     assert missing == []
