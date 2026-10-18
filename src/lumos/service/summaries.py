@@ -12,7 +12,7 @@ from lumos.backend import to_numpy
 from lumos.service.models import PortSummary
 from lumos.service.values import format_value
 
-__all__ = ["figure_of", "figure_png", "job_text", "summarize", "summary_text"]
+__all__ = ["figure_of", "figure_png", "job_text", "study_text", "summarize", "summary_text"]
 
 _MAX_VALUES = 16
 
@@ -184,8 +184,27 @@ def job_text(job: Any) -> str:
         text += f" in {job.seconds:.3g} s"
     if job.error:
         text += f". Error: {job.error}. Hint: {job.hint}"
+    elif job.status == "done" and getattr(job, "kind", "run") in ("sweep", "sample"):
+        text += f". Read its points with get_study(job='{job.id}')"
     elif job.status == "done":
         text += f". Read the outputs with get_result(job='{job.id}', port=...)"
     if job.archive:
         text += f". Archived in {job.archive}"
     return text + "."
+
+
+def study_text(study: Any, *, max_rows: int = 50) -> str:
+    """Describe a study (:class:`~lumos.service.models.StudyResult`) as a header and a CSV table."""
+    from lumos.service.studies import study_table
+
+    kind = "sweep" if study.kind == "sweep" else "Monte-Carlo run"
+    lines = study_table(study).splitlines()
+    text = (
+        f"{kind} {study.job}: {len(study.points)} points (seed {study.seed}, noise {study.noise}); "
+        "non-scalar outputs are summarised by their min, max, mean and sum.\n"
+    )
+    shown = lines[: max_rows + 1]
+    text += "\n".join(shown)
+    if len(lines) > len(shown):
+        text += f"\n... {len(lines) - len(shown)} more rows (get_study with a larger max_rows)"
+    return text

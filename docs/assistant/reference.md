@@ -68,6 +68,16 @@ also listed by any MCP client (`/mcp` in Claude Code).
 | `list_archives` | Archived runs. |
 | `read_archive_metadata` | Metadata of an archived run. |
 
+### Studies
+
+| Tool | Purpose |
+|------|---------|
+| `set_seed` | Seed of every random process of a context (noise, turbulence, Monte-Carlo draws). |
+| `set_free_parameter` | Free a parameter with a prior (uniform, log-uniform, normal), or fix it again. |
+| `run_sweep` | Run the context for listed values or ranges of some parameters (grid or zip). |
+| `run_monte_carlo` | Draw the free parameters from their priors `n` times, each draw with its own noise. |
+| `get_study` | Points of a sweep or Monte-Carlo run as a CSV table, with the structured data. |
+
 ### Catalogues and processing
 
 | Tool | Purpose |

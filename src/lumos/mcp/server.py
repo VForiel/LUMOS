@@ -39,9 +39,10 @@ from lumos.service.models import (
     Page,
     PortSummary,
     PresetInfo,
+    StudyResult,
 )
 from lumos.service.service import acting_as
-from lumos.service.summaries import job_text, summary_text
+from lumos.service.summaries import job_text, study_text, summary_text
 
 __all__ = ["INSTRUCTIONS", "LumosTools", "create_http_app", "create_server"]
 
@@ -125,6 +126,15 @@ def _job_result(job: JobInfo) -> CallToolResult:
     return CallToolResult(
         content=[TextContent(type="text", text=job_text(job))], structured_content=job.model_dump(mode="json")
     )
+
+
+def _study_result(study: StudyResult, max_rows: int) -> CallToolResult:
+    """Return a study as a CSV table, with the :class:`StudyResult` as structured content."""
+    structured = study.model_dump(
+        mode="json", exclude={"points": {"__all__": {"outputs": {"__all__": {"figure_png"}}}}}
+    )
+    text = study_text(study, max_rows=max_rows)
+    return CallToolResult(content=[TextContent(type="text", text=text)], structured_content=structured)
 
 
 def _port_result(summary: PortSummary) -> CallToolResult:
@@ -413,6 +423,10 @@ def create_server(
                 hint="give outputs, e.g. outputs=['camera.out'] (see describe_context)",
             )
         job = service.run(session, identifier, names, archive=archive)
+        return await follow(ctx, job, wait_seconds)
+
+    async def follow(ctx: MCPContext, job: JobInfo, wait_seconds: float) -> CallToolResult:
+        """Report the progress of a job for at most ``wait_seconds``, then return its state."""
         deadline = time.monotonic() + wait_seconds
         while job.status in ("queued", "running") and time.monotonic() < deadline:
             await ctx.report_progress(job.progress, 1.0, job.message or job.status)
@@ -421,6 +435,79 @@ def create_server(
         if job.status == "done":
             await ctx.report_progress(1.0, 1.0, "done")
         return _job_result(job)
+
+    # --- Studies -------------------------------------------------------------------------------------------
+
+    @tool
+    def set_seed(seed: int, context: str | None = None) -> ContextSummary:
+        """Set the seed of every random process of a context (noise, turbulence, Monte-Carlo draws).
+
+        Runs with the same seed give the same results; change it to draw other noise.
+        """
+        return service.set_context(session, state.context(context), seed=seed)
+
+    @tool
+    def set_free_parameter(
+        path: str, free: bool = True, prior: dict[str, Any] | None = None, context: str | None = None
+    ) -> ElementSummary:
+        """Mark a parameter ``"element.field"`` as free with a prior, or fixed again (``free=false``).
+
+        ``prior``: ``{"kind": "uniform" | "loguniform", "low": "190 mm", "high": "210 mm"}`` or
+        ``{"kind": "normal", "mean": "200 mm", "std": "2 mm"}``. run_monte_carlo draws the free parameters.
+        """
+        return service.set_free(session, state.context(context), path, free, prior)
+
+    @tool
+    async def run_sweep(
+        ctx: MCPContext,
+        parameters: dict[str, Any],
+        outputs: list[str] | None = None,
+        mode: str = "grid",
+        noise: str = "fixed",
+        wait_seconds: float = 300.0,
+        context: str | None = None,
+    ) -> Annotated[CallToolResult, JobInfo]:
+        """Run the context for several values of some parameters (a sweep) and report the progress.
+
+        ``parameters`` maps paths to a list (``{"lens.focal_length": ["190 mm", "200 mm"]}``) or a range
+        (``{"start": "190 mm", "stop": "210 mm", "num": 5, "log": false}``). ``mode``: ``grid`` (every
+        combination) or ``zip`` (i-th values together). ``noise``: ``fixed`` (same noise at every point) or
+        ``independent``. Read the points with get_study.
+        """
+        job = service.run_study(
+            session,
+            state.context(context),
+            kind="sweep",
+            parameters=parameters,
+            outputs=outputs,
+            mode=mode,
+            noise=noise,
+        )
+        return await follow(ctx, job, wait_seconds)
+
+    @tool
+    async def run_monte_carlo(
+        ctx: MCPContext,
+        n: int,
+        outputs: list[str] | None = None,
+        noise: str = "independent",
+        wait_seconds: float = 300.0,
+        context: str | None = None,
+    ) -> Annotated[CallToolResult, JobInfo]:
+        """Monte-Carlo run: ``n`` draws of the free parameters from their priors (see set_free_parameter).
+
+        With ``noise="independent"`` (default) each draw also has its own noise; without free parameters the
+        run is repeated with independent noise. Read the points with get_study.
+        """
+        job = service.run_study(
+            session, state.context(context), kind="sample", n=n, outputs=outputs, noise=noise
+        )
+        return await follow(ctx, job, wait_seconds)
+
+    @tool
+    def get_study(job: str, max_rows: int = 50) -> Annotated[CallToolResult, StudyResult]:
+        """Points of a sweep or Monte-Carlo run: a CSV table (parameters, then outputs) and their data."""
+        return _study_result(service.get_study(session, job), max_rows)
 
     @tool
     def get_job(job: str) -> Annotated[CallToolResult, JobInfo]:

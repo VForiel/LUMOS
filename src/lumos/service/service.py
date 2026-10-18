@@ -35,10 +35,11 @@ from lumos.core.driver import DriverError, LimitError
 from lumos.core.element import Element
 from lumos.core.graph import GraphError, Result
 from lumos.core.group import GROUP_TYPE, ElementGroup, group_type_of
+from lumos.core.param import Param
 from lumos.core.port import PortCompatibilityError
 from lumos.core.registry import UnknownTypeError, registry
 from lumos.io.lumos_format import entry_of, from_document
-from lumos.service import docs
+from lumos.service import docs, studies
 from lumos.service import editing as edits
 from lumos.service.errors import ServiceError
 from lumos.service.models import (
@@ -59,6 +60,8 @@ from lumos.service.models import (
     PresetInfo,
     ServiceConfig,
     SessionInfo,
+    StudyPoint,
+    StudyResult,
 )
 from lumos.service.summaries import summarize
 from lumos.service.values import format_value, parse_quantity, parse_value
@@ -81,6 +84,7 @@ class _Job:
     info: JobInfo
     session: str
     result: Result | None = None
+    study: StudyResult | None = None
     future: concurrent.futures.Future[Any] | None = None
     started: float = 0.0
     cancelled: bool = False
@@ -391,6 +395,7 @@ class Service:
             description=str(ctx.meta.get("description", "")),
             mode=ctx.mode,
             twin=ctx.twin,
+            seed=ctx.seed,
             band=band,
             n_wavelengths=int(ctx.observation.n_wavelengths),
             elements=elements,
@@ -445,7 +450,19 @@ class Service:
             inputs=[n for n, p in ports.items() if p.direction == "in"],
             outputs=[n for n, p in ports.items() if p.direction == "out"],
             actions=sorted(actions_of(cls)),
+            free=self._free_of(element),
         )
+
+    @staticmethod
+    def _free_of(element: Any) -> dict[str, dict[str, str] | None]:
+        is_free = getattr(element, "is_free", None)
+        if is_free is None or isinstance(element, ElementGroup):
+            return {}
+        found: dict[str, dict[str, str] | None] = {}
+        for name, declared in type(element).declared().items():
+            if isinstance(declared, Param) and is_free(name):
+                found[name] = studies.prior_summary(element.prior(name), declared.unit)
+        return found
 
     # --- History -------------------------------------------------------------------------------------------
 
@@ -528,15 +545,54 @@ class Service:
         return self._summary(context, self._context(session, context))
 
     def set_context(
-        self, session: str, context: str, *, name: str | None = None, description: str | None = None
+        self,
+        session: str,
+        context: str,
+        *,
+        name: str | None = None,
+        description: str | None = None,
+        seed: int | None = None,
     ) -> ContextSummary:
-        """Rename a context or change its description."""
+        """Rename a context, change its description or the seed of its random streams (REQ-CTX-6)."""
+        if seed is not None and (isinstance(seed, bool) or int(seed) != seed or seed < 0):
+            raise ServiceError(f"invalid seed {seed!r}", hint="the seed is a non-negative integer, e.g. 42")
         with self._editing(session, context) as ctx:
             if name is not None:
                 ctx.name = name
             if description is not None:
                 ctx.meta["description"] = description
+            if seed is not None:
+                ctx.seed = int(seed)
         return self._summary(context, self._context(session, context))
+
+    def set_free(
+        self,
+        session: str,
+        context: str,
+        path: str,
+        free: bool = True,
+        prior: Mapping[str, Any] | None = None,
+    ) -> ElementSummary:
+        """Mark the parameter ``"element.field"`` as free with a prior, or fixed again (REQ-EL-3).
+
+        ``prior`` is ``{"kind": "uniform" | "loguniform", "low": ..., "high": ...}`` or ``{"kind": "normal",
+        "mean": ..., "std": ...}``, values with their units (``"1 mm"``). Monte-Carlo runs draw the free
+        parameters from their priors.
+        """
+        ctx = self._context(session, context)
+        owner, _, name = path.rpartition(".")
+        element = self._element(ctx, owner)
+        field = type(element).declared().get(name)
+        if not isinstance(field, Param):
+            physical = [n for n, f in type(element).declared().items() if isinstance(f, Param)]
+            raise ServiceError(
+                f"{owner} has no parameter {name!r}",
+                hint=f"physical parameters: {', '.join(physical) or 'none'}",
+            )
+        parsed = studies.parse_prior(field, prior, name=path) if free and prior is not None else None
+        with self._editing(session, context):
+            element.set_free(name, bool(free), parsed)
+        return self._element_summary(owner, element)
 
     # --- Editing -------------------------------------------------------------------------------------------
 
@@ -874,6 +930,26 @@ class Service:
         self, session: str, context: str, outputs: Iterable[str], *, archive: bool | str = False
     ) -> JobInfo:
         """Start a run of ``outputs`` in the background; follow it with :meth:`get_job`."""
+        names = list(outputs)
+
+        def compute(ctx: Context, job: _Job, progress: Callable[[int, int, str], None]) -> None:
+            job.result = ctx.run(
+                names, archive=archive, archive_root=self.config.archive_root, progress=progress
+            )
+            if job.result.archive is not None:
+                job.info.archive = str(job.result.archive.path)
+
+        return self._start(session, context, "run", names, compute)
+
+    def _start(
+        self,
+        session: str,
+        context: str,
+        kind: str,
+        names: list[str],
+        compute: Callable[[Context, _Job, Callable[[int, int, str], None]], None],
+    ) -> JobInfo:
+        """Start a job computing ``compute(ctx, job, progress)`` in the background, within the quotas."""
         state = self._session(session)
         ctx = self._context(session, context)
         running = [j for j in state.jobs.values() if j.info.status in ("queued", "running")]
@@ -897,9 +973,9 @@ class Service:
                     code="quota",
                 )
         self._check_quotas(ctx)
-        names = list(outputs)
         job = _Job(
-            JobInfo(id=uuid.uuid4().hex[:10], context=context, outputs=names, status="queued"), session
+            JobInfo(id=uuid.uuid4().hex[:10], kind=kind, context=context, outputs=names, status="queued"),
+            session,
         )
         state.jobs[job.info.id] = job
 
@@ -918,13 +994,9 @@ class Service:
             job.started = time.perf_counter()
             try:
                 with state.lock, ctx.as_origin(origin):
-                    job.result = ctx.run(
-                        names, archive=archive, archive_root=self.config.archive_root, progress=progress
-                    )
+                    compute(ctx, job, progress)
                 job.info.progress = 1.0
                 job.info.status = "done"
-                if job.result.archive is not None:
-                    job.info.archive = str(job.result.archive.path)
             except _Cancelled:
                 job.info.status = "cancelled"
                 job.info.message = "cancelled by the user"
@@ -938,6 +1010,148 @@ class Service:
 
         job.future = self._executor.submit(work)
         return job.info.model_copy()
+
+    def run_study(
+        self,
+        session: str,
+        context: str,
+        *,
+        kind: str,
+        outputs: Iterable[str] | None = None,
+        parameters: Mapping[str, Any] | None = None,
+        mode: str = "grid",
+        n: int | None = None,
+        noise: str | None = None,
+    ) -> JobInfo:
+        """Start a study in the background: a sweep or a Monte-Carlo run (REQ-CTX-10).
+
+        Parameters
+        ----------
+        kind
+            ``"sweep"``: run the context for the values of ``parameters``; ``"sample"``: Monte-Carlo run of
+            ``n`` draws of the free parameters from their priors (see :meth:`set_free`).
+        outputs
+            Ports to compute at each point (default: the outputs of the context).
+        parameters
+            Sweeps: values by path ``"element.field"``, a list (``["1 mm", "2 mm"]``) or a range
+            (``{"start": "1 mm", "stop": "5 mm", "num": 5, "log": false}``).
+        mode
+            Sweeps: ``"grid"`` (every combination) or ``"zip"`` (the i-th values together).
+        n
+            Monte-Carlo runs: number of draws.
+        noise
+            ``"fixed"`` (the noise of the context at every point, default of sweeps) or ``"independent"`` (a
+            new noise realization per point, default of Monte-Carlo runs).
+
+        Follow the job with :meth:`get_job`, read its points with :meth:`get_study`.
+        """
+        ctx = self._context(session, context)
+        if kind not in ("sweep", "sample"):
+            raise ServiceError(
+                f"unknown kind of study {kind!r}",
+                hint="kind='sweep' (values of some parameters) or kind='sample' (Monte-Carlo run of n draws)",
+            )
+        names = list(outputs or self.default_outputs(session, context))
+        if not names:
+            raise ServiceError("no outputs to compute", hint="give outputs, e.g. outputs=['camera.out']")
+        noise = noise or ("fixed" if kind == "sweep" else "independent")
+        if noise not in ("fixed", "independent"):
+            raise ServiceError(f"unknown noise {noise!r}", hint="noise='fixed' or 'independent'")
+        values: dict[str, list[Any]] = {}
+        if kind == "sweep":
+            if not parameters:
+                raise ServiceError(
+                    "a sweep needs the values of at least one parameter",
+                    hint="e.g. parameters={'lens.focal_length': {'start': '190 mm', 'stop': '210 mm', "
+                    "'num': 5}}",
+                )
+            for path, spec in parameters.items():
+                owner, _, name = path.rpartition(".")
+                element = self._element(ctx, owner)
+                field = type(element).declared().get(name)
+                if field is None:
+                    raise ServiceError(
+                        f"{owner} has no field {name!r}",
+                        hint=f"fields: {', '.join(type(element).declared())}",
+                    )
+                values[path] = studies.sweep_values(field, spec, name=path)
+            count = studies.count_points([len(v) for v in values.values()], mode)
+        else:
+            if n is None or int(n) < 1:
+                raise ServiceError("a Monte-Carlo run needs n >= 1 draws", hint="e.g. n=100")
+            count = int(n)
+            priors = ctx.free_parameters()
+            missing = [path for path, prior in priors.items() if prior is None]
+            if missing:
+                raise ServiceError(
+                    f"free parameters without a prior: {', '.join(missing)}",
+                    hint="give them a prior with set_free_parameter (uniform, loguniform or normal)",
+                )
+            noisy = any(getattr(type(e), "stochastic", False) for _, e in ctx.walk())
+            if not priors and (noise == "fixed" or not noisy):
+                raise ServiceError(
+                    "nothing varies between the draws",
+                    hint="mark a parameter as free with a prior (set_free_parameter), "
+                    "or add an element with noise",
+                )
+        if count > self.config.max_study_points:
+            raise ServiceError(
+                f"the study has {count} points",
+                hint=f"this instance computes at most {self.config.max_study_points} points per study",
+                code="quota",
+            )
+        seed = ctx.seed
+
+        def compute(ctx: Context, job: _Job, progress: Callable[[int, int, str], None]) -> None:
+            def point(done: int, total: int) -> None:
+                progress(done, total, f"point {done}")  # cancellation and time limit, between points
+                job.info.message = f"computed point {done}/{total}"
+
+            if kind == "sweep":
+                points = ctx.sweep(values, outputs=names, mode=mode, noise=noise, progress=point)  # type: ignore[arg-type]
+            else:
+                points = ctx.sample(count, outputs=names, noise=noise, progress=point)  # type: ignore[arg-type]
+            job.study = StudyResult(
+                job=job.info.id,
+                context=context,
+                kind=kind,
+                mode=mode if kind == "sweep" else None,
+                noise=noise,
+                seed=seed,
+                parameters=list(values) if kind == "sweep" else list(ctx.free_parameters()),
+                outputs=names,
+                points=[self._study_point(ctx, p, names) for p in points],
+            )
+
+        return self._start(session, context, kind, names, compute)
+
+    def _study_point(self, ctx: Context, point: Any, names: list[str]) -> StudyPoint:
+        params = {}
+        for path, value in point.params.items():
+            element, field = ctx._parameter(path)
+            unit = getattr(type(element).declared()[field], "unit", None)
+            params[path] = str(format_value(value, unit))
+        outputs = {name: summarize(name, point.outputs[name]) for name in names}
+        return StudyPoint(params=params, realization=point.realization, outputs=outputs)
+
+    def get_study(self, session: str, job: str) -> StudyResult:
+        """Points of a finished study: values of the parameters, realization, summaries of the outputs."""
+        record = self._session(session).jobs.get(job)
+        if record is None:
+            raise ServiceError(f"unknown job {job!r}", hint="start one with run_study()", code="not_found")
+        if record.info.kind not in ("sweep", "sample"):
+            raise ServiceError(
+                f"job {job} is a {record.info.kind}, not a study", hint="read it with get_result()"
+            )
+        if record.info.status != "done" or record.study is None:
+            raise ServiceError(
+                f"job {job} is {record.info.status}", hint=record.info.hint or "wait for it with wait_job()"
+            )
+        return record.study
+
+    def study_csv(self, session: str, job: str) -> str:
+        """CSV table of a finished study (one row per point)."""
+        return studies.study_table(self.get_study(session, job))
 
     def default_outputs(self, session: str, context: str) -> list[str]:
         """Return the outputs to run when none is named.

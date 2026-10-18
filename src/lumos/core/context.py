@@ -44,12 +44,30 @@ Mode = Literal["simulation", "operation"]
 MODES: tuple[str, ...] = ("simulation", "operation")
 
 
+Noise = Literal["fixed", "independent"]
+
+#: Byte separating the path of an element from the realization in the spawn key of its random stream: it never
+#: occurs in UTF-8, so that the keys of two (path, realization) pairs never collide.
+_REALIZATION_SEPARATOR = 0xFF
+
+
 @dataclass(frozen=True)
 class SweepPoint:
-    """One point of a sweep: the field values and the computed outputs."""
+    """One point of a sweep or Monte-Carlo run.
+
+    Attributes
+    ----------
+    params
+        Values of the swept or drawn fields, by path ``"element.field"``.
+    outputs
+        The computed outputs.
+    realization
+        Noise realization of the run (:attr:`Context.realization`; 0 for the noise of the context).
+    """
 
     params: dict[str, Any]
     outputs: Result
+    realization: int = 0
 
 
 class Observation:
@@ -171,7 +189,8 @@ class Context:
         self.mode = mode
         self.twin = twin
         self.backend = backend
-        self._seed = int(np.random.SeedSequence().entropy) if seed is None else int(seed)  # type: ignore[arg-type]
+        self._seed = int(np.random.SeedSequence().entropy) if seed is None else _seed(seed)  # type: ignore[arg-type]
+        self._realization = 0
         self.name = name
         self.meta: dict[str, Any] = {}
         self.ui: dict[str, Any] = {}
@@ -534,7 +553,28 @@ class Context:
 
     @seed.setter
     def seed(self, value: int) -> None:
-        self._seed = int(value)
+        self._seed = _seed(value)
+        self._streams_changed()
+
+    @property
+    def realization(self) -> int:
+        """Index of the noise realization (0 by default); changing it recomputes the stochastic elements.
+
+        Every realization gives independent random streams, reproducible with the same seed: Monte-Carlo
+        runs draw realization ``k`` at their ``k``-th point (see :meth:`sample`). Realization 0 gives the
+        streams of the seed alone.
+        """
+        return self._realization
+
+    @realization.setter
+    def realization(self, value: int) -> None:
+        value = int(value)
+        if value < 0:
+            raise ValueError(f"the noise realization must be >= 0, got {value}")
+        self._realization = value
+        self._streams_changed()
+
+    def _streams_changed(self) -> None:
         for element in self._walk():
             if getattr(type(element), "stochastic", False):
                 element._on_field_changed("seed")
@@ -676,16 +716,19 @@ class Context:
     def spawn_key(self, target: Any) -> tuple[int, ...]:
         """Spawn key of the random stream of an element (or identifier): the UTF-8 bytes of its path.
 
-        The path is the identifier of a top-level element and ``"group.child"`` inside groups.
+        The path is the identifier of a top-level element and ``"group.child"`` inside groups. For a noise
+        realization ``r > 0`` (:attr:`realization`), the key ends with ``0xFF, r``: ``0xFF`` never occurs in
+        UTF-8, so the streams of different paths and realizations are independent.
         """
         identifier = target if isinstance(target, str) else self.path_of(target)
-        return tuple(identifier.encode("utf-8"))
+        key = tuple(identifier.encode("utf-8"))
+        return (*key, _REALIZATION_SEPARATOR, self._realization) if self._realization else key
 
     def rng(self, target: Any) -> np.random.Generator:
         """Return a new generator of the reproducible random stream of an element (or identifier).
 
         Streams derive from ``numpy.random.SeedSequence(seed, spawn_key=...)``: they are independent between
-        elements and identical between runs with the same seed.
+        elements and noise realizations, and identical between runs with the same seed and realization.
         """
         return np.random.default_rng(np.random.SeedSequence(self.seed, spawn_key=self.spawn_key(target)))
 
@@ -706,6 +749,8 @@ class Context:
         *,
         outputs: Iterable[Any],
         mode: Literal["grid", "zip"] = "grid",
+        noise: Noise = "fixed",
+        progress: Callable[[int, int], None] | None = None,
     ) -> list[SweepPoint]:
         """Run the context for several values of some fields and collect the outputs.
 
@@ -718,14 +763,21 @@ class Context:
         mode
             ``"grid"``: every combination (Cartesian product, last parameter varying fastest); ``"zip"``: the
             i-th values of every parameter together.
+        noise
+            ``"fixed"`` (default): every point has the noise of the context, so that the points differ by
+            their parameters only (common random numbers); ``"independent"``: point ``k`` (from 1) draws the
+            noise realization ``k`` (:attr:`realization`).
+        progress
+            Called as ``progress(done, total)`` after each point; it may raise to stop the sweep.
 
         Returns
         -------
         list of SweepPoint
-            One point per combination. The fields get their original values back afterwards.
+            One point per combination. The fields and the realization get their values back afterwards.
         """
         if mode not in ("grid", "zip"):
             raise ValueError(f"mode must be 'grid' or 'zip', got {mode!r}")
+        _check_noise(noise)
         targets = [(path, *self._parameter(path)) for path in parameters]
         values = [list(parameters[path]) for path, _, _ in targets]
         if mode == "zip":
@@ -737,19 +789,36 @@ class Context:
             combinations: Iterable[tuple[Any, ...]] = zip(*values, strict=True)
         else:
             combinations = itertools.product(*values)
-        wanted = list(outputs)
+        return self._points(targets, combinations, list(outputs), noise, progress)
+
+    def _points(
+        self,
+        targets: list[tuple[str, Any, str]],
+        combinations: Iterable[tuple[Any, ...]],
+        wanted: list[Any],
+        noise: Noise,
+        progress: Callable[[int, int], None] | None = None,
+    ) -> list[SweepPoint]:
+        combinations = list(combinations)
         original = [getattr(element, field) for _, element, field in targets]
+        realization = self._realization
         points: list[SweepPoint] = []
         try:
-            for combination in combinations:
+            for index, combination in enumerate(combinations, start=1):
                 for (_, element, field), value in zip(targets, combination, strict=True):
                     setattr(element, field, value)
+                if noise == "independent":
+                    self.realization = index
                 result = self.run(wanted)
                 params = {path: getattr(element, field) for path, element, field in targets}
-                points.append(SweepPoint(params, result))
+                points.append(SweepPoint(params, result, self._realization))
+                if progress is not None:
+                    progress(index, len(combinations))
         finally:
             for (_, element, field), value in zip(targets, original, strict=True):
                 setattr(element, field, value)
+            if self._realization != realization:
+                self.realization = realization
         return points
 
     def _ordered_elements(self) -> list[tuple[str, Any]]:
@@ -781,19 +850,44 @@ class Context:
                     found[f"{path}.{name}"] = element.prior(name)
         return found
 
-    def sample(self, n: int, *, outputs: Iterable[Any]) -> list[SweepPoint]:
+    def sample(
+        self,
+        n: int,
+        *,
+        outputs: Iterable[Any],
+        noise: Noise = "independent",
+        progress: Callable[[int, int], None] | None = None,
+    ) -> list[SweepPoint]:
         """Monte-Carlo run: draw ``n`` values of every free parameter from its prior and run the context.
 
-        Draws come from the reproducible stream ``ctx.rng("sample")``, parameter after parameter in the order
-        of :meth:`free_parameters`.
+        Draws come from the reproducible stream ``ctx.rng("sample")`` of the current realization, parameter
+        after parameter in the order of :meth:`free_parameters`.
+
+        Parameters
+        ----------
+        n
+            Number of draws.
+        outputs
+            Outputs to compute at each draw (see :meth:`run`).
+        noise
+            ``"independent"`` (default): draw ``k`` (from 1) also draws the noise realization ``k`` of the
+            stochastic elements, so that the spread of the outputs includes the noise; without free parameters
+            the run is repeated with independent noise. ``"fixed"``: every draw has the noise of the context.
+        progress
+            Called as ``progress(done, n)`` after each draw; it may raise to stop the run.
         """
+        _check_noise(noise)
         priors = self.free_parameters()
         missing = [path for path, prior in priors.items() if prior is None]
         if missing:
             raise ValueError(f"free parameters without a prior cannot be sampled: {missing}")
+        if not priors and noise == "fixed":
+            raise ValueError("nothing varies: no free parameter and the noise is fixed")
         rng = self.rng("sample")
         draws = {path: prior.sample(rng, int(n)) for path, prior in priors.items()}
-        return self.sweep(draws, outputs=outputs, mode="zip")
+        targets = [(path, *self._parameter(path)) for path in draws]
+        combinations = zip(*draws.values(), strict=True) if draws else (() for _ in range(int(n)))
+        return self._points(targets, combinations, list(outputs), noise, progress)
 
     def to_python(self) -> str:
         """Return a Python script rebuilding this context (see :func:`lumos.io.codegen.to_python`)."""
@@ -820,3 +914,15 @@ def _residual(measured: Any, simulated: Any) -> Any:
     except u.UnitsError:
         return None
     return DataProduct(cast(u.Quantity, difference), axes=measured.axes, meta={"residual": True})
+
+
+def _seed(value: Any) -> int:
+    seed = int(value)
+    if seed < 0:
+        raise ValueError(f"the seed must be a non-negative integer, got {seed}")
+    return seed
+
+
+def _check_noise(noise: str) -> None:
+    if noise not in ("fixed", "independent"):
+        raise ValueError(f"noise must be 'fixed' or 'independent', got {noise!r}")

@@ -180,6 +180,26 @@ class ContextChange(BaseModel):
 
     name: str | None = None
     description: str | None = None
+    seed: int | None = None
+
+
+class FreeChange(BaseModel):
+    """Body of ``PUT /api/contexts/{id}/free``: a parameter freed with a prior, or fixed again."""
+
+    path: str
+    free: bool = True
+    prior: dict[str, Any] | None = None
+
+
+class StudyRequest(BaseModel):
+    """Body of ``POST /api/contexts/{id}/studies`` (see :meth:`lumos.service.Service.run_study`)."""
+
+    kind: str
+    outputs: list[str] = Field(default_factory=list)
+    parameters: dict[str, Any] | None = None
+    mode: str = "grid"
+    n: int | None = None
+    noise: str | None = None
 
 
 class Rename(BaseModel):
@@ -770,7 +790,14 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
 
     @app.patch("/api/contexts/{cid}", dependencies=[simulator])
     def change_context(request: Request, cid: str, body: ContextChange) -> ContextSummary:
-        return service.set_context(sid(request), cid, name=body.name, description=body.description)
+        return service.set_context(
+            sid(request), cid, name=body.name, description=body.description, seed=body.seed
+        )
+
+    @app.put("/api/contexts/{cid}/free", dependencies=[simulator])
+    def set_free(request: Request, cid: str, body: FreeChange) -> ContextSummary:
+        service.set_free(sid(request), cid, body.path, body.free, body.prior)
+        return service.describe_context(sid(request), cid)
 
     @app.put("/api/contexts/{cid}/ui", dependencies=[simulator])
     def update_ui(request: Request, cid: str, body: dict[str, Any], record: bool = True) -> ContextSummary:
@@ -835,6 +862,31 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
                 "nothing to run", hint="add elements with outputs, or name the outputs to compute"
             )
         return service.run(sid(request), cid, outputs, archive=body.archive)
+
+    @app.post("/api/contexts/{cid}/studies", status_code=202, dependencies=[simulator])
+    def study(request: Request, cid: str, body: StudyRequest) -> JobInfo:
+        return service.run_study(
+            sid(request),
+            cid,
+            kind=body.kind,
+            outputs=body.outputs or None,
+            parameters=body.parameters,
+            mode=body.mode,
+            n=body.n,
+            noise=body.noise,
+        )
+
+    @app.get("/api/jobs/{job}/study", dependencies=[viewer])
+    def study_points(request: Request, job: str) -> dict[str, Any]:
+        return service.get_study(sid(request), job).model_dump(
+            mode="json", exclude={"points": {"__all__": {"outputs": {"__all__": {"figure_png"}}}}}
+        )
+
+    @app.get("/api/jobs/{job}/study.csv", dependencies=[viewer])
+    def study_table(request: Request, job: str) -> Response:
+        return _attachment(
+            service.study_csv(sid(request), job), f"study-{job}.csv", "text/csv; charset=utf-8"
+        )
 
     @app.get("/api/jobs", dependencies=[viewer])
     def jobs(request: Request) -> list[JobInfo]:

@@ -28,6 +28,8 @@ __all__ = [
     "PresetInfo",
     "ServiceConfig",
     "SessionInfo",
+    "StudyPoint",
+    "StudyResult",
 ]
 
 
@@ -47,6 +49,9 @@ class ServiceConfig(BaseModel):
     )
     max_concurrent_runs: int | None = Field(
         default=None, ge=1, description="runs queued or in progress at the same time, all sessions together"
+    )
+    max_study_points: int = Field(
+        default=1000, ge=1, description="points of a sweep or draws of a Monte-Carlo run"
     )
     archive_root: str | None = Field(default=None, description="directory of the archives of the runs")
     presets_dir: str | None = Field(default=None, description="directory of the preset .lumos files")
@@ -102,6 +107,9 @@ class ElementSummary(BaseModel):
     inputs: list[str]
     outputs: list[str]
     actions: list[str]
+    free: dict[str, dict[str, str] | None] = Field(
+        default={}, description="free parameters and their priors, values in the unit of the parameter"
+    )
 
 
 class ConnectionInfo(BaseModel):
@@ -126,6 +134,7 @@ class ContextSummary(BaseModel):
     description: str = ""
     mode: str
     twin: bool
+    seed: int = 0
     band: list[str] | None = None
     n_wavelengths: int = 1
     elements: list[ElementSummary]
@@ -157,9 +166,10 @@ class Issue(BaseModel):
 
 
 class JobInfo(BaseModel):
-    """A run: its status (``queued``, ``running``, ``done``, ``failed``), progress and outputs."""
+    """A run or a study: its status (``queued``, ``running``, ``done``, ``failed``), progress and outputs."""
 
     id: str
+    kind: str = Field(default="run", description="run, sweep or sample (Monte-Carlo run)")
     context: str
     outputs: list[str]
     status: str
@@ -182,6 +192,28 @@ class PortSummary(BaseModel):
     statistics: dict[str, float] = {}
     details: dict[str, str] = {}
     figure_png: bytes | None = None
+
+
+class StudyPoint(BaseModel):
+    """A point of a study: values of the parameters, noise realization and summaries of the outputs."""
+
+    params: dict[str, str]
+    realization: int = 0
+    outputs: dict[str, PortSummary]
+
+
+class StudyResult(BaseModel):
+    """The points of a sweep or of a Monte-Carlo run."""
+
+    job: str
+    context: str
+    kind: str
+    mode: str | None = None
+    noise: str
+    seed: int
+    parameters: list[str]
+    outputs: list[str]
+    points: list[StudyPoint]
 
 
 class PortFile(BaseModel):
