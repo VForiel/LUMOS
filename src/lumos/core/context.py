@@ -190,7 +190,7 @@ class Context:
     backend
         Array backend used by :meth:`run`: ``"auto"`` (default, the process default) or a backend name.
     seed
-        Seed of the random streams; a random seed is drawn (and kept) if ``None``.
+        Seed of the random streams; a random 32-bit seed is drawn (and kept) if ``None``.
     start
         Absolute start date of the clock (``astropy.time.Time``, UTC); defaults to now.
     name
@@ -221,7 +221,8 @@ class Context:
         self.mode = mode
         self.twin = twin
         self.backend = backend
-        self._seed = int(np.random.SeedSequence().entropy) if seed is None else _seed(seed)  # type: ignore[arg-type]
+        # a drawn seed has 32 bits: exact in JSON and in the web interface (JavaScript numbers)
+        self._seed = int(np.random.SeedSequence().generate_state(1)[0]) if seed is None else _seed(seed)
         self._realization = 0
         self.name = name
         self.meta: dict[str, Any] = {}
