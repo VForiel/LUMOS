@@ -162,7 +162,7 @@ def test_a_sweep_of_a_range_with_units_and_log_spacing(service, session):
     assert len(result.points) == 15
     transmissions = sorted({float(p.params["filt.transmission"]) for p in result.points})
     assert transmissions == pytest.approx(np.linspace(0.2, 1.0, 5))
-    waists = sorted({u.Quantity(p.params["laser.waist"]).to_value(u.mm) for p in result.points})
+    waists = sorted({float(u.Quantity(p.params["laser.waist"]).to_value(u.mm)) for p in result.points})
     assert waists == pytest.approx([1.0, 10.0, 100.0])
 
 
