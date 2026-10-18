@@ -1025,6 +1025,8 @@ class Service:
     ) -> JobInfo:
         """Start a study in the background: a sweep or a Monte-Carlo run (REQ-CTX-10).
 
+        Follow the job with :meth:`get_job`, read its points with :meth:`get_study`.
+
         Parameters
         ----------
         kind
@@ -1033,17 +1035,15 @@ class Service:
         outputs
             Ports to compute at each point (default: the outputs of the context).
         parameters
-            Sweeps: values by path ``"element.field"``, a list (``["1 mm", "2 mm"]``) or a range
-            (``{"start": "1 mm", "stop": "5 mm", "num": 5, "log": false}``).
+            For sweeps, the values of each path ``"element.field"``: a list such as ``["1 mm", "2 mm"]``, or
+            a range such as ``{"start": "1 mm", "stop": "5 mm", "num": 5, "log": false}``.
         mode
-            Sweeps: ``"grid"`` (every combination) or ``"zip"`` (the i-th values together).
+            For sweeps, ``"grid"`` (every combination) or ``"zip"`` (the i-th values together).
         n
-            Monte-Carlo runs: number of draws.
+            For Monte-Carlo runs, the number of draws.
         noise
             ``"fixed"`` (the noise of the context at every point, default of sweeps) or ``"independent"`` (a
             new noise realization per point, default of Monte-Carlo runs).
-
-        Follow the job with :meth:`get_job`, read its points with :meth:`get_study`.
         """
         ctx = self._context(session, context)
         if kind not in ("sweep", "sample"):

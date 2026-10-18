@@ -196,6 +196,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Ergonomics of the web editor (P14.12): pointer mode (move the view or select a zone, keys H and V); badge
   and confirmation for unsaved changes (new context, file, preset, tour, closing the page); removal of a link
   alone; palette, inspector and bottom panel resized from their edge and hidden, sizes kept by the browser.
+- Studies (P14.13, REQ-CTX-10): noise realizations of a context (`Context.realization`, independent and
+  reproducible streams); `Context.sample` draws a new realization per draw (`noise="independent"`) and repeats
+  the run with independent noise without free parameters; `Context.sweep(noise=...)`; progress of both. Service
+  `set_context(seed=)`, `set_free`, `run_study`, `get_study`, `study_csv` (quota `max_study_points`), HTTP
+  routes, MCP tools `set_seed`, `set_free_parameter`, `run_sweep`, `run_monte_carlo`, `get_study`; in the editor,
+  the seed of the context, free parameters with priors, the study dialog and tab (curve, histogram, table,
+  CSV); preset *Monte-Carlo tolerancing*.
 
 ### Changed
 

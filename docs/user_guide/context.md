@@ -103,6 +103,20 @@ draws = ctx.sample(100, outputs=["cam.out"])  # free parameters drawn from their
 The fields get their original values back after a sweep. Draws come from a reproducible random stream: every
 element has its own stream, `ctx.rng(element)`, derived from the seed of the context.
 
+**Noise of the points.** The streams also depend on a *noise realization*, `ctx.realization` (0 by default):
+every realization gives independent streams, reproducible with the same seed. A Monte-Carlo run draws a new
+realization at each point (`noise="independent"`, the default of `sample`), so that the spread of its outputs
+includes the noise of the detectors and of the turbulence; without free parameters it repeats the run with
+independent noise. A sweep keeps the noise of the context at every point (`noise="fixed"`, the default of
+`sweep`): its points differ by their parameters only (common random numbers), which makes small differences
+visible. Every point tells its realization (`point.realization`), and `progress(done, total)` follows long
+studies.
+
+```python
+noise_only = ctx.sample(200, outputs=["cam.out"])            # photon noise alone, 200 realizations
+fixed = ctx.sample(100, outputs=["cam.out"], noise="fixed")  # priors only, the noise of the context
+```
+
 ## Files and scripts
 
 `lumos.io.save(ctx, "bench.lumos")` writes the whole context: settings, clock, elements, groups and

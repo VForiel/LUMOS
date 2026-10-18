@@ -25,6 +25,7 @@ The **Presets** button of the toolbar opens the gallery again at any time.
 
 editing
 running
+studies
 operation
 assistant
 configuration
