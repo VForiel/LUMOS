@@ -73,7 +73,8 @@ def test_the_pointer_mode_moves_the_view_by_default_and_selects_a_zone_on_demand
     add(editor, "GaussianLaser")
     add(editor, "PowerMeter")
     expect(node(editor, "powermeter1")).to_be_visible()
-    editor.keyboard.press("Escape")
+    editor.mouse.click(*empty_corner(editor))  # the block just added is selected: deselect it
+    expect(editor.locator(".react-flow__node.selected")).to_have_count(0)
     expect(editor.get_by_test_id("pointer-pan")).to_have_attribute("aria-pressed", "true")
 
     before = transform(editor)
