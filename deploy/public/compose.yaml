@@ -1,6 +1,12 @@
 # A public LUMOS instance on a VPS (docs/web/hosting.md):
-#   1. point the DNS name of the instance to the VPS and replace lumos.example.org in lumos.toml and Caddyfile;
-#   2. docker compose -f deploy/public/compose.yaml up -d --build
+#   1. point the DNS name of the instance to the VPS;
+#   2. write deploy/public/.env (not versioned), for instance:
+#        LUMOS_HOST=lumos.example.org
+#        LUMOS_CONFIG=/home/me/lumos.toml   # a copy of lumos.toml with quotas for the machine (optional)
+#        LUMOS_CPUS=1.8                     # CPU and memory of the container (optional)
+#        LUMOS_MEMORY=3g
+#   3. docker compose -f deploy/public/compose.yaml up -d --build
+# Updates: git pull, then the same command.
 services:
   lumos:
     build:
@@ -9,7 +15,7 @@ services:
     image: lumos:public
     command: ["--config", "/etc/lumos/lumos.toml"]
     volumes:
-      - ./lumos.toml:/etc/lumos/lumos.toml:ro
+      - ${LUMOS_CONFIG:-./lumos.toml}:/etc/lumos/lumos.toml:ro
       - lumos-data:/data
     expose:
       - "8000"
@@ -17,11 +23,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "3.5"
-          memory: 6g
+          cpus: "${LUMOS_CPUS:-3.5}"
+          memory: ${LUMOS_MEMORY:-6g}
 
   caddy:
     image: caddy:2
+    environment:
+      LUMOS_HOST: ${LUMOS_HOST:-lumos.example.org}
     ports:
       - "80:80"
       - "443:443"

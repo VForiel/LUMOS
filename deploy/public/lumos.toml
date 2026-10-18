@@ -3,7 +3,7 @@
 profile = "public"
 host = "0.0.0.0"                       # inside the container; Caddy is the only way in
 port = 8000
-allowed_hosts = ["lumos.example.org"]  # the host name of the instance
+allowed_hosts = []                     # Caddy only forwards the host name of the instance (LUMOS_HOST)
 trust_proxy = true                     # Caddy terminates TLS and sets X-Forwarded-For/Proto
 # users_file = "/data/users.toml"      # to give accounts: lumos users add ... --file /data/users.toml
 audit_log = "/data/audit.log"
