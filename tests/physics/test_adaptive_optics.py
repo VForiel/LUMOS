@@ -62,7 +62,8 @@ def measure(field, n=16):
 @pytest.mark.parametrize("wavelength", [0.5, 1.65])
 def test_the_sensor_measures_the_slope_of_a_tilt_at_any_wavelength(wavelength):
     a = 2e-6  # m, Noll coefficient of Z2: an optical path of 2a x / R, many waves across the pupil
-    plate = PhasePlate(diameter=D * u.m, coefficients=[0, a] * u.m)
+    radius = 0.6 * D  # the plate covers the pupil and its grey edge pixels
+    plate = PhasePlate(diameter=2 * radius * u.m, coefficients=[0, a] * u.m)
     field = plate.apply(**{"in": pupil_field(wavelength * u.um)})["out"]
     slopes = measure(field)["slopes"]
     data = slopes.data.to_value(u.rad)
@@ -70,7 +71,7 @@ def test_the_sensor_measures_the_slope_of_a_tilt_at_any_wavelength(wavelength):
     assert data.shape == (2, 16, 16)
     assert valid[0].sum() > 150
     assert not valid[0, 0, 0]  # corner of the lenslet array: outside the pupil
-    np.testing.assert_allclose(data[0][valid[0]], 2 * a / (D / 2), rtol=1e-6)
+    np.testing.assert_allclose(data[0][valid[0]], 2 * a / radius, rtol=1e-6)
     np.testing.assert_allclose(data[1][valid[1]], 0, atol=1e-12)
 
 
