@@ -37,8 +37,11 @@ def test_the_adaptive_optics_preset_runs_its_loop(page):
     expect(page.get_by_test_id("study-chart").locator("path.curve")).to_be_visible()
     page.get_by_test_id("study-output").select_option("wfs.residual")
 
+    headers = page.get_by_test_id("study-table").locator("thead th").all_inner_texts()
+    column = next(i for i, text in enumerate(headers) if "wfs.residual" in text)
+
     def residual(row):
-        return float(rows.nth(row).locator("td").last.inner_text().split()[0])
+        return float(rows.nth(row).locator("td").nth(column).inner_text().split()[0])
 
     assert residual(7) < 0.5 * residual(0)
 
