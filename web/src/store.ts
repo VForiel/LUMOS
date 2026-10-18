@@ -15,12 +15,14 @@ import {
   type JournalEntry,
   type Palette,
   type PortSummary,
+  type StudyRequest,
+  type StudyResult,
 } from "./api";
 import { autoLayout, COLUMN } from "./lib/layout";
 
 export type Toast = { id: number; kind: "error" | "info" | "success"; title: string; hint?: string; values?: Record<string, unknown> };
 export type Inspected = { context: string; port: string; summary: PortSummary | null; figure: string | null; loading: boolean; error?: string; job?: string };
-export type BottomTab = "results" | "journal" | "problems" | "operation" | "assistant";
+export type BottomTab = "results" | "study" | "journal" | "problems" | "operation" | "assistant";
 export type Dialog =
   | { kind: "prompt"; title: string; label: string; value: string; confirm: string; onConfirm: (value: string) => void }
   | { kind: "python"; code: string }
@@ -29,7 +31,8 @@ export type Dialog =
   | { kind: "login" }
   | { kind: "confirm-action"; element: string; action: string; device: string; onConfirm: () => void }
   | { kind: "elicit"; message: string; answer: (accepted: boolean) => void }
-  | { kind: "discard"; answer: (choice: "save" | "discard" | "cancel") => void };
+  | { kind: "discard"; answer: (choice: "save" | "discard" | "cancel") => void }
+  | { kind: "study" };
 export type Pointer = "pan" | "select";
 /** Sizes (pixels) and visibility of the panels around the canvas, kept by the browser. */
 export type Layout = { palette: number; inspector: number; bottom: number; paletteOpen: boolean; inspectorOpen: boolean };
@@ -87,6 +90,10 @@ type State = {
   dirty: boolean;
   pointer: Pointer;
   layout: Layout;
+  /** The last study started in this tab, its points once done, and the request it was made of. */
+  studyJob: string | null;
+  study: StudyResult | null;
+  studyRequest: StudyRequest | null;
 };
 
 type Actions = {
@@ -106,7 +113,9 @@ type Actions = {
   connect: (source: string, target: string) => Promise<boolean>;
   disconnect: (source: string, target: string) => Promise<void>;
   setParam: (path: string, value: unknown) => Promise<boolean>;
-  setContextInfo: (change: { name?: string; description?: string }) => Promise<void>;
+  setContextInfo: (change: { name?: string; description?: string; seed?: number }) => Promise<void>;
+  setFree: (path: string, free: boolean, prior?: Record<string, unknown> | null) => Promise<boolean>;
+  runStudy: (request: StudyRequest) => Promise<boolean>;
   setObservation: (minimum: string, maximum: string, n: number) => Promise<boolean>;
   rename: (path: string, name: string) => Promise<void>;
   group: (ids: string[]) => void;
@@ -275,6 +284,9 @@ export const useStore = create<State & Actions>((set, get) => {
     ready: false,
     welcome: false,
     dirty: false,
+    studyJob: null,
+    study: null,
+    studyRequest: null,
     pointer: storage()?.getItem(POINTER_KEY) === "select" ? "select" : "pan",
     layout: readLayout(),
 
@@ -480,6 +492,25 @@ export const useStore = create<State & Actions>((set, get) => {
       await edit((id) => api.setContext(id, change));
     },
 
+    async setFree(path, free, prior) {
+      return (await edit((id) => api.setFree(id, path, free, prior).then(() => true))) ?? false;
+    },
+
+    async runStudy(request) {
+      const context = get().context;
+      if (!context) return false;
+      try {
+        const job = await api.study(context.id, request);
+        set({ studyJob: job.id, study: null, studyRequest: request, bottom: "study" });
+        if (get().layout.bottom < 340) get().setLayout({ bottom: 340 }); // room for the chart
+        get().onJob(get().jobs[job.id] ?? job);
+        return true;
+      } catch (error) {
+        get().fail(error);
+        return false;
+      }
+    },
+
     async setObservation(minimum, maximum, n) {
       return (await edit((id) => api.setObservation(id, minimum, maximum, n).then(() => true))) ?? false;
     },
@@ -663,6 +694,23 @@ export const useStore = create<State & Actions>((set, get) => {
 
     onJob(job) {
       set({ jobs: { ...get().jobs, [job.id]: job } });
+      if (job.id === get().studyJob) {
+        if (announced.has(`${job.id}:${job.status}`)) return;
+        if (job.status === "done") {
+          announced.add(`${job.id}:${job.status}`);
+          void api
+            .studyResult(job.id)
+            .then((study) => {
+              if (get().studyJob === job.id) set({ study });
+            })
+            .catch((error) => get().fail(error));
+          get().toast({ kind: "success", title: "studyDone", values: { seconds: (job.seconds ?? 0).toFixed(1) } });
+        } else if (job.status === "failed") {
+          announced.add(`${job.id}:${job.status}`);
+          get().toast({ kind: "error", title: job.error ?? "failed", hint: job.hint ?? undefined });
+        }
+        return;
+      }
       if (job.id !== get().lastJob || announced.has(`${job.id}:${job.status}`)) return;
       announced.add(`${job.id}:${job.status}`);
       if (job.status === "done") {

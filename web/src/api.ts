@@ -39,6 +39,32 @@ export type ElementSummary = {
   inputs: string[];
   outputs: string[];
   actions: string[];
+  /** Free parameters and their priors (values in the unit of the parameter), e.g. {kind: "normal", mean: "200 mm", std: "2 mm"}. */
+  free?: Record<string, Prior | null>;
+};
+export type Prior = { kind: "uniform" | "loguniform" | "normal"; [value: string]: string };
+export type StudyKind = "sweep" | "sample";
+/** A sweep range or list of values, by path "element.field". */
+export type SweepSpec = { start: string; stop: string; num: number; log?: boolean } | string[];
+export type StudyRequest = {
+  kind: StudyKind;
+  outputs: string[];
+  parameters?: Record<string, SweepSpec>;
+  mode?: "grid" | "zip";
+  n?: number;
+  noise?: "fixed" | "independent";
+};
+export type StudyPoint = { params: Record<string, string>; realization: number; outputs: Record<string, PortSummary> };
+export type StudyResult = {
+  job: string;
+  context: string;
+  kind: StudyKind;
+  mode: string | null;
+  noise: string;
+  seed: number;
+  parameters: string[];
+  outputs: string[];
+  points: StudyPoint[];
 };
 
 export type Connection = { source: string; target: string };
@@ -51,6 +77,7 @@ export type ContextSummary = {
   description: string;
   mode: string;
   twin: boolean;
+  seed: number;
   band: string[] | null;
   n_wavelengths: number;
   elements: ElementSummary[];
@@ -66,6 +93,7 @@ export type Issue = { severity: string; element: string | null; message: string;
 
 export type JobInfo = {
   id: string;
+  kind?: "run" | StudyKind;
   context: string;
   outputs: string[];
   status: "queued" | "running" | "done" | "failed" | "cancelled";
@@ -161,8 +189,13 @@ export const api = {
   createContext: (name = "", mode = "simulation") => request<ContextSummary>("POST", "/api/contexts", { name, mode }),
   describe: (id: string) => request<ContextSummary>("GET", ctx(id)),
   close: (id: string) => request<void>("DELETE", ctx(id)),
-  setContext: (id: string, change: { name?: string; description?: string }) =>
+  setContext: (id: string, change: { name?: string; description?: string; seed?: number }) =>
     request<ContextSummary>("PATCH", ctx(id), change),
+  setFree: (id: string, path: string, free: boolean, prior?: Record<string, unknown> | null) =>
+    request<ContextSummary>("PUT", `${ctx(id)}/free`, { path, free, prior: prior ?? null }),
+  study: (id: string, body: StudyRequest) => request<JobInfo>("POST", `${ctx(id)}/studies`, body),
+  studyResult: (job: string) => request<StudyResult>("GET", `/api/jobs/${enc(job)}/study`),
+  studyCsvUrl: (job: string) => `/api/jobs/${enc(job)}/study.csv`,
   importLumos: (text: string) => request<ContextSummary>("POST", "/api/contexts/import", text),
   exportLumos: (id: string) => request<string>("GET", `${ctx(id)}/export.lumos`, undefined, true),
   exportPython: (id: string) => request<string>("GET", `${ctx(id)}/export.py`, undefined, true),

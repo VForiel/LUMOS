@@ -530,6 +530,7 @@ class Element(ParamHost):
                 ]
                 for direction, code in (("inputs", "in"), ("outputs", "out"))
             },
+            "x-lumos-stochastic": bool(cls.stochastic),
         }
 
 

@@ -18,7 +18,9 @@
     "shortcuts": "Raccourcis clavier",
     "tour": "Visite guidée",
     "presets": "Préréglages : contextes prêts à l'emploi",
-    "presetsShort": "Préréglages"
+    "presetsShort": "Préréglages",
+    "study": "Étude : balayage ou Monte-Carlo",
+    "studyShort": "Étude"
   },
   "theme": {
     "switch": "Passer au thème {{theme}}",
@@ -70,7 +72,8 @@
   "node": {
     "problems_one": "{{count}} problème",
     "problems_other": "{{count}} problèmes",
-    "inspect": "Inspecter {{port}}"
+    "inspect": "Inspecter {{port}}",
+    "free": "Paramètres libres : {{names}}"
   },
   "toast": {
     "restored": "Votre dernier contexte a été restauré.",
@@ -80,7 +83,8 @@
     "blockSaved": "Bloc {{name}} enregistré dans Mes blocs.",
     "runDone": "Calcul terminé en {{seconds}} s.",
     "actionDone": "{{action}} effectuée ({{mode}}, {{seconds}} s)",
-    "stopped": "Arrêt d'urgence envoyé à tous les appareils du contexte."
+    "stopped": "Arrêt d'urgence envoyé à tous les appareils du contexte.",
+    "studyDone": "Étude terminée en {{seconds}} s."
   },
   "fields": {
     "free": "paramètre libre (ajusté par calibration)",
@@ -122,7 +126,10 @@
     "selected_one": "{{count}} élément sélectionné",
     "selected_other": "{{count}} éléments sélectionnés",
     "groupSelection": "Grouper",
-    "selectionHint": "Maj+clic ajoute à la sélection ; Maj+glisser, ou glisser en mode sélection (V), sélectionne une zone."
+    "selectionHint": "Maj+clic ajoute à la sélection ; Maj+glisser, ou glisser en mode sélection (V), sélectionne une zone.",
+    "randomness": "Hasard",
+    "randomnessHint": "Graine de tous les processus aléatoires du contexte (bruit, turbulence, tirages Monte-Carlo) : la même graine donne les mêmes résultats.",
+    "newSeed": "Tirer une nouvelle graine"
   },
   "mode": {
     "simulation": "simulation",
@@ -186,7 +193,8 @@
     "show": "Afficher le panneau",
     "hide": "Masquer le panneau",
     "operation": "Opération",
-    "assistant": "Assistant"
+    "assistant": "Assistant",
+    "study": "Étude"
   },
   "results": {
     "inspected": "Port",
@@ -322,5 +330,63 @@
   },
   "panels": {
     "resize": "Glisser pour redimensionner le panneau"
+  },
+  "prior": {
+    "free": "Libérer ce paramètre : lui donner un a priori pour les études Monte-Carlo",
+    "edit": "Modifier l'a priori de ce paramètre libre",
+    "hint": "Les études Monte-Carlo tirent ce paramètre selon son a priori.",
+    "uniform": "Uniforme",
+    "loguniform": "Log-uniforme",
+    "normal": "Normale (gaussienne)",
+    "low": "min",
+    "high": "max",
+    "mean": "moyenne",
+    "std": "écart-type",
+    "fix": "Fixer à nouveau"
+  },
+  "study": {
+    "title": "Étude",
+    "open": "Nouvelle étude",
+    "kind": "Type d'étude",
+    "sweep": "Balayage",
+    "sweepHint": "Exécuter le contexte pour une plage de valeurs de certains paramètres.",
+    "sample": "Monte-Carlo",
+    "sampleHint": "Tirer de nombreuses fois les paramètres libres selon leur a priori, et le bruit.",
+    "parameter": "Paramètre",
+    "start": "De",
+    "stop": "À",
+    "num": "Valeurs",
+    "log": "Log",
+    "add": "Ajouter un paramètre",
+    "remove": "Retirer ce paramètre",
+    "mode": "Combiner",
+    "grid": "toutes les combinaisons",
+    "zip": "par paires",
+    "unitsHint": "Valeurs dans l'unité du paramètre, ou avec leur propre unité (« 190 mm »).",
+    "draws": "Tirages",
+    "freeTitle": "Paramètres libres",
+    "noFree": "Aucun paramètre libre et aucun bruit : libérez un paramètre avec le bouton dé de l'inspecteur.",
+    "noFreeNoise": "Aucun paramètre libre : chaque tirage répète l'exécution avec son propre bruit.",
+    "outputs": "Sorties",
+    "noOutputs": "Le contexte n'a aucune sortie à calculer.",
+    "independent": "Bruit indépendant à chaque point",
+    "independentHint": "Chaque point tire sa propre réalisation du bruit (graine {{seed}}) ; sinon tous les points ont le même bruit.",
+    "count_one": "{{count}} point à calculer",
+    "count_other": "{{count}} points à calculer",
+    "run": "Lancer l'étude",
+    "empty": "Aucune étude pour l'instant : balayez des paramètres ou lancez une étude Monte-Carlo du contexte.",
+    "summary": "{{count}} points · graine {{seed}}",
+    "output": "Sortie",
+    "metric": "Valeur tracée",
+    "axis": "Axe horizontal",
+    "realization": "bruit",
+    "moments": "n = {{n}} · moyenne {{mean}} {{unit}} · écart-type {{std}} {{unit}}",
+    "metrics": {
+      "value": "valeur",
+      "max": "maximum",
+      "mean": "moyenne",
+      "min": "minimum",
+      "sum": "somme"
+    }
   }
 }

@@ -1,7 +1,7 @@
 // A block of the graph: an element with its ports (colour = signal), a few values and its problems.
 
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
-import { AlertTriangle, Layers } from "lucide-react";
+import { AlertTriangle, Dices, Layers } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import type { ElementSummary, ElementType, Issue } from "../api";
@@ -70,6 +70,11 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
           </span>
           <span className="block truncate text-[11px] leading-tight text-slate-500 dark:text-slate-400">{title}</span>
         </span>
+        {Object.keys(element.free ?? {}).length > 0 && (
+          <span data-testid="free-badge" title={t("node.free", { names: Object.keys(element.free ?? {}).join(", ") })} className="text-amber-500">
+            <Dices className="size-3.5" />
+          </span>
+        )}
         {errors > 0 && (
           <span title={issues.map((issue) => issue.message).join("\n")} className="text-red-500">
             <AlertTriangle className="size-4" aria-label={t("node.problems", { count: errors })} />

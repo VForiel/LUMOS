@@ -18,7 +18,9 @@
     "shortcuts": "Keyboard shortcuts",
     "tour": "Guided tour",
     "presets": "Presets: ready-made contexts",
-    "presetsShort": "Presets"
+    "presetsShort": "Presets",
+    "study": "Study: sweep or Monte-Carlo run",
+    "studyShort": "Study"
   },
   "theme": {
     "switch": "Switch to the {{theme}} theme",
@@ -70,7 +72,8 @@
   "node": {
     "problems_one": "{{count}} problem",
     "problems_other": "{{count}} problems",
-    "inspect": "Inspect {{port}}"
+    "inspect": "Inspect {{port}}",
+    "free": "Free parameters: {{names}}"
   },
   "toast": {
     "restored": "Your last context was restored.",
@@ -80,7 +83,8 @@
     "blockSaved": "Block {{name}} saved in My blocks.",
     "runDone": "Run finished in {{seconds}} s.",
     "actionDone": "{{action}} done ({{mode}}, {{seconds}} s)",
-    "stopped": "Emergency stop sent to every device of the context."
+    "stopped": "Emergency stop sent to every device of the context.",
+    "studyDone": "Study finished in {{seconds}} s."
   },
   "fields": {
     "free": "free parameter (fitted by calibration)",
@@ -122,7 +126,10 @@
     "selected_one": "{{count}} element selected",
     "selected_other": "{{count}} elements selected",
     "groupSelection": "Group",
-    "selectionHint": "Shift+click adds to the selection; Shift+drag, or a drag in the selection mode (V), selects a zone."
+    "selectionHint": "Shift+click adds to the selection; Shift+drag, or a drag in the selection mode (V), selects a zone.",
+    "randomness": "Randomness",
+    "randomnessHint": "Seed of every random process of the context (noise, turbulence, Monte-Carlo draws): the same seed gives the same results.",
+    "newSeed": "Draw a new seed"
   },
   "mode": {
     "simulation": "simulation",
@@ -186,7 +193,8 @@
     "show": "Show the panel",
     "hide": "Hide the panel",
     "operation": "Operation",
-    "assistant": "Assistant"
+    "assistant": "Assistant",
+    "study": "Study"
   },
   "results": {
     "inspected": "Port",
@@ -322,5 +330,63 @@
   },
   "panels": {
     "resize": "Drag to resize the panel"
+  },
+  "prior": {
+    "free": "Free this parameter: give it a prior for Monte-Carlo runs",
+    "edit": "Edit the prior of this free parameter",
+    "hint": "Monte-Carlo runs draw this parameter from its prior.",
+    "uniform": "Uniform",
+    "loguniform": "Log-uniform",
+    "normal": "Normal (Gaussian)",
+    "low": "low",
+    "high": "high",
+    "mean": "mean",
+    "std": "standard deviation",
+    "fix": "Fix again"
+  },
+  "study": {
+    "title": "Study",
+    "open": "New study",
+    "kind": "Kind of study",
+    "sweep": "Sweep",
+    "sweepHint": "Run the context for a range of values of some parameters.",
+    "sample": "Monte-Carlo",
+    "sampleHint": "Draw the free parameters from their priors, and the noise, many times.",
+    "parameter": "Parameter",
+    "start": "From",
+    "stop": "To",
+    "num": "Values",
+    "log": "Log",
+    "add": "Add a parameter",
+    "remove": "Remove this parameter",
+    "mode": "Combine",
+    "grid": "every combination",
+    "zip": "in pairs",
+    "unitsHint": "Values in the unit of the parameter, or with their own unit (\"190 mm\").",
+    "draws": "Draws",
+    "freeTitle": "Free parameters",
+    "noFree": "No free parameter and no noise: free a parameter with the dice button of the inspector.",
+    "noFreeNoise": "No free parameter: every draw repeats the run with its own noise.",
+    "outputs": "Outputs",
+    "noOutputs": "The context has no output to compute.",
+    "independent": "Independent noise per point",
+    "independentHint": "Each point draws its own noise realization (seed {{seed}}); otherwise every point has the same noise.",
+    "count_one": "{{count}} point",
+    "count_other": "{{count}} points",
+    "run": "Run the study",
+    "empty": "No study yet: sweep parameters or run a Monte-Carlo study of the context.",
+    "summary": "{{count}} points · seed {{seed}}",
+    "output": "Output",
+    "metric": "Value plotted",
+    "axis": "Horizontal axis",
+    "realization": "noise",
+    "moments": "n = {{n}} · mean {{mean}} {{unit}} · std {{std}} {{unit}}",
+    "metrics": {
+      "value": "value",
+      "max": "maximum",
+      "mean": "mean",
+      "min": "minimum",
+      "sum": "sum"
+    }
   }
 }

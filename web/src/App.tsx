@@ -1,5 +1,5 @@
 import { ReactFlowProvider } from "@xyflow/react";
-import { Bot, Code2, Cpu, FilePlus2, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
+import { Bot, Code2, Cpu, FilePlus2, FlaskConical, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AccountMenu, LoginDialog } from "./components/Account";
@@ -12,6 +12,7 @@ import { Palette } from "./components/Palette";
 import { PresetsDialog } from "./components/Presets";
 import { QuickAdd } from "./components/QuickAdd";
 import { RunButton } from "./components/RunButton";
+import { StudyDialog } from "./components/Study";
 import { Toasts } from "./components/Toasts";
 import { ToolButton, TopBar } from "./components/TopBar";
 import { connectEvents, disconnectEvents } from "./events";
@@ -55,6 +56,16 @@ function Editor() {
         right={
           <>
             {(info?.operation || context?.mode === "operation") && <EmergencyStop />}
+            <ToolButton
+              icon={<FlaskConical className="size-4" />}
+              label={t("toolbar.study")}
+              onClick={() => store.setDialog({ kind: "study" })}
+              testId="open-study"
+              disabled={!context || !(role === "simulator" || role === "operator")}
+              tour="study"
+            >
+              <span className="hidden xl:inline">{t("toolbar.studyShort")}</span>
+            </ToolButton>
             <RunButton />
             <Separator />
             <div className="flex items-center" data-tour="help">
@@ -114,6 +125,8 @@ function Editor() {
         extra={(dialog) =>
           dialog.kind === "presets" ? (
             <PresetsDialog />
+          ) : dialog.kind === "study" ? (
+            <StudyDialog />
           ) : dialog.kind === "login" ? (
             <LoginDialog />
           ) : dialog.kind === "elicit" ? (

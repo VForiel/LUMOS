@@ -1,0 +1,221 @@
+{
+  "lumos_format": "1.0",
+  "kind": "context",
+  "lumos_version": "0.0.2.dev16",
+  "created_at": "2026-10-16T23:37:07Z",
+  "meta": {
+    "name": "Monte-Carlo tolerancing",
+    "description": "Tolerance study of a focusing lens: its focal length (normal prior, 200 \u00b1 2 mm) and the photon noise of the camera change from draw to draw; the study gives the spread of the peak on the camera.",
+    "outputs": [
+      "camera.out"
+    ],
+    "author": "LUMOS"
+  },
+  "context": {
+    "mode": "simulation",
+    "twin": true,
+    "seed": 2026,
+    "backend": {
+      "preferred": "auto"
+    },
+    "clock": {
+      "start": "2026-01-01T00:00:00.000",
+      "elapsed": {
+        "value": 0.0,
+        "unit": "s"
+      }
+    },
+    "observation": {
+      "band": null,
+      "n": 1,
+      "rule": "midpoint",
+      "extra": {}
+    },
+    "simulate": []
+  },
+  "elements": [
+    {
+      "id": "laser",
+      "type": "lumos.sources.GaussianLaser",
+      "type_version": 1,
+      "name": "laser",
+      "params": {
+        "wavelength": {
+          "value": 633.0,
+          "unit": "nm"
+        },
+        "power": {
+          "value": 1.0,
+          "unit": "mW"
+        },
+        "waist": {
+          "value": 1.0,
+          "unit": "mm"
+        },
+        "pixel_scale": {
+          "value": 20.0,
+          "unit": "um"
+        }
+      },
+      "settings": {
+        "n_pixels": 256
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "lens",
+      "type": "lumos.optics.ThinLens",
+      "type_version": 1,
+      "name": "lens",
+      "params": {
+        "focal_length": {
+          "value": 200.0,
+          "unit": "mm"
+        }
+      },
+      "settings": {},
+      "state": {},
+      "free": {
+        "focal_length": {
+          "prior": {
+            "kind": "normal",
+            "mean": {
+              "value": 200.0,
+              "unit": "mm"
+            },
+            "std": {
+              "value": 2.0,
+              "unit": "mm"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "focus",
+      "type": "lumos.optics.FreeSpace",
+      "type_version": 1,
+      "name": "focus",
+      "params": {
+        "distance": {
+          "value": 200.0,
+          "unit": "mm"
+        }
+      },
+      "settings": {
+        "method": "fresnel_mft",
+        "output_grid": {
+          "nx": 64,
+          "ny": 64,
+          "dx": {
+            "value": 2.0,
+            "unit": "um"
+          },
+          "dy": {
+            "value": 2.0,
+            "unit": "um"
+          },
+          "x0": {
+            "value": 0.0,
+            "unit": "um"
+          },
+          "y0": {
+            "value": 0.0,
+            "unit": "um"
+          }
+        }
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "camera",
+      "type": "lumos.detectors.Camera",
+      "type_version": 1,
+      "name": "camera",
+      "params": {
+        "quantum_efficiency": {
+          "value": {
+            "dtype": "<f8",
+            "shape": [
+              1
+            ],
+            "data": "mpmZmZmZ6T8="
+          },
+          "unit": ""
+        },
+        "qe_wavelengths": {
+          "value": {
+            "dtype": "<f8",
+            "shape": [
+              0
+            ],
+            "data": ""
+          },
+          "unit": "nm"
+        },
+        "exposure": {
+          "value": 1.0,
+          "unit": "us"
+        },
+        "dark_current": {
+          "value": 0.0,
+          "unit": "electron / s"
+        },
+        "read_noise": {
+          "value": 0.0,
+          "unit": "electron"
+        },
+        "gain": {
+          "value": 1.0,
+          "unit": "electron / adu"
+        },
+        "bias": {
+          "value": 0.0,
+          "unit": "adu"
+        },
+        "full_well": {
+          "value": 1000000000.0,
+          "unit": "electron"
+        }
+      },
+      "settings": {
+        "bits": 32,
+        "binning": 1,
+        "noise": true
+      },
+      "state": {
+        "frame": {
+          "value": 0.0,
+          "unit": ""
+        }
+      },
+      "free": {}
+    }
+  ],
+  "connections": [
+    {
+      "from": "laser.out",
+      "to": "lens.in"
+    },
+    {
+      "from": "lens.out",
+      "to": "focus.in"
+    },
+    {
+      "from": "focus.out",
+      "to": "camera.in"
+    }
+  ],
+  "ui": {
+    "study": {
+      "kind": "sample",
+      "n": 50,
+      "outputs": [
+        "camera.out"
+      ],
+      "metric": "max"
+    }
+  }
+}

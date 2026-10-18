@@ -1,12 +1,13 @@
 // Bottom panel (REQ-WEB-5): results of the last run and of inspected ports, live journal, problems.
 
-import { AlertTriangle, Archive, CheckCircle2, ChevronDown, ChevronUp, Download, FileJson, Image, ListTree, Loader2, ScrollText, Table2, X } from "lucide-react";
+import { AlertTriangle, Archive, CheckCircle2, ChevronDown, ChevronUp, Download, FileJson, FlaskConical, Image, ListTree, Loader2, ScrollText, Table2, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type JournalEntry, type PortSummary } from "../api";
 import { formatNumber } from "../lib/units";
 import { FIGURE_KINDS, useStore, type BottomTab } from "../store";
 import { Resizer } from "./Resizer";
+import { StudyPanel } from "./Study";
 
 function DownloadLink({ href, label, testId, icon }: { href: string; label: string; testId?: string; icon?: ReactNode }) {
   return (
@@ -251,6 +252,7 @@ function Problems() {
 
 const TABS: { tab: BottomTab; icon: typeof ListTree; label: string }[] = [
   { tab: "results", icon: ListTree, label: "tabs.results" },
+  { tab: "study", icon: FlaskConical, label: "tabs.study" },
   { tab: "journal", icon: ScrollText, label: "tabs.journal" },
   { tab: "problems", icon: AlertTriangle, label: "tabs.problems" },
 ];
@@ -288,6 +290,7 @@ export function BottomPanel({ extraTabs, renderExtra }: { extraTabs?: typeof TAB
       {bottom && (
         <div className="min-h-0 flex-1">
           {bottom === "results" && <Results />}
+          {bottom === "study" && <StudyPanel />}
           {bottom === "journal" && <Journal />}
           {bottom === "problems" && <Problems />}
           {renderExtra?.(bottom)}

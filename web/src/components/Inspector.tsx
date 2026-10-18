@@ -4,6 +4,7 @@ import {
   ChevronDown,
   ChevronRight,
   Copy,
+  Dices,
   Download,
   FolderOpen,
   FolderTree,
@@ -27,6 +28,7 @@ import { useStore } from "../store";
 import { Resizer } from "./Resizer";
 import { FieldInput, FieldRow, inputClass, QuantityInput } from "./Fields";
 import { plain } from "./Palette";
+import { priorText } from "./Study";
 
 function Section({ title, children, defaultOpen = true, extra }: { title: string; children: ReactNode; defaultOpen?: boolean; extra?: ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -85,6 +87,124 @@ function NameInput({ path, editable }: { path: string; editable: boolean }) {
       onKeyDown={(event) => event.key === "Enter" && commit()}
       className="w-full rounded-md border border-transparent bg-transparent px-1 text-base font-semibold text-slate-800 outline-none hover:border-slate-200 focus:border-accent-400 dark:text-slate-100 dark:hover:border-slate-700"
     />
+  );
+}
+
+type PriorKind = "uniform" | "loguniform" | "normal";
+const PRIOR_VALUES: Record<PriorKind, [string, string]> = { uniform: ["low", "high"], loguniform: ["low", "high"], normal: ["mean", "std"] };
+
+/** A number typed in the unit of the parameter, or a quantity with its own unit ("2 mm"). */
+function inUnit(text: string, unit: string): string {
+  const quantity = parseQuantity(text.trim());
+  return quantity && quantity.unit ? text.trim() : `${text.trim()} ${unit}`.trim();
+}
+
+/** Free a parameter with a prior (Monte-Carlo runs draw it), or fix it again. */
+function PriorEditor({ element, field, onClose }: { element: ElementSummary; field: Field; onClose: () => void }) {
+  const { t } = useTranslation();
+  const setFree = useStore((s) => s.setFree);
+  const current = parseQuantity(String(element.params[field.name] ?? "")) ?? { value: 0, unit: field.unit ?? "" };
+  const prior = element.free?.[field.name] ?? null;
+  const strip = (text: string | undefined) => (text === undefined ? "" : formatNumber(parseQuantity(text)?.value ?? Number(text)));
+  const [kind, setKind] = useState<PriorKind>((prior?.kind as PriorKind) ?? "normal");
+  const initial = (choice: PriorKind): [string, string] => {
+    if (prior && prior.kind === choice) return PRIOR_VALUES[choice].map((key) => strip(prior[key])) as [string, string];
+    const v = current.value;
+    if (choice === "normal") return [formatNumber(v), formatNumber(Math.abs(v) * 0.01 || 0.1)];
+    return v === 0 ? ["0", "1"] : [formatNumber(Math.min(v * 0.9, v * 1.1)), formatNumber(Math.max(v * 0.9, v * 1.1))];
+  };
+  const [[a, b], setValues] = useState<[string, string]>(initial(kind));
+  const [first, second] = PRIOR_VALUES[kind];
+  const name = field.name;
+  const apply = async () => {
+    if (await setFree(`${element.id}.${name}`, true, { kind, [first]: inUnit(a, current.unit), [second]: inUnit(b, current.unit) })) onClose();
+  };
+  return (
+    <div data-testid={`prior-${name}`} className="mt-1 space-y-1.5 rounded-lg border border-amber-200 bg-amber-50/60 p-2 text-xs dark:border-amber-900 dark:bg-amber-950/30">
+      <p className="text-slate-600 dark:text-slate-300">{t("prior.hint")}</p>
+      <select
+        data-testid={`prior-kind-${name}`}
+        value={kind}
+        onChange={(event) => {
+          const next = event.target.value as PriorKind;
+          setKind(next);
+          setValues(initial(next));
+        }}
+        className={`${inputClass} py-0.5 text-xs`}
+      >
+        {(Object.keys(PRIOR_VALUES) as PriorKind[]).map((choice) => (
+          <option key={choice} value={choice}>
+            {t(`prior.${choice}`)}
+          </option>
+        ))}
+      </select>
+      <div className="grid grid-cols-2 gap-1.5">
+        {[
+          [first, a, (value: string) => setValues([value, b])],
+          [second, b, (value: string) => setValues([a, value])],
+        ].map(([label, value, change], index) => (
+          <label key={label as string} className="block">
+            <span className="text-slate-500">
+              {t(`prior.${label as string}`)}
+              {current.unit ? ` [${current.unit}]` : ""}
+            </span>
+            <input
+              data-testid={`prior-${index ? "b" : "a"}-${name}`}
+              value={value as string}
+              onChange={(event) => (change as (value: string) => void)(event.target.value)}
+              onKeyDown={(event) => event.key === "Enter" && void apply()}
+              className={`${inputClass} py-0.5 text-xs`}
+            />
+          </label>
+        ))}
+      </div>
+      <div className="flex justify-end gap-1.5">
+        {prior !== null || name in (element.free ?? {}) ? (
+          <ActionButton icon={null} label={t("prior.fix")} testId={`prior-remove-${name}`} onClick={() => void setFree(`${element.id}.${name}`, false).then(onClose)} />
+        ) : (
+          <ActionButton icon={null} label={t("common.cancel")} onClick={onClose} />
+        )}
+        <ActionButton icon={<Dices className="size-3.5" />} label={t("common.apply")} testId={`prior-apply-${name}`} onClick={() => void apply()} />
+      </div>
+    </div>
+  );
+}
+
+/** The row of a parameter: its input, the button freeing it, its prior. */
+function ParamRow({ element, field, editable }: { element: ElementSummary; field: Field; editable: boolean }) {
+  const { t } = useTranslation();
+  const [editing, setEditing] = useState(false);
+  const free = field.name in (element.free ?? {});
+  const canFree = field.kind === "param" && field.input === "quantity";
+  return (
+    <FieldRow field={{ ...field, free }}>
+      <div className="flex items-start gap-1">
+        <div className="min-w-0 flex-1">
+          <FieldInput element={element.id} field={field} value={valueOf(element, field)} disabled={!editable} />
+        </div>
+        {canFree && editable && (
+          <button
+            type="button"
+            data-testid={`free-${field.name}`}
+            aria-pressed={free}
+            title={t(free ? "prior.edit" : "prior.free")}
+            aria-label={t(free ? "prior.edit" : "prior.free")}
+            onClick={() => setEditing(!editing)}
+            className={`mt-0.5 grid size-7 shrink-0 place-items-center rounded-md transition-colors ${
+              free ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200" : "text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"
+            }`}
+          >
+            <Dices className="size-3.5" />
+          </button>
+        )}
+      </div>
+      {free && !editing && (
+        <p data-testid={`prior-summary-${field.name}`} className="mt-0.5 font-mono text-[11px] text-amber-700 dark:text-amber-300">
+          ∼ {priorText(element.free?.[field.name])}
+        </p>
+      )}
+      {editing && <PriorEditor element={element} field={field} onClose={() => setEditing(false)} />}
+    </FieldRow>
   );
 }
 
@@ -171,11 +291,15 @@ function ElementPanel({ element, type, onInspect }: { element: ElementSummary; t
       {groups.map(([title, list]) =>
         list.length ? (
           <Section key={title} title={title} defaultOpen={title !== t("inspector.state")}>
-            {list.map((field) => (
-              <FieldRow key={field.name} field={field}>
-                <FieldInput element={element.id} field={field} value={valueOf(element, field)} disabled={!editable} />
-              </FieldRow>
-            ))}
+            {list.map((field) =>
+              field.kind === "param" ? (
+                <ParamRow key={field.name} element={element} field={field} editable={editable} />
+              ) : (
+                <FieldRow key={field.name} field={field}>
+                  <FieldInput element={element.id} field={field} value={valueOf(element, field)} disabled={!editable} />
+                </FieldRow>
+              ),
+            )}
           </Section>
         ) : null,
       )}
@@ -292,6 +416,9 @@ function ContextPanel({ context }: { context: ContextSummary }) {
           </div>
         )}
       </Section>
+      <Section title={t("inspector.randomness")}>
+        <SeedInput context={context} editable={editable} />
+      </Section>
       {context.outputs.length > 0 && (
         <Section title={t("inspector.outputs")}>
           <ul className="space-y-0.5 font-mono text-xs text-slate-600 dark:text-slate-300">
@@ -301,6 +428,58 @@ function ContextPanel({ context }: { context: ContextSummary }) {
           </ul>
         </Section>
       )}
+    </>
+  );
+}
+
+/** The seed of every random process of the context: type it, or draw a new one. */
+function SeedInput({ context, editable }: { context: ContextSummary; editable: boolean }) {
+  const { t } = useTranslation();
+  const setContextInfo = useStore((s) => s.setContextInfo);
+  const [text, setText] = useState(String(context.seed));
+  useEffect(() => {
+    setText(String(context.seed));
+  }, [context.seed]);
+  const commit = (value: string) => {
+    const seed = Number(value);
+    if (Number.isInteger(seed) && seed >= 0 && seed !== context.seed) void setContextInfo({ seed });
+    else setText(String(context.seed));
+  };
+  return (
+    <>
+      <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">{t("inspector.randomnessHint")}</p>
+      <div className="grid grid-cols-[6.5rem_1fr] items-center gap-2 py-1">
+        <label htmlFor="seed" className="font-mono text-xs text-slate-600 dark:text-slate-300">
+          seed
+        </label>
+        <div className="flex gap-1">
+          <input
+            id="seed"
+            data-testid="seed"
+            type="number"
+            min={0}
+            step={1}
+            value={text}
+            disabled={!editable}
+            onChange={(event) => setText(event.target.value)}
+            onBlur={() => commit(text)}
+            onKeyDown={(event) => event.key === "Enter" && commit(text)}
+            className={inputClass}
+          />
+          {editable && (
+            <button
+              type="button"
+              data-testid="new-seed"
+              title={t("inspector.newSeed")}
+              aria-label={t("inspector.newSeed")}
+              onClick={() => void setContextInfo({ seed: Math.floor(Math.random() * 2 ** 31) })}
+              className="grid size-8 shrink-0 place-items-center rounded-md border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-accent-600 dark:border-slate-700 dark:hover:bg-slate-800"
+            >
+              <Dices className="size-4" />
+            </button>
+          )}
+        </div>
+      </div>
     </>
   );
 }
