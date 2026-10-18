@@ -51,7 +51,13 @@ def _sampling(ux: np.ndarray) -> float:
 class Coronagraph(Element):
     """Base class: focal-plane mask between two pupil planes, followed by a Lyot stop."""
 
-    pupil_diameter = Param(unit=u.m, default=1 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
+    pupil_diameter = Param(
+        unit=u.m,
+        default=1 * u.m,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="diameter of the entrance pupil",
+    )
     lyot_stop = Param(default=0.95, bounds=(0, None), inclusive=(False, True), doc="in pupil diameters")
     reference_wavelength = Param(
         unit=u.nm,

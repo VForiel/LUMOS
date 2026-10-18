@@ -252,8 +252,20 @@ class DelayLine(Element):
 class SpectralFilter(Element):
     """Top-hat band-pass filter: power transmission inside the band, opaque outside."""
 
-    center = Param(unit=u.nm, default=550 * u.nm, bounds=(0 * u.m, None), inclusive=(False, True))
-    width = Param(unit=u.nm, default=100 * u.nm, bounds=(0 * u.m, None), inclusive=(False, True))
+    center = Param(
+        unit=u.nm,
+        default=550 * u.nm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="central wavelength of the band",
+    )
+    width = Param(
+        unit=u.nm,
+        default=100 * u.nm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="full width of the band",
+    )
     transmission = Param(default=1.0, bounds=(0, 1), doc="power transmission in the band")
     in_ = Input(OpticalSignal)
     out = Output(OpticalSignal)
@@ -346,7 +358,13 @@ def _plate_opd(values: Values, grid: Any) -> np.ndarray:
 class PhasePlate(Element):
     """Phase plate adding the OPD ``Σ a_j Z_j`` (Noll's Zernike modes, j from 1) over a disk."""
 
-    diameter = Param(unit=u.mm, default=10 * u.mm, bounds=(0 * u.m, None), inclusive=(False, True))
+    diameter = Param(
+        unit=u.mm,
+        default=10 * u.mm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="diameter over which the Zernike modes are normalised",
+    )
     coefficients = Param(unit=u.nm, shape=None, default=[0.0] * u.nm, doc="RMS OPD of modes 1, 2, ...")
     in_ = Input(OpticalSignal)
     out = Output(OpticalSignal)

@@ -90,9 +90,21 @@ class LinearStage(_Stage):
     """Motorised linear stage (LumosLabs ``LL-LS100``: 100 mm)."""
 
     lumoslabs_model = "LL-LS100"
-    position = State(unit=u.mm, default=0 * u.mm, bounds=(0 * u.mm, 100 * u.mm))
-    velocity = Param(unit=u.mm / u.s, default=10 * u.mm / u.s, bounds=(0 * u.mm / u.s, 50 * u.mm / u.s))
-    acceleration = Param(unit=u.mm / u.s**2, default=50 * u.mm / u.s**2, bounds=(0 * u.mm / u.s**2, None))
+    position = State(
+        unit=u.mm, default=0 * u.mm, bounds=(0 * u.mm, 100 * u.mm), doc="position of the carriage"
+    )
+    velocity = Param(
+        unit=u.mm / u.s,
+        default=10 * u.mm / u.s,
+        bounds=(0 * u.mm / u.s, 50 * u.mm / u.s),
+        doc="cruise velocity of the moves",
+    )
+    acceleration = Param(
+        unit=u.mm / u.s**2,
+        default=50 * u.mm / u.s**2,
+        bounds=(0 * u.mm / u.s**2, None),
+        doc="acceleration of the moves",
+    )
 
 
 @register("lumos.lab.RotationStage")
@@ -100,9 +112,21 @@ class RotationStage(_Stage):
     """Motorised rotation stage (LumosLabs ``LL-RS360``: ±360°)."""
 
     lumoslabs_model = "LL-RS360"
-    position = State(unit=u.deg, default=0 * u.deg, bounds=(-360 * u.deg, 360 * u.deg))
-    velocity = Param(unit=u.deg / u.s, default=20 * u.deg / u.s, bounds=(0 * u.deg / u.s, 90 * u.deg / u.s))
-    acceleration = Param(unit=u.deg / u.s**2, default=100 * u.deg / u.s**2, bounds=(0 * u.deg / u.s**2, None))
+    position = State(
+        unit=u.deg, default=0 * u.deg, bounds=(-360 * u.deg, 360 * u.deg), doc="angle of the stage"
+    )
+    velocity = Param(
+        unit=u.deg / u.s,
+        default=20 * u.deg / u.s,
+        bounds=(0 * u.deg / u.s, 90 * u.deg / u.s),
+        doc="angular cruise velocity of the moves",
+    )
+    acceleration = Param(
+        unit=u.deg / u.s**2,
+        default=100 * u.deg / u.s**2,
+        bounds=(0 * u.deg / u.s**2, None),
+        doc="angular acceleration of the moves",
+    )
 
 
 @register("lumos.lab.Piezo")
@@ -110,9 +134,9 @@ class Piezo(Element):
     """Three-axis piezo controller (LumosLabs ``LL-PZ3``: 0–30 µm per axis)."""
 
     lumoslabs_model = "LL-PZ3"
-    x = State(unit=u.um, default=0 * u.um, bounds=(0 * u.um, 30 * u.um))
-    y = State(unit=u.um, default=0 * u.um, bounds=(0 * u.um, 30 * u.um))
-    z = State(unit=u.um, default=0 * u.um, bounds=(0 * u.um, 30 * u.um))
+    x = State(unit=u.um, default=0 * u.um, bounds=(0 * u.um, 30 * u.um), doc="position along x")
+    y = State(unit=u.um, default=0 * u.um, bounds=(0 * u.um, 30 * u.um), doc="position along y")
+    z = State(unit=u.um, default=0 * u.um, bounds=(0 * u.um, 30 * u.um), doc="position along z")
 
     @action()
     def move(self, axis: str, position: u.Quantity) -> None:
@@ -159,7 +183,12 @@ class FilterWheel(Element):
 
     lumoslabs_model = "LL-FW6"
     slot = State(default=1.0, bounds=(1, 6), doc="selected slot, 1 to 6")
-    transmissions = Param(shape=(6,), default=[1.0, 0.5, 0.1, 0.01, 1e-3, 1e-4], bounds=(0, 1))
+    transmissions = Param(
+        shape=(6,),
+        default=[1.0, 0.5, 0.1, 0.01, 1e-3, 1e-4],
+        bounds=(0, 1),
+        doc="power transmission of each position of the wheel",
+    )
     in_ = Input(OpticalSignal)
     out = Output(OpticalSignal)
 
@@ -182,11 +211,29 @@ class LaserSource(Element):
     """Laser source (LumosLabs ``LL-LD``): a Gaussian beam of ``power`` emitted when ``emitting``."""
 
     lumoslabs_model = "LL-LD"
-    wavelength = Param(unit=u.nm, default=635 * u.nm, bounds=(0 * u.m, None), inclusive=(False, True))
+    wavelength = Param(
+        unit=u.nm,
+        default=635 * u.nm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="vacuum wavelength",
+    )
     power = Param(unit=u.mW, default=1 * u.mW, bounds=(0 * u.mW, 10 * u.mW), doc="set point")
-    waist = Param(unit=u.mm, default=1 * u.mm, bounds=(0 * u.m, None), inclusive=(False, True))
-    pixel_scale = Param(unit=u.um, default=20 * u.um, bounds=(0 * u.m, None), inclusive=(False, True))
-    n_pixels = Setting(int, default=256)
+    waist = Param(
+        unit=u.mm,
+        default=1 * u.mm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="1/e² radius of the beam at its waist",
+    )
+    pixel_scale = Param(
+        unit=u.um,
+        default=20 * u.um,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="pixel size of the grid of the beam",
+    )
+    n_pixels = Setting(int, default=256, doc="pixels per side of the grid of the beam")
     emitting = State(default=0.0, doc="1 while emitting")
     out = Output(Wavefront)
 
@@ -214,7 +261,13 @@ class PhaseController(Element):
     """Heater voltages of a photonic chip (LumosLabs ``LL-PCU``, 8 channels of 0–10 V)."""
 
     lumoslabs_model = "LL-PCU"
-    voltages = State(unit=u.V, shape=(8,), default=[0.0] * 8 * u.V, bounds=(0 * u.V, 10 * u.V))
+    voltages = State(
+        unit=u.V,
+        shape=(8,),
+        default=[0.0] * 8 * u.V,
+        bounds=(0 * u.V, 10 * u.V),
+        doc="voltage of each channel",
+    )
     kappa = Param(unit=u.rad / u.V**2, default=math.pi / 25 * u.rad / u.V**2, doc="phase per V²")
     crosstalk = Param(default=0.05, bounds=(0, 1), doc="fraction of the heating of the neighbours")
 

@@ -146,10 +146,22 @@ class DiffuseComponent(Element):
         unit=u.um, default=1 * u.um, bounds=(0 * u.m, None), inclusive=(False, True), doc="wavelength of F_nu"
     )
     spectrum = Setting(str, default="flat", choices=("flat", "blackbody"), doc="spectral shape of F_nu")
-    temperature = Param(unit=u.K, default=5772 * u.K, bounds=(0 * u.K, None), inclusive=(False, True))
+    temperature = Param(
+        unit=u.K,
+        default=5772 * u.K,
+        bounds=(0 * u.K, None),
+        inclusive=(False, True),
+        doc="temperature of the blackbody spectrum",
+    )
     x0 = Param(unit=u.mas, default=0 * u.mas, doc="position along x (East)")
     y0 = Param(unit=u.mas, default=0 * u.mas, doc="position along y (North)")
-    pixel_scale = Param(unit=u.mas, default=2 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True))
+    pixel_scale = Param(
+        unit=u.mas,
+        default=2 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="angular pixel size of the map",
+    )
     n_pixels = Setting(int, default=64, doc="pixels per side of the component grid")
     supersample = Setting(int, default=4, doc="sub-pixels per pixel side")
     out = Output(RadianceField)
@@ -166,7 +178,13 @@ def _disk(values: Values, x: np.ndarray, y: np.ndarray) -> np.ndarray:
 class UniformDisk(DiffuseComponent):
     """Disk of uniform surface brightness (resolved star, planet, uniform nebula)."""
 
-    radius = Param(unit=u.mas, default=10 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True))
+    radius = Param(
+        unit=u.mas,
+        default=10 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="angular radius of the disk",
+    )
     transfer = _compact_transfer(_disk, lambda v: math.pi * float(v.radius) ** 2)
 
 
@@ -185,7 +203,13 @@ def _gaussian(values: Values, x: np.ndarray, y: np.ndarray) -> np.ndarray:
 class GaussianComponent(DiffuseComponent):
     """Circular Gaussian surface brightness."""
 
-    fwhm = Param(unit=u.mas, default=10 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True))
+    fwhm = Param(
+        unit=u.mas,
+        default=10 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="full width at half maximum",
+    )
     transfer = _compact_transfer(_gaussian, lambda v: 2 * math.pi * _sigma(v) ** 2)
 
 
@@ -213,7 +237,11 @@ class SersicComponent(DiffuseComponent):
     """Sérsic profile (n = 1: exponential disk, n = 4: de Vaucouleurs elliptical galaxy)."""
 
     effective_radius = Param(
-        unit=u.mas, default=10 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True)
+        unit=u.mas,
+        default=10 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="radius enclosing half of the flux",
     )
     index = Param(default=1.0, bounds=(0.2, 10), doc="Sérsic index n")
     transfer = _compact_transfer(_sersic, _sersic_integral)
@@ -238,8 +266,16 @@ def _ring(values: Values, x: np.ndarray, y: np.ndarray) -> np.ndarray:
 class InclinedRing(DiffuseComponent):
     """Optically thin flat ring or disk seen inclined (debris disks, exo-zodiacal dust)."""
 
-    inner_radius = Param(unit=u.mas, default=20 * u.mas, bounds=(0 * u.rad, None))
-    outer_radius = Param(unit=u.mas, default=30 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True))
+    inner_radius = Param(
+        unit=u.mas, default=20 * u.mas, bounds=(0 * u.rad, None), doc="inner radius of the ring"
+    )
+    outer_radius = Param(
+        unit=u.mas,
+        default=30 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="outer radius of the ring",
+    )
     inclination = Param(unit=u.deg, default=0 * u.deg, bounds=(0 * u.deg, 90 * u.deg), doc="0: face-on")
     position_angle = Param(unit=u.deg, default=0 * u.deg, doc="major axis, from North towards East")
     power_law = Param(default=0.0, doc="index p of the surface brightness r^-p in the plane of the ring")
@@ -274,10 +310,22 @@ class SurfaceBrightnessComponent(Element):
         bounds=(0 * u.Jy / u.sr, None),
         doc="surface brightness (F_nu per solid angle) at the reference wavelength",
     )
-    reference_wavelength = Param(unit=u.um, default=1 * u.um, bounds=(0 * u.m, None), inclusive=(False, True))
+    reference_wavelength = Param(
+        unit=u.um,
+        default=1 * u.um,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="wavelength of the surface brightness",
+    )
     x0 = Param(unit=u.mas, default=0 * u.mas, doc="centre of the grid along x")
     y0 = Param(unit=u.mas, default=0 * u.mas, doc="centre of the grid along y")
-    pixel_scale = Param(unit=u.mas, default=10 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True))
+    pixel_scale = Param(
+        unit=u.mas,
+        default=10 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="angular pixel size of the map",
+    )
     n_pixels = Setting(int, default=64, doc="pixels per side of the background grid")
     out = Output(RadianceField)
 
@@ -292,8 +340,16 @@ def _background_shape(values: Values, lam: np.ndarray) -> np.ndarray:
 class UniformBackground(SurfaceBrightnessComponent):
     """Uniform background (sky, thermal background of the instrument) with a flat or blackbody spectrum."""
 
-    spectrum = Setting(str, default="flat", choices=("flat", "blackbody"))
-    temperature = Param(unit=u.K, default=280 * u.K, bounds=(0 * u.K, None), inclusive=(False, True))
+    spectrum = Setting(
+        str, default="flat", choices=("flat", "blackbody"), doc="'flat' or 'blackbody' spectrum"
+    )
+    temperature = Param(
+        unit=u.K,
+        default=280 * u.K,
+        bounds=(0 * u.K, None),
+        inclusive=(False, True),
+        doc="temperature of the blackbody spectrum",
+    )
     transfer = _background_transfer(_background_shape)
 
 
@@ -309,5 +365,11 @@ class ZodiacalLight(SurfaceBrightnessComponent):
     """Local zodiacal light: uniform, with scattered sunlight and thermal dust emission."""
 
     albedo = Param(default=0.2, bounds=(0, 1), doc="albedo of the interplanetary dust")
-    dust_temperature = Param(unit=u.K, default=265 * u.K, bounds=(0 * u.K, None), inclusive=(False, True))
+    dust_temperature = Param(
+        unit=u.K,
+        default=265 * u.K,
+        bounds=(0 * u.K, None),
+        inclusive=(False, True),
+        doc="temperature of the thermal emission of the dust",
+    )
     transfer = _background_transfer(_zodi_shape)

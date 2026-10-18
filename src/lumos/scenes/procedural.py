@@ -167,10 +167,30 @@ class ProceduralComponent(Element):
         bounds=(0 * u.Jy / u.sr, None),
         doc="brightest level (random fields: mean) at the reference wavelength",
     )
-    reference_wavelength = Param(unit=u.um, default=1 * u.um, bounds=(0 * u.m, None), inclusive=(False, True))
-    spectrum = Setting(str, default="flat", choices=("flat", "blackbody"))
-    temperature = Param(unit=u.K, default=3000 * u.K, bounds=(0 * u.K, None), inclusive=(False, True))
-    pixel_scale = Param(unit=u.mas, default=1 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True))
+    reference_wavelength = Param(
+        unit=u.um,
+        default=1 * u.um,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="wavelength of the brightness",
+    )
+    spectrum = Setting(
+        str, default="flat", choices=("flat", "blackbody"), doc="'flat' or 'blackbody' spectrum"
+    )
+    temperature = Param(
+        unit=u.K,
+        default=3000 * u.K,
+        bounds=(0 * u.K, None),
+        inclusive=(False, True),
+        doc="temperature of the blackbody spectrum",
+    )
+    pixel_scale = Param(
+        unit=u.mas,
+        default=1 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="pixel size of the map",
+    )
     pixel_size = Param(
         unit=u.um, default=0 * u.um, bounds=(0 * u.m, None), doc="> 0: spatial grid (laboratory)"
     )
@@ -253,7 +273,7 @@ def _bars(values: Values, x: np.ndarray, y: np.ndarray) -> np.ndarray:
 class BarTarget(ProceduralComponent):
     """Group of bright vertical bars (one element of a USAF 1951 chart)."""
 
-    n_bars = Setting(int, default=3)
+    n_bars = Setting(int, default=3, doc="bars of each group")
     period = TargetSize(default=10.0, doc="period: a bar and a gap (angle, length or pixels)")
     length = TargetSize(default=25.0, doc="length of the bars (angle, length or pixels)")
     transfer = _anti_aliased(_bars)

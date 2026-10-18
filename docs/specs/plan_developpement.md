@@ -309,7 +309,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Phase 15 — Stabilisation v1.0
 
-- [ ] **P15.1 Revue d'API** — nommage et cohérence ; gel de l'API et du format `.lumos` 1.x.
+- [x] **P15.1 Revue d'API** — nommage et cohérence ; gel de l'API et du format `.lumos` 1.x.
 - [ ] **P15.2 Docs complètes EN et FR** — user guide, learn, hardware, web, assistant, ADR ; notebooks ; tutoriels.
 - [ ] **P15.3 Performance** — profilage, optimisation ciblée (extension native seulement si justifiée).
 - [ ] **P15.4 Qualité et sécurité** — couverture, typage strict, audit (chargement `.lumos`, web, MCP, réseau).

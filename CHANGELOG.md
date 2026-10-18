@@ -215,6 +215,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Changed
 
+- Review of the public API before its 1.x freeze (P15.1, ADR-0021): American spelling of the identifiers
+  (`FlatField` and `KernelObservables` settings and the keyword of `flat_field` and `kernel_observables`
+  renamed `normalize`, type version 2 reading the older documents; `subaperture_centers`); the element class
+  `PSFMeasurementElement` is `PSFMeasurement`, like its type, and the result of `measure_psf` is `PSFResult`;
+  every field of every element type has a description; `lumos.core` and `lumos.hardware` list their modules;
+  the API reference documents `lumos.symbolic` and `lumos.hardware`; versions and stability page.
 - Sizes of the test targets (`SiemensStar`, `Checkerboard`, `BarTarget`) may be angles or lengths; plain
   numbers keep meaning pixels.
 - VFSciTools is no longer a dependency: the PltEdit `.plt` writer and `vfst.archive` are shipped in

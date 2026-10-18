@@ -96,11 +96,17 @@ def _arrays(sources: SourceList) -> tuple[np.ndarray, np.ndarray, np.ndarray, np
 class Telescope(Element):
     """Telescope pupil sampling the plane waves of the sources at infinity (one bundle mode per source)."""
 
-    diameter = Param(unit=u.m, default=1 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
+    diameter = Param(
+        unit=u.m,
+        default=1 * u.m,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="diameter of the primary mirror",
+    )
     obstruction = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="central obstruction diameter")
-    spider_width = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None))
-    spider_rotation = Param(unit=u.deg, default=0 * u.deg)
-    n_spiders = Setting(int, default=0)
+    spider_width = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="width of each spider vane")
+    spider_rotation = Param(unit=u.deg, default=0 * u.deg, doc="angle of the first spider vane, from +x")
+    n_spiders = Setting(int, default=0, doc="number of spider vanes (0: none)")
     n_pixels = Setting(int, default=128, doc="pupil grid size")
     oversize = Setting(float, default=1.05, doc="width of the pupil grid in diameters (> 1: margin)")
     supersample = Setting(int, default=4, doc="sub-pixels per pixel side for anti-aliasing")
@@ -172,11 +178,22 @@ class TelescopeArray(Element):
         default=[[0.0, 0.0]] * u.m,
         doc="(East, North[, Up]) or sky (x, y), shape (n, 2|3)",
     )
-    diameter = Param(unit=u.m, default=1 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
+    diameter = Param(
+        unit=u.m,
+        default=1 * u.m,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="diameter of each telescope",
+    )
     obstruction = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="central obstruction diameter")
     throughput = Param(default=1.0, bounds=(0, 1), doc="power transmission up to the guides")
     latitude = Param(unit=u.deg, default=0 * u.deg, bounds=(-90 * u.deg, 90 * u.deg), doc="site latitude")
-    declination = Param(unit=u.deg, default=0 * u.deg, bounds=(-90 * u.deg, 90 * u.deg))
+    declination = Param(
+        unit=u.deg,
+        default=0 * u.deg,
+        bounds=(-90 * u.deg, 90 * u.deg),
+        doc="declination of the target (projection of the baselines)",
+    )
     hour_angle = Param(unit=u.hourangle, default=0 * u.hourangle, doc="hour angle at the start of the clock")
     rotation = Param(unit=u.deg, default=0 * u.deg, doc="sky frame: array rotation at the start of the clock")
     rotation_rate = Param(unit=u.deg / u.hour, default=0 * u.deg / u.hour, doc="sky frame: rotation rate")

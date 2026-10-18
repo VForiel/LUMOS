@@ -274,9 +274,9 @@ class AperturePhotometry(Element):
 
     x = QuantitySetting(default=0 * u.pix, doc="centre along x")
     y = QuantitySetting(default=0 * u.pix, doc="centre along y")
-    radius = QuantitySetting(default=3 * u.pix)
+    radius = QuantitySetting(default=3 * u.pix, doc="radius of the photometric aperture")
     annulus_inner = QuantitySetting(default=0 * u.pix, doc="inner radius of the annulus (0: no annulus)")
-    annulus_outer = QuantitySetting(default=0 * u.pix)
+    annulus_outer = QuantitySetting(default=0 * u.pix, doc="outer radius of the background annulus")
     in_ = Input(DataProduct)
     out = Output(DataProduct)
 
@@ -300,7 +300,7 @@ class ContrastCurve(Element):
 
     peak = QuantitySetting(default=1 * u.electron, doc="peak of the off-axis PSF, in the unit of the image")
     resolution = QuantitySetting(default=4 * u.pix, doc="λ/D in the unit of the image axes")
-    sigma = Setting(float, default=5.0)
+    sigma = Setting(float, default=5.0, doc="detection threshold in standard deviations")
     in_ = Input(DataProduct)
     out = Output(DataProduct)
 

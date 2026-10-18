@@ -22,7 +22,7 @@ from astropy import units as u
 from lumos.core.element import Element, Values
 from lumos.core.param import Setting
 from lumos.core.port import Input, Output
-from lumos.core.registry import register
+from lumos.core.registry import register, registry
 from lumos.fields.dataproduct import DataProduct
 
 __all__ = ["KernelObservables", "NullDepth", "kernel_observables", "null_depth", "transmission_map"]
@@ -56,7 +56,7 @@ def kernel_observables(
     outputs: DataProduct,
     *,
     pairs: Sequence[tuple[int, int]] | None = None,
-    normalise: bool = False,
+    normalize: bool = False,
     bright: int = 0,
 ) -> DataProduct:
     """Return the kernels, differences of paired outputs (default: those of the LUMOS kernel nuller).
@@ -67,7 +67,7 @@ def kernel_observables(
         Powers of the outputs of the nuller (last axis: channels).
     pairs
         Pairs ``(a, b)`` of outputs whose differences ``a - b`` are the kernels.
-    normalise
+    normalize
         Divide the kernels by the bright output ``bright`` (contrast units).
     """
     from lumos.elements.photonics import KERNEL_PAIRS
@@ -79,7 +79,7 @@ def kernel_observables(
     if sigma is not None:
         variance = np.stack([sigma[..., a] ** 2 + sigma[..., b] ** 2 for a, b in pairs], axis=-1)
     unit = outputs.unit
-    if normalise:
+    if normalize:
         reference = values[..., bright][..., None]
         if variance is not None:
             sr = sigma[..., bright][..., None] if sigma is not None else 0.0
@@ -89,7 +89,7 @@ def kernel_observables(
     return DataProduct(
         kernels * unit,
         uncertainty=None if variance is None else np.sqrt(variance) * unit,
-        meta={"pairs": [list(p) for p in pairs], "normalised": bool(normalise)},
+        meta={"pairs": [list(p) for p in pairs], "normalized": bool(normalize)},
     )
 
 
@@ -153,11 +153,11 @@ class NullDepth(Element):
         return {"out": null_depth(inputs["in"], dark=int(values.dark), bright=int(values.bright))}
 
 
-@register("lumos.processing.KernelObservables")
+@register("lumos.processing.KernelObservables", version=2)
 class KernelObservables(Element):
     """Kernels of the kernel nuller (differences of paired dark outputs)."""
 
-    normalise = Setting(bool, default=False, doc="divide by the bright output")
+    normalize = Setting(bool, default=False, doc="divide by the bright output")
     bright = Setting(int, default=0, doc="index of the bright output")
     in_ = Input(DataProduct)
     out = Output(DataProduct)
@@ -167,6 +167,14 @@ class KernelObservables(Element):
         """Return the kernels."""
         return {
             "out": kernel_observables(
-                inputs["in"], normalise=bool(values.normalise), bright=int(values.bright)
+                inputs["in"], normalize=bool(values.normalize), bright=int(values.bright)
             )
         }
+
+@registry.add_migration("lumos.processing.KernelObservables", from_version=1)
+def _rename_normalise(body: dict[str, Any]) -> dict[str, Any]:
+    """Version 2 spells the setting ``normalize`` (ADR-0021, American spelling of the identifiers)."""
+    settings = dict(body.get("settings", {}))
+    if "normalise" in settings:
+        settings["normalize"] = settings.pop("normalise")
+    return {**body, "settings": settings}

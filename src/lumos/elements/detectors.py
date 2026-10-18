@@ -140,19 +140,30 @@ class Camera(Element):
     lumoslabs_model = "LL-CAM"
     quantum_efficiency = Param(shape=None, default=[0.8], bounds=(0, 1), doc="one value, or a curve")
     qe_wavelengths = Param(unit=u.nm, shape=None, default=[] * u.nm, doc="wavelengths of the QE curve")
-    exposure = Param(unit=u.s, default=1 * u.s, bounds=(0 * u.s, None))
+    exposure = Param(unit=u.s, default=1 * u.s, bounds=(0 * u.s, None), doc="exposure time of a frame")
     dark_current = Param(
-        unit=u.electron / u.s, default=0 * u.electron / u.s, bounds=(0 * u.electron / u.s, None)
+        unit=u.electron / u.s,
+        default=0 * u.electron / u.s,
+        bounds=(0 * u.electron / u.s, None),
+        doc="dark electrons per pixel and per second",
     )
-    read_noise = Param(unit=u.electron, default=0 * u.electron, bounds=(0 * u.electron, None))
+    read_noise = Param(
+        unit=u.electron, default=0 * u.electron, bounds=(0 * u.electron, None), doc="RMS read noise per pixel"
+    )
     gain = Param(
         unit=u.electron / u.adu,
         default=1 * u.electron / u.adu,
         bounds=(0 * u.electron / u.adu, None),
         inclusive=(False, True),
+        doc="electrons per analogue-to-digital unit",
     )
-    bias = Param(unit=u.adu, default=0 * u.adu)
-    full_well = Param(unit=u.electron, default=1e5 * u.electron, bounds=(0 * u.electron, None))
+    bias = Param(unit=u.adu, default=0 * u.adu, doc="offset added to every pixel")
+    full_well = Param(
+        unit=u.electron,
+        default=1e5 * u.electron,
+        bounds=(0 * u.electron, None),
+        doc="electrons a pixel holds before saturating",
+    )
     frame = State(default=0.0, doc="number of exposures taken")
     bits = Setting(int, default=16, doc="resolution of the analog-to-digital converter")
     binning = Setting(int, default=1, doc="pixels binned along each axis")
@@ -225,9 +236,15 @@ class Photodiode(Element):
     """Photodiode: photocurrent with shot noise over its bandwidth."""
 
     stochastic = True
-    quantum_efficiency = Param(default=0.8, bounds=(0, 1))
-    dark_current = Param(unit=u.nA, default=0 * u.nA, bounds=(0 * u.A, None))
-    bandwidth = Param(unit=u.Hz, default=1 * u.kHz, bounds=(0 * u.Hz, None), inclusive=(False, True))
+    quantum_efficiency = Param(default=0.8, bounds=(0, 1), doc="electrons per incident photon")
+    dark_current = Param(unit=u.nA, default=0 * u.nA, bounds=(0 * u.A, None), doc="current without light")
+    bandwidth = Param(
+        unit=u.Hz,
+        default=1 * u.kHz,
+        bounds=(0 * u.Hz, None),
+        inclusive=(False, True),
+        doc="electrical bandwidth Δf of the shot noise",
+    )
     sample = State(default=0.0, doc="number of samples acquired")
     noise = Setting(bool, default=True, doc="False: expected values")
     in_ = Input(OpticalSignal)

@@ -136,9 +136,11 @@ def _constant(matrix: np.ndarray, n_wavelengths: int) -> np.ndarray:
 class Waveguide(PhotonicComponent):
     """Straight waveguide: propagation phase and loss."""
 
-    length = Param(unit=u.mm, default=1 * u.mm, bounds=(0 * u.m, None))
-    effective_index = Param(default=1.5, bounds=(1, None))
-    loss = Param(unit=u.dB / u.cm, default=0 * u.dB / u.cm, bounds=(0 * u.dB / u.cm, None))
+    length = Param(unit=u.mm, default=1 * u.mm, bounds=(0 * u.m, None), doc="length of the waveguide")
+    effective_index = Param(default=1.5, bounds=(1, None), doc="effective index of the guided mode")
+    loss = Param(
+        unit=u.dB / u.cm, default=0 * u.dB / u.cm, bounds=(0 * u.dB / u.cm, None), doc="propagation loss"
+    )
 
     @classmethod
     def _block(cls, values: Values, wavelengths: np.ndarray, n_in: int) -> np.ndarray:
@@ -156,9 +158,13 @@ class Waveguide(PhotonicComponent):
 class PhaseShifter(PhotonicComponent):
     """Phase shifter (thermo-optic: the phase is an optical path, set at the reference wavelength)."""
 
-    phase = Param(unit=u.rad, default=0 * u.rad)
+    phase = Param(unit=u.rad, default=0 * u.rad, doc="phase shift at the reference wavelength")
     reference_wavelength = Param(
-        unit=u.nm, default=1550 * u.nm, bounds=(0 * u.m, None), inclusive=(False, True)
+        unit=u.nm,
+        default=1550 * u.nm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="wavelength at which the phase is given",
     )
     achromatic = Setting(bool, default=False, doc="True: the same phase at every wavelength")
 
@@ -194,7 +200,12 @@ class DirectionalCoupler(PhotonicComponent):
 class YJunction(PhotonicComponent):
     """Symmetric Y-junction: splits one channel in two, or combines two channels into one."""
 
-    mode = Setting(str, default="split", choices=("split", "combine"))
+    mode = Setting(
+        str,
+        default="split",
+        choices=("split", "combine"),
+        doc="'split' one input into two outputs, or 'combine' two into one",
+    )
 
     @classmethod
     def _transfer(cls, values: Values, inputs: Any) -> dict[str, Any]:
@@ -260,15 +271,31 @@ def _mmi_block(
 class MMI(PhotonicComponent):
     """N × N multimode interference coupler computed with a slab mode solver."""
 
-    width = Param(unit=u.um, default=10 * u.um, bounds=(0 * u.m, None), inclusive=(False, True))
-    port_width = Param(unit=u.um, default=3 * u.um, bounds=(0 * u.m, None), inclusive=(False, True))
+    width = Param(
+        unit=u.um,
+        default=10 * u.um,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="width of the multimode section",
+    )
+    port_width = Param(
+        unit=u.um,
+        default=3 * u.um,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="width of the access waveguides",
+    )
     length = Param(unit=u.um, default=0 * u.um, bounds=(0 * u.m, None), doc="0: 3 L_pi / N at the reference")
     n_core = Param(default=1.6, bounds=(1, None), doc="effective index of the multimode section")
-    n_cladding = Param(default=1.45, bounds=(1, None))
+    n_cladding = Param(default=1.45, bounds=(1, None), doc="refractive index of the cladding")
     reference_wavelength = Param(
-        unit=u.nm, default=1550 * u.nm, bounds=(0 * u.m, None), inclusive=(False, True)
+        unit=u.nm,
+        default=1550 * u.nm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="design wavelength of the self-imaging length",
     )
-    n_ports = Setting(int, default=2)
+    n_ports = Setting(int, default=2, doc="input and output ports")
 
     @classmethod
     def _transfer(cls, values: Values, inputs: Any) -> dict[str, Any]:

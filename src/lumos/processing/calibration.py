@@ -42,7 +42,7 @@ from lumos.processing.photometry import _pixel_edges, circle_overlap
 __all__ = [
     "MTFMeasurement",
     "PSFMeasurement",
-    "PSFMeasurementElement",
+    "PSFResult",
     "PhaseFit",
     "fit_phases",
     "measure_psf",
@@ -226,7 +226,7 @@ def mtf_slanted_edge(image: DataProduct, *, oversampling: int = 4, window: bool 
 
 
 @dataclass(frozen=True)
-class PSFMeasurement:
+class PSFResult:
     """Measured properties of a PSF (positions and widths in the unit of the image axes)."""
 
     centroid: tuple[u.Quantity, u.Quantity]
@@ -275,7 +275,7 @@ def _half_width(values: np.ndarray, radii: np.ndarray) -> tuple[float, float]:
 
 def measure_psf(
     image: DataProduct, *, resolution: u.Quantity | None = None, reference: DataProduct | None = None
-) -> PSFMeasurement:
+) -> PSFResult:
     """Measure the centroid, peak, FWHM, total and (with ``reference``) the Strehl ratio of a PSF image.
 
     Parameters
@@ -311,7 +311,7 @@ def measure_psf(
     strehl = None
     if reference is not None:
         strehl = peak / float(np.max(np.asarray(reference.data.to_value(image.unit), dtype=float)))
-    return PSFMeasurement(
+    return PSFResult(
         centroid=(cx * unit, cy * unit),
         peak=peak * image.unit,
         fwhm=2 * half * unit,
@@ -328,7 +328,7 @@ def measure_psf(
 class MTFMeasurement(Element):
     """MTF measured on the image of a slanted edge (ISO 12233)."""
 
-    oversampling = Setting(int, default=4)
+    oversampling = Setting(int, default=4, doc="sub-pixel bins of the edge spread function")
     in_ = Input(DataProduct)
     out = Output(DataProduct)
 
@@ -339,7 +339,7 @@ class MTFMeasurement(Element):
 
 
 @register("lumos.processing.PSFMeasurement")
-class PSFMeasurementElement(Element):
+class PSFMeasurement(Element):
     """Centroid, peak, FWHM and encircled energy of a PSF image (a product of scalars with named meta)."""
 
     in_ = Input(DataProduct)

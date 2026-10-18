@@ -324,6 +324,43 @@
    :members:
 ```
 
+## Symbolic optics
+
+```{eval-rst}
+.. automodule:: lumos.symbolic
+   :members: SymbolicField, SymbolicSource, gaussian_beam, plane_wave, rectangular_pupil, to_wavefront, to_wavecube, to_numeric
+
+.. automodule:: lumos.symbolic.closed_forms
+   :members:
+
+.. automodule:: lumos.symbolic.reconstruct
+   :members:
+
+.. automodule:: lumos.symbolic.serialize
+   :members:
+```
+
+## Operation of equipment
+
+```{eval-rst}
+.. automodule:: lumos.hardware
+
+.. automodule:: lumos.hardware.transport
+   :members:
+
+.. automodule:: lumos.hardware.protocol
+   :members:
+
+.. automodule:: lumos.hardware.discovery
+   :members:
+
+.. automodule:: lumos.hardware.drivers
+   :members:
+
+.. automodule:: lumos.hardware.emulators
+   :members:
+```
+
 ## Service layer
 
 ```{eval-rst}

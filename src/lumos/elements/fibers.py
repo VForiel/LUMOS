@@ -158,11 +158,21 @@ def _transfer(values: Values, signal: Any) -> tuple[ModalField, Any]:
 class Fiber(Element):
     """Step-index fibre: injection into LP modes, propagation over its length, near field at its output."""
 
-    core_radius = Param(unit=u.um, default=4.1 * u.um, bounds=(0 * u.m, None), inclusive=(False, True))
-    numerical_aperture = Param(default=0.12, bounds=(0, 1), inclusive=(False, True))
-    cladding_index = Param(default=1.444, bounds=(1, None))
-    length = Param(unit=u.m, default=1 * u.m, bounds=(0 * u.m, None))
-    attenuation = Param(unit=u.dB / u.km, default=0 * u.dB / u.km, bounds=(0 * u.dB / u.km, None))
+    core_radius = Param(
+        unit=u.um,
+        default=4.1 * u.um,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="radius of the core",
+    )
+    numerical_aperture = Param(
+        default=0.12, bounds=(0, 1), inclusive=(False, True), doc="numerical aperture of the step-index fibre"
+    )
+    cladding_index = Param(default=1.444, bounds=(1, None), doc="refractive index of the cladding")
+    length = Param(unit=u.m, default=1 * u.m, bounds=(0 * u.m, None), doc="length of the fibre")
+    attenuation = Param(
+        unit=u.dB / u.km, default=0 * u.dB / u.km, bounds=(0 * u.dB / u.km, None), doc="propagation loss"
+    )
     mode_field_diameter = Param(
         unit=u.um, default=0 * u.um, bounds=(0 * u.m, None), doc="Gaussian model; 0: Marcuse"
     )

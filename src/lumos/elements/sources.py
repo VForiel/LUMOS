@@ -181,16 +181,41 @@ class _StarAndOrbit(Element):
 
     observation_dependent = True
     time_dependent = True
-    star_temperature = Param(unit=u.K, default=5772 * u.K, bounds=(0 * u.K, None))
-    star_radius = Param(unit=u.R_sun, default=1 * u.R_sun, bounds=(0 * u.m, None))
-    star_mass = Param(unit=u.M_sun, default=1 * u.M_sun, bounds=(0 * u.kg, None), inclusive=(False, True))
-    distance = Param(unit=u.pc, default=10 * u.pc, bounds=(0 * u.m, None), inclusive=(False, True))
-    planet_radius = Param(unit=u.R_earth, default=1 * u.R_earth, bounds=(0 * u.m, None))
-    semi_major_axis = Param(unit=u.au, default=1 * u.au, bounds=(0 * u.m, None), inclusive=(False, True))
-    eccentricity = Param(default=0.0, bounds=(0, 1), inclusive=(True, False))
+    star_temperature = Param(
+        unit=u.K,
+        default=5772 * u.K,
+        bounds=(0 * u.K, None),
+        doc="effective temperature of the star (blackbody)",
+    )
+    star_radius = Param(unit=u.R_sun, default=1 * u.R_sun, bounds=(0 * u.m, None), doc="radius of the star")
+    star_mass = Param(
+        unit=u.M_sun,
+        default=1 * u.M_sun,
+        bounds=(0 * u.kg, None),
+        inclusive=(False, True),
+        doc="mass of the star (orbital period)",
+    )
+    distance = Param(
+        unit=u.pc,
+        default=10 * u.pc,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="distance of the system",
+    )
+    planet_radius = Param(
+        unit=u.R_earth, default=1 * u.R_earth, bounds=(0 * u.m, None), doc="radius of the planet"
+    )
+    semi_major_axis = Param(
+        unit=u.au,
+        default=1 * u.au,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="semi-major axis of the orbit",
+    )
+    eccentricity = Param(default=0.0, bounds=(0, 1), inclusive=(True, False), doc="eccentricity of the orbit")
     inclination = Param(unit=u.deg, default=0 * u.deg, doc="0: face-on")
-    argument_periapsis = Param(unit=u.deg, default=0 * u.deg)
-    longitude_node = Param(unit=u.deg, default=0 * u.deg)
+    argument_periapsis = Param(unit=u.deg, default=0 * u.deg, doc="argument of periapsis ω of the orbit")
+    longitude_node = Param(unit=u.deg, default=0 * u.deg, doc="longitude of the ascending node Ω")
     mean_anomaly = Param(unit=u.deg, default=0 * u.deg, doc="mean anomaly at the start of the clock")
     albedo = Param(default=0.3, bounds=(0, 1), doc="geometric albedo (also used as Bond albedo)")
     theta_x = Param(unit=u.rad, default=0 * u.rad, doc="direction of the star along x")
@@ -261,10 +286,28 @@ def _planet_values(record: Any) -> dict[str, Any]:
 class GaussianLaser(Element):
     """Laser beam with a Gaussian profile at its waist, sampled on its own grid."""
 
-    wavelength = Param(unit=u.nm, default=633 * u.nm, bounds=(0 * u.m, None), inclusive=(False, True))
-    power = Param(unit=u.mW, default=1 * u.mW, bounds=(0 * u.W, None))
-    waist = Param(unit=u.mm, default=1 * u.mm, bounds=(0 * u.m, None), inclusive=(False, True))
-    pixel_scale = Param(unit=u.um, default=20 * u.um, bounds=(0 * u.m, None), inclusive=(False, True))
+    wavelength = Param(
+        unit=u.nm,
+        default=633 * u.nm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="vacuum wavelength",
+    )
+    power = Param(unit=u.mW, default=1 * u.mW, bounds=(0 * u.W, None), doc="optical power of the beam")
+    waist = Param(
+        unit=u.mm,
+        default=1 * u.mm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="1/e² radius of the beam at its waist",
+    )
+    pixel_scale = Param(
+        unit=u.um,
+        default=20 * u.um,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="pixel size of the grid of the beam",
+    )
     n_pixels = Setting(int, default=256, doc="grid size")
     out = Output(Wavefront)
 
@@ -284,8 +327,20 @@ class IncoherentLamp(Element):
 
     observation_dependent = True
     power = Param(unit=u.W, default=1 * u.W, bounds=(0 * u.W, None), doc="power emitted in the band")
-    diameter = Param(unit=u.mm, default=1 * u.mm, bounds=(0 * u.m, None), inclusive=(False, True))
-    pixel_scale = Param(unit=u.um, default=20 * u.um, bounds=(0 * u.m, None), inclusive=(False, True))
+    diameter = Param(
+        unit=u.mm,
+        default=1 * u.mm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="diameter of the emitting disk",
+    )
+    pixel_scale = Param(
+        unit=u.um,
+        default=20 * u.um,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="pixel size of the grid of the lamp",
+    )
     n_pixels = Setting(int, default=128, doc="grid size")
     out = Output(RadianceField)
 

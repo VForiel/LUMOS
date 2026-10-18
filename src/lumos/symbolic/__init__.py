@@ -1,4 +1,4 @@
-"""Symbolic optics (phase 10, REQ-SYM-*).
+"""Symbolic optics (phase 10, requirements REQ-SYM).
 
 - :mod:`~lumos.symbolic.symbols`: canonical variables ``x, y, theta_x, theta_y, lam, t``;
 - :class:`SymbolicField`: closed-form expressions of fields with their parameters;

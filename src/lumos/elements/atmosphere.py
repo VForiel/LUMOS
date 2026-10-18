@@ -153,13 +153,25 @@ class Atmosphere(Element):
     reference_wavelength = Param(
         unit=u.nm, default=500 * u.nm, bounds=(0 * u.m, None), inclusive=(False, True), doc="wavelength of r0"
     )
-    outer_scale = Param(unit=u.m, default=25 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
+    outer_scale = Param(
+        unit=u.m,
+        default=25 * u.m,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="von Kármán outer scale L0",
+    )
     weights = Param(shape=None, default=[1.0], doc="fraction of the turbulence in each layer")
     wind_speed = Param(unit=u.m / u.s, shape=None, default=[10.0] * u.m / u.s, doc="wind speed of each layer")
     wind_direction = Param(
         unit=u.deg, shape=None, default=[0.0] * u.deg, doc="direction of the wind, from +x"
     )
-    pupil_diameter = Param(unit=u.m, default=8 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
+    pupil_diameter = Param(
+        unit=u.m,
+        default=8 * u.m,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="pupil over which the adaptive optics correction acts",
+    )
     corrected_modes = Setting(int, default=0, doc="Noll modes removed by the adaptive optics (0: none)")
     screen_oversize = Setting(int, default=2, doc="screen size in units of the field grid")
     subharmonics = Setting(
@@ -310,7 +322,7 @@ def _gradients(
     return gx, wx, gy, wy
 
 
-def subaperture_centres(values: Values) -> np.ndarray:
+def subaperture_centers(values: Values) -> np.ndarray:
     """Centres of the sub-apertures along one axis, in metres."""
     n = int(values.n_subapertures)
     if n < 1:
@@ -349,7 +361,7 @@ class WavefrontSensor(Element):
         gx, wx, gy, wy = _gradients(channels, lit, grid.dx_si, grid.dy_si)
 
         n = int(values.n_subapertures)
-        centres = subaperture_centres(values)
+        centres = subaperture_centers(values)
         width = values.diameter / n
         x, y = (np.asarray(c, dtype=float) for c in grid.axes(backend="numpy"))
         column = np.floor((x - (centres[0] - width / 2)) / width).astype(int)

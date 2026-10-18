@@ -5,7 +5,7 @@ uncertainties for independent errors (JCGM 100:2008, *GUM*, §5.1):
 
 - :func:`subtract_dark`: :math:`S - D`, :math:`\sigma^2 = \sigma_S^2 + \sigma_D^2`;
 - :func:`flat_field`: :math:`S / F`, :math:`\sigma^2 = (\sigma_S/F)^2 + (S\sigma_F/F^2)^2`, the flat being
-  first divided by its mean (``normalise=True``) so that the mean level is kept;
+  first divided by its mean (``normalize=True``) so that the mean level is kept;
 - :func:`stack`: mean (:math:`\sigma/\sqrt N`), median (:math:`\sqrt{\pi/2}\,\sigma/\sqrt N`, the
   efficiency of the median of normal samples, Kenney & Keeping 1962) or sigma-clipped mean, the clipping
   using the median and the normalised median absolute deviation :math:`1.4826\,\mathrm{MAD}`. Without
@@ -30,7 +30,7 @@ from astropy import units as u
 from lumos.core.element import Element, Values
 from lumos.core.param import Setting
 from lumos.core.port import Input, Output
-from lumos.core.registry import register
+from lumos.core.registry import register, registry
 from lumos.fields.dataproduct import DataProduct
 from lumos.processing.settings import QuantitySetting
 
@@ -74,12 +74,12 @@ def subtract_dark(frame: DataProduct, dark: DataProduct) -> DataProduct:
     return frame - DataProduct(dark.data, axes=frame.axes, mask=dark.mask, uncertainty=dark.uncertainty)
 
 
-def flat_field(frame: DataProduct, flat: DataProduct, *, normalise: bool = True) -> DataProduct:
+def flat_field(frame: DataProduct, flat: DataProduct, *, normalize: bool = True) -> DataProduct:
     """Divide ``frame`` by ``flat`` (normalised to a mean of 1 by default), propagating the uncertainties."""
     f = _values(flat)
     sigma_f = _sigma(flat)
     unit = u.dimensionless_unscaled
-    if normalise:
+    if normalize:
         valid = np.ones(f.shape, bool) if flat.mask is None else ~flat.mask
         level = float(np.mean(f[valid]))
         f = f / level
@@ -302,11 +302,11 @@ class DarkSubtraction(Element):
         return {"out": subtract_dark(inputs["in"], inputs["dark"])}
 
 
-@register("lumos.processing.FlatField")
+@register("lumos.processing.FlatField", version=2)
 class FlatField(Element):
     """Divide the science frame by a flat field (normalised to a mean of 1 by default)."""
 
-    normalise = Setting(bool, default=True, doc="divide the flat by its mean first")
+    normalize = Setting(bool, default=True, doc="divide the flat by its mean first")
     in_ = Input(DataProduct)
     flat = Input(DataProduct)
     out = Output(DataProduct)
@@ -314,14 +314,16 @@ class FlatField(Element):
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
         """Return ``in / flat``."""
-        return {"out": flat_field(inputs["in"], inputs["flat"], normalise=bool(values.normalise))}
+        return {"out": flat_field(inputs["in"], inputs["flat"], normalize=bool(values.normalize))}
 
 
 @register("lumos.processing.Stack")
 class Stack(Element):
     """Combine the frames connected to ``in`` (or the first axis of a single cube)."""
 
-    method = Setting(str, default="mean", choices=("mean", "median", "sigma_clip"))
+    method = Setting(
+        str, default="mean", choices=("mean", "median", "sigma_clip"), doc="'mean', 'median' or 'sigma_clip'"
+    )
     sigma = Setting(float, default=3.0, doc="clipping threshold of sigma_clip")
     in_ = Input(DataProduct, multiple=True)
     out = Output(DataProduct)
@@ -338,7 +340,7 @@ class Stack(Element):
 class Rebin(Element):
     """Sum blocks of ``factor`` × ``factor`` pixels."""
 
-    factor = Setting(int, default=2)
+    factor = Setting(int, default=2, doc="pixels summed per output pixel along each axis")
     in_ = Input(DataProduct)
     out = Output(DataProduct)
 
@@ -359,8 +361,8 @@ def _on_axis(value: u.Quantity, axis: u.Quantity) -> u.Quantity:
 class Crop(Element):
     """Keep ``nx`` × ``ny`` pixels around the pixel nearest to (``x``, ``y``)."""
 
-    nx = Setting(int, default=64)
-    ny = Setting(int, default=64)
+    nx = Setting(int, default=64, doc="pixels kept along x")
+    ny = Setting(int, default=64, doc="pixels kept along y")
     x = QuantitySetting(default=0 * u.pix, doc="centre along x (in a unit of the x axis)")
     y = QuantitySetting(default=0 * u.pix, doc="centre along y (in a unit of the y axis)")
     in_ = Input(DataProduct)
@@ -373,3 +375,11 @@ class Crop(Element):
         y_name, x_name = _image_axes(product)
         cx, cy = _on_axis(values.x, product.axes[x_name]), _on_axis(values.y, product.axes[y_name])
         return {"out": crop(product, center=(cx, cy), size=(int(values.nx), int(values.ny)))}
+
+@registry.add_migration("lumos.processing.FlatField", from_version=1)
+def _rename_normalise(body: dict[str, Any]) -> dict[str, Any]:
+    """Version 2 spells the setting ``normalize`` (ADR-0021, American spelling of the identifiers)."""
+    settings = dict(body.get("settings", {}))
+    if "normalise" in settings:
+        settings["normalize"] = settings.pop("normalise")
+    return {**body, "settings": settings}

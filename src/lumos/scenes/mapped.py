@@ -132,9 +132,27 @@ class MappedComponent(Element):
         unit=u.um, default=1 * u.um, bounds=(0 * u.m, None), inclusive=(False, True), doc="of an image"
     )
     spectrum = Setting(str, default="flat", choices=("flat", "blackbody"), doc="spectral shape of an image")
-    temperature = Param(unit=u.K, default=5772 * u.K, bounds=(0 * u.K, None), inclusive=(False, True))
-    pixel_scale_x = Param(unit=u.mas, default=1 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True))
-    pixel_scale_y = Param(unit=u.mas, default=1 * u.mas, bounds=(0 * u.rad, None), inclusive=(False, True))
+    temperature = Param(
+        unit=u.K,
+        default=5772 * u.K,
+        bounds=(0 * u.K, None),
+        inclusive=(False, True),
+        doc="temperature of the blackbody spectrum",
+    )
+    pixel_scale_x = Param(
+        unit=u.mas,
+        default=1 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="angular pixel size of the map along x",
+    )
+    pixel_scale_y = Param(
+        unit=u.mas,
+        default=1 * u.mas,
+        bounds=(0 * u.rad, None),
+        inclusive=(False, True),
+        doc="angular pixel size of the map along y",
+    )
     x0 = Param(unit=u.mas, default=0 * u.mas, doc="position of the central pixel along x (East)")
     y0 = Param(unit=u.mas, default=0 * u.mas, doc="position of the central pixel along y (North)")
     out = Output(RadianceField)

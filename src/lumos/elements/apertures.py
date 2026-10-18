@@ -89,11 +89,17 @@ def _circular(values: Values, grid: Grid) -> np.ndarray:
 class CircularAperture(Aperture):
     """Circular pupil with an optional central obstruction and radial spider vanes."""
 
-    diameter = Param(unit=u.m, default=1 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
+    diameter = Param(
+        unit=u.m,
+        default=1 * u.m,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="outer diameter of the pupil",
+    )
     obstruction = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="central obstruction diameter")
-    spider_width = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None))
-    spider_rotation = Param(unit=u.deg, default=0 * u.deg)
-    n_spiders = Setting(int, default=0)
+    spider_width = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="width of each spider vane")
+    spider_rotation = Param(unit=u.deg, default=0 * u.deg, doc="angle of the first spider vane, from +x")
+    n_spiders = Setting(int, default=0, doc="number of spider vanes (0: none)")
     supersample = Setting(int, default=4, doc="sub-pixels per pixel side for anti-aliasing")
 
     _mask = staticmethod(_circular)
@@ -130,10 +136,16 @@ def _polygon(values: Values, grid: Grid) -> np.ndarray:
 class PolygonAperture(Aperture):
     """Regular polygon (e.g. a hexagonal segment) inscribed in a circle."""
 
-    circumradius = Param(unit=u.m, default=0.5 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
+    circumradius = Param(
+        unit=u.m,
+        default=0.5 * u.m,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="distance from the centre to a vertex",
+    )
     rotation = Param(unit=u.deg, default=0 * u.deg, doc="angle of a vertex from +x")
-    n_sides = Setting(int, default=6)
-    supersample = Setting(int, default=4)
+    n_sides = Setting(int, default=6, doc="number of sides of the regular polygon")
+    supersample = Setting(int, default=4, doc="sub-pixels per pixel side for the grey edges")
 
     _mask = staticmethod(_polygon)
     transfer = _transfer(_polygon)
@@ -161,16 +173,22 @@ def _segmented(values: Values, grid: Grid) -> np.ndarray:
 class HexSegmentedAperture(Aperture):
     """Primary made of hexagonal segments on a hexagonal lattice, ring by ring around the centre."""
 
-    flat_to_flat = Param(unit=u.m, default=1 * u.m, bounds=(0 * u.m, None), inclusive=(False, True))
-    gap = Param(unit=u.mm, default=5 * u.mm, bounds=(0 * u.m, None))
+    flat_to_flat = Param(
+        unit=u.m,
+        default=1 * u.m,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="flat-to-flat width of one hexagonal segment",
+    )
+    gap = Param(unit=u.mm, default=5 * u.mm, bounds=(0 * u.m, None), doc="gap between neighbouring segments")
     inner_radius = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="0: no inner limit")
     outer_radius = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="0: no outer limit")
-    spider_width = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None))
-    spider_rotation = Param(unit=u.deg, default=0 * u.deg)
-    rings = Setting(int, default=2)
-    missing_center = Setting(bool, default=False)
-    n_spiders = Setting(int, default=0)
-    supersample = Setting(int, default=4)
+    spider_width = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="width of each spider vane")
+    spider_rotation = Param(unit=u.deg, default=0 * u.deg, doc="angle of the first spider vane, from +x")
+    rings = Setting(int, default=2, doc="rings of segments around the centre")
+    missing_center = Setting(bool, default=False, doc="leave out the central segment")
+    n_spiders = Setting(int, default=0, doc="number of spider vanes (0: none)")
+    supersample = Setting(int, default=4, doc="sub-pixels per pixel side for the grey edges")
 
     _mask = staticmethod(_segmented)
     transfer = _transfer(_segmented)
