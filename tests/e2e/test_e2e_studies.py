@@ -27,7 +27,7 @@ def open_preset(page, name):
 
 def test_the_seed_is_set_and_drawn_in_the_inspector(page):
     open_preset(page, "first_simulation")
-    page.locator(".react-flow__pane").click(position={"x": 10, "y": 10})
+    page.locator(".react-flow__pane").click(position={"x": 200, "y": 20})  # away from the pointer buttons
     seed = page.get_by_test_id("seed")
     seed.fill("42")
     seed.press("Enter")
