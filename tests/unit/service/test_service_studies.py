@@ -93,7 +93,7 @@ def test_a_parameter_is_freed_with_a_prior_and_fixed_again(service, session):
     summary = service.describe_context(session, ctx)
     laser = next(e for e in summary.elements if e.id == "laser")
     filt = next(e for e in summary.elements if e.id == "filt")
-    assert laser.free == {"waist": {"kind": "normal", "mean": "1 mm", "std": "50 um"}}
+    assert laser.free == {"waist": {"kind": "normal", "mean": "1 mm", "std": "0.05 mm"}}
     assert filt.free == {"transmission": {"kind": "uniform", "low": "0.2", "high": "0.8"}}
     document = json.loads(service.export_lumos(session, ctx))
     entry = next(e for e in document["elements"] if e["id"] == "filt")
