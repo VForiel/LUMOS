@@ -1,66 +1,178 @@
-// Assistant panel (REQ-WEB-12): a conversation with Claude using the tools of LUMOS on the open context.
+// Assistant panel (REQ-WEB-12): a conversation with a language model using the tools of LUMOS on the open
+// context. The user chooses the provider (Claude, OpenAI, Gemini, OpenRouter or any compatible endpoint) and
+// gives a key, or logs in to OpenRouter.
 
-import { Bot, KeyRound, Loader2, Send, Square, Wrench } from "lucide-react";
+import { Bot, ExternalLink, KeyRound, Loader2, LogIn, Send, Settings2, Square, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Conversation, MODEL, saveKey, savedKey, type Turn } from "../assistant";
+import { Conversation, openRouterLogin, provider, PROVIDERS, ready, saveSettings, savedSettings, type ProviderId, type Settings, type Turn } from "../assistant";
 import { inputClass } from "./Fields";
+
+function SettingsForm({ initial, onDone }: { initial: Settings; onDone: (settings: Settings) => void }) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState<Settings>(initial);
+  const [key, setKey] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState<string | null>(null);
+  const known = provider(draft.provider);
+  const choose = (id: ProviderId) => {
+    setDraft(savedSettings(id));
+    setKey("");
+    setProblem(null);
+  };
+  const apply = (settings: Settings) => {
+    if (!ready(settings)) {
+      setProblem(t(settings.baseUrl ? (settings.model ? "assistant.keyMissing" : "assistant.modelMissing") : "assistant.urlMissing"));
+      return;
+    }
+    saveSettings(settings);
+    onDone(settings);
+  };
+  const login = async () => {
+    setBusy(true);
+    setProblem(null);
+    try {
+      apply({ ...draft, key: await openRouterLogin() });
+    } catch (error) {
+      setProblem(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div data-testid="assistant" className="h-full overflow-y-auto">
+      <form
+        className="mx-auto flex max-w-xl flex-col gap-3 p-4 text-sm"
+        onSubmit={(event) => {
+          event.preventDefault();
+          apply({ ...draft, key: key.trim() || draft.key });
+        }}
+      >
+        <p className="flex items-center gap-2 font-semibold">
+          <KeyRound className="size-4 text-accent-500" />
+          {t("assistant.settingsTitle")}
+        </p>
+        <p className="text-slate-600 dark:text-slate-400">{t("assistant.settingsHint")}</p>
+        <div className="grid grid-cols-[7rem_1fr] items-center gap-2">
+          <label htmlFor="assistant-provider" className="text-slate-600 dark:text-slate-300">
+            {t("assistant.provider")}
+          </label>
+          <select id="assistant-provider" data-testid="assistant-provider" className={inputClass} value={draft.provider} onChange={(e) => choose(e.target.value as ProviderId)}>
+            {PROVIDERS.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.id === "custom" ? t("assistant.custom") : p.label}
+              </option>
+            ))}
+          </select>
+          {draft.provider === "custom" && (
+            <>
+              <label htmlFor="assistant-base-url" className="text-slate-600 dark:text-slate-300">
+                {t("assistant.baseUrl")}
+              </label>
+              <input
+                id="assistant-base-url"
+                data-testid="assistant-base-url"
+                className={inputClass}
+                placeholder="http://localhost:11434/v1"
+                value={draft.baseUrl}
+                onChange={(e) => setDraft({ ...draft, baseUrl: e.target.value.trim() })}
+              />
+            </>
+          )}
+          <label htmlFor="assistant-model" className="text-slate-600 dark:text-slate-300">
+            {t("assistant.model")}
+          </label>
+          <input id="assistant-model" data-testid="assistant-model" className={inputClass} value={draft.model} onChange={(e) => setDraft({ ...draft, model: e.target.value.trim() })} />
+          <label htmlFor="assistant-key" className="text-slate-600 dark:text-slate-300">
+            {t(known.keyRequired ? "assistant.key" : "assistant.keyOptional")}
+          </label>
+          <input
+            id="assistant-key"
+            data-testid="assistant-key"
+            type="password"
+            autoComplete="off"
+            placeholder={draft.key ? t("assistant.keyKept") : known.keyPlaceholder}
+            className={inputClass}
+            value={key}
+            onChange={(e) => setKey(e.target.value)}
+          />
+        </div>
+        {known.keysUrl && (
+          <a href={known.keysUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 self-start text-xs text-accent-600 hover:underline dark:text-accent-300">
+            <ExternalLink className="size-3" />
+            {t("assistant.getKey", { provider: known.label })}
+          </a>
+        )}
+        <p className="text-xs text-slate-500 dark:text-slate-400">{t(`assistant.about.${draft.provider}`)}</p>
+        {problem && <p className="text-xs text-red-600 dark:text-red-400">{problem}</p>}
+        <div className="flex flex-wrap justify-end gap-2">
+          {draft.provider === "openrouter" && (
+            <button
+              type="button"
+              data-testid="assistant-openrouter-login"
+              disabled={busy}
+              onClick={() => void login()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 font-medium hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-800"
+            >
+              {busy ? <Loader2 className="size-4 animate-spin" /> : <LogIn className="size-4" />}
+              {t("assistant.openrouterLogin")}
+            </button>
+          )}
+          <button type="submit" data-testid="assistant-key-save" className="rounded-lg bg-accent-600 px-3 py-1.5 font-medium text-white hover:bg-accent-700">
+            {t("common.apply")}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
 
 export function AssistantPanel() {
   const { t } = useTranslation();
-  const [key, setKey] = useState<string | null>(savedKey());
-  const [draftKey, setDraftKey] = useState("");
+  const [settings, setSettings] = useState<Settings>(savedSettings());
+  const [editing, setEditing] = useState(!ready(settings));
   const [turns, setTurns] = useState<Turn[]>([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const conversation = useRef<Conversation | null>(null);
   const end = useRef<HTMLDivElement>(null);
 
-  if (!conversation.current) {
+  const restart = () => {
     conversation.current = new Conversation((turn, replace) =>
       setTurns((previous) => (replace && previous.length ? [...previous.slice(0, -1), turn] : [...previous, turn])),
     );
-  }
+  };
+  if (!conversation.current) restart();
   useEffect(() => {
     end.current?.scrollIntoView({ block: "end" });
   }, [turns.length, busy]);
 
   const send = async () => {
     const message = text.trim();
-    if (!message || !key || busy) return;
+    if (!message || busy) return;
     setText("");
     setBusy(true);
     try {
-      await conversation.current!.send(message, key);
+      await conversation.current!.send(message, settings);
     } finally {
       setBusy(false);
     }
   };
 
-  if (!key) {
+  if (editing) {
     return (
-      <div data-testid="assistant" className="mx-auto flex h-full max-w-xl flex-col justify-center gap-3 p-4 text-sm">
-        <p className="flex items-center gap-2 font-semibold">
-          <KeyRound className="size-4 text-accent-500" />
-          {t("assistant.keyTitle")}
-        </p>
-        <p className="text-slate-600 dark:text-slate-400">{t("assistant.keyHint")}</p>
-        <form
-          className="flex gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (!draftKey.trim()) return;
-            saveKey(draftKey.trim());
-            setKey(draftKey.trim());
-            setDraftKey("");
-          }}
-        >
-          <input data-testid="assistant-key" type="password" autoComplete="off" placeholder="sk-ant-…" className={inputClass} value={draftKey} onChange={(e) => setDraftKey(e.target.value)} />
-          <button type="submit" data-testid="assistant-key-save" className="rounded-lg bg-accent-600 px-3 text-white hover:bg-accent-700">
-            {t("common.apply")}
-          </button>
-        </form>
-      </div>
+      <SettingsForm
+        initial={settings}
+        onDone={(chosen) => {
+          if (chosen.provider !== settings.provider || chosen.model !== settings.model || chosen.baseUrl !== settings.baseUrl) {
+            restart(); // another model: a new conversation
+            setTurns([]);
+          }
+          setSettings(chosen);
+          setEditing(false);
+        }}
+      />
     );
   }
 
@@ -134,19 +246,27 @@ export function AssistantPanel() {
           </button>
         )}
       </div>
-      <p className="flex justify-between px-3 pb-1 text-[10px] text-slate-400">
-        <span>{t("assistant.footer", { model: MODEL })}</span>
-        <button
-          type="button"
-          data-testid="assistant-key-forget"
-          onClick={() => {
-            saveKey(null);
-            setKey(null);
-          }}
-          className="underline hover:text-slate-600"
-        >
-          {t("assistant.forget")}
-        </button>
+      <p className="flex items-center justify-between gap-2 px-3 pb-1 text-[10px] text-slate-400">
+        <span className="truncate">{t("assistant.footer", { model: `${provider(settings.provider).id === "custom" ? settings.baseUrl : provider(settings.provider).label} · ${settings.model}` })}</span>
+        <span className="flex shrink-0 gap-3">
+          <button type="button" data-testid="assistant-settings" onClick={() => setEditing(true)} className="inline-flex items-center gap-1 underline hover:text-slate-600">
+            <Settings2 className="size-3" />
+            {t("assistant.change")}
+          </button>
+          <button
+            type="button"
+            data-testid="assistant-key-forget"
+            onClick={() => {
+              const forgotten = { ...settings, key: null };
+              saveSettings(forgotten);
+              setSettings(forgotten);
+              setEditing(true);
+            }}
+            className="underline hover:text-slate-600"
+          >
+            {t("assistant.forget")}
+          </button>
+        </span>
       </p>
     </div>
   );

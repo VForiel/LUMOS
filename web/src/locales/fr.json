@@ -326,7 +326,33 @@
     "stopped": "Arrêté.",
     "badKey": "La clé API a été refusée : vérifiez-la, ou oubliez-la et donnez-en une autre.",
     "confirmTitle": "L'assistant demande une confirmation",
-    "decline": "Refuser"
+    "decline": "Refuser",
+    "settingsTitle": "Modèle de l'assistant",
+    "settingsHint": "L'assistant est un modèle de langage de votre choix, appelé depuis votre navigateur avec votre propre compte. Votre clé reste dans cet onglet et ne va qu'à son fournisseur, jamais au serveur LUMOS ; les requêtes sont facturées sur votre compte.",
+    "provider": "Fournisseur",
+    "custom": "Autre (point d'accès compatible OpenAI)",
+    "baseUrl": "Point d'accès",
+    "model": "Modèle",
+    "key": "Clé d'API",
+    "keyOptional": "Clé d'API (facultative)",
+    "keyKept": "gardée dans cet onglet : laisser vide pour la garder",
+    "getKey": "Obtenir une clé chez {{provider}}",
+    "openrouterLogin": "Se connecter avec OpenRouter",
+    "keyMissing": "Donnez une clé d'API, ou connectez-vous.",
+    "modelMissing": "Donnez le nom d'un modèle.",
+    "urlMissing": "Donnez l'adresse du point d'accès (…/v1).",
+    "popupBlocked": "La fenêtre de connexion a été bloquée : autorisez les fenêtres surgissantes pour ce site.",
+    "loginCancelled": "La connexion a été annulée.",
+    "loginFailed": "La connexion a échoué : réessayez.",
+    "figureShown": "une figure est montrée à l'utilisateur",
+    "change": "Changer de modèle",
+    "about": {
+      "anthropic": "Claude avec une clé d'API de la console Anthropic. Un abonnement Claude.ai ne peut pas être utilisé par d'autres applications : pour vous en servir, ajoutez plutôt LUMOS à Claude comme connecteur MCP (voir la documentation).",
+      "openai": "Modèles d'OpenAI avec une clé d'API de la plateforme OpenAI (un abonnement ChatGPT ne donne pas accès à l'API).",
+      "gemini": "Gemini avec une clé de Google AI Studio (offre gratuite disponible), par son point d'accès compatible OpenAI.",
+      "openrouter": "Connectez-vous avec votre compte OpenRouter (aucune clé à copier : OpenRouter en crée une pour LUMOS, avec vos crédits et vos limites), ou collez une clé. OpenRouter donne accès aux modèles de la plupart des fournisseurs, dont Claude, GPT et Gemini.",
+      "custom": "Tout point d'accès de l'API chat completions d'OpenAI avec outils : Mistral, Groq, DeepSeek, ou un modèle sur votre machine avec Ollama (http://localhost:11434/v1), LM Studio ou vLLM. Le point d'accès doit accepter les requêtes de cette page (CORS)."
+    }
   },
   "panels": {
     "resize": "Glisser pour redimensionner le panneau"

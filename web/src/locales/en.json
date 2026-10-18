@@ -326,7 +326,33 @@
     "stopped": "Stopped.",
     "badKey": "The API key was refused: check it, or forget it and give another one.",
     "confirmTitle": "The assistant asks for a confirmation",
-    "decline": "Refuse"
+    "decline": "Refuse",
+    "settingsTitle": "Assistant model",
+    "settingsHint": "The assistant is a language model of your choice, called from your browser with your own account. Your key stays in this tab and goes to its provider only, never to the LUMOS server; requests are billed to your account.",
+    "provider": "Provider",
+    "custom": "Other (OpenAI-compatible endpoint)",
+    "baseUrl": "Endpoint",
+    "model": "Model",
+    "key": "API key",
+    "keyOptional": "API key (optional)",
+    "keyKept": "kept in this tab: leave empty to keep it",
+    "getKey": "Get a key on {{provider}}",
+    "openrouterLogin": "Log in with OpenRouter",
+    "keyMissing": "Give an API key, or log in.",
+    "modelMissing": "Give the name of a model.",
+    "urlMissing": "Give the address of the endpoint (…/v1).",
+    "popupBlocked": "The login window was blocked: allow popups for this site.",
+    "loginCancelled": "The login was cancelled.",
+    "loginFailed": "The login failed: try again.",
+    "figureShown": "a figure is shown to the user",
+    "change": "Change the model",
+    "about": {
+      "anthropic": "Claude with an API key of the Anthropic console. A Claude.ai subscription cannot be used by other applications: to use it, add LUMOS to Claude as an MCP connector instead (see the documentation).",
+      "openai": "OpenAI models with an API key of the OpenAI platform (a ChatGPT subscription does not give API access).",
+      "gemini": "Gemini with a key of Google AI Studio (free tier available), through its OpenAI-compatible endpoint.",
+      "openrouter": "Log in with your OpenRouter account (no key to copy: OpenRouter creates one for LUMOS, with your credits and limits), or paste a key. OpenRouter gives access to the models of most providers, Claude, GPT and Gemini included.",
+      "custom": "Any endpoint of the OpenAI chat completions API with tools: Mistral, Groq, DeepSeek, or a model on your machine with Ollama (http://localhost:11434/v1), LM Studio or vLLM. The endpoint must accept requests from this page (CORS)."
+    }
   },
   "panels": {
     "resize": "Drag to resize the panel"
