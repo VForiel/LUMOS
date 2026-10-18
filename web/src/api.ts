@@ -199,6 +199,9 @@ export const api = {
   study: (id: string, body: StudyRequest) => request<JobInfo>("POST", `${ctx(id)}/studies`, body),
   loop: (id: string, body: LoopRequest) =>
     request<JobInfo>("POST", `${ctx(id)}/loops`, { steps: body.steps, period: body.period, outputs: body.outputs }),
+  assistantLink: () => request<{ url: string | null }>("GET", "/api/assistant/link"),
+  createAssistantLink: () => request<{ url: string | null }>("POST", "/api/assistant/link"),
+  revokeAssistantLink: () => request<void>("DELETE", "/api/assistant/link"),
   addFeedback: (id: string, source: string, target: string, mode: string) =>
     request<ContextSummary>("POST", `${ctx(id)}/feedbacks`, { source, target, mode }),
   removeFeedback: (id: string, source: string, target: string) =>

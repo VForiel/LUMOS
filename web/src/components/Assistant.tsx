@@ -6,6 +6,7 @@ import { Bot, ExternalLink, KeyRound, Loader2, LogIn, Send, Settings2, Square, W
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Conversation, openRouterLogin, provider, PROVIDERS, ready, saveSettings, savedSettings, type ProviderId, type Settings, type Turn } from "../assistant";
+import { ConnectorLink } from "./Connector";
 import { inputClass } from "./Fields";
 
 function SettingsForm({ initial, onDone }: { initial: Settings; onDone: (settings: Settings) => void }) {
@@ -124,6 +125,9 @@ function SettingsForm({ initial, onDone }: { initial: Settings; onDone: (setting
           </button>
         </div>
       </form>
+      <div className="mx-auto max-w-xl px-4 pb-4 text-sm">
+        <ConnectorLink />
+      </div>
     </div>
   );
 }

@@ -436,5 +436,17 @@
     "add": "Close the loop",
     "remove": "Remove this feedback",
     "title": "{{source}} drives {{target}} at the next step ({{mode}})"
+  },
+  "connector": {
+    "title": "Use your Claude or ChatGPT subscription",
+    "hint": "Claude and ChatGPT accept LUMOS as a connector: their assistant then works on the contexts of this tab, and you see its edits here, without an API key (Claude Pro, Max, Team or Enterprise; ChatGPT Plus or Pro in developer mode).",
+    "create": "Create a connector link",
+    "copy": "Copy the link",
+    "revoke": "Revoke the link",
+    "secret": "Anyone with this link works in your session: keep it private, revoke it when you are done. It ends with your session.",
+    "local": "This instance runs on your machine: Claude.ai and ChatGPT cannot reach it. Local clients (Claude Code, Claude Desktop) can, and so can every client on a public instance.",
+    "claude": "Claude: Settings › Connectors › Add custom connector, paste the link, then enable LUMOS in the conversation.",
+    "chatgpt": "ChatGPT: Settings › Apps & Connectors › Advanced settings › Developer mode, then Create, paste the link, no authentication.",
+    "code": "Claude Code:"
   }
 }

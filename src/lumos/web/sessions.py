@@ -35,6 +35,8 @@ class WebSession:
         Authenticated user and their role; ``None`` for an anonymous visitor.
     created, last_seen, authenticated
         Monotonic times of creation, of the last request and of the login.
+    link
+        Secret of the connector link of the session (``/mcp/<link>``), or ``None``.
     """
 
     token: str
@@ -44,6 +46,7 @@ class WebSession:
     created: float = field(default_factory=time.monotonic)
     last_seen: float = field(default_factory=time.monotonic)
     authenticated: float | None = None
+    link: str | None = None
 
 
 class WebSessions:
@@ -66,6 +69,7 @@ class WebSessions:
         self.idle_seconds = idle_seconds
         self.lifetime_seconds = lifetime_seconds
         self._sessions: dict[str, WebSession] = {}
+        self._links: dict[str, str] = {}  # secret of a connector link -> token of its session
         self._lock = threading.Lock()
 
     def get(self, token: str | None) -> WebSession | None:
@@ -78,6 +82,31 @@ class WebSessions:
             if session is not None:
                 session.last_seen = time.monotonic()
             return session
+
+    def by_link(self, link: str | None) -> WebSession | None:
+        """Return the live session of a connector link (and mark it as used), or ``None``."""
+        self.expire()
+        if not link:
+            return None
+        with self._lock:
+            token = self._links.get(link)
+        return self.get(token)
+
+    def create_link(self, session: WebSession) -> str:
+        """Give ``session`` a new connector link (the previous one stops working); return its secret."""
+        with self._lock:
+            if session.link is not None:
+                self._links.pop(session.link, None)
+            session.link = secrets.token_urlsafe(32)
+            self._links[session.link] = session.token
+            return session.link
+
+    def revoke_link(self, session: WebSession) -> None:
+        """Remove the connector link of ``session``."""
+        with self._lock:
+            if session.link is not None:
+                self._links.pop(session.link, None)
+            session.link = None
 
     def open(self) -> WebSession:
         """Open a new anonymous session."""
@@ -96,16 +125,21 @@ class WebSessions:
             user=user,
             role=role,
             authenticated=time.monotonic(),
+            link=session.link,
         )
         with self._lock:
             self._sessions.pop(session.token, None)
             self._sessions[renewed.token] = renewed
+            if renewed.link is not None:
+                self._links[renewed.link] = renewed.token
         return renewed
 
     def close(self, token: str) -> None:
         """Close a session and its service session."""
         with self._lock:
             session = self._sessions.pop(token, None)
+            if session is not None and session.link is not None:
+                self._links.pop(session.link, None)
         if session is not None:
             with contextlib.suppress(ServiceError):  # already closed by the service
                 self.service.close_session(session.service_session)

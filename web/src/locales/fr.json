@@ -436,5 +436,17 @@
     "add": "Fermer la boucle",
     "remove": "Supprimer cette rétroaction",
     "title": "{{source}} pilote {{target}} au pas suivant ({{mode}})"
+  },
+  "connector": {
+    "title": "Utiliser votre abonnement Claude ou ChatGPT",
+    "hint": "Claude et ChatGPT acceptent LUMOS comme connecteur : leur assistant travaille alors sur les contextes de cet onglet et vous voyez ses modifications ici, sans clé d'API (Claude Pro, Max, Team ou Enterprise ; ChatGPT Plus ou Pro en mode développeur).",
+    "create": "Créer un lien de connecteur",
+    "copy": "Copier le lien",
+    "revoke": "Révoquer le lien",
+    "secret": "Quiconque a ce lien travaille dans votre session : gardez-le privé et révoquez-le quand vous avez fini. Il expire avec votre session.",
+    "local": "Cette instance tourne sur votre machine : Claude.ai et ChatGPT ne peuvent pas l'atteindre. Les clients locaux (Claude Code, Claude Desktop) le peuvent, comme tous les clients d'une instance publique.",
+    "claude": "Claude : Paramètres › Connecteurs › Ajouter un connecteur personnalisé, collez le lien, puis activez LUMOS dans la conversation.",
+    "chatgpt": "ChatGPT : Paramètres › Applications et connecteurs › Paramètres avancés › Mode développeur, puis Créer, collez le lien, sans authentification.",
+    "code": "Claude Code :"
   }
 }

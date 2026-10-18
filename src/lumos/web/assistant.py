@@ -82,7 +82,17 @@ class McpGateway:
         if not self.enabled:
             await self._refuse(scope, receive, send, 404, "the assistant is turned off on this instance", "")
             return
-        session = self.sessions.get(_bearer(connection) or connection.cookies.get(COOKIE))
+        link = scope.get("path_params", {}).get("link")
+        if link is not None:
+            # a connector link (/mcp/<secret>): the secret is the credential of the session
+            session = self.sessions.by_link(link)
+            if session is None:
+                hint = "create a new connector link in the assistant panel of the interface"
+                await self._refuse(scope, receive, send, 404, "unknown or revoked connector link", hint)
+                return
+            scope = {**scope, "path": PATH, "raw_path": PATH.encode()}
+        else:
+            session = self.sessions.get(_bearer(connection) or connection.cookies.get(COOKIE))
         role = self.role_of(session) if session is not None else self.anonymous_role
         if role is not None and not role_allows(role, "simulator"):
             hint = "this needs the role simulator"

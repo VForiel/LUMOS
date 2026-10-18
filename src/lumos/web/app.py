@@ -502,7 +502,10 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         anonymous_role=config.anonymous_role,
         enabled=config.assistant,
     )
-    app.router.routes.insert(0, Route(PATH, endpoint=gateway, methods=["GET", "POST", "DELETE"]))
+    methods = ["GET", "POST", "DELETE"]
+    app.router.routes.insert(0, Route(PATH, endpoint=gateway, methods=methods))
+    # connector links: /mcp/<secret>
+    app.router.routes.insert(1, Route(f"{PATH}/{{link}}", endpoint=gateway, methods=methods))
 
     # --- Sessions, limits and errors -------------------------------------------------------------------
 
@@ -728,6 +731,41 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         response = Response(status_code=204)
         response.delete_cookie(COOKIE, path="/")
         return response
+
+    # --- Connector links (P14.15) ---------------------------------------------------------------------
+
+    def link_url(request: Request, link: str | None) -> str | None:
+        if link is None:
+            return None
+        scheme = "https" if secure(request) else "http"
+        return f"{scheme}://{request.url.netloc}{PATH}/{link}"
+
+    def assistant_on() -> None:
+        if not config.assistant:
+            raise ServiceError(
+                "the assistant is turned off on this instance", hint="ask its administrator", code="not_found"
+            )
+
+    @app.get("/api/assistant/link", dependencies=[simulator])
+    def get_link(request: Request) -> dict[str, str | None]:
+        assistant_on()
+        session: WebSession = request.state.web_session
+        return {"url": link_url(request, session.link)}
+
+    @app.post("/api/assistant/link", dependencies=[simulator])
+    def create_link(request: Request) -> dict[str, str | None]:
+        """Create the connector link of the session: its MCP server at a secret URL, for Claude or ChatGPT."""
+        assistant_on()
+        session: WebSession = request.state.web_session
+        link = sessions.create_link(session)
+        audit.record("connector-link", "success", ip=address(request), user=session.user)
+        return {"url": link_url(request, link)}
+
+    @app.delete("/api/assistant/link", status_code=204, dependencies=[simulator])
+    def revoke_link(request: Request) -> Response:
+        session: WebSession = request.state.web_session
+        sessions.revoke_link(session)
+        return Response(status_code=204)
 
     # --- Contexts --------------------------------------------------------------------------------------
 
