@@ -136,3 +136,10 @@ def test_units_of_sampled_quantities_are_kept():
     points = ctx.sample(3, outputs=["src.out"])
     assert all(1e-3 <= p.outputs["src.out"].value <= 2e-3 for p in points)
     assert all(p.params["src.power"].unit.is_equivalent(u.W) for p in points)
+
+
+def test_a_drawn_seed_survives_json_and_the_web_interface():
+    # JavaScript numbers hold integers exactly up to 2**53 (ECMAScript, Number.MAX_SAFE_INTEGER)
+    seeds = {Context().seed for _ in range(20)}
+    assert all(0 <= seed < 2**32 for seed in seeds)
+    assert len(seeds) > 1
