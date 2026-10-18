@@ -51,6 +51,8 @@ REFERENCE = pathlib.Path(__file__).resolve().parents[2] / "docs" / "api" / "inde
 
 def test_every_element_type_is_documented_with_a_stable_identifier():
     for type_id in registry:
+        if not type_id.startswith("lumos."):
+            continue  # types registered by plugins and by other tests
         cls = registry.get(type_id)
         family, name = type_id.split(".")[1:]
         assert type_id == f"lumos.{family}.{name}", type_id
