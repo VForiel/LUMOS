@@ -7,8 +7,8 @@ Requirements:
 - an edit marks the context as not saved (indicator next to its name); replacing the context (new context,
   file, preset) asks to confirm the loss of the changes, and so does closing the page; saving clears the mark;
 - a link is removed on its own, its blocks stay;
-- the palette (left), the inspector (right) and the bottom panel are resized by dragging their edge, hidden and
-  shown again; their sizes are kept by the browser.
+- the palette (left), the inspector (right) and the bottom panel are resized by dragging their edge, hidden
+  and shown again; their sizes are kept by the browser.
 """
 
 import pytest
@@ -177,7 +177,11 @@ def test_the_side_and_bottom_panels_are_resized_hidden_and_remembered(editor):
     palette = editor.get_by_test_id("palette")
     inspector = editor.get_by_test_id("inspector")
     start = width(palette)
-    drag(editor, centre(editor.get_by_test_id("resize-palette")), (centre(editor.get_by_test_id("resize-palette"))[0] + 100, 400))
+    drag(
+        editor,
+        centre(editor.get_by_test_id("resize-palette")),
+        (centre(editor.get_by_test_id("resize-palette"))[0] + 100, 400),
+    )
     assert width(palette) == pytest.approx(start + 100, abs=4)
 
     start_inspector = width(inspector)
