@@ -209,6 +209,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   the interaction matrix of its mirror); service `add_feedback`, `remove_feedback`, `run_loop`, HTTP routes and
   MCP tools; in the editor, feedback curves, the feedback section of the inspector and loops in the study
   dialog; preset *Adaptive optics loop*.
+- Assistant providers (P14.15): Claude, OpenAI, Google Gemini, OpenRouter (key or login with OAuth PKCE) and any
+  OpenAI-compatible endpoint (tool loop of the chat completions API); connector links (`/mcp/<secret>`,
+  `/api/assistant/link`) to use a Claude or ChatGPT subscription by adding LUMOS as a connector.
 
 ### Changed
 
