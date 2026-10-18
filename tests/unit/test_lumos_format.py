@@ -52,7 +52,7 @@ def json_round_trip(document):
 
 def test_document_envelope(reg):
     document = to_document(Lens(name="L1"), registry=reg)
-    assert document["lumos_format"] == "1.0"
+    assert document["lumos_format"] == "1.1"  # ADR-0020: feedbacks of contexts
     assert document["kind"] == "element"
     assert document["lumos_version"] == lumos.__version__
     created = datetime.fromisoformat(document["created_at"])
