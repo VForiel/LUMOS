@@ -310,7 +310,14 @@ export const useStore = create<State & Actions>((set, get) => {
     },
 
     async restore() {
-      const store = storage();
+      // `?welcome` in the URL simulates a first visit: the saved study is not restored
+      const url = new URL(window.location.href);
+      const fresh = url.searchParams.has("welcome");
+      if (fresh) {
+        url.searchParams.delete("welcome");
+        window.history.replaceState(null, "", url);
+      }
+      const store = fresh ? null : storage();
       const id = store?.getItem(CONTEXT_KEY);
       const dirty = store?.getItem(DIRTY_KEY) === "1";
       if (id) {

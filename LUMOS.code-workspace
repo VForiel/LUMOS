@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"name": "LUMOS",
+			"path": "."
+		},
+		{
+			"name": "HELIOS",
+			"path": "../HELIOS"
+		},
+		{
+			"name": "PHISE",
+			"path": "../PHISE"
+		},
+		{
+			"name": "PhD-Theory",
+			"path": "../PhD-Theory"
+		},
+		{
+			"name": "PhD-Publications",
+			"path": "../PhD-Publications"
+		},
+		{
+			"name": "PHOBOS",
+			"path": "../PHOBOS"
+		}
+	]
+}
