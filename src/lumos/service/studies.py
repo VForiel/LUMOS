@@ -12,7 +12,7 @@ import csv
 import io
 import math
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -137,7 +137,7 @@ def prior_summary(prior: Prior | None, unit: Any) -> dict[str, str] | None:
 
 def _number(text: str) -> tuple[float, str]:
     quantity = u.Quantity(text)
-    return float(quantity.value), u.Unit(quantity.unit).to_string()
+    return float(quantity.value), cast(u.UnitBase, quantity.unit).to_string()
 
 
 def study_table(study: StudyResult) -> str:
