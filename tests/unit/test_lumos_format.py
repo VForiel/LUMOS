@@ -156,7 +156,7 @@ def test_missing_envelope_keys(reg, key):
         from_document(document, registry=reg)
 
 
-@pytest.mark.parametrize("version", ["2.0", "1.1", "one"])
+@pytest.mark.parametrize("version", ["2.0", "1.2", "one"])  # 1.1 is read since ADR-0020
 def test_unsupported_format_versions(reg, version):
     document = valid_document(reg)
     document["lumos_format"] = version
