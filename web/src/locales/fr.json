@@ -27,7 +27,9 @@
     "system": "du système"
   },
   "context": {
-    "untitled": "Contexte sans titre"
+    "untitled": "Contexte sans titre",
+    "unsaved": "Modifications non sauvegardées : sauvegardez le contexte (Ctrl+S) pour les garder",
+    "unsavedShort": "Non sauvegardé"
   },
   "palette": {
     "title": "Éléments",
@@ -37,7 +39,9 @@
     "blocks": "Mes blocs",
     "importBlock": "Insérer un bloc depuis un fichier .lumos",
     "blocksHint": "Enregistrez un groupe comme bloc pour le réutiliser ici.",
-    "forgetBlock": "Retirer de mes blocs"
+    "forgetBlock": "Retirer de mes blocs",
+    "show": "Afficher les éléments",
+    "hide": "Masquer les éléments"
   },
   "categories": {
     "sources": "Sources",
@@ -57,7 +61,11 @@
   },
   "canvas": {
     "empty": "Partez d'un préréglage, ou ajoutez des éléments",
-    "hint": "Glissez des éléments depuis la palette, puis reliez une sortie (côté droit d'un bloc) à une entrée (côté gauche)."
+    "hint": "Glissez des éléments depuis la palette, puis reliez une sortie (côté droit d'un bloc) à une entrée (côté gauche).",
+    "pointer": "Mode de pointage",
+    "pointerPan": "Déplacer la vue en glissant",
+    "pointerSelect": "Sélectionner une zone en glissant",
+    "removeLink": "Supprimer ce lien (les blocs restent)"
   },
   "node": {
     "problems_one": "{{count}} problème",
@@ -114,7 +122,7 @@
     "selected_one": "{{count}} élément sélectionné",
     "selected_other": "{{count}} éléments sélectionnés",
     "groupSelection": "Grouper",
-    "selectionHint": "Maj+clic ajoute à la sélection ; Maj+glisser sélectionne une zone."
+    "selectionHint": "Maj+clic ajoute à la sélection ; Maj+glisser, ou glisser en mode sélection (V), sélectionne une zone."
   },
   "mode": {
     "simulation": "simulation",
@@ -132,6 +140,12 @@
       "copy": "Copier",
       "copied": "Copié",
       "download": "Télécharger le .py"
+    },
+    "discard": {
+      "title": "Modifications non sauvegardées",
+      "text": "« {{name}} » a des modifications non sauvegardées. Elles seront perdues si vous continuez.",
+      "discard": "Abandonner",
+      "save": "Sauvegarder d'abord"
     }
   },
   "shortcuts": {
@@ -149,7 +163,9 @@
     "run": "Lancer le calcul",
     "fit": "Ajuster la vue",
     "box": "Sélectionner une zone",
-    "help": "Afficher ces raccourcis"
+    "help": "Afficher ces raccourcis",
+    "pointer": "Glisser sur le canevas : déplacer la vue (H) ou sélectionner une zone (V)",
+    "pan": "Déplacer la vue, quel que soit le mode de pointage"
   },
   "quickAdd": {
     "placeholder": "Élément à ajouter… (par ex. thin lens, camera)",
@@ -303,5 +319,8 @@
     "badKey": "La clé API a été refusée : vérifiez-la, ou oubliez-la et donnez-en une autre.",
     "confirmTitle": "L'assistant demande une confirmation",
     "decline": "Refuser"
+  },
+  "panels": {
+    "resize": "Glisser pour redimensionner le panneau"
   }
 }

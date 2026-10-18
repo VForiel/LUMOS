@@ -36,12 +36,7 @@ export async function startTour(): Promise<void> {
   const store = useStore.getState();
   store.setDialog(null);
   if (!store.context || !store.context.name.toLowerCase().includes("first")) {
-    try {
-      await store.open(await api.loadPreset(PRESET));
-    } catch (error) {
-      store.fail(error);
-      return;
-    }
+    if (!(await store.replace(() => api.loadPreset(PRESET)))) return;
   }
   await waitFor(() => document.querySelector(".react-flow__node") !== null, 10_000);
   const firstNode = () => document.querySelector<HTMLElement>(".react-flow__node");

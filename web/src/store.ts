@@ -28,7 +28,13 @@ export type Dialog =
   | { kind: "presets" }
   | { kind: "login" }
   | { kind: "confirm-action"; element: string; action: string; device: string; onConfirm: () => void }
-  | { kind: "elicit"; message: string; answer: (accepted: boolean) => void };
+  | { kind: "elicit"; message: string; answer: (accepted: boolean) => void }
+  | { kind: "discard"; answer: (choice: "save" | "discard" | "cancel") => void };
+export type Pointer = "pan" | "select";
+/** Sizes (pixels) and visibility of the panels around the canvas, kept by the browser. */
+export type Layout = { palette: number; inspector: number; bottom: number; paletteOpen: boolean; inspectorOpen: boolean };
+export const LAYOUT_LIMITS = { palette: [180, 520], inspector: [240, 640], bottom: [120, 720] } as const;
+const DEFAULT_LAYOUT: Layout = { palette: 256, inspector: 320, bottom: 280, paletteOpen: true, inspectorOpen: true };
 
 /** Run an action of an element; on equipment, only after the user confirmed it in a dialog. */
 export async function runAction(element: string, action: string, args: unknown[]): Promise<void> {
@@ -77,6 +83,10 @@ type State = {
   ready: boolean;
   /** First visit: the empty canvas welcomes with the presets and the tour. */
   welcome: boolean;
+  /** The context changed since it was opened or saved. */
+  dirty: boolean;
+  pointer: Pointer;
+  layout: Layout;
 };
 
 type Actions = {
@@ -115,6 +125,12 @@ type Actions = {
   setBottom: (tab: BottomTab | null) => void;
   setDialog: (dialog: Dialog | null) => void;
   setQuickAdd: (quickAdd: QuickAdd | null) => void;
+  /** Ask before replacing a context with unsaved changes; true when it may be replaced. */
+  confirmDiscard: () => Promise<boolean>;
+  /** Open a context in place of the current one, once the user accepted to lose its unsaved changes. */
+  replace: (load: () => Promise<ContextSummary>) => Promise<boolean>;
+  setPointer: (pointer: Pointer) => void;
+  setLayout: (change: Partial<Layout>) => void;
   /** Ask the user to confirm what the assistant wants to do (MCP elicitation). */
   ask: (message: string) => Promise<boolean>;
   run: () => Promise<void>;
@@ -129,6 +145,9 @@ const CONTEXT_KEY = "lumos.context";
 const DOCUMENT_KEY = "lumos.document";
 const CLIPBOARD_KEY = "lumos.clipboard";
 const BLOCKS_KEY = "lumos.blocks";
+const DIRTY_KEY = "lumos.dirty";
+const LAYOUT_KEY = "lumos.layout";
+const POINTER_KEY = "lumos.pointer";
 
 /** Kinds of signals drawn as figures by the server. */
 export const FIGURE_KINDS = ["Wavefront", "Wavecube", "IncoherentBundle", "DataProduct"];
@@ -151,6 +170,19 @@ function readBlocks(): Block[] {
   } catch {
     return [];
   }
+}
+
+function readLayout(): Layout {
+  try {
+    const saved = JSON.parse(storage()?.getItem(LAYOUT_KEY) ?? "{}") as Partial<Layout>;
+    return { ...DEFAULT_LAYOUT, ...saved };
+  } catch {
+    return DEFAULT_LAYOUT;
+  }
+}
+
+function clamp(value: number, [low, high]: readonly [number, number]): number {
+  return Math.round(Math.min(high, Math.max(low, value)));
 }
 
 /** Keep a copy of the open context in the browser, to restore it after a restart of the server. */
@@ -183,12 +215,24 @@ export function placed(summary: ContextSummary): Record<string, [number, number]
 const isEditable = (info: Info | null) => info?.role !== "viewer" && info?.role !== null;
 
 export const useStore = create<State & Actions>((set, get) => {
+  /** Mark the open context as changed since it was opened or saved. */
+  function changed(): void {
+    if (!get().dirty) storage()?.setItem(DIRTY_KEY, "1");
+    set({ dirty: true });
+  }
+
+  function clean(): void {
+    storage()?.removeItem(DIRTY_KEY);
+    set({ dirty: false });
+  }
+
   /** Run an edit on the open context, then show the context as the server describes it. */
   async function edit<T>(change: (id: string) => Promise<T>): Promise<T | undefined> {
     const context = get().context;
     if (!context) return undefined;
     try {
       const result = await change(context.id);
+      changed();
       await get().refresh();
       return result;
     } catch (error) {
@@ -230,6 +274,9 @@ export const useStore = create<State & Actions>((set, get) => {
     archive: storage()?.getItem("lumos.archive") === "1",
     ready: false,
     welcome: false,
+    dirty: false,
+    pointer: storage()?.getItem(POINTER_KEY) === "select" ? "select" : "pan",
+    layout: readLayout(),
 
     async start() {
       try {
@@ -250,9 +297,11 @@ export const useStore = create<State & Actions>((set, get) => {
     async restore() {
       const store = storage();
       const id = store?.getItem(CONTEXT_KEY);
+      const dirty = store?.getItem(DIRTY_KEY) === "1";
       if (id) {
         try {
           await get().open(await api.describe(id));
+          if (dirty) changed();
           return;
         } catch {
           /* the server forgot it (restart, expired session): restore the copy */
@@ -262,13 +311,20 @@ export const useStore = create<State & Actions>((set, get) => {
       if (document) {
         try {
           await get().open(await api.importLumos(document));
+          if (dirty) changed();
           get().toast({ kind: "info", title: "restored" });
           return;
         } catch {
           store?.removeItem(DOCUMENT_KEY);
         }
       }
-      if (isEditable(get().info)) await get().newContext();
+      if (isEditable(get().info)) {
+        try {
+          await get().open(await api.createContext("untitled"));
+        } catch (error) {
+          get().fail(error);
+        }
+      }
       set({ welcome: true });
     },
 
@@ -292,27 +348,18 @@ export const useStore = create<State & Actions>((set, get) => {
     async open(summary) {
       const previous = get().context;
       set({ selection: [], inspected: null, journal: [], lastJob: null, results: {} });
+      clean();
       await get().show(summary);
       if (previous && previous.id !== summary.id) void api.close(previous.id).catch(() => undefined);
     },
 
     async newContext() {
-      set({ welcome: false });
-      try {
-        await get().open(await api.createContext("untitled"));
-      } catch (error) {
-        get().fail(error);
-      }
+      if (await get().replace(() => api.createContext("untitled"))) set({ welcome: false });
     },
 
     async openFile(file) {
-      try {
-        const text = await file.text();
-        await get().open(await api.importLumos(text));
-        get().toast({ kind: "success", title: "opened", values: { name: file.name } });
-      } catch (error) {
-        get().fail(error);
-      }
+      const text = await file.text();
+      if (await get().replace(() => api.importLumos(text))) get().toast({ kind: "success", title: "opened", values: { name: file.name } });
     },
 
     async save() {
@@ -320,9 +367,51 @@ export const useStore = create<State & Actions>((set, get) => {
       if (!context) return;
       try {
         download(fileName(context.name, ".lumos"), await api.exportLumos(context.id));
+        clean();
       } catch (error) {
         get().fail(error);
       }
+    },
+
+    confirmDiscard() {
+      if (!get().dirty || !get().context) return Promise.resolve(true);
+      return new Promise<boolean>((resolve) => {
+        set({
+          dialog: {
+            kind: "discard",
+            answer: (choice) => {
+              set({ dialog: null });
+              if (choice === "save") void get().save().then(() => resolve(true));
+              else resolve(choice === "discard");
+            },
+          },
+        });
+      });
+    },
+
+    async replace(load) {
+      if (!(await get().confirmDiscard())) return false;
+      try {
+        await get().open(await load());
+        return true;
+      } catch (error) {
+        get().fail(error);
+        return false;
+      }
+    },
+
+    setPointer(pointer) {
+      storage()?.setItem(POINTER_KEY, pointer);
+      set({ pointer });
+    },
+
+    setLayout(change) {
+      const layout = { ...get().layout, ...change };
+      layout.palette = clamp(layout.palette, LAYOUT_LIMITS.palette);
+      layout.inspector = clamp(layout.inspector, LAYOUT_LIMITS.inspector);
+      layout.bottom = clamp(layout.bottom, LAYOUT_LIMITS.bottom);
+      storage()?.setItem(LAYOUT_KEY, JSON.stringify(layout));
+      set({ layout });
     },
 
     async python() {
@@ -340,6 +429,7 @@ export const useStore = create<State & Actions>((set, get) => {
       if (!context?.can_undo) return;
       try {
         await get().show(await api.undo(context.id));
+        changed();
       } catch (error) {
         get().fail(error);
       }
@@ -350,6 +440,7 @@ export const useStore = create<State & Actions>((set, get) => {
       if (!context?.can_redo) return;
       try {
         await get().show(await api.redo(context.id));
+        changed();
       } catch (error) {
         get().fail(error);
       }
@@ -480,6 +571,7 @@ export const useStore = create<State & Actions>((set, get) => {
       try {
         const summary = await api.updateUi(context.id, { positions: { ...(context.ui.positions ?? {}), ...positions } });
         set({ context: summary });
+        changed();
       } catch (error) {
         get().fail(error);
       }

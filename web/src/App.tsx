@@ -128,7 +128,31 @@ function Editor() {
   );
 }
 
+/** Closing or reloading the page with unsaved changes asks first (the browser shows its own dialog). */
+function useLeaveGuard() {
+  useEffect(() => {
+    const guard = (event: BeforeUnloadEvent) => {
+      if (!useStore.getState().dirty) return;
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", guard);
+    return () => window.removeEventListener("beforeunload", guard);
+  }, []);
+}
+
+/** The title of the tab shows the context and whether it has unsaved changes. */
+function useTitle() {
+  const name = useStore((s) => s.context?.name);
+  const dirty = useStore((s) => s.dirty);
+  useEffect(() => {
+    document.title = `${dirty ? "• " : ""}${name ? `${name} — ` : ""}LUMOS`;
+  }, [name, dirty]);
+}
+
 export function App() {
+  useLeaveGuard();
+  useTitle();
   useEffect(() => {
     let cancelled = false;
     void useStore

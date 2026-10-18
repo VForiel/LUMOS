@@ -1,6 +1,6 @@
 // Modal dialogs: names, Python script, keyboard shortcuts.
 
-import { Check, Copy, Download, X } from "lucide-react";
+import { AlertTriangle, Check, Copy, Download, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { download, fileName } from "../api";
@@ -136,8 +136,37 @@ export const SHORTCUTS: [string, string][] = [
   ["Ctrl+Enter", "shortcuts.run"],
   ["F", "shortcuts.fit"],
   ["Shift+drag", "shortcuts.box"],
+  ["H / V", "shortcuts.pointer"],
+  ["Space+drag", "shortcuts.pan"],
   ["?", "shortcuts.help"],
 ];
+
+function DiscardDialog({ answer }: { answer: (choice: "save" | "discard" | "cancel") => void }) {
+  const { t } = useTranslation();
+  const name = useStore((s) => s.context?.name) || t("context.untitled");
+  return (
+    <Modal title={t("dialog.discard.title")} onClose={() => answer("cancel")} testId="discard-dialog">
+      <div className="space-y-4 p-5 text-sm">
+        <p className="flex items-start gap-2 text-slate-600 dark:text-slate-300">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-500" />
+          <span>{t("dialog.discard.text", { name })}</span>
+        </p>
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button onClick={() => answer("cancel")} testId="discard-cancel">
+            {t("common.cancel")}
+          </Button>
+          <Button onClick={() => answer("discard")} testId="discard-confirm">
+            {t("dialog.discard.discard")}
+          </Button>
+          <Button primary onClick={() => answer("save")} testId="discard-save">
+            <Download className="size-4" />
+            {t("dialog.discard.save")}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
 
 function ShortcutsDialog() {
   const { t } = useTranslation();
@@ -167,6 +196,8 @@ export function Dialogs({ extra }: { extra?: (dialog: Dialog) => ReactNode }) {
       return <PythonDialog code={dialog.code} />;
     case "shortcuts":
       return <ShortcutsDialog />;
+    case "discard":
+      return <DiscardDialog answer={dialog.answer} />;
     default:
       return <>{extra?.(dialog)}</>;
   }

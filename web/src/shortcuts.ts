@@ -42,6 +42,8 @@ export function useShortcuts(actions: { run?: () => void; open: () => void }): v
       else if (mod && key === "a") store.select(store.context?.elements.filter((e) => !e.id.includes(".")).map((e) => e.id) ?? []);
       else if (mod && key === "enter") actions.run?.();
       else if (!mod && key === "f") void flow.fitView({ padding: 0.15, duration: 300, maxZoom: 1 });
+      else if (!mod && key === "h") store.setPointer("pan");
+      else if (!mod && key === "v") store.setPointer("select");
       else if (!mod && event.key === "?") store.setDialog({ kind: "shortcuts" });
       else if (key === "escape") store.select([]);
       else done = false;

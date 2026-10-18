@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { api, type JournalEntry, type PortSummary } from "../api";
 import { formatNumber } from "../lib/units";
 import { FIGURE_KINDS, useStore, type BottomTab } from "../store";
+import { Resizer } from "./Resizer";
 
 function DownloadLink({ href, label, testId, icon }: { href: string; label: string; testId?: string; icon?: ReactNode }) {
   return (
@@ -261,8 +262,11 @@ export function BottomPanel({ extraTabs, renderExtra }: { extraTabs?: typeof TAB
   const issues = useStore((s) => s.issues);
   const errors = issues.filter((i) => i.severity === "error").length;
   const tabs = [...TABS, ...(extraTabs ?? [])];
+  const height = useStore((s) => s.layout.bottom);
+  const setLayout = useStore((s) => s.setLayout);
   return (
-    <div data-tour="results" className="flex shrink-0 flex-col border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" style={{ height: bottom ? 280 : 36 }}>
+    <div data-tour="results" data-testid="bottom-panel" className="relative flex shrink-0 flex-col border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" style={{ height: bottom ? height : 36 }}>
+      {bottom && <Resizer side="top" size={height} onResize={(size) => setLayout({ bottom: size })} testId="resize-bottom" />}
       <div className="flex h-9 shrink-0 items-center gap-0.5 border-b border-slate-100 px-2 dark:border-slate-800">
         {tabs.map(({ tab, icon: Icon, label }) => (
           <button

@@ -24,6 +24,7 @@ import { fieldsOf, type Field } from "../lib/schema";
 import { signalColor } from "../lib/signals";
 import { formatNumber, parseQuantity } from "../lib/units";
 import { useStore } from "../store";
+import { Resizer } from "./Resizer";
 import { FieldInput, FieldRow, inputClass, QuantityInput } from "./Fields";
 import { plain } from "./Palette";
 
@@ -338,24 +339,28 @@ export function Inspector({ onInspect }: { onInspect: (port: string) => void }) 
   const context = useStore((s) => s.context);
   const selection = useStore((s) => s.selection);
   const palette = useStore((s) => s.palette);
-  const [open, setOpen] = useState(true);
+  const layout = useStore((s) => s.layout);
+  const setLayout = useStore((s) => s.setLayout);
+  const open = layout.inspectorOpen;
+  const setOpen = (inspectorOpen: boolean) => setLayout({ inspectorOpen });
   const types = useMemo(() => new Map((palette?.types ?? []).map((item) => [item.type_id, item])), [palette]);
   const element = selection.length === 1 ? context?.elements.find((e) => e.id === selection[0]) : undefined;
 
   if (!open) {
     return (
       <aside className="flex w-10 shrink-0 flex-col items-center border-l border-slate-200 bg-white pt-2 dark:border-slate-800 dark:bg-slate-900">
-        <button type="button" onClick={() => setOpen(true)} title={t("inspector.show")} className="rounded p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <button type="button" data-testid="show-inspector" onClick={() => setOpen(true)} title={t("inspector.show")} aria-label={t("inspector.show")} className="rounded p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
           <PanelRightOpen className="size-4" />
         </button>
       </aside>
     );
   }
   return (
-    <aside data-testid="inspector" data-tour="inspector" className="relative flex w-80 shrink-0 flex-col border-l border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <aside data-testid="inspector" data-tour="inspector" className="relative flex shrink-0 flex-col border-l border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" style={{ width: layout.inspector }}>
+      <Resizer side="left" size={layout.inspector} onResize={(inspector) => setLayout({ inspector })} testId="resize-inspector" />
       <div className="flex h-9 items-center justify-between border-b border-slate-100 px-3 dark:border-slate-800">
         <h2 className="text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">{t("inspector.title")}</h2>
-        <button type="button" onClick={() => setOpen(false)} title={t("inspector.hide")} className="rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+        <button type="button" data-testid="hide-inspector" onClick={() => setOpen(false)} title={t("inspector.hide")} aria-label={t("inspector.hide")} className="rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
           <PanelRightClose className="size-4" />
         </button>
       </div>

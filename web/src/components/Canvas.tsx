@@ -7,16 +7,19 @@ import {
   BackgroundVariant,
   Controls,
   MiniMap,
+  Panel,
   ReactFlow,
+  SelectionMode,
   useReactFlow,
   useUpdateNodeInternals,
   type Connection,
   type Edge,
+  type EdgeChange,
   type FinalConnectionState,
   type IsValidConnection,
   type NodeChange,
 } from "@xyflow/react";
-import { MousePointerClick, X } from "lucide-react";
+import { BoxSelect, Hand, MousePointerClick, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { useTranslation } from "react-i18next";
 import type { ContextSummary } from "../api";
@@ -27,10 +30,13 @@ import { compatible, signalColor } from "../lib/signals";
 import { useStore } from "../store";
 import { ElementNode, type ElementFlowNode } from "./ElementNode";
 import { FRAME_HEADER, FRAME_PAD, GroupFrame, type FrameFlowNode } from "./GroupFrame";
+import { LinkEdge } from "./LinkEdge";
 import { BLOCK_TYPE, DRAG_TYPE } from "./Palette";
 import { PresetGallery } from "./Presets";
 
 const nodeTypes = { element: ElementNode, frame: GroupFrame };
+const edgeTypes = { link: LinkEdge };
+const PAN_BUTTONS = [1, 2]; // in selection mode, the middle and right buttons still move the view
 const NODE_WIDTH = 210;
 const NODE_HEIGHT = 170;
 const NONE: Record<string, boolean> = {};
@@ -75,6 +81,8 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
   const [nodes, setNodes] = useState<FlowNode[]>([]);
   const fitted = useRef<string | null>(null);
   const welcome = useStore((s) => s.welcome);
+  const pointer = useStore((s) => s.pointer);
+  const [selectedEdges, setSelectedEdges] = useState<ReadonlySet<string>>(new Set());
 
   const types = useMemo(() => new Map((palette?.types ?? []).map((item) => [item.type_id, item])), [palette]);
   const running = Object.values(jobs).some((job) => job.context === context?.id && (job.status === "running" || job.status === "queued"));
@@ -180,13 +188,16 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
       const [targetNode, targetHandle] = splitPort(target);
       return {
         id: `${source}->${target}`,
+        type: "link",
+        selected: selectedEdges.has(`${source}->${target}`),
         source: sourceNode,
         sourceHandle,
         target: targetNode,
         targetHandle,
         className: running ? "running" : undefined,
         style: { stroke: signalColor(signalOf(sourceNode, sourceHandle, "outputs")) },
-        data: { source, target },
+        // the button removing a link shows on a link selected alone, not on those of a box selection
+        data: { source, target, removable: selectedEdges.size === 1 && selection.length === 0 },
       };
     });
     for (const [group, info] of Object.entries(context.groups ?? {})) {
@@ -208,7 +219,26 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
       }
     }
     return list;
-  }, [context, signalOf, running, expanded]);
+  }, [context, signalOf, running, expanded, selectedEdges, selection]);
+
+  useEffect(() => {
+    // forget the selected links that were removed
+    const known = new Set(context?.connections.map(({ source, target }) => `${source}->${target}`));
+    setSelectedEdges((current) => ([...current].every((id) => known.has(id)) ? current : new Set([...current].filter((id) => known.has(id)))));
+  }, [context]);
+
+  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+    const chosen = changes.filter((change) => change.type === "select");
+    if (!chosen.length) return;
+    setSelectedEdges((current) => {
+      const next = new Set(current);
+      for (const change of chosen) {
+        if (change.selected) next.add(change.id);
+        else next.delete(change.id);
+      }
+      return next;
+    });
+  }, []);
 
   const isValidConnection: IsValidConnection = useCallback(
     (connection) => {
@@ -339,7 +369,9 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onNodeDragStop={onNodeDragStop}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
@@ -362,6 +394,9 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         nodesDraggable={editable}
         multiSelectionKeyCode={MULTI_KEYS}
         selectionKeyCode="Shift"
+        panOnDrag={pointer === "pan" ? true : PAN_BUTTONS}
+        selectionOnDrag={pointer === "select"}
+        selectionMode={pointer === "select" ? SelectionMode.Partial : SelectionMode.Full}
         zoomOnDoubleClick={false}
         snapToGrid
         snapGrid={SNAP}
@@ -371,6 +406,33 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         defaultEdgeOptions={EDGE_OPTIONS}
         connectionRadius={28}
       >
+        <Panel position="top-left" className="!m-2">
+          <div role="group" aria-label={t("canvas.pointer")} className="flex rounded-lg border border-slate-200 bg-white/90 p-0.5 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
+            {(
+              [
+                ["pan", Hand, "canvas.pointerPan", "H"],
+                ["select", BoxSelect, "canvas.pointerSelect", "V"],
+              ] as const
+            ).map(([mode, Icon, label, key]) => (
+              <button
+                key={mode}
+                type="button"
+                data-testid={`pointer-${mode}`}
+                aria-pressed={pointer === mode}
+                title={`${t(label)} (${key})`}
+                aria-label={t(label)}
+                onClick={() => useStore.getState().setPointer(mode)}
+                className={`grid size-7 place-items-center rounded-md transition-colors ${
+                  pointer === mode
+                    ? "bg-accent-100 text-accent-700 dark:bg-accent-900/60 dark:text-accent-200"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                }`}
+              >
+                <Icon className="size-4" />
+              </button>
+            ))}
+          </div>
+        </Panel>
         <Background variant={BackgroundVariant.Dots} gap={20} size={1.4} color="var(--canvas-dots)" />
         <Controls showInteractive={false} position="bottom-left" />
         <MiniMap

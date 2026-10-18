@@ -45,11 +45,7 @@ export function PresetGallery({ welcome }: { welcome?: boolean }) {
   const open = async (name: string) => {
     const store = useStore.getState();
     store.setDialog(null);
-    try {
-      await store.open(await api.loadPreset(name));
-    } catch (error) {
-      store.fail(error);
-    }
+    await store.replace(() => api.loadPreset(name));
   };
   return (
     <div data-testid="presets" className="space-y-4">

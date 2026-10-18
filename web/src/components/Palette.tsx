@@ -1,12 +1,13 @@
 // Palette of element types, generated from the registry (REQ-WEB-2): search, categories, drag or click to add.
 
 import { useReactFlow } from "@xyflow/react";
-import { ChevronDown, ChevronRight, FileUp, Package, Search, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronRight, FileUp, Package, PanelLeftClose, PanelLeftOpen, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ElementType } from "../api";
 import { category, CATEGORY_ORDER } from "../lib/categories";
 import { useStore } from "../store";
+import { Resizer } from "./Resizer";
 
 export const DRAG_TYPE = "application/x-lumos-type";
 export const BLOCK_TYPE = "application/x-lumos-block";
@@ -87,19 +88,50 @@ export function Palette() {
   const blocks = useStore((s) => s.blocks);
   const { insertBlock, forgetBlock } = useStore.getState();
   const shownBlocks = blocks.filter((b) => !query || b.name.toLowerCase().includes(query.toLowerCase()));
+  const layout = useStore((s) => s.layout);
+  const setLayout = useStore((s) => s.setLayout);
+
+  if (!layout.paletteOpen) {
+    return (
+      <aside className="flex w-10 shrink-0 flex-col items-center border-r border-slate-200 bg-white pt-2 dark:border-slate-800 dark:bg-slate-900">
+        <button
+          type="button"
+          data-testid="show-palette"
+          onClick={() => setLayout({ paletteOpen: true })}
+          title={t("palette.show")}
+          aria-label={t("palette.show")}
+          className="rounded p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          <PanelLeftOpen className="size-4" />
+        </button>
+      </aside>
+    );
+  }
 
   return (
     <aside
       data-testid="palette"
-      className="flex w-64 shrink-0 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+      className="relative flex shrink-0 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+      style={{ width: layout.palette }}
       data-tour="palette"
     >
+      <Resizer side="right" size={layout.palette} onResize={(palette) => setLayout({ palette })} testId="resize-palette" />
       <div className="border-b border-slate-200 p-3 dark:border-slate-800">
-        <div className="mb-2 flex items-baseline justify-between">
+        <div className="mb-2 flex items-center justify-between gap-2">
           <h2 className="text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
             {t("palette.title")}
           </h2>
-          <span className="text-xs text-slate-400">{palette?.types.length ?? 0}</span>
+          <span className="ml-auto text-xs text-slate-400">{palette?.types.length ?? 0}</span>
+          <button
+            type="button"
+            data-testid="hide-palette"
+            onClick={() => setLayout({ paletteOpen: false })}
+            title={t("palette.hide")}
+            aria-label={t("palette.hide")}
+            className="rounded p-0.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            <PanelLeftClose className="size-4" />
+          </button>
         </div>
         <label className="relative block">
           <Search className="pointer-events-none absolute top-2 left-2.5 size-4 text-slate-400" />

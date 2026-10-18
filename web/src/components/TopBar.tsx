@@ -81,6 +81,7 @@ export function TopBar({ children, right }: { children?: ReactNode; right?: Reac
   const { t, i18n } = useTranslation();
   const context = useStore((s) => s.context);
   const info = useStore((s) => s.info);
+  const dirty = useStore((s) => s.dirty);
   const [theme, chooseTheme] = useState<Theme>(savedTheme());
   const next = THEMES[(THEMES.findIndex((item) => item.theme === theme) + 1) % THEMES.length];
 
@@ -94,8 +95,21 @@ export function TopBar({ children, right }: { children?: ReactNode; right?: Reac
         </div>
       </div>
       <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" />
-      <div className="min-w-0 truncate px-1 text-sm font-medium text-slate-700 dark:text-slate-200" data-testid="context-name">
-        {context?.name || t("context.untitled")}
+      <div className="flex min-w-0 items-center gap-1.5 px-1">
+        <span className="truncate text-sm font-medium text-slate-700 dark:text-slate-200" data-testid="context-name">
+          {context?.name || t("context.untitled")}
+        </span>
+        {dirty && (
+          <span
+            data-testid="unsaved"
+            title={t("context.unsaved")}
+            aria-label={t("context.unsaved")}
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-900/50 dark:text-amber-200"
+          >
+            <span className="size-1.5 rounded-full bg-amber-500" />
+            <span className="hidden lg:inline">{t("context.unsavedShort")}</span>
+          </span>
+        )}
       </div>
       <div className="flex flex-1 items-center gap-0.5">{children}</div>
       {right}
