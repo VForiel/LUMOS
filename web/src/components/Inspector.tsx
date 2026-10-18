@@ -12,6 +12,8 @@ import {
   PackagePlus,
   PanelRightClose,
   PanelRightOpen,
+  Plus,
+  Repeat,
   ScanSearch,
   Trash2,
   Ungroup,
@@ -208,6 +210,83 @@ function ParamRow({ element, field, editable }: { element: ElementSummary; field
   );
 }
 
+/** The feedbacks of the loops whose source is an output of this element (ADR-0020): list, remove, add. */
+function FeedbackSection({ element, editable }: { element: ElementSummary; editable: boolean }) {
+  const { t } = useTranslation();
+  const context = useStore((s) => s.context)!;
+  const palette = useStore((s) => s.palette);
+  const { addFeedback, removeFeedback } = useStore.getState();
+  const mine = (context.feedbacks ?? []).filter((f) => f.source.startsWith(`${element.id}.`) && !f.source.slice(element.id.length + 1).includes("."));
+  const targets = useMemo(() => {
+    const types = new Map((palette?.types ?? []).map((item) => [item.type_id, item]));
+    return context.elements.flatMap((e) => {
+      const type = types.get(e.type_id);
+      if (!type) return [];
+      return fieldsOf(type.schema)
+        .filter((f) => f.kind !== "setting")
+        .map((f) => `${e.id}.${f.name}`);
+    });
+  }, [context, palette]);
+  const [port, setPort] = useState(element.outputs[0] ?? "");
+  const [target, setTarget] = useState("");
+  const [mode, setMode] = useState<"set" | "add">("add");
+  const select = `${inputClass} py-0.5 text-xs`;
+  return (
+    <Section title={t("feedback.section")} defaultOpen={mine.length > 0}>
+      <div data-testid="feedbacks" className="space-y-2 text-xs">
+        <p className="text-slate-500 dark:text-slate-400">{t("feedback.hint")}</p>
+        {mine.length > 0 && (
+          <ul className="space-y-1">
+            {mine.map((f, index) => (
+              <li key={`${f.source}->${f.target}`} className="flex items-center gap-1.5 rounded-md bg-amber-50 px-2 py-1 font-mono text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+                <Repeat className="size-3.5 shrink-0" />
+                <span className="min-w-0 flex-1 truncate">
+                  {f.source.slice(element.id.length + 1)} → {f.target} {f.mode === "add" ? "+=" : "="}
+                </span>
+                {editable && (
+                  <button type="button" data-testid={`remove-feedback-${index}`} onClick={() => void removeFeedback(f.source, f.target)} aria-label={t("feedback.remove")} title={t("feedback.remove")} className="rounded p-0.5 hover:bg-amber-200 dark:hover:bg-amber-800">
+                    <Trash2 className="size-3.5" />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        {editable && element.outputs.length > 0 && (
+          <div className="grid grid-cols-[1fr_auto] gap-1.5">
+            <select data-testid="feedback-port" className={select} value={port} onChange={(e) => setPort(e.target.value)} aria-label={t("feedback.port")}>
+              {element.outputs.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            <select data-testid="feedback-mode" className={select} value={mode} onChange={(e) => setMode(e.target.value as "set" | "add")} aria-label={t("feedback.mode")}>
+              <option value="add">{t("feedback.modes.add")}</option>
+              <option value="set">{t("feedback.modes.set")}</option>
+            </select>
+            <select data-testid="feedback-target" className={select} value={target} onChange={(e) => setTarget(e.target.value)} aria-label={t("feedback.target")}>
+              <option value="">{t("feedback.chooseTarget")}</option>
+              {targets.map((path) => (
+                <option key={path} value={path}>
+                  {path}
+                </option>
+              ))}
+            </select>
+            <ActionButton
+              icon={<Plus className="size-3.5" />}
+              label={t("feedback.add")}
+              testId="feedback-add"
+              disabled={!port || !target}
+              onClick={() => void addFeedback(`${element.id}.${port}`, target, mode).then((done) => done && setTarget(""))}
+            />
+          </div>
+        )}
+      </div>
+    </Section>
+  );
+}
+
 function valueOf(element: ElementSummary, field: Field): unknown {
   const group = field.kind === "param" ? element.params : field.kind === "setting" ? element.settings : element.state;
   return group[field.name];
@@ -303,6 +382,7 @@ function ElementPanel({ element, type, onInspect }: { element: ElementSummary; t
           </Section>
         ) : null,
       )}
+      {element.outputs.length > 0 && !isGroup && <FeedbackSection element={element} editable={editable} />}
       {(element.inputs.length > 0 || element.outputs.length > 0) && (
         <Section title={t("inspector.ports")}>
           <ul className="space-y-1 text-xs">

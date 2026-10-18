@@ -43,11 +43,13 @@ export type ElementSummary = {
   free?: Record<string, Prior | null>;
 };
 export type Prior = { kind: "uniform" | "loguniform" | "normal"; [value: string]: string };
-export type StudyKind = "sweep" | "sample";
+export type StudyKind = "sweep" | "sample" | "loop";
+export type Feedback = { source: string; target: string; mode: "set" | "add" };
+export type LoopRequest = { kind: "loop"; steps: number; period: string; outputs: string[] };
 /** A sweep range or list of values, by path "element.field". */
 export type SweepSpec = { start: string; stop: string; num: number; log?: boolean } | string[];
 export type StudyRequest = {
-  kind: StudyKind;
+  kind: "sweep" | "sample";
   outputs: string[];
   parameters?: Record<string, SweepSpec>;
   mode?: "grid" | "zip";
@@ -82,6 +84,7 @@ export type ContextSummary = {
   n_wavelengths: number;
   elements: ElementSummary[];
   connections: Connection[];
+  feedbacks?: Feedback[];
   outputs: string[];
   groups: Record<string, GroupInfo>;
   ui: { positions?: Record<string, [number, number]>; expanded?: Record<string, boolean>; [key: string]: unknown };
@@ -194,6 +197,12 @@ export const api = {
   setFree: (id: string, path: string, free: boolean, prior?: Record<string, unknown> | null) =>
     request<ContextSummary>("PUT", `${ctx(id)}/free`, { path, free, prior: prior ?? null }),
   study: (id: string, body: StudyRequest) => request<JobInfo>("POST", `${ctx(id)}/studies`, body),
+  loop: (id: string, body: LoopRequest) =>
+    request<JobInfo>("POST", `${ctx(id)}/loops`, { steps: body.steps, period: body.period, outputs: body.outputs }),
+  addFeedback: (id: string, source: string, target: string, mode: string) =>
+    request<ContextSummary>("POST", `${ctx(id)}/feedbacks`, { source, target, mode }),
+  removeFeedback: (id: string, source: string, target: string) =>
+    request<ContextSummary>("DELETE", `${ctx(id)}/feedbacks?source=${enc(source)}&target=${enc(target)}`),
   studyResult: (job: string) => request<StudyResult>("GET", `/api/jobs/${enc(job)}/study`),
   studyCsvUrl: (job: string) => `/api/jobs/${enc(job)}/study.csv`,
   importLumos: (text: string) => request<ContextSummary>("POST", "/api/contexts/import", text),

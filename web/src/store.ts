@@ -15,6 +15,7 @@ import {
   type JournalEntry,
   type Palette,
   type PortSummary,
+  type LoopRequest,
   type StudyRequest,
   type StudyResult,
 } from "./api";
@@ -93,7 +94,7 @@ type State = {
   /** The last study started in this tab, its points once done, and the request it was made of. */
   studyJob: string | null;
   study: StudyResult | null;
-  studyRequest: StudyRequest | null;
+  studyRequest: StudyRequest | LoopRequest | null;
 };
 
 type Actions = {
@@ -115,7 +116,9 @@ type Actions = {
   setParam: (path: string, value: unknown) => Promise<boolean>;
   setContextInfo: (change: { name?: string; description?: string; seed?: number }) => Promise<void>;
   setFree: (path: string, free: boolean, prior?: Record<string, unknown> | null) => Promise<boolean>;
-  runStudy: (request: StudyRequest) => Promise<boolean>;
+  runStudy: (request: StudyRequest | LoopRequest) => Promise<boolean>;
+  addFeedback: (source: string, target: string, mode: string) => Promise<boolean>;
+  removeFeedback: (source: string, target: string) => Promise<void>;
   setObservation: (minimum: string, maximum: string, n: number) => Promise<boolean>;
   rename: (path: string, name: string) => Promise<void>;
   group: (ids: string[]) => void;
@@ -500,7 +503,7 @@ export const useStore = create<State & Actions>((set, get) => {
       const context = get().context;
       if (!context) return false;
       try {
-        const job = await api.study(context.id, request);
+        const job = request.kind === "loop" ? await api.loop(context.id, request) : await api.study(context.id, request);
         set({ studyJob: job.id, study: null, studyRequest: request, bottom: "study" });
         if (get().layout.bottom < 340) get().setLayout({ bottom: 340 }); // room for the chart
         get().onJob(get().jobs[job.id] ?? job);
@@ -509,6 +512,14 @@ export const useStore = create<State & Actions>((set, get) => {
         get().fail(error);
         return false;
       }
+    },
+
+    async addFeedback(source, target, mode) {
+      return (await edit((id) => api.addFeedback(id, source, target, mode).then(() => true))) ?? false;
+    },
+
+    async removeFeedback(source, target) {
+      await edit((id) => api.removeFeedback(id, source, target));
     },
 
     async setObservation(minimum, maximum, n) {
@@ -698,6 +709,7 @@ export const useStore = create<State & Actions>((set, get) => {
         if (announced.has(`${job.id}:${job.status}`)) return;
         if (job.status === "done") {
           announced.add(`${job.id}:${job.status}`);
+          if (job.kind === "loop") void get().refresh(); // the loop has run: states and clock changed
           void api
             .studyResult(job.id)
             .then((study) => {

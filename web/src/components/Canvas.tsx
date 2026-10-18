@@ -30,12 +30,13 @@ import { compatible, signalColor } from "../lib/signals";
 import { useStore } from "../store";
 import { ElementNode, type ElementFlowNode } from "./ElementNode";
 import { FRAME_HEADER, FRAME_PAD, GroupFrame, type FrameFlowNode } from "./GroupFrame";
+import { FeedbackEdge, FeedbackMarker } from "./FeedbackEdge";
 import { LinkEdge } from "./LinkEdge";
 import { BLOCK_TYPE, DRAG_TYPE } from "./Palette";
 import { PresetGallery } from "./Presets";
 
 const nodeTypes = { element: ElementNode, frame: GroupFrame };
-const edgeTypes = { link: LinkEdge };
+const edgeTypes = { link: LinkEdge, feedback: FeedbackEdge };
 const PAN_BUTTONS = [1, 2]; // in selection mode, the middle and right buttons still move the view
 const NODE_WIDTH = 210;
 const NODE_HEIGHT = 170;
@@ -200,6 +201,26 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         data: { source, target, removable: selectedEdges.size === 1 && selection.length === 0 },
       };
     });
+    const shown = new Set(context.elements.filter((e) => !e.id.includes(".")).map((e) => e.id));
+    for (const { source, target, mode } of context.feedbacks ?? []) {
+      // the block driven: the element of the field, or the collapsed group holding it
+      const owner = target.slice(0, target.lastIndexOf("."));
+      const targetNode = shown.has(owner) || expanded[owner.split(".")[0]] ? owner : owner.split(".")[0];
+      const [sourceNode, sourceHandle] = splitPort(source);
+      const element = context.elements.find((e) => e.id === targetNode);
+      list.push({
+        id: `feedback:${source}->${target}`,
+        type: "feedback",
+        className: "feedback",
+        source: sourceNode,
+        sourceHandle,
+        target: targetNode,
+        targetHandle: element?.inputs[0] ?? null,
+        selected: selectedEdges.has(`feedback:${source}->${target}`),
+        zIndex: 2,
+        data: { source, target, mode, field: target.slice(target.lastIndexOf(".") + 1) },
+      });
+    }
     for (const [group, info] of Object.entries(context.groups ?? {})) {
       if (!expanded[group]) continue;
       for (const { source, target } of info.connections) {
@@ -223,7 +244,10 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
 
   useEffect(() => {
     // forget the selected links that were removed
-    const known = new Set(context?.connections.map(({ source, target }) => `${source}->${target}`));
+    const known = new Set([
+      ...(context?.connections.map(({ source, target }) => `${source}->${target}`) ?? []),
+      ...(context?.feedbacks?.map(({ source, target }) => `feedback:${source}->${target}`) ?? []),
+    ]);
     setSelectedEdges((current) => ([...current].every((id) => known.has(id)) ? current : new Set([...current].filter((id) => known.has(id)))));
   }, [context]);
 
@@ -380,8 +404,10 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         onNodesDelete={(deleted) => void removeElements(deleted.filter((node) => !node.parentId).map((node) => node.id))}
         onEdgesDelete={(deleted) => {
           for (const edge of deleted) {
-            const data = edge.data as { source: string; target: string } | undefined;
-            if (data) void disconnect(data.source, data.target);
+            const data = edge.data as { source: string; target: string; mode?: string } | undefined;
+            if (!data) continue;
+            if (edge.type === "feedback") void useStore.getState().removeFeedback(data.source, data.target);
+            else void disconnect(data.source, data.target);
           }
         }}
         onDragOver={(event) => {
@@ -406,6 +432,7 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         defaultEdgeOptions={EDGE_OPTIONS}
         connectionRadius={28}
       >
+        <FeedbackMarker />
         <Panel position="top-left" className="!m-2">
           <div role="group" aria-label={t("canvas.pointer")} className="flex rounded-lg border border-slate-200 bg-white/90 p-0.5 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/90">
             {(

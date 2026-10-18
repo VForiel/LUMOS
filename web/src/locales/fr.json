@@ -387,6 +387,28 @@
       "mean": "moyenne",
       "min": "minimum",
       "sum": "somme"
-    }
+    },
+    "loop": "Boucle",
+    "loopHint": "Exécuter pas à pas les boucles de rétroaction du contexte.",
+    "steps": "Pas",
+    "period": "Période",
+    "noFeedback": "Aucune rétroaction : sélectionnez le bloc qui calcule la correction et fermez la boucle dans son inspecteur.",
+    "loopSummary": "{{count}} pas · graine {{seed}}",
+    "loopDetails": "Chaque pas calcule les sorties, applique les rétroactions, puis avance l'horloge d'une période. La boucle garde son état final (Annuler le rétablit)."
+  },
+  "feedback": {
+    "section": "Boucles de rétroaction",
+    "hint": "Une sortie de ce bloc pilote un champ au pas suivant d'une boucle (Étude, Boucle) : « += » ajoute la valeur, « = » la remplace.",
+    "port": "Sortie",
+    "target": "Champ piloté",
+    "chooseTarget": "Champ piloté…",
+    "mode": "Mode",
+    "modes": {
+      "add": "ajouter (+=)",
+      "set": "remplacer (=)"
+    },
+    "add": "Fermer la boucle",
+    "remove": "Supprimer cette rétroaction",
+    "title": "{{source}} pilote {{target}} au pas suivant ({{mode}})"
   }
 }

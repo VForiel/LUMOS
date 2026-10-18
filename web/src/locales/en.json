@@ -387,6 +387,28 @@
       "mean": "mean",
       "min": "minimum",
       "sum": "sum"
-    }
+    },
+    "loop": "Loop",
+    "loopHint": "Run the feedback loops of the context step by step.",
+    "steps": "Steps",
+    "period": "Period",
+    "noFeedback": "No feedback yet: select the block computing the correction and close the loop in its inspector.",
+    "loopSummary": "{{count}} steps · seed {{seed}}",
+    "loopDetails": "Each step computes the outputs, applies the feedbacks, then advances the clock by the period. The loop keeps its final state (Undo puts it back)."
+  },
+  "feedback": {
+    "section": "Feedback loops",
+    "hint": "An output of this block drives a field at the next step of a loop (Study, Loop): \"+=\" adds the value, \"=\" sets it.",
+    "port": "Output",
+    "target": "Field driven",
+    "chooseTarget": "Field driven…",
+    "mode": "Mode",
+    "modes": {
+      "add": "add (+=)",
+      "set": "set (=)"
+    },
+    "add": "Close the loop",
+    "remove": "Remove this feedback",
+    "title": "{{source}} drives {{target}} at the next step ({{mode}})"
   }
 }

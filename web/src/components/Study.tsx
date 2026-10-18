@@ -1,10 +1,10 @@
 // Studies (REQ-CTX-10): the dialog starting a sweep or a Monte-Carlo run, and the tab of the bottom panel
 // showing its points as a chart (curve of a sweep, histogram of a Monte-Carlo run) and a table.
 
-import { Dices, Download, FlaskConical, Loader2, Plus, Trash2 } from "lucide-react";
+import { Dices, Download, FlaskConical, Loader2, Plus, Repeat, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { api, type ContextSummary, type ElementType, type StudyKind, type StudyRequest, type StudyResult, type SweepSpec } from "../api";
+import { api, type ContextSummary, type ElementType, type LoopRequest, type StudyKind, type StudyRequest, type StudyResult, type SweepSpec } from "../api";
 import { fieldsOf } from "../lib/schema";
 import { formatNumber, parseQuantity } from "../lib/units";
 import { useStore } from "../store";
@@ -15,7 +15,15 @@ import { inputClass } from "./Fields";
 type Candidate = { path: string; unit: string; value: number };
 type Row = { path: string; start: string; stop: string; num: number; log: boolean };
 /** Defaults of the study dialog stored by a preset in ``ui.study``. */
-type StudyDefaults = { kind?: StudyKind; n?: number; outputs?: string[]; metric?: string; parameters?: Record<string, SweepSpec> };
+type StudyDefaults = {
+  kind?: StudyKind;
+  n?: number;
+  outputs?: string[];
+  metric?: string;
+  parameters?: Record<string, SweepSpec>;
+  steps?: number;
+  period?: string;
+};
 
 const STATISTICS = ["max", "mean", "min", "sum"] as const;
 
@@ -62,14 +70,19 @@ export function StudyDialog() {
   const { t } = useTranslation();
   const context = useStore((s) => s.context)!;
   const palette = useStore((s) => s.palette);
-  const previous = useStore((s) => s.studyRequest);
+  const last = useStore((s) => s.studyRequest);
+  const previous = last && last.kind !== "loop" ? last : null;
+  const previousLoop = last && last.kind === "loop" ? last : null;
   const types = useMemo(() => new Map((palette?.types ?? []).map((item) => [item.type_id, item])), [palette]);
   const candidates = useMemo(() => candidatesOf(context, types), [context, types]);
   const defaults = (context.ui.study ?? {}) as StudyDefaults;
   const free = context.elements.flatMap((e) => Object.entries(e.free ?? {}).map(([name, prior]) => ({ path: `${e.id}.${name}`, prior })));
   const noisy = useMemo(() => context.elements.some((e) => types.get(e.type_id)?.schema?.["x-lumos-stochastic"]), [context, types]);
 
-  const [kind, setKind] = useState<StudyKind>(previous?.kind ?? defaults.kind ?? (free.length ? "sample" : "sweep"));
+  const loops = context.feedbacks?.length ?? 0;
+  const [kind, setKind] = useState<StudyKind>(last?.kind ?? defaults.kind ?? (loops ? "loop" : free.length ? "sample" : "sweep"));
+  const [steps, setSteps] = useState(previousLoop?.steps ?? defaults.steps ?? 20);
+  const [period, setPeriod] = useState(previousLoop?.period ?? defaults.period ?? "1 ms");
   const [rows, setRows] = useState<Row[]>(() => {
     const listed = previous?.parameters ?? defaults.parameters;
     if (listed && Object.keys(listed).length) {
@@ -87,14 +100,17 @@ export function StudyDialog() {
   const [independent, setIndependent] = useState<boolean | null>(null);
   const available = defaultOutputs(context);
   const [outputs, setOutputs] = useState<string[]>(() => {
-    const wanted = previous?.outputs ?? defaults.outputs ?? available;
+    const wanted = last?.outputs ?? defaults.outputs ?? available;
     return wanted.filter((port) => available.includes(port) || context.outputs.includes(port));
   });
   const noise = independent ?? kind === "sample";
+  const periodOk = /^\s*[0-9.eE+-]+\s*(s|ms|us|µs|ns|min|h)\s*$/.test(period);
   const close = () => useStore.getState().setDialog(null);
 
   const count =
-    kind === "sample"
+    kind === "loop"
+      ? steps
+      : kind === "sample"
       ? n
       : rows.length === 0
         ? 0
@@ -102,9 +118,17 @@ export function StudyDialog() {
           ? Math.min(...rows.map((r) => r.num))
           : rows.reduce((product, r) => product * Math.max(r.num, 0), 1);
   const unitOf = (path: string) => candidates.find((c) => c.path === path)?.unit ?? "";
-  const valid = outputs.length > 0 && count > 0 && (kind === "sample" || rows.every((r) => r.path && r.start !== "" && r.stop !== "" && r.num >= 1));
+  const valid =
+    outputs.length > 0 &&
+    count > 0 &&
+    (kind === "sample" || (kind === "loop" ? loops > 0 && periodOk : rows.every((r) => r.path && r.start !== "" && r.stop !== "" && r.num >= 1)));
 
   const start = async () => {
+    if (kind === "loop") {
+      const loop: LoopRequest = { kind: "loop", steps, period: period.trim(), outputs };
+      if (await useStore.getState().runStudy(loop)) close();
+      return;
+    }
     const request: StudyRequest = { kind, outputs, noise: noise ? "independent" : "fixed" };
     if (kind === "sample") request.n = n;
     else {
@@ -122,7 +146,7 @@ export function StudyDialog() {
     <Modal title={t("study.title")} onClose={close} wide testId="study-dialog">
       <div className="space-y-4 p-5 text-sm">
         <div className="flex gap-2" role="group" aria-label={t("study.kind")}>
-          {(["sweep", "sample"] as const).map((value) => (
+          {(["sweep", "sample", "loop"] as const).map((value) => (
             <button
               key={value}
               type="button"
@@ -135,7 +159,13 @@ export function StudyDialog() {
                   : "border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
               }`}
             >
-              {value === "sweep" ? <FlaskConical className="mt-0.5 size-4 shrink-0 text-accent-500" /> : <Dices className="mt-0.5 size-4 shrink-0 text-accent-500" />}
+              {value === "sweep" ? (
+                <FlaskConical className="mt-0.5 size-4 shrink-0 text-accent-500" />
+              ) : value === "sample" ? (
+                <Dices className="mt-0.5 size-4 shrink-0 text-accent-500" />
+              ) : (
+                <Repeat className="mt-0.5 size-4 shrink-0 text-amber-500" />
+              )}
               <span>
                 <span className="block font-semibold">{t(`study.${value}`)}</span>
                 <span className="block text-xs text-slate-500 dark:text-slate-400">{t(`study.${value}Hint`)}</span>
@@ -144,7 +174,35 @@ export function StudyDialog() {
           ))}
         </div>
 
-        {kind === "sweep" ? (
+        {kind === "loop" ? (
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-3">
+                <span className="text-slate-600 dark:text-slate-300">{t("study.steps")}</span>
+                <input data-testid="study-steps" type="number" min={1} className={`${inputClass} w-24`} value={steps} onChange={(e) => setSteps(Math.max(0, Math.round(Number(e.target.value))))} />
+              </label>
+              <label className="flex items-center gap-3">
+                <span className="text-slate-600 dark:text-slate-300">{t("study.period")}</span>
+                <input data-testid="study-period" className={`${inputClass} w-28 ${periodOk ? "" : "border-red-400"}`} value={period} onChange={(e) => setPeriod(e.target.value)} placeholder="2 ms" />
+              </label>
+            </div>
+            <div data-testid="study-feedbacks" className="rounded-lg border border-amber-200 bg-amber-50/60 p-3 text-xs dark:border-amber-900 dark:bg-amber-950/30">
+              <p className="mb-1 font-semibold text-amber-800 uppercase dark:text-amber-300">{t("feedback.section")}</p>
+              {loops ? (
+                <ul className="space-y-0.5 font-mono">
+                  {context.feedbacks!.map((f) => (
+                    <li key={`${f.source}->${f.target}`}>
+                      {f.source} → {f.target} ({t(`feedback.modes.${f.mode}`)})
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-slate-600 dark:text-slate-300">{t("study.noFeedback")}</p>
+              )}
+              <p className="mt-1 text-slate-500 dark:text-slate-400">{t("study.loopDetails")}</p>
+            </div>
+          </div>
+        ) : kind === "sweep" ? (
           <div className="space-y-2">
             <div className="grid grid-cols-[minmax(10rem,1fr)_5.5rem_5.5rem_4rem_auto_auto] items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <span>{t("study.parameter")}</span>
@@ -246,7 +304,7 @@ export function StudyDialog() {
               </label>
             ))}
           </fieldset>
-          <label className="flex items-start gap-2 rounded-lg border border-slate-200 p-3 text-xs dark:border-slate-700">
+          <label className={`flex items-start gap-2 rounded-lg border border-slate-200 p-3 text-xs dark:border-slate-700 ${kind === "loop" ? "invisible" : ""}`}>
             <input type="checkbox" data-testid="study-noise" checked={noise} onChange={(e) => setIndependent(e.target.checked)} className="mt-0.5 size-4 accent-accent-600" />
             <span>
               <span className="block font-semibold text-slate-700 dark:text-slate-200">{t("study.independent")}</span>
@@ -461,7 +519,10 @@ export function StudyPanel() {
   const chosen = output && study.outputs.includes(output) ? output : study.outputs[0];
   const isScalar = scalar(study, chosen);
   const metrics = isScalar ? ["value"] : [...STATISTICS];
-  const shownMetric = metric && metrics.includes(metric) ? metric : isScalar ? "value" : defaults.metric && metrics.includes(defaults.metric) ? defaults.metric : "max";
+  const isStatistic = (m: string | null | undefined): m is (typeof STATISTICS)[number] => STATISTICS.includes(m as (typeof STATISTICS)[number]);
+  /** The statistic shown for non-scalar outputs (images, fields), whatever the output plotted. */
+  const statistic = isStatistic(metric) ? metric : isStatistic(defaults.metric) ? defaults.metric : "max";
+  const shownMetric = isScalar ? "value" : statistic;
   const axis = x && study.parameters.includes(x) ? x : study.parameters[0];
   const realizations = study.points.some((p) => p.realization);
   const select =
@@ -472,7 +533,7 @@ export function StudyPanel() {
       <div className="flex w-[520px] shrink-0 flex-col gap-1.5">
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="font-semibold tracking-wider text-accent-700 uppercase dark:text-accent-300">{t(`study.${study.kind}`)}</span>
-          <span className="text-slate-500">{t("study.summary", { count: study.points.length, seed: study.seed })}</span>
+          <span className="text-slate-500">{t(study.kind === "loop" ? "study.loopSummary" : "study.summary", { count: study.points.length, seed: study.seed })}</span>
           <select data-testid="study-output" className={select} value={chosen} onChange={(e) => setOutput(e.target.value)} aria-label={t("study.output")}>
             {study.outputs.map((port) => (
               <option key={port}>{port}</option>
@@ -502,7 +563,7 @@ export function StudyPanel() {
             CSV
           </a>
         </div>
-        {study.kind === "sweep" ? <SweepChart study={study} output={chosen} metric={shownMetric} x={axis} /> : <Histogram study={study} output={chosen} metric={shownMetric} />}
+        {study.kind !== "sample" ? <SweepChart study={study} output={chosen} metric={shownMetric} x={axis} /> : <Histogram study={study} output={chosen} metric={shownMetric} />}
       </div>
       <div className="min-w-0 flex-1 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
         <table data-testid="study-table" className="w-full text-left font-mono text-xs whitespace-nowrap">
@@ -517,7 +578,7 @@ export function StudyPanel() {
               ))}
               {study.outputs.map((port) => (
                 <th key={port} className="px-2 py-1">
-                  {port} {scalar(study, port) ? "" : shownMetric}
+                  {port} {scalar(study, port) ? "" : statistic}
                 </th>
               ))}
             </tr>
@@ -533,7 +594,7 @@ export function StudyPanel() {
                   </td>
                 ))}
                 {study.outputs.map((port) => {
-                  const value = measure(study, index, port, scalar(study, port) ? "value" : shownMetric);
+                  const value = measure(study, index, port, scalar(study, port) ? "value" : statistic);
                   const unit = point.outputs[port]?.unit;
                   return (
                     <td key={port} className="px-2 py-0.5">
