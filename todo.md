@@ -7,6 +7,21 @@ Pour répondre : un commit distant modifiant ce fichier, dont le message commenc
 > Ce fichier est à la racine à ta demande (exception à la règle « pas de fichier à la racine » du CLAUDE.md).
 > Supprime-le ou déplace-le quand tout est traité.
 
+## À faire maintenant (18/10) — une commande dans ton terminal VPS
+
+- [ ] **Autoriser ma clé SSH sur le VPS** : je n'ai pas accès au terminal VS Code connecté au VPS, et le serveur
+  refuse la connexion sans mot de passe. J'ai créé la clé `~/.ssh/id_ed25519_vps1` et le profil `VPS1`
+  (`~/.ssh/config`, utilisateur `ubuntu`). Colle cette ligne **dans le terminal connecté au VPS** :
+
+  ```
+  mkdir -p ~/.ssh && chmod 700 ~/.ssh && echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHg599ulXRUtCGxmszHR4q6nPhrLlzcgvvLAbMy49qb+ vince@windows->VPS1' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
+  ```
+
+  Ensuite `ssh VPS1` marche depuis PowerShell et Git Bash ; je teste régulièrement et je déploie dès que ça passe
+  (Docker, clone du dépôt, Caddy et TLS pour `lumos.vincent.foriel.pro`).
+- [ ] **WSL n'est pas installé** sur ta machine (`wsl -l` : « Le sous-système Windows pour Linux n'est pas
+  installé »). Après `wsl --install`, dans WSL : `mkdir -p ~/.ssh && cp /mnt/c/Users/vince/.ssh/{config,id_ed25519_vps1*} ~/.ssh/ && chmod 600 ~/.ssh/id_ed25519_vps1 ~/.ssh/config`.
+
 ## Réponses du 17/10 traitées
 
 VFSciTools intégré, push après chaque étape, notebooks exécutés dans la doc, tailles des mires, spectre solaire
