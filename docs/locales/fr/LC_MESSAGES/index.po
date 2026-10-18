@@ -41,25 +41,13 @@ msgstr "LUMOS"
 
 #: ../../index.md:3
 msgid "**Lumos is a Universal and Modular Optical Simulator & Operating System.**"
-msgstr ""
-"**Lumos is a Universal and Modular Optical Simulator & Operating System** (simulateur optique universel et "
-"modulaire, doublé d'un système de pilotage)."
+msgstr "**Lumos is a Universal and Modular Optical Simulator & Operating System** (simulateur optique universel et modulaire, doublé d'un système de pilotage)."
 
 #: ../../index.md:5
-msgid ""
-"LUMOS simulates light end to end, from a scene (astronomical, terrestrial or laboratory) to the detected "
-"data, through any optical system. The same object model drives real optical equipment, builds data "
-"processing pipelines and is exposed to AI assistants through an MCP server."
-msgstr ""
-"LUMOS simule la lumière de bout en bout, d'une scène (astronomique, terrestre ou de laboratoire) jusqu'aux "
-"données détectées, à travers n'importe quel système optique. Le même modèle objet pilote les équipements "
-"optiques réels, construit des pipelines de traitement de données et est mis à disposition des assistants IA"
-" via un serveur MCP."
+msgid "LUMOS simulates light end to end, from a scene (astronomical, terrestrial or laboratory) to the detected data, through any optical system. The same object model drives real optical equipment, builds data processing pipelines and is exposed to AI assistants through an MCP server."
+msgstr "LUMOS simule la lumière de bout en bout, d'une scène (astronomique, terrestre ou de laboratoire) jusqu'aux données détectées, à travers n'importe quel système optique. Le même modèle objet pilote les équipements optiques réels, construit des pipelines de traitement de données et est mis à disposition des assistants IA via un serveur MCP."
 
 #: ../../index.md:10
-msgid ""
-"LUMOS is in early development. This documentation describes the planned structure; most pages are "
-"placeholders."
-msgstr ""
-"LUMOS est en tout début de développement. Cette documentation décrit la structure prévue ; la plupart des "
-"pages sont encore vides."
+msgid "LUMOS is in early development. This documentation describes the planned structure; most pages are placeholders."
+msgstr "LUMOS est en tout début de développement. Cette documentation décrit la structure prévue ; la plupart des pages sont encore vides."
+

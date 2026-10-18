@@ -19,8 +19,20 @@ Pour répondre : un commit distant modifiant ce fichier, dont le message commenc
 
   Ensuite `ssh VPS1` marche depuis PowerShell et Git Bash ; je teste régulièrement et je déploie dès que ça passe
   (Docker, clone du dépôt, Caddy et TLS pour `lumos.vincent.foriel.pro`).
+-> C'est fait
 - [ ] **WSL n'est pas installé** sur ta machine (`wsl -l` : « Le sous-système Windows pour Linux n'est pas
   installé »). Après `wsl --install`, dans WSL : `mkdir -p ~/.ssh && cp /mnt/c/Users/vince/.ssh/{config,id_ed25519_vps1*} ~/.ssh/ && chmod 600 ~/.ssh/id_ed25519_vps1 ~/.ssh/config`.
+-> j'ai installé le WSL via wsl --install et j'ai essayé d'installer une distribution ubuntu depuis le MS store mais quand je le lance il me fait une erreur indiquant une fonctionnalité manquante
+
+## Où j'en suis (18/10, arrêt pour quota)
+
+- Phase 15 : **P15.1 fait** (revue d'API, ADR-0021, gel 1.x). **P15.2 en cours** : traductions FR faites pour le
+  guide utilisateur, l'interface web, l'assistant et le matériel ; restent les notebooks (`examples/`) puis la
+  resynchronisation EN (deux phrases FR plus complètes que l'anglais : `web/index`, `web/development`, et
+  `assistant/setup` ligne 93 à mettre à jour en anglais). Outil : `tools/translate_po.py`.
+- Restent P15.3 (performance), P15.4 (qualité, sécurité, CSP à prévoir pour les fournisseurs de l'assistant),
+  P15.5 (PyPI : il faudra ton accord et un compte ; VPS).
+- **VPS** : toujours en attente de la ligne `authorized_keys` ci-dessus.
 
 ## Retours du 18/10 traités (P14.12 à P14.15)
 

@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:10002
+msgid "3. Pupils and point-spread functions"
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:10004
+msgid "Telescope pupils are anti-aliased masks; the point-spread function (PSF) is the intensity in the focal plane. The PSF of a uniform circular pupil is the Airy pattern, with its first dark ring at $1.22\\,\\lambda/D$ (Born & Wolf, *Principles of Optics*, §8.5.2)."
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:20002
+#, python-format
+msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/03_psf_and_pupils.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F03_psf_and_pupils.ipynb)"
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:20002
+msgid "Open in Colab"
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:20002
+msgid "Launch on Binder"
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:60002
+msgid "The PSF of the VLT"
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:60004
+msgid "The preset `vlt_psf.lumos` observes a star in the H band (three spectral channels) with an 8.2 m telescope."
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:80002
+msgid "A coronagraph"
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:80004
+msgid "The preset `coronagraph.lumos` places a companion 10⁴ times fainter than its star at 6 λ/D behind a charge-2 vortex coronagraph (Mawet et al. 2005): the star is removed and the companion appears."
+msgstr ""
+
+#: ../../examples/notebooks/03_psf_and_pupils.ipynb:90002
+#, python-brace-format
+msgid "[6.2373856 \\times 10^{-6},~0.86640886] \\; \\mathrm{}"
+msgstr ""
+

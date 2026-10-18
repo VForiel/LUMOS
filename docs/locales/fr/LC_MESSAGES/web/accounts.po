@@ -1,0 +1,125 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/accounts.md:1
+msgid "Accounts and security"
+msgstr "Comptes et sécurité"
+
+#: ../../web/accounts.md:3
+msgid "On your own machine (`lumos web`), there is nothing to set up: the interface only listens on `localhost` and you have every right. Accounts matter on a shared or public instance."
+msgstr "Sur votre propre machine (`lumos web`), il n'y a rien à configurer : l'interface n'écoute que sur `localhost` et vous avez tous les droits. Les comptes comptent sur une instance partagée ou publique."
+
+#: ../../web/accounts.md:6
+msgid "Roles"
+msgstr "Rôles"
+
+#: ../../web/accounts.md
+msgid "Role"
+msgstr "Rôle"
+
+#: ../../web/accounts.md
+msgid "Can"
+msgstr "Peut"
+
+#: ../../web/accounts.md
+msgid "viewer"
+msgstr "viewer (lecteur)"
+
+#: ../../web/accounts.md
+msgid "browse the elements and the documentation, load presets, inspect contexts, download `.lumos` files and scripts"
+msgstr "parcourir les éléments et la documentation, charger des préréglages, inspecter des contextes, télécharger les fichiers `.lumos` et les scripts"
+
+#: ../../web/accounts.md
+msgid "simulator"
+msgstr "simulator (simulateur)"
+
+#: ../../web/accounts.md
+msgid "everything above, plus edit contexts, run them and inspect any port"
+msgstr "tout ce qui précède, plus modifier des contextes, les exécuter et inspecter n'importe quel port"
+
+#: ../../web/accounts.md
+msgid "operator"
+msgstr "operator (opérateur)"
+
+#: ../../web/accounts.md
+msgid "everything above, plus discover devices and act on real equipment (each action confirmed)"
+msgstr "tout ce qui précède, plus découvrir des équipements et agir sur du matériel réel (chaque action confirmée)"
+
+#: ../../web/accounts.md:14
+msgid "Anyone can press the emergency stop. On a public instance, visitors who did not log in are simulators by default (`anonymous_role` in the configuration: `viewer`, `simulator`, or none to require a login)."
+msgstr "Tout le monde peut appuyer sur l'arrêt d'urgence. Sur une instance publique, les visiteurs non connectés sont simulateurs par défaut (`anonymous_role` dans la configuration : `viewer`, `simulator`, ou aucun rôle pour exiger une connexion)."
+
+#: ../../web/accounts.md:17
+msgid "Managing users"
+msgstr "Gérer les utilisateurs"
+
+#: ../../web/accounts.md:19
+msgid "Users are stored in a TOML file, with a hash of their password (Argon2id) and their public SSH keys. Manage it with `lumos users`:"
+msgstr "Les utilisateurs sont enregistrés dans un fichier TOML, avec une empreinte de leur mot de passe (Argon2id) et leurs clés SSH publiques. Gérez-le avec `lumos users` :"
+
+#: ../../web/accounts.md:33
+msgid "Start the instance with `lumos web --users users.toml ...` (or `users_file` in its configuration). The file is read again when it changes: no restart is needed to add a user."
+msgstr "Démarrez l'instance avec `lumos web --users users.toml ...` (ou `users_file` dans sa configuration). Le fichier est relu quand il change : inutile de redémarrer pour ajouter un utilisateur."
+
+#: ../../web/accounts.md:36
+msgid "Logging in"
+msgstr "Se connecter"
+
+#: ../../web/accounts.md:38
+msgid "**With a password**: the *Log in* button of the toolbar (shown when the instance has users)."
+msgstr "**Avec un mot de passe** : le bouton *Se connecter* de la barre d'outils (affiché quand l'instance a des utilisateurs)."
+
+#: ../../web/accounts.md:39
+msgid "**With an SSH key**: the interface shows a challenge and the command that signs it; paste the signature it prints:"
+msgstr "**Avec une clé SSH** : l'interface affiche un défi et la commande qui le signe ; collez la signature qu'elle affiche :"
+
+#: ../../web/accounts.md:46
+msgid "**From a script**: `lumos login` does the same and prints a token to send as `Authorization: Bearer <token>`:"
+msgstr "**Depuis un script** : `lumos login` fait de même et affiche un jeton à envoyer comme `Authorization: Bearer <jeton>` :"
+
+#: ../../web/accounts.md:52
+msgid "A key protected by a passphrase is used through your SSH agent (give the `.pub` file as `--key`)."
+msgstr "Une clé protégée par une phrase de passe s'utilise via votre agent SSH (donnez le fichier `.pub` comme `--key`)."
+
+#: ../../web/accounts.md:54
+msgid "A challenge is valid for two minutes and only once. Sessions end after a period of inactivity and, once logged in, after a maximum duration (12 h by default)."
+msgstr "Un défi est valable deux minutes et une seule fois. Les sessions se terminent après une période d'inactivité et, une fois connecté, après une durée maximale (12 h par défaut)."
+
+#: ../../web/accounts.md:57
+msgid "Safeguards"
+msgstr "Garde-fous"
+
+#: ../../web/accounts.md:59
+msgid "Passwords are never stored or logged; wrong credentials give the same answer whatever was wrong."
+msgstr "Les mots de passe ne sont jamais enregistrés ni journalisés ; des identifiants erronés donnent la même réponse, quelle que soit l'erreur."
+
+#: ../../web/accounts.md:60
+msgid "Login attempts and requests are rate-limited per address; logging in needs HTTPS outside your own machine."
+msgstr "Les tentatives de connexion et les requêtes sont limitées par adresse ; se connecter exige HTTPS hors de votre propre machine."
+
+#: ../../web/accounts.md:61
+msgid "Security events (logins, refusals, actions on equipment, emergency stops) are written to an audit journal (`audit_log`), without passwords or tokens."
+msgstr "Les événements de sécurité (connexions, refus, actions sur le matériel, arrêts d'urgence) sont écrits dans un journal d'audit (`audit_log`), sans mot de passe ni jeton."
+
+#: ../../web/accounts.md:63
+msgid "The operation of equipment on a public instance needs an explicit configuration, TLS and registered operators (see the hosting guide and ADR-0019)."
+msgstr "L'opération de matériel sur une instance publique exige une configuration explicite, TLS et des opérateurs enregistrés (voir le guide d'hébergement et l'ADR-0019)."
+

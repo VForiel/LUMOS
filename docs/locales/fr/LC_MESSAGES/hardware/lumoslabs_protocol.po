@@ -1,0 +1,585 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../hardware/lumoslabs_protocol.md:1
+msgid "LumosLabs protocol"
+msgstr "Protocole LumosLabs"
+
+#: ../../hardware/lumoslabs_protocol.md:3
+msgid "LumosLabs is a fictitious range of laboratory equipment. Its devices do not exist, but their **emulators** speak the protocol below over real transports (TCP, serial), so that LUMOS drives them exactly as it drives physical equipment: same drivers, same errors, same latencies (ADR-0014). The protocol is also a template for vendors."
+msgstr "LumosLabs est une gamme fictive d'équipements de laboratoire. Ses appareils n'existent pas, mais leurs **émulateurs** parlent le protocole ci-dessous sur de vrais transports (TCP, série), si bien que LUMOS les pilote exactement comme du matériel physique : mêmes pilotes, mêmes erreurs, mêmes latences (ADR-0014). Le protocole sert aussi de modèle aux fabricants."
+
+#: ../../hardware/lumoslabs_protocol.md:7
+msgid "Lines"
+msgstr "Lignes"
+
+#: ../../hardware/lumoslabs_protocol.md:9
+msgid "One command per line, one reply per command, lines terminated by `\\n` (ASCII)."
+msgstr "Une commande par ligne, une réponse par commande, lignes terminées par `\\n` (ASCII)."
+
+#: ../../hardware/lumoslabs_protocol.md:10
+msgid "A command is `VERB [argument ...]`. Verbs are case-insensitive; queries end with `?`."
+msgstr "Une commande s'écrit `VERBE [argument ...]`. Les verbes sont insensibles à la casse ; les requêtes se terminent par `?`."
+
+#: ../../hardware/lumoslabs_protocol.md:11
+msgid "Tokens are separated by spaces:"
+msgstr "Les jetons sont séparés par des espaces :"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Token"
+msgstr "Jeton"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Example"
+msgstr "Exemple"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Meaning"
+msgstr "Signification"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "integer"
+msgstr "entier"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`3`"
+msgstr "`3`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "channel, slot, count"
+msgstr "voie, emplacement, nombre"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "real"
+msgstr "réel"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`0.25`, `1e-12`"
+msgstr "`0.25`, `1e-12`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "dimensionless value"
+msgstr "valeur sans dimension"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "quantity"
+msgstr "grandeur"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`12.5[mm]`, `4[mm/s]`, `1.5[V]`"
+msgstr "`12.5[mm]`, `4[mm/s]`, `1.5[V]`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "value and astropy unit, without space"
+msgstr "valeur et unité astropy, sans espace"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "word"
+msgstr "mot"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`ON`, `X`, `READY`"
+msgstr "`ON`, `X`, `READY`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "keyword"
+msgstr "mot-clé"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "array"
+msgstr "tableau"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`float32 3x4 b64:...`"
+msgstr "`float32 3x4 b64:...`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "dtype, shape, base64 of the little-endian bytes"
+msgstr "type, forme, base64 des octets petit-boutistes"
+
+#: ../../hardware/lumoslabs_protocol.md:21
+msgid "A reply is `OK [value ...]` or `ERR <code> <message>`."
+msgstr "Une réponse s'écrit `OK [valeur ...]` ou `ERR <code> <message>`."
+
+#: ../../hardware/lumoslabs_protocol.md:23
+msgid "Error codes"
+msgstr "Codes d'erreur"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Code"
+msgstr "Code"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Name"
+msgstr "Nom"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Raised by the driver as"
+msgstr "Levée par le pilote comme"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`100`"
+msgstr "`100`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "unknown command"
+msgstr "commande inconnue"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`DeviceError`"
+msgstr "`DeviceError`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`101`"
+msgstr "`101`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "bad argument (missing, wrong type)"
+msgstr "argument erroné (manquant, de mauvais type)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`102`"
+msgstr "`102`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "bad unit (not convertible)"
+msgstr "unité erronée (non convertible)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`200`"
+msgstr "`200`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "out of range"
+msgstr "hors limites"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`DeviceLimitError` (a `LimitError`)"
+msgstr "`DeviceLimitError` (a `LimitError`)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`300`"
+msgstr "`300`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "busy (another command is in progress)"
+msgstr "occupé (une autre commande est en cours)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`DeviceBusy`"
+msgstr "`DeviceBusy`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`301`"
+msgstr "`301`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "not homed (a move needs `HOME` first)"
+msgstr "non référencé (un déplacement demande d'abord `HOME`)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`400`"
+msgstr "`400`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "emergency stop latched (cleared by `*RST`)"
+msgstr "arrêt d'urgence verrouillé (levé par `*RST`)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`DeviceStopped` (a `DriverStopped`)"
+msgstr "`DeviceStopped` (a `DriverStopped`)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`500`"
+msgstr "`500`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "hardware fault"
+msgstr "défaut matériel"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`501`"
+msgstr "`501`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "motion stalled"
+msgstr "mouvement bloqué"
+
+#: ../../hardware/lumoslabs_protocol.md:37
+msgid "Common commands"
+msgstr "Commandes communes"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Command"
+msgstr "Commande"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Reply"
+msgstr "Réponse"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "Effect"
+msgstr "Effet"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`*IDN?`"
+msgstr "`*IDN?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK LUMOSLABS,<model>,<serial>,<firmware>`"
+msgstr "`OK LUMOSLABS,<model>,<serial>,<firmware>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "identification"
+msgstr "identification"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`*RST`"
+msgstr "`*RST`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK`"
+msgstr "`OK`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "stops everything, clears the emergency stop and the errors"
+msgstr "arrête tout, lève l'arrêt d'urgence et efface les erreurs"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`STATUS?`"
+msgstr "`STATUS?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK READY` / `BUSY` / `STOPPED` / `FAULT`"
+msgstr "`OK READY` / `BUSY` / `STOPPED` / `FAULT`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "state of the device"
+msgstr "état de l'appareil"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`BUSY?`"
+msgstr "`BUSY?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK 0` / `OK 1`"
+msgstr "`OK 0` / `OK 1`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "whether a long operation (move, exposure) is in progress"
+msgstr "indique si une opération longue (déplacement, pose) est en cours"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`STOP`"
+msgstr "`STOP`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "emergency stop: interrupts the operation and latches `STOPPED`"
+msgstr "arrêt d'urgence : interrompt l'opération et verrouille `STOPPED`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`LIMITS? <name>`"
+msgstr "`LIMITS? <name>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK <low> <high>`"
+msgstr "`OK <low> <high>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "range of an adjustable quantity"
+msgstr "plage d'une grandeur réglable"
+
+#: ../../hardware/lumoslabs_protocol.md:48
+msgid "Long operations (moves, slot changes, exposures, warm-up) return `OK` at once; the driver polls `BUSY?` until `OK 0`, which lets `STOP` interrupt them."
+msgstr "Les opérations longues (déplacements, changements d'emplacement, poses, préchauffage) renvoient `OK` aussitôt ; le pilote interroge `BUSY?` jusqu'à `OK 0`, ce qui permet à `STOP` de les interrompre."
+
+#: ../../hardware/lumoslabs_protocol.md:51
+msgid "Devices"
+msgstr "Appareils"
+
+#: ../../hardware/lumoslabs_protocol.md:53
+msgid "`LL-LS100` linear stage (100 mm)"
+msgstr "Platine linéaire `LL-LS100` (100 mm)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`HOME`"
+msgstr "`HOME`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK` (long operation, finds the reference switch)"
+msgstr "`OK` (opération longue, trouve le contact de référence)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`MOVE <position[mm]>`"
+msgstr "`MOVE <position[mm]>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK` (long, `ERR 301` before `HOME`, `ERR 200` outside `LIMITS? POS`)"
+msgstr "`OK` (longue, `ERR 301` avant `HOME`, `ERR 200` hors de `LIMITS? POS`)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`POS?`"
+msgstr "`POS?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK <position[mm]>` (encoder reading, with a small position error)"
+msgstr "`OK <position[mm]>` (lecture du codeur, avec une petite erreur de position)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`VEL <speed[mm/s]>`, `VEL?`"
+msgstr "`VEL <speed[mm/s]>`, `VEL?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "velocity (trapezoidal profile with the acceleration `ACC`)"
+msgstr "vitesse (profil trapézoïdal avec l'accélération `ACC`)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`ACC <acceleration[mm/s2]>`, `ACC?`"
+msgstr "`ACC <acceleration[mm/s2]>`, `ACC?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "acceleration"
+msgstr "accélération"
+
+#: ../../hardware/lumoslabs_protocol.md:63
+msgid "`LL-RS360` rotation stage"
+msgstr "Platine de rotation `LL-RS360`"
+
+#: ../../hardware/lumoslabs_protocol.md:65
+msgid "Same commands in degrees (`MOVE 90[deg]`, `VEL 20[deg/s]`); `LIMITS? POS` is ±360 deg."
+msgstr "Mêmes commandes en degrés (`MOVE 90[deg]`, `VEL 20[deg/s]`) ; `LIMITS? POS` vaut ±360 deg."
+
+#: ../../hardware/lumoslabs_protocol.md:67
+msgid "`LL-PZ3` three-axis piezo controller"
+msgstr "Contrôleur piézoélectrique trois axes `LL-PZ3`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`MOVE <axis> <position[um]>`"
+msgstr "`MOVE <axis> <position[um]>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK`, axis `X`, `Y` or `Z`, range 0–30 µm (`LIMITS? POS`)"
+msgstr "`OK`, axe `X`, `Y` ou `Z`, plage 0–30 µm (`LIMITS? POS`)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`POS? <axis>`"
+msgstr "`POS? <axis>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK <position[um]>` (with hysteresis and noise)"
+msgstr "`OK <position[um]>` (avec hystérésis et bruit)"
+
+#: ../../hardware/lumoslabs_protocol.md:74
+msgid "`LL-SH1` shutter"
+msgstr "Obturateur `LL-SH1`"
+
+#: ../../hardware/lumoslabs_protocol.md:76
+msgid "`OPEN`, `CLOSE` (long, 8 ms and 10 ms) and `STATE?` → `OK OPEN` / `CLOSED` / `MOVING`."
+msgstr "`OPEN`, `CLOSE` (longues, 8 ms et 10 ms) et `STATE?` → `OK OPEN` / `CLOSED` / `MOVING`."
+
+#: ../../hardware/lumoslabs_protocol.md:78
+msgid "`LL-FW6` filter wheel"
+msgstr "Roue à filtres `LL-FW6`"
+
+#: ../../hardware/lumoslabs_protocol.md:80
+msgid "`SLOT <n>` (1–6, long: 0.4 s per step, shortest direction) and `SLOT?` → `OK <n>`."
+msgstr "`SLOT <n>` (1–6, longue : 0,4 s par pas, sens le plus court) et `SLOT?` → `OK <n>`."
+
+#: ../../hardware/lumoslabs_protocol.md:82
+msgid "`LL-LD` laser source"
+msgstr "Source laser `LL-LD`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`EMIT ON` / `EMIT OFF`"
+msgstr "`EMIT ON` / `EMIT OFF`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK` (emission; the driver asks a confirmation before `ON`)"
+msgstr "`OK` (émission ; le pilote demande une confirmation avant `ON`)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`EMIT?`"
+msgstr "`EMIT?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK ON` / `OFF`"
+msgstr "`OK ON` / `OFF`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`POWER <power[mW]>`, `POWER?`"
+msgstr "`POWER <power[mW]>`, `POWER?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "set point; `POWER?` returns the emitted power, with warm-up and fluctuations"
+msgstr "consigne ; `POWER?` renvoie la puissance émise, avec préchauffage et fluctuations"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`WL?`"
+msgstr "`WL?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK <wavelength[nm]>`"
+msgstr "`OK <wavelength[nm]>`"
+
+#: ../../hardware/lumoslabs_protocol.md:91
+msgid "`LL-PM` power meter"
+msgstr "Puissancemètre `LL-PM`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`WL <wavelength[nm]>`"
+msgstr "`WL <wavelength[nm]>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "correction wavelength"
+msgstr "longueur d'onde de correction"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`INT <time[s]>`, `INT?`"
+msgstr "`INT <time[s]>`, `INT?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "integration time"
+msgstr "temps d'intégration"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`RANGE <power[W]>`, `RANGE?`"
+msgstr "`RANGE <power[W]>`, `RANGE?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "full scale (readings above it saturate)"
+msgstr "pleine échelle (les lectures au-delà saturent)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`READ?`"
+msgstr "`READ?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK <power[W]>`: the incident power, with offset, gain error and noise"
+msgstr "`OK <puissance[W]>` : la puissance incidente, avec décalage, erreur de gain et bruit"
+
+#: ../../hardware/lumoslabs_protocol.md:100
+msgid "`LL-CAM` scientific camera"
+msgstr "Caméra scientifique `LL-CAM`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`EXP <time[s]>`, `EXP?`"
+msgstr "`EXP <time[s]>`, `EXP?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "exposure time"
+msgstr "temps de pose"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`GAIN <electrons per adu>`, `GAIN?`"
+msgstr "`GAIN <electrons per adu>`, `GAIN?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "conversion gain"
+msgstr "gain de conversion"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`ROI <x> <y> <width> <height>`, `ROI?`"
+msgstr "`ROI <x> <y> <width> <height>`, `ROI?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "region of interest"
+msgstr "région d'intérêt"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`ACQ`"
+msgstr "`ACQ`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK` (long: the exposure)"
+msgstr "`OK` (longue : la pose)"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`FRAME?`"
+msgstr "`FRAME?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK uint16 <h>x<w> b64:...`: the last image in adu"
+msgstr "`OK uint16 <h>x<w> b64:...` : la dernière image en adu"
+
+#: ../../hardware/lumoslabs_protocol.md:110
+msgid "`LL-PCU` phase controller of photonic chips"
+msgstr "Contrôleur de phase de puces photoniques `LL-PCU`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`CHAN?`"
+msgstr "`CHAN?`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK <n>` number of heater channels"
+msgstr "`OK <n>` nombre de voies de chauffage"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`VOLT <channel> <voltage[V]>`, `VOLT? <channel>`"
+msgstr "`VOLT <channel> <voltage[V]>`, `VOLT? <channel>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "heater voltage, 0–10 V, settling time 5 ms"
+msgstr "tension de chauffage, 0–10 V, temps d'établissement 5 ms"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`PHASE? <channel>`"
+msgstr "`PHASE? <channel>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`OK <phase[rad]>`: phase produced, `κV²` plus thermal crosstalk from the neighbours"
+msgstr "`OK <phase[rad]>` : phase produite, `κV²` plus la diaphonie thermique des voisines"
+
+#: ../../hardware/lumoslabs_protocol.md:118
+msgid "Simulation commands"
+msgstr "Commandes de simulation"
+
+#: ../../hardware/lumoslabs_protocol.md:120
+msgid "The emulators of the devices that measure light accept data from the digital twin; real devices ignore them (`ERR 100`)."
+msgstr "Les émulateurs des appareils qui mesurent la lumière acceptent des données du jumeau numérique ; les appareils réels les ignorent (`ERR 100`)."
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`SIM:POWER <power[W]>`"
+msgstr "`SIM:POWER <power[W]>`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "incident power seen by `LL-PM`"
+msgstr "puissance incidente vue par `LL-PM`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`SIM:IMAGE <dtype> <h>x<w> b64:...`"
+msgstr "`SIM:IMAGE <dtype> <h>x<w> b64:...`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "expected image of `LL-CAM`, in electrons per second"
+msgstr "image attendue de `LL-CAM`, en électrons par seconde"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "`SIM:FAULT <kind> [value]`"
+msgstr "`SIM:FAULT <kind> [value]`"
+
+#: ../../hardware/lumoslabs_protocol.md
+msgid "injects a fault: `DISCONNECT`, `DELAY <time[s]>`, `OFFSET <value>`, `STUCK`, `CLEAR`"
+msgstr "injecte un défaut : `DISCONNECT`, `DELAY <durée[s]>`, `OFFSET <valeur>`, `STUCK`, `CLEAR`"
+
+#: ../../hardware/lumoslabs_protocol.md:129
+msgid "The emulators add their own defects to what the twin sends them (noise, offset, gain error, hot pixels): the measured and simulated outputs then differ in a controlled way."
+msgstr "Les émulateurs ajoutent leurs propres défauts à ce que le jumeau leur envoie (bruit, décalage, erreur de gain, pixels chauds) : les sorties mesurées et simulées diffèrent alors de façon maîtrisée."
+

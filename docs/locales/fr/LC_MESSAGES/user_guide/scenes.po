@@ -1,0 +1,173 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../user_guide/scenes.md:1
+msgid "Scenes and extended objects"
+msgstr "Scènes et objets étendus"
+
+#: ../../user_guide/scenes.md:3
+msgid "A **scene** describes what an instrument observes: point sources (stars, planets) and diffuse objects (disks, nebulae, galaxies, backgrounds, maps), placed in a frame."
+msgstr "Une **scène** décrit ce qu'un instrument observe : des sources ponctuelles (étoiles, planètes) et des objets diffus (disques, nébuleuses, galaxies, fonds, cartes), placés dans un repère."
+
+#: ../../user_guide/scenes.md:33
+msgid "Frames"
+msgstr "Repères"
+
+#: ../../user_guide/scenes.md
+msgid "Frame"
+msgstr "Repère"
+
+#: ../../user_guide/scenes.md
+msgid "Coordinates"
+msgstr "Coordonnées"
+
+#: ../../user_guide/scenes.md
+msgid "Objects"
+msgstr "Objets"
+
+#: ../../user_guide/scenes.md
+msgid "`celestial`"
+msgstr "`celestial`"
+
+#: ../../user_guide/scenes.md
+msgid "ICRS pointing `(ra, dec)`, angles on the sky (East towards +x, North towards +y)"
+msgstr "pointage ICRS `(ra, dec)`, angles sur le ciel (Est vers +x, Nord vers +y)"
+
+#: ../../user_guide/scenes.md
+msgid "at infinity"
+msgstr "à l'infini"
+
+#: ../../user_guide/scenes.md
+msgid "`terrestrial`"
+msgstr "`terrestrial`"
+
+#: ../../user_guide/scenes.md
+msgid "site `(latitude, longitude, altitude)`, angles seen from the instrument"
+msgstr "site `(latitude, longitude, altitude)`, angles vus de l'instrument"
+
+#: ../../user_guide/scenes.md
+msgid "`laboratory`"
+msgstr "`laboratory`"
+
+#: ../../user_guide/scenes.md
+msgid "metres, at `distance` from the pupil"
+msgstr "mètres, à `distance` de la pupille"
+
+#: ../../user_guide/scenes.md
+msgid "finite distance"
+msgstr "distance finie"
+
+#: ../../user_guide/scenes.md:41
+msgid "Laboratory maps keep their radiance (radiance is invariant along rays) and are seen with pixels of `dx / distance` radians."
+msgstr "Les cartes de laboratoire gardent leur luminance (la luminance se conserve le long des rayons) et sont vues avec des pixels de `dx / distance` radians."
+
+#: ../../user_guide/scenes.md:44
+msgid "Components"
+msgstr "Composantes"
+
+#: ../../user_guide/scenes.md:46
+msgid "**Point components**: any element producing a `SourceList` (`PointSource`, `Star`, `PlanetarySystem`)."
+msgstr "**Composantes ponctuelles** : tout élément produisant une `SourceList` (`PointSource`, `Star`, `PlanetarySystem`)."
+
+#: ../../user_guide/scenes.md:47
+msgid "**Parametric diffuse components** (`lumos.scenes.diffuse`): `UniformDisk`, `GaussianComponent`, `SersicComponent`, `InclinedRing` (debris and exo-zodiacal disks), `UniformBackground`, `ZodiacalLight`; each with a total flux density (or a surface brightness) at a reference wavelength and a flat or blackbody spectrum."
+msgstr "**Composantes diffuses paramétriques** (`lumos.scenes.diffuse`) : `UniformDisk`, `GaussianComponent`, `SersicComponent`, `InclinedRing` (disques de débris et exozodiacaux), `UniformBackground`, `ZodiacalLight` ; chacune avec une densité de flux totale (ou une brillance de surface) à une longueur d'onde de référence et un spectre plat ou de corps noir."
+
+#: ../../user_guide/scenes.md:51
+msgid "**Maps** (`lumos.scenes.mapped.MappedComponent`): `from_fits` (images and cubes with a WCS, `BUNIT` in Jy/pixel, MJy/sr, Jy/arcsec², W m⁻² sr⁻¹ m⁻¹...), `from_array`, `from_image` (PNG, JPEG, TIFF with a calibration)."
+msgstr "**Cartes** (`lumos.scenes.mapped.MappedComponent`) : `from_fits` (images et cubes avec un WCS, `BUNIT` en Jy/pixel, MJy/sr, Jy/arcsec², W m⁻² sr⁻¹ m⁻¹…), `from_array`, `from_image` (PNG, JPEG, TIFF avec une calibration)."
+
+#: ../../user_guide/scenes.md:54
+msgid "**Procedural components** (`lumos.scenes.procedural`): `GaussianRandomField` (log-normal texture with a power-law spectrum), `SiemensStar`, `Checkerboard`, `BarTarget`; their grid is angular (`pixel_scale`) or spatial (`pixel_size`, laboratory charts) and their sizes are angles or lengths accordingly, or numbers of pixels on both (`SiemensStar(radius=50 * u.mas, pixel_scale=1 * u.mas)`, `BarTarget(period=0.2 * u.mm, pixel_size=10 * u.um)`, `Checkerboard(period=8)`)."
+msgstr "**Composantes procédurales** (`lumos.scenes.procedural`) : `GaussianRandomField` (texture log-normale de spectre en loi de puissance), `SiemensStar`, `Checkerboard`, `BarTarget` ; leur grille est angulaire (`pixel_scale`) ou spatiale (`pixel_size`, mires de laboratoire) et leurs tailles sont en conséquence des angles ou des longueurs, ou des nombres de pixels dans les deux cas (`SiemensStar(radius=50 * u.mas, pixel_scale=1 * u.mas)`, `BarTarget(period=0.2 * u.mm, pixel_size=10 * u.um)`, `Checkerboard(period=8)`)."
+
+#: ../../user_guide/scenes.md:60
+msgid "Diffuse components are evaluated on their own grids and resampled onto the scene grid, conserving the flux."
+msgstr "Les composantes diffuses sont évaluées sur leurs propres grilles et rééchantillonnées sur la grille de la scène en conservant le flux."
+
+#: ../../user_guide/scenes.md:62
+msgid "Radiometry"
+msgstr "Radiométrie"
+
+#: ../../user_guide/scenes.md:64
+msgid "`lumos.physics.radiometry` gives the blackbody radiance, photon energies and photon ↔ energy conversions, solid angles of cones, étendue, Lambertian exitance, the irradiance of a uniform disk, the power collected by a pupil and spectral integrals; magnitudes are in `lumos.physics.photometry`."
+msgstr "`lumos.physics.radiometry` donne la luminance du corps noir, les énergies des photons et les conversions photons ↔ énergie, les angles solides des cônes, l'étendue géométrique, l'émittance lambertienne, l'éclairement d'un disque uniforme, la puissance collectée par une pupille et des intégrales spectrales ; les magnitudes sont dans `lumos.physics.photometry`."
+
+#: ../../user_guide/scenes.md:68
+msgid "Imaging an extended scene"
+msgstr "Imager une scène étendue"
+
+#: ../../user_guide/scenes.md:70
+msgid "`image_scene` images a radiance map through the part of a context between an input receiving point sources and an output field:"
+msgstr "`image_scene` image une carte de luminance à travers la partie d'un contexte comprise entre une entrée recevant des sources ponctuelles et un champ de sortie :"
+
+#: ../../user_guide/scenes.md
+msgid "Strategy"
+msgstr "Stratégie"
+
+#: ../../user_guide/scenes.md
+msgid "Principle"
+msgstr "Principe"
+
+#: ../../user_guide/scenes.md
+msgid "When"
+msgstr "Quand"
+
+#: ../../user_guide/scenes.md
+msgid "`isoplanatic`"
+msgstr "`isoplanatic`"
+
+#: ../../user_guide/scenes.md
+msgid "convolution of the scene by the on-axis PSF"
+msgstr "convolution de la scène par la PSF sur l'axe"
+
+#: ../../user_guide/scenes.md
+msgid "shift-invariant systems (default for them)"
+msgstr "systèmes invariants par translation (défaut pour eux)"
+
+#: ../../user_guide/scenes.md
+msgid "`anisoplanatic`"
+msgstr "`anisoplanatic`"
+
+#: ../../user_guide/scenes.md
+msgid "PSFs on a grid of field points, interpolated"
+msgstr "PSF sur une grille de points du champ, interpolées"
+
+#: ../../user_guide/scenes.md
+msgid "slowly varying PSFs (on request)"
+msgstr "PSF variant lentement (sur demande)"
+
+#: ../../user_guide/scenes.md
+msgid "`decomposition`"
+msgstr "`decomposition`"
+
+#: ../../user_guide/scenes.md
+msgid "one incoherent point source per pixel"
+msgstr "une source ponctuelle incohérente par pixel"
+
+#: ../../user_guide/scenes.md
+msgid "coronagraphs, interferometers, fibres"
+msgstr "coronographes, interféromètres, fibres"
+
+#: ../../user_guide/scenes.md:88
+msgid "The automatic choice probes the system with an off-axis point; it is logged. Inside a graph, the element `SceneToSources` decomposes a scene: `sky.radiance >> SceneToSources() >> telescope`. See [ADR-0011](../adr/0011-extended-scene-imaging.md) and the notebook *Extended scenes*."
+msgstr "Le choix automatique sonde le système avec un point hors axe ; il est journalisé. Dans un graphe, l'élément `SceneToSources` décompose une scène : `sky.radiance >> SceneToSources() >> telescope`. Voir l'[ADR-0011](../adr/0011-extended-scene-imaging.md) et le notebook *Scènes étendues*."
+

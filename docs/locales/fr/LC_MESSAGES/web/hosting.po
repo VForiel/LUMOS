@@ -1,0 +1,186 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/hosting.md:1
+msgid "Hosting"
+msgstr "Hébergement"
+
+#: ../../web/hosting.md:3
+msgid "On your machine, with Docker"
+msgstr "Sur votre machine, avec Docker"
+
+#: ../../web/hosting.md:5
+msgid "The image holds the backend and the interface. From the root of the repository:"
+msgstr "L'image contient le serveur et l'interface. Depuis la racine du dépôt :"
+
+#: ../../web/hosting.md:11
+msgid "The interface is at <http://localhost:8000>. The image runs the **local** profile: inside the container the server listens on all interfaces (`--listen-all`), and the compose file publishes its port on `127.0.0.1` only, so no other machine can reach it. Archives of the runs are kept in the `lumos-data` volume. Without compose:"
+msgstr "L'interface est à <http://localhost:8000>. L'image utilise le profil **local** : dans le conteneur, le serveur écoute sur toutes les interfaces (`--listen-all`), et le fichier compose publie son port sur `127.0.0.1` seulement, si bien qu'aucune autre machine ne peut l'atteindre. Les archives des exécutions sont gardées dans le volume `lumos-data`. Sans compose :"
+
+#: ../../web/hosting.md:20
+msgid "Never publish the port of the local profile on another address (`-p 8000:8000`): its user has every right."
+msgstr "Ne publiez jamais le port du profil local sur une autre adresse (`-p 8000:8000`) : son utilisateur a tous les droits."
+
+#: ../../web/hosting.md:22
+msgid "A public instance on a VPS"
+msgstr "Une instance publique sur un VPS"
+
+#: ../../web/hosting.md:24
+msgid "The public instance serves anonymous visitors (simulators by default) with quotas, behind a reverse proxy that terminates TLS. `deploy/public/` holds a working setup with [Caddy](https://caddyserver.com), which obtains and renews the certificates by itself."
+msgstr "L'instance publique sert des visiteurs anonymes (simulateurs par défaut) avec des quotas, derrière un mandataire inverse qui termine TLS. `deploy/public/` contient une configuration fonctionnelle avec [Caddy](https://caddyserver.com), qui obtient et renouvelle les certificats seul."
+
+#: ../../web/hosting.md:28
+msgid "Requirements"
+msgstr "Prérequis"
+
+#: ../../web/hosting.md:30
+msgid "A VPS with Docker and Docker Compose; 4 cores and 8 GB of memory serve a few dozen simultaneous visitors with the default quotas (the computations are the limit, not the interface)."
+msgstr "Un VPS avec Docker et Docker Compose ; 4 cœurs et 8 Go de mémoire servent quelques dizaines de visiteurs simultanés avec les quotas par défaut (ce sont les calculs qui limitent, pas l'interface)."
+
+#: ../../web/hosting.md:32
+msgid "A DNS name pointing to the VPS (`lumos.example.org` below); ports 80 and 443 open."
+msgstr "Un nom DNS pointant vers le VPS (`lumos.example.org` ci-dessous) ; ports 80 et 443 ouverts."
+
+#: ../../web/hosting.md:34
+msgid "Steps"
+msgstr "Étapes"
+
+#: ../../web/hosting.md:36
+msgid "Copy the repository to the VPS (or only `deploy/` with an image built elsewhere)."
+msgstr "Copiez le dépôt sur le VPS (ou seulement `deploy/` avec une image construite ailleurs)."
+
+#: ../../web/hosting.md:37
+msgid "Replace `lumos.example.org` by your host name in `deploy/public/lumos.toml` (`allowed_hosts`) and `deploy/public/Caddyfile`."
+msgstr "Remplacez `lumos.example.org` par votre nom d'hôte dans `deploy/public/lumos.toml` (`allowed_hosts`) et `deploy/public/Caddyfile`."
+
+#: ../../web/hosting.md:39
+msgid "Adapt the quotas of `lumos.toml` to the machine (see below)."
+msgstr "Adaptez les quotas de `lumos.toml` à la machine (voir ci-dessous)."
+
+#: ../../web/hosting.md:40
+msgid "Start it:"
+msgstr "Démarrez-la :"
+
+#: ../../web/hosting.md:47
+#, python-brace-format
+msgid "Open `https://lumos.example.org`. `https://lumos.example.org/api/health` answers `{\"status\": \"ok\"}`."
+msgstr "Ouvrez `https://lumos.example.org`. `https://lumos.example.org/api/health` répond `{\"status\": \"ok\"}`."
+
+#: ../../web/hosting.md:49
+msgid "Sizing the quotas"
+msgstr "Dimensionner les quotas"
+
+#: ../../web/hosting.md:51
+msgid "The quotas bound what one visitor and all visitors together may compute ([Configuration](configuration.md)):"
+msgstr "Les quotas bornent ce qu'un visiteur et l'ensemble des visiteurs peuvent calculer ([Configuration](configuration.md)) :"
+
+#: ../../web/hosting.md
+msgid "Setting"
+msgstr "Réglage"
+
+#: ../../web/hosting.md
+msgid "Rule of thumb"
+msgstr "Règle pratique"
+
+#: ../../web/hosting.md
+msgid "`max_workers`, `max_concurrent_runs`"
+msgstr "`max_workers`, `max_concurrent_runs`"
+
+#: ../../web/hosting.md
+msgid "number of cores minus one"
+msgstr "nombre de cœurs moins un"
+
+#: ../../web/hosting.md
+msgid "`max_memory_mb`"
+msgstr "`max_memory_mb`"
+
+#: ../../web/hosting.md
+msgid "memory of the machine divided by `max_concurrent_runs`, minus a margin"
+msgstr "mémoire de la machine divisée par `max_concurrent_runs`, moins une marge"
+
+#: ../../web/hosting.md
+msgid "`max_grid_pixels`"
+msgstr "`max_grid_pixels`"
+
+#: ../../web/hosting.md
+msgid "1024 (a 1024 × 1024 complex field takes 16 MB per wavelength)"
+msgstr "1024 (un champ complexe de 1024 × 1024 occupe 16 Mo par longueur d'onde)"
+
+#: ../../web/hosting.md
+msgid "`max_run_seconds`"
+msgstr "`max_run_seconds`"
+
+#: ../../web/hosting.md
+msgid "60 for interactive use"
+msgstr "60 pour un usage interactif"
+
+#: ../../web/hosting.md
+msgid "`max_sessions`, `requests_per_minute`"
+msgstr "`max_sessions`, `requests_per_minute`"
+
+#: ../../web/hosting.md
+msgid "a few hundred"
+msgstr "quelques centaines"
+
+#: ../../web/hosting.md:61
+msgid "The compose file also limits the CPU and memory of the container, so that the proxy stays responsive."
+msgstr "Le fichier compose limite aussi le processeur et la mémoire du conteneur, pour que le mandataire reste réactif."
+
+#: ../../web/hosting.md:63
+msgid "Accounts"
+msgstr "Comptes"
+
+#: ../../web/hosting.md:65
+msgid "Anonymous visitors need no account. To give some users more rights (or to require a login with `anonymous_role = \"none\"`), create the users file in the volume and point `users_file` to it:"
+msgstr "Les visiteurs anonymes n'ont besoin d'aucun compte. Pour donner plus de droits à certains utilisateurs (ou exiger une connexion avec `anonymous_role = \"none\"`), créez le fichier des utilisateurs dans le volume et faites-y pointer `users_file` :"
+
+#: ../../web/hosting.md:72
+msgid "See [Accounts and security](accounts.md)."
+msgstr "Voir [Comptes et sécurité](accounts.md)."
+
+#: ../../web/hosting.md:74
+msgid "Operating equipment from a public instance"
+msgstr "Opérer du matériel depuis une instance publique"
+
+#: ../../web/hosting.md:76
+msgid "It stays disabled unless you decide otherwise: set `operation_enabled = true`, keep the instance behind TLS (`trust_proxy = true` with the proxy above) and register at least one operator. The server refuses to start when one of these is missing. Every action is confirmed in the interface and written to the audit journal."
+msgstr "Cela reste désactivé à moins que vous n'en décidiez autrement : réglez `operation_enabled = true`, gardez l'instance derrière TLS (`trust_proxy = true` avec le mandataire ci-dessus) et enregistrez au moins un opérateur. Le serveur refuse de démarrer s'il en manque un. Chaque action est confirmée dans l'interface et écrite dans le journal d'audit."
+
+#: ../../web/hosting.md:80
+msgid "Maintenance"
+msgstr "Maintenance"
+
+#: ../../web/hosting.md:82
+msgid "**Updates**: pull the new version, then `docker compose -f deploy/public/compose.yaml up -d --build`. Sessions are kept in memory: a restart logs everybody out (the interface restores the context of each visitor from their browser)."
+msgstr "**Mises à jour** : récupérez la nouvelle version, puis `docker compose -f deploy/public/compose.yaml up -d --build`. Les sessions sont gardées en mémoire : un redémarrage déconnecte tout le monde (l'interface restaure le contexte de chaque visiteur depuis son navigateur)."
+
+#: ../../web/hosting.md:85
+msgid "**Backups**: the `lumos-data` volume holds the users file, the audit journal and the archives."
+msgstr "**Sauvegardes** : le volume `lumos-data` contient le fichier des utilisateurs, le journal d'audit et les archives."
+
+#: ../../web/hosting.md:86
+msgid "**Logs**: `docker compose logs lumos`; security events are in `/data/audit.log` (one JSON object per line)."
+msgstr "**Journaux** : `docker compose logs lumos` ; les événements de sécurité sont dans `/data/audit.log` (un objet JSON par ligne)."
+
+#: ../../web/hosting.md:87
+msgid "**Checklist**: HTTPS only (Caddy redirects HTTP), `allowed_hosts` set, operation disabled or guarded, quotas adapted, volume backed up, the image updated with LUMOS."
+msgstr "**Liste de contrôle** : HTTPS seulement (Caddy redirige HTTP), `allowed_hosts` renseigné, opération désactivée ou protégée, quotas adaptés, volume sauvegardé, image mise à jour avec LUMOS."
+

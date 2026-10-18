@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:10002
+msgid "5. Extended scenes"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:10004
+msgid "A **scene** gathers what an instrument observes: point sources (stars, planets) and diffuse objects (disks, nebulae, backgrounds, maps). Extended scenes are incoherent: their image is the sum of the images of their points. LUMOS images them with one of three strategies, chosen automatically and logged:"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:10008
+msgid "**isoplanatic**: the scene convolved by the PSF, for shift-invariant systems;"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:10009
+msgid "**anisoplanatic**: PSFs on a grid of field points, interpolated;"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:10010
+msgid "**decomposition**: every pixel becomes a point source, compulsory for coronagraphs and interferometers."
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:20002
+#, python-format
+msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/05_extended_scenes.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F05_extended_scenes.ipynb)"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:20002
+msgid "Open in Colab"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:20002
+msgid "Launch on Binder"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:50002
+msgid "A debris disk behind a coronagraph"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:50004
+msgid "The preset `debris_disk.lumos` holds a star and an inclined ring 1000 times fainter, decomposed into point sources by the `SceneToSources` element and imaged through an 8 m telescope and a vortex coronagraph."
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:70002
+msgid "The same scene with `image_scene`"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:70004
+msgid "`image_scene` probes the system: an off-axis PSF is compared with the on-axis one. The coronagraph removes the on-axis star but not the off-axis light: it is not shift-invariant, so the scene is decomposed."
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:100002
+msgid "A nebula"
+msgstr ""
+
+#: ../../examples/notebooks/05_extended_scenes.ipynb:100004
+msgid "A random texture with a power-law spectrum stands for a nebula; imaged by a plain telescope, the system is shift-invariant and the scene is convolved by the PSF."
+msgstr ""
+

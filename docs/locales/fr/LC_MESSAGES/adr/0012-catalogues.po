@@ -1,0 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0012-catalogues.md:1
+msgid "ADR-0012: Astronomical catalogues"
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:4
+msgid "**Date**: 2026-10-17"
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:5
+msgid "**Plan step**: P9.1 to P9.9 (REQ-CAT-1 to REQ-CAT-7, NF-7)"
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:9
+msgid ""
+"LUMOS reads a dozen services (SIMBAD, VizieR, Gaia, CALSPEC, ESO, IRSA, "
+"MAST, the NASA Exoplanet Archive, exoplanet.eu, JPL Horizons, the SVO "
+"Filter Profile Service, SkyView, hips2fits) and must stay safe (TLS "
+"always verified, timeouts), usable offline, testable without network, and"
+" traceable (provenance of every value)."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:13
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:15
+msgid ""
+"**One network layer** (`lumos.catalogs.http.fetch`): `https` only, TLS "
+"verification that cannot be turned off, a timeout on every request, a "
+"JSON user cache keyed by method, URL, parameters and body (7-day "
+"lifetime), an offline mode, and an injectable transport (`requests` by "
+"default). `LUMOS_CATALOGS_CACHE` and `LUMOS_CATALOGS_OFFLINE` set the "
+"cache and the offline mode for notebooks and CI."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:19
+msgid ""
+"**Thin providers on standard protocols**: IVOA TAP (ADQL, VOTable read "
+"with astropy) for SIMBAD, Gaia DR3, the NASA Exoplanet Archive "
+"(`pscomppars`), IRSA (2MASS), ESO and MAST (ObsCore); plain HTTP for the "
+"VizieR SED service, CALSPEC and Pickles files (STScI), the SVO FPS, JPL "
+"Horizons (JSON API), SkyView and hips2fits. `astroquery` and `pyvo` are "
+"not needed: the `[catalogs]` extra only holds `requests`."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:23
+msgid ""
+"**exoplanet.eu** is read from its CSV catalogue (its TAP server refused "
+"connections on 2026-10-16); the file (3.7 MB) is cached like any answer."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:25
+msgid ""
+"**Solar reference spectrum**: CALSPEC `sun_reference_stis` (Bohlin et al."
+" 2001) instead of the ASTM E490 table, which is distributed as a "
+"spreadsheet; both agree within a few percent."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:27
+msgid ""
+"**Typed records** (`StarRecord`, `ExoplanetRecord`, `SolarSystemRecord`, "
+"`ExtendedObjectRecord`): every field is a `Measurement` (value with unit,"
+" uncertainty, provider, reference, `estimated` flag)."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:29
+msgid ""
+"**SED fusion rules**: one point per filter, priority catalogues first "
+"(`DEFAULT_PRIORITIES`), then the smallest relative uncertainty, then the "
+"median; completion by a blackbody fit, flagged as estimated; a measured "
+"effective temperature is kept and only the solid angle is fitted."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:32
+msgid ""
+"**Tests on recorded answers**: `tools/record_catalog_fixtures.py` records"
+" the real answers with `requests` (independently of LUMOS) in "
+"`tests/fixtures/catalogs`; a replay transport answers the requests of "
+"LUMOS and refuses any other. Expected values are those of the catalogues,"
+" cited in the tests."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:36
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:38
+msgid ""
+"`astroquery` everywhere: convenient, but heavy, with its own caches and "
+"network settings that would bypass the guarantees of the network layer "
+"(TLS, timeouts, offline mode)."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:40
+msgid ""
+"Mocking parsed results instead of recording raw answers: the tests would "
+"not check the parsing of the real formats."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:43
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:45
+msgid ""
+"Service changes (columns, formats) are caught by re-recording the "
+"fixtures; network tests can be added under the `network` marker."
+msgstr ""
+
+#: ../../adr/0012-catalogues.md:47
+msgid ""
+"The cache of `examples/catalog_cache` must be re-recorded when the "
+"notebook `06` changes its queries."
+msgstr ""
+

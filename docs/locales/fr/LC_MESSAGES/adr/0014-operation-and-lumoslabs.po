@@ -1,0 +1,180 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0014-operation-and-lumoslabs.md:1
+msgid "ADR-0014: Operation mode, LumosLabs equipment and the digital twin"
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:4
+msgid "**Date**: 2026-10-17"
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:5
+msgid "**Plan step**: P12.1 to P12.10 (REQ-HW-1 to REQ-HW-8, REQ-EL-7)"
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:9
+msgid ""
+"In operation mode the actions of elements are sent to real equipment "
+"(ADR-0006, step P5.6 gave the `Driver` interface and `SimulatedDriver`). "
+"Phase 12 must make this path safe and testable without hardware: bounds, "
+"emergency stop, dry-run, confirmations, timeouts and recovery (REQ-HW-4),"
+" transports (serial, TCP, VISA), a reference family of virtual devices, "
+"LumosLabs, whose emulators speak a documented protocol over a real "
+"transport (REQ-HW-3), discovery, the digital twin with real and simulated"
+" outputs side by side (REQ-EL-7) and recorded sequences."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:16
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:18
+msgid ""
+"**Package** `lumos.hardware`: `transport` (`Transport` with "
+"`TCPTransport`, `SerialTransport` on pyserial URLs, including `loop://` "
+"and `socket://`, `VisaTransport` on pyvisa, and an in-process "
+"`PipeTransport`), `protocol` (the LumosLabs ASCII protocol), `emulators` "
+"(one class per device and a threaded TCP server), `drivers` (one driver "
+"per device, plus the plugin registry), `discovery`, `twin` and "
+"`sequence`. pyserial and pyvisa stay optional (extra `[hardware]`); TCP "
+"and pipes need nothing."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:23
+msgid ""
+"**Driver safety in the base class**, so that every driver gets it: "
+"software limits checked in `send` for every command, including commands "
+"sent directly to the driver; `dry_run` validates and logs without "
+"sending; actions listed as dangerous need a confirmation callback "
+"(refused when absent); timeouts and a bounded number of reconnections on "
+"transport errors; `stop()` usable from another thread, interrupting a "
+"wait in progress; `safe_state()` (laser off, shutter closed, motion "
+"stopped). `Context.stop_all()` stops every driver, and "
+"`Context.operation_guard()` brings every driver to its safe state on "
+"`KeyboardInterrupt` or any exception."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:29
+msgid ""
+"**Protocol**: one ASCII line per command and per reply, `\\n`-terminated;"
+" replies `OK [value [unit]]` or `ERR <code> <message>`; common commands "
+"`*IDN?`, `*RST`, `STATUS?`, `BUSY?`, `STOP`, `LIMITS? <name>`; quantities"
+" always carry their unit. Long operations (moves, exposures) return at "
+"once and are followed by `BUSY?` polling, which lets `STOP` interrupt "
+"them."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:33
+msgid ""
+"**Emulators** run in-process (tests, notebooks) or as TCP servers (`lumos"
+" emulators start`). They model latencies, noise, limits, homing, drifts "
+"and **fault injection** (disconnection, delay, out-of-range value, stuck "
+"motion). `LL-CAM` and `LL-PM` measure what the twin sends them through "
+"`SIM:` commands of the protocol (`SIM:POWER`, `SIM:IMAGE`), then add "
+"their own noise and defects: the real and simulated outputs then differ "
+"in a controlled way."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:38
+msgid ""
+"**Lab elements** (`lumos.elements.lab`): stages, piezo controller, "
+"shutter, filter wheel, laser source, phase controller; "
+"`ctx.link(\"stage.position\", \"gap.distance\", offset=...)` lets an "
+"actuator drive a parameter of the optical model, so that the twin follows"
+" the bench."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:41
+msgid ""
+"**Twin outputs**: in operation, detectors attached to a driver return the"
+" measured `DataProduct`; the result of `ctx.run` also holds the simulated"
+" outputs (`result.twin`) and the residuals (`result.residuals`)."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:43
+msgid ""
+"**Sequences**: `ctx.record()` records the actions as commands with their "
+"arguments; a sequence replays in any mode and its commands are identical "
+"in simulation and in operation."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:45
+msgid ""
+"**Plugins**: drivers of other packages register through the "
+"`lumos.drivers` entry points."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:47
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:49
+msgid ""
+"Driving the emulators by direct method calls: simpler, but the drivers "
+"would not go through transports, errors and latencies (REQ-HW-3 requires "
+"the same code path as real equipment)."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:51
+msgid ""
+"asyncio drivers: the rest of LUMOS is synchronous; threads (a stop from "
+"another thread, a polling loop) are enough for the bench equipment "
+"considered."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:53
+msgid ""
+"SCPI as the protocol: close in spirit, but its full grammar is much "
+"larger than needed; the LumosLabs protocol borrows `*IDN?`/`*RST` and "
+"keeps units explicit."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:56
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:58
+msgid ""
+"Every new driver inherits the safety mechanisms; the emulators double as "
+"the reference implementation of the protocol."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:60
+msgid ""
+"The notebook `10_bench_operation` and the tests run against the emulators"
+" without hardware."
+msgstr ""
+
+#: ../../adr/0014-operation-and-lumoslabs.md:61
+msgid ""
+"Vendor drivers (Thorlabs first) follow the same interface; the coverage "
+"of their SDKs is documented."
+msgstr ""
+

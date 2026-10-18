@@ -42,3 +42,4 @@ msgstr "Premiers pas"
 #: ../../getting_started.md:27
 msgid "The first simulation tutorial will be added when the core of the library is available."
 msgstr "Le premier tutoriel de simulation sera ajouté dès que le cœur de la bibliothèque sera disponible."
+

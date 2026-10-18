@@ -1,0 +1,401 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/configuration.md:1
+msgid "Configuration"
+msgstr "Configuration"
+
+#: ../../web/configuration.md:3
+msgid "An instance is configured by its profile, a TOML file and options of `lumos web`; options win over the file, and the file wins over the defaults of the profile."
+msgstr "Une instance se configure par son profil, un fichier TOML et les options de `lumos web` ; les options l'emportent sur le fichier, et le fichier sur les valeurs par défaut du profil."
+
+#: ../../web/configuration.md:6
+msgid "Profiles"
+msgstr "Profils"
+
+#: ../../web/configuration.md
+msgid "`local` (default)"
+msgstr "`local` (par défaut)"
+
+#: ../../web/configuration.md
+msgid "`public`"
+msgstr "`public`"
+
+#: ../../web/configuration.md
+msgid "Listens on"
+msgstr "Écoute sur"
+
+#: ../../web/configuration.md
+msgid "`127.0.0.1` only"
+msgstr "`127.0.0.1` seulement"
+
+#: ../../web/configuration.md
+msgid "the address you give (`host`)"
+msgstr "l'adresse donnée (`host`)"
+
+#: ../../web/configuration.md
+msgid "Visitors who did not log in"
+msgstr "Visiteurs non connectés"
+
+#: ../../web/configuration.md
+msgid "operators (it is your machine)"
+msgstr "opérateurs (c'est votre machine)"
+
+#: ../../web/configuration.md
+msgid "simulators (`anonymous_role`)"
+msgstr "simulateurs (`anonymous_role`)"
+
+#: ../../web/configuration.md
+msgid "Operation of equipment"
+msgstr "Opération de matériel"
+
+#: ../../web/configuration.md
+msgid "with `--enable-operation`, each action confirmed"
+msgstr "avec `--enable-operation`, chaque action confirmée"
+
+#: ../../web/configuration.md
+msgid "disabled; can be enabled with TLS and operators"
+msgstr "désactivée ; activable avec TLS et des opérateurs"
+
+#: ../../web/configuration.md
+msgid "Quotas"
+msgstr "Quotas"
+
+#: ../../web/configuration.md
+msgid "none"
+msgstr "aucun"
+
+#: ../../web/configuration.md
+msgid "grids, memory, time, concurrency, sessions, requests"
+msgstr "grilles, mémoire, durée, concurrence, sessions, requêtes"
+
+#: ../../web/configuration.md:15
+msgid "The local profile refuses to listen on another address: use the public profile for that. An unsafe configuration stops the server at start-up with a message saying what is missing."
+msgstr "Le profil local refuse d'écouter sur une autre adresse : utilisez le profil public pour cela. Une configuration dangereuse arrête le serveur au démarrage avec un message disant ce qui manque."
+
+#: ../../web/configuration.md:18
+msgid "Configuration file"
+msgstr "Fichier de configuration"
+
+#: ../../web/configuration.md:49
+msgid "Settings"
+msgstr "Réglages"
+
+#: ../../web/configuration.md
+msgid "Setting"
+msgstr "Réglage"
+
+#: ../../web/configuration.md
+msgid "Default (local / public)"
+msgstr "Défaut (local / public)"
+
+#: ../../web/configuration.md
+msgid "Meaning"
+msgstr "Signification"
+
+#: ../../web/configuration.md
+msgid "`profile`"
+msgstr "`profile`"
+
+#: ../../web/configuration.md
+msgid "`local`"
+msgstr "`local`"
+
+#: ../../web/configuration.md
+msgid "`local` or `public`"
+msgstr "`local` ou `public`"
+
+#: ../../web/configuration.md
+msgid "`host`, `port`"
+msgstr "`host`, `port`"
+
+#: ../../web/configuration.md
+msgid "`127.0.0.1`, `8000`"
+msgstr "`127.0.0.1`, `8000`"
+
+#: ../../web/configuration.md
+msgid "address to listen on"
+msgstr "adresse d'écoute"
+
+#: ../../web/configuration.md
+msgid "`allowed_hosts`"
+msgstr "`allowed_hosts`"
+
+#: ../../web/configuration.md
+msgid "—"
+msgstr "—"
+
+#: ../../web/configuration.md
+msgid "host names accepted in requests (all on a public instance if empty)"
+msgstr "noms d'hôte acceptés dans les requêtes (tous sur une instance publique si vide)"
+
+#: ../../web/configuration.md
+msgid "`allowed_origins`"
+msgstr "`allowed_origins`"
+
+#: ../../web/configuration.md
+msgid "extra origins allowed to open WebSockets (development servers)"
+msgstr "origines supplémentaires autorisées à ouvrir des WebSockets (serveurs de développement)"
+
+#: ../../web/configuration.md
+msgid "`trust_proxy`"
+msgstr "`trust_proxy`"
+
+#: ../../web/configuration.md
+msgid "`false`"
+msgstr "`false`"
+
+#: ../../web/configuration.md
+msgid "behind a reverse proxy terminating TLS"
+msgstr "derrière un mandataire inverse qui termine TLS"
+
+#: ../../web/configuration.md
+msgid "`tls_certfile`, `tls_keyfile`"
+msgstr "`tls_certfile`, `tls_keyfile`"
+
+#: ../../web/configuration.md
+msgid "serve HTTPS directly"
+msgstr "servir HTTPS directement"
+
+#: ../../web/configuration.md
+msgid "`users_file`"
+msgstr "`users_file`"
+
+#: ../../web/configuration.md
+msgid "users and roles ([Accounts](accounts.md))"
+msgstr "utilisateurs et rôles ([Comptes](accounts.md))"
+
+#: ../../web/configuration.md
+msgid "`anonymous_role`"
+msgstr "`anonymous_role`"
+
+#: ../../web/configuration.md
+msgid "`operator` / `simulator`"
+msgstr "`operator` / `simulator`"
+
+#: ../../web/configuration.md
+msgid "role of visitors who did not log in: `\"viewer\"` shows without computing, `\"none\"` requires a login"
+msgstr "rôle des visiteurs non connectés : `\"viewer\"` montre sans calculer, `\"none\"` exige une connexion"
+
+#: ../../web/configuration.md
+msgid "`session_idle_minutes`"
+msgstr "`session_idle_minutes`"
+
+#: ../../web/configuration.md
+msgid "720"
+msgstr "720"
+
+#: ../../web/configuration.md
+msgid "sessions end after this idle time"
+msgstr "les sessions se terminent après ce temps d'inactivité"
+
+#: ../../web/configuration.md
+msgid "`session_max_hours`"
+msgstr "`session_max_hours`"
+
+#: ../../web/configuration.md
+msgid "12"
+msgstr "12"
+
+#: ../../web/configuration.md
+msgid "logged-in sessions end after this time"
+msgstr "les sessions connectées se terminent après cette durée"
+
+#: ../../web/configuration.md
+msgid "`challenge_seconds`"
+msgstr "`challenge_seconds`"
+
+#: ../../web/configuration.md
+msgid "120"
+msgstr "120"
+
+#: ../../web/configuration.md
+msgid "validity of an SSH challenge"
+msgstr "validité d'un défi SSH"
+
+#: ../../web/configuration.md
+msgid "`requests_per_minute`"
+msgstr "`requests_per_minute`"
+
+#: ../../web/configuration.md
+msgid "none / 600"
+msgstr "aucun / 600"
+
+#: ../../web/configuration.md
+msgid "per client address"
+msgstr "par adresse de client"
+
+#: ../../web/configuration.md
+msgid "`login_attempts_per_minute`"
+msgstr "`login_attempts_per_minute`"
+
+#: ../../web/configuration.md
+msgid "20 / 5"
+msgstr "20 / 5"
+
+#: ../../web/configuration.md
+msgid "per client address and per user"
+msgstr "par adresse de client et par utilisateur"
+
+#: ../../web/configuration.md
+msgid "`max_sessions`"
+msgstr "`max_sessions`"
+
+#: ../../web/configuration.md
+msgid "none / 500"
+msgstr "aucun / 500"
+
+#: ../../web/configuration.md
+msgid "sessions open at the same time"
+msgstr "sessions ouvertes en même temps"
+
+#: ../../web/configuration.md
+msgid "`audit_log`"
+msgstr "`audit_log`"
+
+#: ../../web/configuration.md
+msgid "JSON-lines journal of the security events"
+msgstr "journal JSON-lines des événements de sécurité"
+
+#: ../../web/configuration.md
+msgid "`assistant`"
+msgstr "`assistant`"
+
+#: ../../web/configuration.md
+msgid "`true`"
+msgstr "`true`"
+
+#: ../../web/configuration.md
+msgid "offer the assistant panel"
+msgstr "proposer le panneau assistant"
+
+#: ../../web/configuration.md:70
+msgid "Quotas of the computations (`[service]`), shared with the MCP server:"
+msgstr "Quotas des calculs (`[service]`), partagés avec le serveur MCP :"
+
+#: ../../web/configuration.md
+msgid "`max_run_seconds`"
+msgstr "`max_run_seconds`"
+
+#: ../../web/configuration.md
+msgid "600 / 60"
+msgstr "600 / 60"
+
+#: ../../web/configuration.md
+msgid "time of a run or of an inspection"
+msgstr "durée d'une exécution ou d'une inspection"
+
+#: ../../web/configuration.md
+msgid "`max_grid_pixels`"
+msgstr "`max_grid_pixels`"
+
+#: ../../web/configuration.md
+msgid "none / 1024"
+msgstr "aucun / 1024"
+
+#: ../../web/configuration.md
+msgid "largest grid side of an element (`n_pixels`, output grids)"
+msgstr "plus grand côté de grille d'un élément (`n_pixels`, grilles de sortie)"
+
+#: ../../web/configuration.md
+msgid "`max_memory_mb`"
+msgstr "`max_memory_mb`"
+
+#: ../../web/configuration.md
+msgid "none / 2048"
+msgstr "aucun / 2048"
+
+#: ../../web/configuration.md
+msgid "estimated memory: N² × 16 bytes per wavelength, 4 working copies"
+msgstr "mémoire estimée : N² × 16 octets par longueur d'onde, 4 copies de travail"
+
+#: ../../web/configuration.md
+msgid "`max_concurrent_runs`"
+msgstr "`max_concurrent_runs`"
+
+#: ../../web/configuration.md
+msgid "none / 4"
+msgstr "aucun / 4"
+
+#: ../../web/configuration.md
+msgid "runs in progress, all visitors together"
+msgstr "exécutions en cours, tous visiteurs confondus"
+
+#: ../../web/configuration.md
+msgid "`max_jobs_per_session`"
+msgstr "`max_jobs_per_session`"
+
+#: ../../web/configuration.md
+msgid "2 / 1"
+msgstr "2 / 1"
+
+#: ../../web/configuration.md
+msgid "runs in progress per visitor"
+msgstr "exécutions en cours par visiteur"
+
+#: ../../web/configuration.md
+msgid "`max_contexts_per_session`"
+msgstr "`max_contexts_per_session`"
+
+#: ../../web/configuration.md
+msgid "contexts open per visitor"
+msgstr "contextes ouverts par visiteur"
+
+#: ../../web/configuration.md
+msgid "`max_workers`"
+msgstr "`max_workers`"
+
+#: ../../web/configuration.md
+msgid "4"
+msgstr "4"
+
+#: ../../web/configuration.md
+msgid "threads computing the runs"
+msgstr "fils d'exécution calculant les exécutions"
+
+#: ../../web/configuration.md
+msgid "`operation_enabled`"
+msgstr "`operation_enabled`"
+
+#: ../../web/configuration.md
+msgid "allow actions on real equipment"
+msgstr "autoriser les actions sur du matériel réel"
+
+#: ../../web/configuration.md
+msgid "`archive_root`, `presets_dir`"
+msgstr "`archive_root`, `presets_dir`"
+
+#: ../../web/configuration.md
+msgid "directories of the archives and of the presets"
+msgstr "dossiers des archives et des préréglages"
+
+#: ../../web/configuration.md:84
+msgid "A refused computation answers with the code `quota` and says which limit applies, so that the user can reduce the number of pixels or of wavelengths."
+msgstr "Un calcul refusé répond avec le code `quota` et indique la limite en cause, pour que l'utilisateur puisse réduire le nombre de pixels ou de longueurs d'onde."
+
+#: ../../web/configuration.md:87
+msgid "Enabling the operation on a public instance"
+msgstr "Activer l'opération sur une instance publique"
+
+#: ../../web/configuration.md:89
+msgid "Set `operation_enabled = true` in `[service]`, serve the instance over TLS (`tls_certfile` and `tls_keyfile`, or `trust_proxy = true` behind a proxy with HTTPS) and register at least one operator in the users file. Anonymous visitors can never be operators there. Each action is still confirmed in the interface and written to the audit journal."
+msgstr "Réglez `operation_enabled = true` dans `[service]`, servez l'instance en TLS (`tls_certfile` et `tls_keyfile`, ou `trust_proxy = true` derrière un mandataire en HTTPS) et enregistrez au moins un opérateur dans le fichier des utilisateurs. Les visiteurs anonymes ne peuvent jamais y être opérateurs. Chaque action reste confirmée dans l'interface et écrite dans le journal d'audit."
+

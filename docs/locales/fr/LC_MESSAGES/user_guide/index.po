@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 20:50+0200\n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -36,29 +36,38 @@ msgid "**element groups**, which behave like single elements;"
 msgstr "les **groupes d'éléments**, qui se comportent comme un élément unique ;"
 
 #: ../../user_guide/index.md:7
-msgid ""
-"the **context**, which holds the graph of elements, the clock and the operating mode (simulation or "
-"operation);"
-msgstr ""
-"le **contexte**, qui contient le graphe des éléments, l'horloge et le mode de fonctionnement (simulation ou"
-" opération) ;"
+msgid "the **context**, which holds the graph of elements, the clock and the operating mode (simulation or operation);"
+msgstr "le **contexte**, qui contient le graphe des éléments, l'horloge et le mode de fonctionnement (simulation ou opération) ;"
 
 #: ../../user_guide/index.md:8
-msgid ""
-"the **signals** that flow between elements (wavefronts, wavecubes, incoherent bundles, radiance fields, "
-"data);"
-msgstr ""
-"les **signaux** qui circulent entre les éléments (fronts d'onde, cubes de fronts d'onde, ensembles "
-"incohérents, champs de radiance, données) ;"
+msgid "the **signals** that flow between elements (wavefronts, wavecubes, incoherent bundles, radiance fields, data);"
+msgstr "les **signaux** qui circulent entre les éléments (fronts d'onde, cubes de fronts d'onde, ensembles incohérents, champs de radiance, données) ;"
 
 #: ../../user_guide/index.md:9
 msgid "the `.lumos` file format;"
 msgstr "le format de fichier `.lumos` ;"
 
 #: ../../user_guide/index.md:10
-msgid ""
-"the **element library**: sources, optics, telescopes, atmosphere, coronagraphs, fibres, photonic chips and "
-"detectors."
-msgstr ""
-"la **bibliothèque d'éléments** : sources, optique, télescopes, atmosphère, coronographes, fibres, puces "
-"photoniques et détecteurs."
+msgid "the **element library**: sources, optics, telescopes, atmosphere, coronagraphs, fibres, photonic chips and detectors;"
+msgstr "la **bibliothèque d'éléments** : sources, optiques, télescopes, atmosphère, coronographes, fibres, puces photoniques et détecteurs ;"
+
+#: ../../user_guide/index.md:12
+msgid "**scenes**: point and extended objects in a frame, and the imaging of extended scenes;"
+msgstr "les **scènes** : objets ponctuels et étendus dans un repère, et l'imagerie des scènes étendues ;"
+
+#: ../../user_guide/index.md:13
+msgid "**catalogues**: typed records from SIMBAD, Gaia, exoplanet archives, surveys... and scenes built from them;"
+msgstr "les **catalogues** : enregistrements typés issus de SIMBAD, Gaia, des archives d'exoplanètes, des relevés… et les scènes construites à partir d'eux ;"
+
+#: ../../user_guide/index.md:14
+msgid "**symbolic optics**: closed-form fields carried through the graph, and expressions recovered from grids;"
+msgstr "l'**optique symbolique** : champs en forme close transportés dans le graphe, et expressions retrouvées à partir de grilles ;"
+
+#: ../../user_guide/index.md:15
+msgid "**processing**: reduction, photometry, interferometric observables, detection statistics, calibration and script blocks;"
+msgstr "le **traitement** : réduction, photométrie, observables interférométriques, statistiques de détection, calibration et blocs de script ;"
+
+#: ../../user_guide/index.md:17
+msgid "**results**: figures, data files and archives of runs."
+msgstr "les **résultats** : figures, fichiers de données et archives des exécutions."
+

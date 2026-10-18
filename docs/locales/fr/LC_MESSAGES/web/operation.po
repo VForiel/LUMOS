@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/operation.md:1
+msgid "Operating a bench"
+msgstr "Opérer un banc"
+
+#: ../../web/operation.md:3
+msgid "The same context that simulates a bench can drive the real equipment (operation mode, digital twin beside it; see the hardware guide). The **Operation** tab of the interface appears for contexts with actions (stages, shutters, lasers...)."
+msgstr "Le même contexte qui simule un banc peut piloter le matériel réel (mode opération, avec le jumeau numérique à côté ; voir le guide du matériel). L'onglet **Opération** de l'interface apparaît pour les contextes qui ont des actions (platines, obturateurs, lasers…)."
+
+#: ../../web/operation.md:7
+msgid "Without the operation enabled"
+msgstr "Sans l'opération activée"
+
+#: ../../web/operation.md:9
+msgid "Actions only change the simulation: press `home` or `move` (with arguments such as `5 mm`) to see what the bench would do and how long it would take. Nothing real is driven, and no confirmation is asked."
+msgstr "Les actions ne changent que la simulation : appuyez sur `home` ou `move` (avec des arguments comme `5 mm`) pour voir ce que ferait le banc et combien de temps cela prendrait. Rien de réel n'est piloté, et aucune confirmation n'est demandée."
+
+#: ../../web/operation.md:12
+msgid "With the operation enabled"
+msgstr "Avec l'opération activée"
+
+#: ../../web/operation.md:14
+msgid "On your own machine, start the interface with:"
+msgstr "Sur votre propre machine, lancez l'interface avec :"
+
+#: ../../web/operation.md:20
+msgid "(on a shared instance, see [Configuration](configuration.md): TLS and registered operators are required)."
+msgstr "(sur une instance partagée, voir [Configuration](configuration.md) : TLS et des opérateurs enregistrés sont exigés)."
+
+#: ../../web/operation.md:22
+msgid "Create or open a context in operation mode."
+msgstr "Créez ou ouvrez un contexte en mode opération."
+
+#: ../../web/operation.md:23
+msgid "In the **Operation** tab, give the addresses of the devices (`tcp://192.168.1.20:5025`, or the LumosLabs emulators started with `lumos emulators start`) and press **Discover**: LUMOS asks each address who it is."
+msgstr "Dans l'onglet **Opération**, donnez les adresses des équipements (`tcp://192.168.1.20:5025`, ou les émulateurs LumosLabs lancés avec `lumos emulators start`) et appuyez sur **Découvrir** : LUMOS demande à chaque adresse qui elle est."
+
+#: ../../web/operation.md:25
+msgid "Press **Associate** to attach the devices found to the elements of the context."
+msgstr "Appuyez sur **Associer** pour rattacher les équipements trouvés aux éléments du contexte."
+
+#: ../../web/operation.md:26
+msgid "Run the actions: each action on real equipment opens a dialog naming the device, and runs only once you confirm it. Limits are checked by the server, whatever the request."
+msgstr "Lancez les actions : chaque action sur du matériel réel ouvre une boîte de dialogue nommant l'équipement, et ne s'exécute qu'après votre confirmation. Les limites sont vérifiées par le serveur, quelle que soit la requête."
+
+#: ../../web/operation.md:28
+msgid "The **STOP** button of the toolbar sends an emergency stop to every device of the context, at any time and whatever your role."
+msgstr "Le bouton **STOP** de la barre d'outils envoie un arrêt d'urgence à tous les équipements du contexte, à tout moment et quel que soit votre rôle."
+
+#: ../../web/operation.md:31
+msgid "Every action is written to the journal of the context (origin `web`) and, on a shared instance, to the audit journal. Only operators can discover devices and act on equipment; simulators and viewers see their state."
+msgstr "Chaque action est écrite dans le journal du contexte (origine `web`) et, sur une instance partagée, dans le journal d'audit. Seuls les opérateurs peuvent découvrir des équipements et agir sur le matériel ; les simulateurs et les lecteurs voient leur état."
+

@@ -1,0 +1,67 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:10002
+msgid "12. A closed adaptive optics loop"
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:10004
+msgid "The turbulence of the atmosphere corrugates the wavefront of a star; a deformable mirror, a wavefront sensor and a controller correct it in a closed loop. LUMOS keeps the graph of a context acyclic: the loop is a series of time iterations, where an output (the commands computed by the controller) is **fed back** to a field (the commands of the mirror) at the next step (ADR-0020). The preset `adaptive_optics.lumos` observes a star in the H band with an 8.2 m telescope through turbulence in frozen flow ($r_0$ = 15 cm at 500 nm, wind 10 m/s)."
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:20002
+#, python-format
+msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/12_adaptive_optics.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F12_adaptive_optics.ipynb)"
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:20002
+msgid "Open in Colab"
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:20002
+msgid "Launch on Binder"
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:50002
+msgid "Open loop"
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:50004
+msgid "Before the loop runs, the mirror is flat: the image of the star is a speckle cloud spread over $\\lambda / r_0$ instead of $\\lambda / D$."
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:70002
+msgid "Closing the loop"
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:70004
+#, python-brace-format
+msgid "The controller is an integrator: $\\Delta c = -g R s$, with $s$ the slopes measured by the Shack-Hartmann sensor and $R$ the regularised pseudo-inverse of the interaction matrix of the mirror. Each iteration of 2 ms computes the outputs, then adds $\\Delta c$ to the commands of the mirror, then advances the clock: the correction acts one frame later. With a gain $g$ the error of a static aberration decreases as $(1 - g)^k$; on turbulence the residual settles near the fitting error of the mirror, about $0.3 (d / r_0)^{5/3}$ rad² for an actuator pitch $d$ (Hudgin 1977), plus the error due to the wind during the delay."
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:90002
+msgid "Closed loop"
+msgstr ""
+
+#: ../../examples/notebooks/12_adaptive_optics.ipynb:90004
+msgid "The image of the star is now close to the diffraction limit of the telescope; the loop has kept its state: the mirror holds the last commands."
+msgstr ""
+

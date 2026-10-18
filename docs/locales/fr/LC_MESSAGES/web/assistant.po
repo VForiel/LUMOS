@@ -1,0 +1,157 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/assistant.md:1
+msgid "Assistant panel"
+msgstr "Panneau assistant"
+
+#: ../../web/assistant.md:3
+msgid "The **Assistant** tab lets you ask a language model to build, check, run and explain the context open in the interface, in plain language: \"add a camera 200 mm after the lens\", \"why is the image under-sampled?\", \"run it and give me the contrast between 3 and 4 λ/D\"."
+msgstr "L'onglet **Assistant** permet de demander à un modèle de langage de construire, vérifier, exécuter et expliquer le contexte ouvert dans l'interface, en langage courant : « ajoute une caméra 200 mm après la lentille », « pourquoi l'image est-elle sous-échantillonnée ? », « exécute-le et donne-moi le contraste entre 3 et 4 λ/D »."
+
+#: ../../web/assistant.md:7
+msgid "Your model, your account"
+msgstr "Votre modèle, votre compte"
+
+#: ../../web/assistant.md:9
+msgid "The assistant is a model of your choice, called **directly from your browser** with your own account. Its key is kept in the browser tab (session storage) and sent to its provider only: it never reaches the LUMOS server. Requests are billed to your account. *Forget the key* removes it; closing the tab does too."
+msgstr "L'assistant est un modèle de votre choix, appelé **directement depuis votre navigateur** avec votre propre compte. Sa clé est gardée dans l'onglet du navigateur (stockage de session) et n'est envoyée qu'à son fournisseur : elle n'atteint jamais le serveur LUMOS. Les requêtes sont facturées sur votre compte. *Oublier la clé* la supprime ; fermer l'onglet aussi."
+
+#: ../../web/assistant.md
+msgid "Provider"
+msgstr "Fournisseur"
+
+#: ../../web/assistant.md
+msgid "What you need"
+msgstr "Ce qu'il vous faut"
+
+#: ../../web/assistant.md
+msgid "Claude (Anthropic)"
+msgstr "Claude (Anthropic)"
+
+#: ../../web/assistant.md
+msgid "an API key of the [Anthropic console](https://console.anthropic.com)"
+msgstr "une clé d'API de la [console Anthropic](https://console.anthropic.com)"
+
+#: ../../web/assistant.md
+msgid "OpenAI"
+msgstr "OpenAI"
+
+#: ../../web/assistant.md
+msgid "an API key of the [OpenAI platform](https://platform.openai.com/api-keys)"
+msgstr "une clé d'API de la [plateforme OpenAI](https://platform.openai.com/api-keys)"
+
+#: ../../web/assistant.md
+msgid "Google Gemini"
+msgstr "Google Gemini"
+
+#: ../../web/assistant.md
+msgid "a key of [Google AI Studio](https://aistudio.google.com/apikey) (free tier available)"
+msgstr "une clé de [Google AI Studio](https://aistudio.google.com/apikey) (offre gratuite disponible)"
+
+#: ../../web/assistant.md
+msgid "OpenRouter"
+msgstr "OpenRouter"
+
+#: ../../web/assistant.md
+msgid "**Log in with OpenRouter** (no key to copy), or an OpenRouter key; gives access to the models of most providers"
+msgstr "**Se connecter avec OpenRouter** (aucune clé à copier), ou une clé OpenRouter ; donne accès aux modèles de la plupart des fournisseurs"
+
+#: ../../web/assistant.md
+msgid "OpenAI-compatible"
+msgstr "Compatible OpenAI"
+
+#: ../../web/assistant.md
+msgid "the address of the endpoint (`…/v1`), a model and, if needed, a key: Mistral, Groq, DeepSeek, or a model on your machine with Ollama (`http://localhost:11434/v1`), LM Studio or vLLM"
+msgstr "l'adresse du point d'accès (`…/v1`), un modèle et, si besoin, une clé : Mistral, Groq, DeepSeek, ou un modèle sur votre machine avec Ollama (`http://localhost:11434/v1`), LM Studio ou vLLM"
+
+#: ../../web/assistant.md:21
+msgid "The model can be changed at any time (*Change the model*); a new model starts a new conversation."
+msgstr "Le modèle peut être changé à tout moment (*Changer de modèle*) ; un nouveau modèle commence une nouvelle conversation."
+
+#: ../../web/assistant.md:23
+msgid "**Log in with OpenRouter** opens the OpenRouter login in a popup. Once you accept, OpenRouter creates a key on your account for LUMOS, with your credits and limits (OAuth with PKCE: LUMOS never sees your password, and the code of the login is useless without the secret kept by the page). You can revoke that key on OpenRouter."
+msgstr "**Se connecter avec OpenRouter** ouvre la connexion d'OpenRouter dans une fenêtre. Une fois que vous acceptez, OpenRouter crée une clé sur votre compte pour LUMOS, avec vos crédits et vos limites (OAuth avec PKCE : LUMOS ne voit jamais votre mot de passe, et le code de la connexion est inutilisable sans le secret gardé par la page). Vous pouvez révoquer cette clé sur OpenRouter."
+
+#: ../../web/assistant.md:27
+msgid "A compatible endpoint must accept requests from the page of LUMOS (CORS): Ollama does with `OLLAMA_ORIGINS=<address of LUMOS>`; most hosted APIs do."
+msgstr "Un point d'accès compatible doit accepter les requêtes de la page de LUMOS (CORS) : Ollama le fait avec `OLLAMA_ORIGINS=<adresse de LUMOS>` ; la plupart des API hébergées le font."
+
+#: ../../web/assistant.md:30
+msgid "Your Claude or ChatGPT subscription"
+msgstr "Votre abonnement Claude ou ChatGPT"
+
+#: ../../web/assistant.md:32
+msgid "A Claude.ai or ChatGPT **subscription** cannot be used by other applications: their providers only give API access with API keys. But both accept LUMOS as a **connector** (a remote MCP server): their own assistant then works on the contexts of your tab, and you see its edits in the interface as they happen."
+msgstr "Un **abonnement** Claude.ai ou ChatGPT ne peut pas être utilisé par d'autres applications : leurs fournisseurs ne donnent accès à l'API qu'avec des clés d'API. Mais tous deux acceptent LUMOS comme **connecteur** (un serveur MCP distant) : leur propre assistant travaille alors sur les contextes de votre onglet, et vous voyez ses modifications dans l'interface au fur et à mesure."
+
+#: ../../web/assistant.md:36
+msgid "In the assistant tab, press **Create a connector link**. The link is the address of the MCP server of your session, with a secret: anyone with it works in your session, so keep it private and revoke it when you are done. It ends with your session (idle time of the instance)."
+msgstr "Dans l'onglet assistant, appuyez sur **Créer un lien de connecteur**. Le lien est l'adresse du serveur MCP de votre session, avec un secret : quiconque le possède travaille dans votre session ; gardez-le privé et révoquez-le quand vous avez fini. Il expire avec votre session (délai d'inactivité de l'instance)."
+
+#: ../../web/assistant.md:39
+msgid "Add it to your assistant:"
+msgstr "Ajoutez-le à votre assistant :"
+
+#: ../../web/assistant.md:40
+msgid "**Claude** (Pro, Max, Team or Enterprise): *Settings › Connectors › Add custom connector*, paste the link, then enable LUMOS in a conversation;"
+msgstr "**Claude** (Pro, Max, Team ou Enterprise) : *Paramètres › Connecteurs › Ajouter un connecteur personnalisé*, collez le lien, puis activez LUMOS dans une conversation ;"
+
+#: ../../web/assistant.md:42
+msgid "**ChatGPT** (Plus or Pro): *Settings › Apps & Connectors › Advanced settings › Developer mode*, then *Create*, paste the link, no authentication;"
+msgstr "**ChatGPT** (Plus ou Pro) : *Paramètres › Applications et connecteurs › Paramètres avancés › Mode développeur*, puis *Créer*, collez le lien, sans authentification ;"
+
+#: ../../web/assistant.md:44
+msgid "**Claude Code**: `claude mcp add --transport http lumos <link>`."
+msgstr "**Claude Code** : `claude mcp add --transport http lumos <lien>`."
+
+#: ../../web/assistant.md:46
+msgid "Claude.ai and ChatGPT reach the connector from the Internet: use the link of a public instance (HTTPS). On your own machine (`lumos web`), only local clients can use it: Claude Code, Claude Desktop, or `lumos mcp` directly."
+msgstr "Claude.ai et ChatGPT atteignent le connecteur depuis Internet : utilisez le lien d'une instance publique (HTTPS). Sur votre propre machine (`lumos web`), seuls les clients locaux peuvent l'utiliser : Claude Code, Claude Desktop, ou directement `lumos mcp`."
+
+#: ../../web/assistant.md:50
+msgid "What it can do"
+msgstr "Ce qu'il sait faire"
+
+#: ../../web/assistant.md:52
+msgid "The assistant uses the tools of the MCP server of the instance (the same as `lumos mcp`, see the [AI assistant guide](../assistant/index.md)), in **your session**: what it adds or changes appears at once in the editor, and you can undo it like any edit. Its actions are journaled with the origin `mcp`. Figures returned by the tools (inspected ports) are shown in the conversation and given to models that read images."
+msgstr "L'assistant utilise les outils du serveur MCP de l'instance (les mêmes que `lumos mcp`, voir le [guide de l'assistant IA](../assistant/index.md)), dans **votre session** : ce qu'il ajoute ou modifie apparaît aussitôt dans l'éditeur, et vous pouvez l'annuler comme toute modification. Ses actions sont journalisées avec l'origine `mcp`. Les figures renvoyées par les outils (ports inspectés) sont affichées dans la conversation et données aux modèles qui lisent les images."
+
+#: ../../web/assistant.md:57
+msgid "Viewers cannot use the assistant; simulators can; only operators get the tools that drive equipment, and every action on equipment is confirmed in a dialog, whoever asks for it."
+msgstr "Les lecteurs ne peuvent pas utiliser l'assistant ; les simulateurs le peuvent ; seuls les opérateurs obtiennent les outils qui pilotent le matériel, et chaque action sur le matériel est confirmée dans une boîte de dialogue, quel que soit le demandeur."
+
+#: ../../web/assistant.md:59
+msgid "An administrator turns the panel and the connector links off with `assistant = false` in the configuration."
+msgstr "Un administrateur désactive le panneau et les liens de connecteur avec `assistant = false` dans la configuration."
+
+#: ../../web/assistant.md:62
+msgid "Other MCP clients"
+msgstr "Autres clients MCP"
+
+#: ../../web/assistant.md:64
+msgid "The same server is at `/mcp` on the instance (streamable HTTP), with the authentication of the interface. A client such as Claude Code connects with a bearer token from `lumos login`:"
+msgstr "Le même serveur est à `/mcp` sur l'instance (HTTP en flux), avec l'authentification de l'interface. Un client comme Claude Code s'y connecte avec un jeton porteur obtenu par `lumos login` :"
+
+#: ../../web/assistant.md:72
+msgid "On your own machine, `lumos mcp` (stdio) remains the simplest way."
+msgstr "Sur votre propre machine, `lumos mcp` (stdio) reste le moyen le plus simple."
+

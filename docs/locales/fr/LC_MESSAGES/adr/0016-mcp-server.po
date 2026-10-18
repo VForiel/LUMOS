@@ -1,0 +1,210 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0016-mcp-server.md:1
+msgid "ADR-0016: MCP server"
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:4
+msgid "**Date**: 2026-10-17"
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:5
+msgid "**Plan step**: P13.2 (REQ-MCP-1, REQ-MCP-2); completed by P13.3 to P13.6"
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:9
+msgid ""
+"AI assistants (Claude Code, Claude Desktop, other MCP clients) must "
+"build, run and analyse simulations through the Model Context Protocol, "
+"with the same results as the Python API (objective O4) and the safeguards"
+" of the service layer (ADR-0015). The official Python SDK changed its "
+"server API in version 2: `FastMCP` became `MCPServer`, and the protocol "
+"revision 2026-07-28 replaced the requests sent by the server in the "
+"middle of a call (elicitation, sampling) by results asking the client for"
+" input (`InputRequiredResult`)."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:15
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:17
+msgid ""
+"`lumos.mcp.create_server(service)` builds an `MCPServer` of the SDK 2 "
+"(`mcp>=2.3,<3`, extra `mcp`). `lumos mcp` serves it over stdio; the logs "
+"go to stderr, since stdout carries the protocol."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:19
+msgid ""
+"Each tool translates its arguments into one call of "
+"`lumos.service.Service` and returns the Pydantic model of the service "
+"(structured content and JSON text). The tools have the names of REQ-"
+"MCP-2; their docstrings are their descriptions, written for a language "
+"model (units as text, ports as `\"element.port\"`)."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:22
+msgid ""
+"A server holds one session of the service, of origin `mcp`, so its runs "
+"and actions are journaled as such."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:23
+msgid ""
+"**Current context**: the last context created, loaded, imported or named "
+"by a tool. Tools take an optional `context` and use the current one when "
+"it is omitted, which keeps the conversations short."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:25
+msgid ""
+"**Errors**: a `ServiceError` becomes a `ToolError` whose text holds the "
+"message, the hint and the code, so that the assistant can fix its "
+"request; other exceptions are reported with their type and message rather"
+" than the SDK's generic \"Error executing tool\"."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:28
+msgid ""
+"**Runs**: `run` starts a job of the service, reports its progress with "
+"MCP progress notifications while it waits (up to `wait_seconds`) and "
+"returns the job; longer runs continue in the background (`get_job`, "
+"`wait_job`). Without `outputs`, the main outputs of the context (those of"
+" its preset) are computed."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:31
+#, python-brace-format
+msgid ""
+"**Resources** (P13.3) use the scheme `lumos://`: `docs` and "
+"`docs/{+path}`, `elements` and `elements/{type_id}`, `presets` and "
+"`presets/{name}`, `context/current` (and its `journal`), `contexts/{id}` "
+"and `contexts/{id}/journal`, `archives` and `archives/{+path}` (relative "
+"to the archive directory; the SDK rejects `..` and absolute paths). "
+"**Prompts** guide four use cases: `design_instrument`, "
+"`estimate_detection`, `calibrate_bench`, `diagnose_simulation`."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:36
+msgid ""
+"**Responses** (P13.5): signals are answered with a short text summary "
+"(kind, shape, range and mean with their unit, grid, wavelength) and a PNG"
+" image, runs with one line naming the job and the next tool; the Pydantic"
+" model stays the structured content (`Annotated[CallToolResult, Model]`),"
+" without the figure bytes. The values shown are accepted back as they "
+"are, and a quantity without unit is refused with an example."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:40
+msgid ""
+"**HTTP** (P13.6): `lumos mcp --transport http` serves the streamable HTTP"
+" application of the SDK with uvicorn on `127.0.0.1:8765/mcp`; "
+"`create_http_app` returns it for the web backend to mount. Without "
+"authentication (P14), another address needs `--allow-remote`, and the "
+"operation of equipment is refused for remote clients, who could confirm "
+"their own actions. The SDK protects loopback servers from DNS rebinding."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:45
+msgid ""
+"Synchronous tools run in worker threads of the SDK; the service "
+"serialises the work of a session."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:46
+msgid ""
+"Groups are created in one call (`create_group`: elements, internal "
+"connections, exposed ports), added to the service as "
+"`Service.create_group`."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:48
+msgid ""
+"**Operation** (P13.4): `execute_action`, `list_devices`, `device_status` "
+"and `stop_all` are always offered; `discover_devices` and "
+"`associate_devices` only when the server runs with `--enable-operation`. "
+"Actions on simulated elements run directly. An action on real equipment "
+"is confirmed by the user: a resolver of the SDK (`Resolve` returning "
+"`Elicit`) asks the question, which works with both protocol revisions "
+"(input-required results from 2026-07-28, elicitation requests before). "
+"The flag `confirmed` of the service is set from the answer and never "
+"appears in the input schema of the tool, so the model cannot set it. A "
+"client without the elicitation capability gets a tool error and cannot "
+"act on equipment. Limits and the emergency stop stay in the drivers "
+"(ADR-0014); `stop_all` never asks."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:57
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:59
+msgid ""
+"SDK 1 (`FastMCP`): superseded; its elicitation does not work with the "
+"2026-07-28 revision."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:60
+msgid ""
+"One tool per element type, or a generic `call(method, args)` tool: too "
+"many tools for the context of the model, or no schema to guide it."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:62
+msgid ""
+"Requiring `context` in every call: longer requests and more mistakes from"
+" the assistant."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:63
+msgid ""
+"A blocking `run` without progress: the client times out on long runs and "
+"the user sees nothing."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:65
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:67
+msgid "New operations of the service reach the assistant by adding a short tool."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:68
+msgid ""
+"The HTTP transport (P13.6) shares one server, so one session, between its"
+" clients until the web instance (P14) gives each user its own session."
+msgstr ""
+
+#: ../../adr/0016-mcp-server.md:70
+msgid "The SDK 2 is required: version 1 is not supported."
+msgstr ""
+

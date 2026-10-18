@@ -1,0 +1,188 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../user_guide/processing.md:1
+msgid "Processing and detection"
+msgstr "Traitement et détection"
+
+#: ../../user_guide/processing.md:3
+#, python-brace-format
+msgid "`lumos.processing` reduces detected data and evaluates detection capabilities. Its functions take and return {class}`~lumos.fields.DataProduct` objects and propagate their uncertainties (GUM); its **elements** wrap them with `DataProduct` ports, so that a pipeline is built in the same graph as the optics."
+msgstr "`lumos.processing` réduit les données détectées et évalue les capacités de détection. Ses fonctions prennent et renvoient des objets {class}`~lumos.fields.DataProduct` et propagent leurs incertitudes (GUM) ; ses **éléments** les enveloppent avec des ports `DataProduct`, de sorte qu'une chaîne de traitement se construit dans le même graphe que l'optique."
+
+#: ../../user_guide/processing.md:7
+msgid "Reduction and photometry"
+msgstr "Réduction et photométrie"
+
+#: ../../user_guide/processing.md
+msgid "Function"
+msgstr "Fonction"
+
+#: ../../user_guide/processing.md
+msgid "Element"
+msgstr "Élément"
+
+#: ../../user_guide/processing.md
+msgid "What it does"
+msgstr "Ce qu'il fait"
+
+#: ../../user_guide/processing.md
+msgid "`reduction.subtract_dark`"
+msgstr "`reduction.subtract_dark`"
+
+#: ../../user_guide/processing.md
+msgid "`DarkSubtraction` (inputs `in`, `dark`)"
+msgstr "`DarkSubtraction` (entrées `in`, `dark`)"
+
+#: ../../user_guide/processing.md
+msgid "$S - D$, $\\sigma^2 = \\sigma_S^2 + \\sigma_D^2$"
+msgstr "$S - D$, $\\sigma^2 = \\sigma_S^2 + \\sigma_D^2$"
+
+#: ../../user_guide/processing.md
+msgid "`reduction.flat_field`"
+msgstr "`reduction.flat_field`"
+
+#: ../../user_guide/processing.md
+msgid "`FlatField` (inputs `in`, `flat`)"
+msgstr "`FlatField` (entrées `in`, `flat`)"
+
+#: ../../user_guide/processing.md
+msgid "division by the flat normalised to a mean of 1"
+msgstr "division par le champ plat normalisé à une moyenne de 1"
+
+#: ../../user_guide/processing.md
+msgid "`reduction.stack`"
+msgstr "`reduction.stack`"
+
+#: ../../user_guide/processing.md
+msgid "`Stack`"
+msgstr "`Stack`"
+
+#: ../../user_guide/processing.md
+#, python-brace-format
+msgid "mean ($\\sigma/\\sqrt N$), median ($\\sqrt{\\pi/2}\\,\\sigma/\\sqrt N$) or sigma-clipped mean"
+msgstr "moyenne ($\\sigma/\\sqrt N$), médiane ($\\sqrt{\\pi/2}\\,\\sigma/\\sqrt N$) ou moyenne avec rejet à n sigmas"
+
+#: ../../user_guide/processing.md
+msgid "`reduction.crop`, `rebin`, `resample`"
+msgstr "`reduction.crop`, `rebin`, `resample`"
+
+#: ../../user_guide/processing.md
+msgid "`Crop`, `Rebin`"
+msgstr "`Crop`, `Rebin`"
+
+#: ../../user_guide/processing.md
+msgid "geometry; rebinning and resampling conserve the flux"
+msgstr "géométrie ; le regroupement et le rééchantillonnage conservent le flux"
+
+#: ../../user_guide/processing.md
+msgid "`photometry.aperture_photometry`"
+msgstr "`photometry.aperture_photometry`"
+
+#: ../../user_guide/processing.md
+msgid "`AperturePhotometry`"
+msgstr "`AperturePhotometry`"
+
+#: ../../user_guide/processing.md
+msgid "exact disk overlap per pixel, median background annulus"
+msgstr "recouvrement exact du disque par pixel, anneau de fond médian"
+
+#: ../../user_guide/processing.md
+msgid "`photometry.ccd_snr`"
+msgstr "`photometry.ccd_snr`"
+
+#: ../../user_guide/processing.md
+msgid "CCD equation, with the error of the background estimate"
+msgstr "équation des CCD, avec l'erreur de l'estimation du fond"
+
+#: ../../user_guide/processing.md
+msgid "`photometry.contrast_curve`"
+msgstr "`photometry.contrast_curve`"
+
+#: ../../user_guide/processing.md
+msgid "`ContrastCurve`"
+msgstr "`ContrastCurve`"
+
+#: ../../user_guide/processing.md
+msgid "5σ limit with the small-sample penalty of Mawet et al. (2014)"
+msgstr "limite à 5σ avec la pénalité des petits échantillons de Mawet et al. (2014)"
+
+#: ../../user_guide/processing.md
+msgid "`RadialProfile`, `SignalToNoise`"
+msgstr "`RadialProfile`, `SignalToNoise`"
+
+#: ../../user_guide/processing.md
+msgid "azimuthal mean with its error; data / uncertainty"
+msgstr "moyenne azimutale avec son erreur ; données / incertitude"
+
+#: ../../user_guide/processing.md:31
+msgid "Positions and radii are given in the unit of the image axes (metres or micrometres for a camera of LUMOS, pixels for plain arrays)."
+msgstr "Les positions et les rayons sont donnés dans l'unité des axes de l'image (mètres ou micromètres pour une caméra de LUMOS, pixels pour de simples tableaux)."
+
+#: ../../user_guide/processing.md:34
+msgid "Interferometry"
+msgstr "Interférométrie"
+
+#: ../../user_guide/processing.md:36
+msgid "`interferometry.null_depth` (element `NullDepth`) divides a dark output by a bright one; `interferometry.kernel_observables` (`KernelObservables`) forms the kernels of the kernel nuller, robust to second order in the piston errors; `interferometry.transmission_map` moves a point source of a context over a grid of sky positions and returns the transmission of one output."
+msgstr "`interferometry.null_depth` (élément `NullDepth`) divise une sortie sombre par une sortie brillante ; `interferometry.kernel_observables` (`KernelObservables`) forme les noyaux du kernel nuller, robustes au second ordre aux erreurs de piston ; `interferometry.transmission_map` déplace une source ponctuelle d'un contexte sur une grille de positions du ciel et renvoie la transmission d'une sortie."
+
+#: ../../user_guide/processing.md:41
+msgid "Detection statistics"
+msgstr "Statistiques de détection"
+
+#: ../../user_guide/processing.md:43
+msgid "`detection.matched_filter` is the Neyman-Pearson test of a known signal in Gaussian noise, distributed as $\\mathcal N(0, 1)$ without signal and $\\mathcal N(d, 1)$ with it; `detection.energy` the energy detector ($\\chi^2_N$). `roc_curve` gives the empirical ROC of samples of a statistic, `roc_matched_filter` and `roc_energy` the analytic ones, `threshold` the threshold of a false-alarm probability. For a companion whose deflection grows with its contrast, `contrast_limit` returns the contrast detected with a given probability and `detection_capability` the map of the detection probability versus separation and contrast."
+msgstr "`detection.matched_filter` est le test de Neyman-Pearson d'un signal connu dans un bruit gaussien, distribué selon $\\mathcal N(0, 1)$ sans signal et $\\mathcal N(d, 1)$ avec ; `detection.energy` est le détecteur d'énergie ($\\chi^2_N$). `roc_curve` donne la courbe ROC empirique d'échantillons d'une statistique, `roc_matched_filter` et `roc_energy` les courbes analytiques, `threshold` le seuil d'une probabilité de fausse alarme. Pour un compagnon dont la déflexion croît avec son contraste, `contrast_limit` renvoie le contraste détecté avec une probabilité donnée et `detection_capability` la carte de la probabilité de détection en fonction de la séparation et du contraste."
+
+#: ../../user_guide/processing.md:50
+msgid "Calibration"
+msgstr "Calibration"
+
+#: ../../user_guide/processing.md:52
+msgid "`calibration.fit_phases(measure, initial=..., method=...)` minimises a measured quantity (a null depth...) over phase settings, by gradient (`\"gradient\"`), trial and error (`\"scan\"`) or a genetic algorithm (`\"genetic\"`)."
+msgstr "`calibration.fit_phases(measure, initial=..., method=...)` minimise une grandeur mesurée (une profondeur de nulling…) sur des réglages de phase, par gradient (`\"gradient\"`), par essais et erreurs (`\"scan\"`) ou par algorithme génétique (`\"genetic\"`)."
+
+#: ../../user_guide/processing.md:55
+msgid "`calibration.mtf_slanted_edge` (element `MTFMeasurement`) measures the MTF of the image of a slanted edge (ISO 12233)."
+msgstr "`calibration.mtf_slanted_edge` (élément `MTFMeasurement`) mesure la FTM de l'image d'un bord incliné (ISO 12233)."
+
+#: ../../user_guide/processing.md:57
+msgid "`calibration.measure_psf` measures the centroid, peak, FWHM, encircled energy and Strehl ratio of a PSF."
+msgstr "`calibration.measure_psf` mesure le barycentre, le pic, la largeur à mi-hauteur, l'énergie encerclée et le rapport de Strehl d'une PSF."
+
+#: ../../user_guide/processing.md:59
+msgid "Script blocks"
+msgstr "Blocs de script"
+
+#: ../../user_guide/processing.md:61
+#, python-brace-format
+msgid "A function of yours becomes an element with declared ports ({doc}`../adr/0013-script-blocks`):"
+msgstr "Une de vos fonctions devient un élément avec des ports déclarés ({doc}`../adr/0013-script-blocks`) :"
+
+#: ../../user_guide/processing.md:76
+msgid "Its keyword arguments become parameters with units. A `.lumos` file stores the name of the script and the parameter values, never its code: define the script (import its module) before loading the file."
+msgstr "Ses arguments nommés deviennent des paramètres avec unités. Un fichier `.lumos` enregistre le nom du script et les valeurs des paramètres, jamais son code : définissez le script (importez son module) avant de charger le fichier."
+
+#: ../../user_guide/processing.md:79
+msgid "See the notebooks [Data pipeline](../examples/notebooks/08_data_pipeline.ipynb) and [Detection capability](../examples/notebooks/09_detection_capability.ipynb)."
+msgstr "Voir les notebooks [Chaîne de traitement](../examples/notebooks/08_data_pipeline.ipynb) et [Capacité de détection](../examples/notebooks/09_detection_capability.ipynb)."
+

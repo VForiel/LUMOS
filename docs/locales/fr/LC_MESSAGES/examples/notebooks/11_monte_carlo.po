@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:10002
+msgid "11. Seeds, sweeps and Monte-Carlo runs"
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:10004
+msgid "Every random process of a context (photon and read noise, turbulence screens, Monte-Carlo draws) derives from **one seed**: the same seed gives the same results. A **sweep** runs the context for a range of values of some parameters; a **Monte-Carlo run** draws its free parameters from their priors, each draw with its own noise realization. This notebook studies the tolerance of the focus of a lens with the preset `monte_carlo.lumos`: a HeNe laser beam of waist 1 mm focused by a 200 mm lens on a camera."
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:20002
+#, python-format
+msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/11_monte_carlo.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F11_monte_carlo.ipynb)"
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:20002
+msgid "Open in Colab"
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:20002
+msgid "Launch on Binder"
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:50002
+msgid "A sweep of the focus"
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:50004
+msgid "A Gaussian beam of waist $w$ focused by a lens of focal length $f$ has a waist $w_f = \\lambda f / (\\pi w)$ and a Rayleigh range $z_R = \\pi w_f^2 / \\lambda$; at a distance $\\Delta z$ from the focus its peak intensity is reduced by $1 / (1 + (\\Delta z / z_R)^2)$ (Siegman, *Lasers*, §17.1). The sweep moves the camera around the focus. It keeps the noise of the context at every point (common random numbers), so that the curve shows the optics, not the noise."
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:70002
+msgid "A Monte-Carlo run of the tolerance"
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:70004
+msgid "The focal length of the lens is a free parameter with a normal prior, 200 ± 2 mm: a manufacturing tolerance. Each draw takes a focal length and its own photon noise (`noise=\"independent\"`, the default). The peaks spread below the best focus; their mean follows from the same law averaged over the prior."
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:90002
+msgid "Reproducibility and archive"
+msgstr ""
+
+#: ../../examples/notebooks/11_monte_carlo.ipynb:90004
+msgid "The same seed gives the same draws; another seed gives others. The context, the figures and the data of a final run are archived next to the notebook."
+msgstr ""
+

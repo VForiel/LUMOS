@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/studies.md:1
+msgid "Studies: sweeps, Monte-Carlo runs and loops"
+msgstr "Études : balayages, Monte-Carlo et boucles"
+
+#: ../../web/studies.md:3
+msgid "A study runs the context many times: a **sweep** over ranges of some parameters, a **Monte-Carlo run** drawing its free parameters, and its noise, again and again, or a **loop** that feeds outputs back to the context step by step. Open it with **Study** in the toolbar; the **Monte-Carlo tolerancing** and **Adaptive optics loop** presets open with one ready."
+msgstr "Une étude exécute le contexte de nombreuses fois : un **balayage** sur des plages de certains paramètres, une étude **Monte-Carlo** qui tire encore et encore ses paramètres libres et son bruit, ou une **boucle** qui renvoie des sorties au contexte pas à pas. Ouvrez-la avec **Étude** dans la barre d'outils ; les préréglages **Monte-Carlo tolerancing** et **Adaptive optics loop** s'ouvrent avec une étude prête."
+
+#: ../../web/studies.md:8
+msgid "Randomness and the seed"
+msgstr "Le hasard et la graine"
+
+#: ../../web/studies.md:10
+msgid "Every random process of a context (photon and read noise of the detectors, turbulence screens, Monte-Carlo draws) derives from **one seed**, shown in the inspector of the context (select nothing) under *Randomness*. Type a seed to reproduce a result, or press the dice to draw a new one. The seed is saved in the `.lumos` file: the same context with the same seed gives the same results, in the interface, in Python and through an AI assistant."
+msgstr "Tous les processus aléatoires d'un contexte (bruits de photons et de lecture des détecteurs, écrans de turbulence, tirages Monte-Carlo) dérivent d'**une seule graine**, affichée dans l'inspecteur du contexte (sans sélection) sous *Hasard*. Tapez une graine pour reproduire un résultat, ou appuyez sur le dé pour en tirer une nouvelle. La graine est enregistrée dans le fichier `.lumos` : le même contexte avec la même graine donne les mêmes résultats, dans l'interface, en Python et par un assistant IA."
+
+#: ../../web/studies.md:16
+msgid "Free parameters"
+msgstr "Paramètres libres"
+
+#: ../../web/studies.md:18
+msgid "The dice button next to a parameter of the inspector **frees** it: give it a prior, uniform, log-uniform or normal (Gaussian), with values in the unit of the parameter (or with their own unit, `2 mm`). A free parameter shows its prior under its value (`∼ N(200 mm, 2 mm)`) and its block carries a small die. *Fix again* removes the prior. Free parameters are also those that calibrations and inferences fit."
+msgstr "Le bouton dé à côté d'un paramètre de l'inspecteur le **libère** : donnez-lui un a priori, uniforme, log-uniforme ou normal (gaussien), avec des valeurs dans l'unité du paramètre (ou avec leur propre unité, `2 mm`). Un paramètre libre affiche son a priori sous sa valeur (`∼ N(200 mm, 2 mm)`) et son bloc porte un petit dé. *Fixer à nouveau* retire l'a priori. Les paramètres libres sont aussi ceux qu'ajustent les calibrations et les inférences."
+
+#: ../../web/studies.md:23
+msgid "Sweeps"
+msgstr "Balayages"
+
+#: ../../web/studies.md:25
+msgid "Choose **Sweep**, then for each parameter its range: from, to, number of values, and *Log* for a geometric spacing (1, 10, 100...). With several parameters, *every combination* runs the grid of their values, *in pairs* runs their i-th values together. The dialog counts the points before you start."
+msgstr "Choisissez **Balayage**, puis pour chaque paramètre sa plage : de, à, nombre de valeurs, et *Log* pour un espacement géométrique (1, 10, 100…). Avec plusieurs paramètres, *toutes les combinaisons* parcourt la grille de leurs valeurs, *par paires* prend ensemble leurs i-ièmes valeurs. La boîte de dialogue compte les points avant que vous lanciez."
+
+#: ../../web/studies.md:29
+msgid "By default every point of a sweep has the **same noise** (that of the seed): the points differ by their parameters only, so that small effects show. Tick *Independent noise per point* to draw a new noise at each point."
+msgstr "Par défaut, tous les points d'un balayage ont le **même bruit** (celui de la graine) : les points ne diffèrent que par leurs paramètres, si bien que les petits effets se voient. Cochez *Bruit indépendant à chaque point* pour tirer un nouveau bruit à chaque point."
+
+#: ../../web/studies.md:33
+msgid "Monte-Carlo runs"
+msgstr "Études Monte-Carlo"
+
+#: ../../web/studies.md:35
+msgid "Choose **Monte-Carlo** and the number of draws. Each draw takes the free parameters from their priors and, by default, its own noise realization: the spread of the results combines the tolerances and the noise. Without free parameters, the draws repeat the run with independent noise (a noise study)."
+msgstr "Choisissez **Monte-Carlo** et le nombre de tirages. Chaque tirage prend les paramètres libres selon leurs a priori et, par défaut, sa propre réalisation du bruit : la dispersion des résultats combine les tolérances et le bruit. Sans paramètre libre, les tirages répètent l'exécution avec un bruit indépendant (une étude du bruit)."
+
+#: ../../web/studies.md:39
+msgid "Feedback loops"
+msgstr "Boucles de rétroaction"
+
+#: ../../web/studies.md:41
+msgid "A loop feeds an output back to a field at the next step: the correction computed by an adaptive optics controller drives the commands of its deformable mirror. Select the block that computes the correction: the *Feedback loops* section of the inspector lists its feedbacks and closes a new one (its output, the field it drives, and the mode: *add* integrates, *set* replaces). A feedback is drawn as a dashed amber curve back to the block it drives; select it to remove it."
+msgstr "Une boucle renvoie une sortie vers un champ au pas suivant : la correction calculée par un contrôleur d'optique adaptative pilote les commandes de son miroir déformable. Sélectionnez le bloc qui calcule la correction : la section *Boucles de rétroaction* de l'inspecteur liste ses rétroactions et en ferme une nouvelle (sa sortie, le champ qu'elle pilote, et le mode : *ajouter* intègre, *remplacer* remplace). Une rétroaction est dessinée par une courbe ambre en pointillés qui revient vers le bloc qu'elle pilote ; sélectionnez-la pour la supprimer."
+
+#: ../../web/studies.md:47
+msgid "Choose **Loop** in the study dialog, the number of steps and the period (`2 ms`): each step computes the outputs, applies the feedbacks, then advances the clock by the period. The study tab plots the outputs against time (the residual of the wavefront sensor falls as the loop closes). The loop keeps its final state, the commands of the mirror for instance; **Undo** puts back the state before the loop."
+msgstr "Choisissez **Boucle** dans la boîte de dialogue d'étude, le nombre de pas et la période (`2 ms`) : chaque pas calcule les sorties, applique les rétroactions, puis avance l'horloge d'une période. L'onglet d'étude trace les sorties en fonction du temps (le résidu de l'analyseur de surface d'onde baisse quand la boucle se ferme). La boucle garde son état final, les commandes du miroir par exemple ; **Annuler** rétablit l'état d'avant la boucle."
+
+#: ../../web/studies.md:52
+msgid "Results"
+msgstr "Résultats"
+
+#: ../../web/studies.md:54
+msgid "The **Study** tab of the bottom panel follows the progress, then shows:"
+msgstr "L'onglet **Étude** du panneau du bas suit la progression, puis montre :"
+
+#: ../../web/studies.md:56
+msgid "a **curve** for a sweep (one curve per value of the other parameters) or a loop (against time), or a **histogram** for a Monte-Carlo run with the mean (dashed line) and the standard deviation of the values;"
+msgstr "une **courbe** pour un balayage (une courbe par valeur des autres paramètres) ou une boucle (en fonction du temps), ou un **histogramme** pour une étude Monte-Carlo avec la moyenne (trait pointillé) et l'écart-type des valeurs ;"
+
+#: ../../web/studies.md:58
+msgid "the **value plotted**: the value of a scalar output (a power meter), or a statistic of an image or a field (maximum, mean, minimum, sum);"
+msgstr "la **valeur tracée** : la valeur d'une sortie scalaire (un puissancemètre), ou une statistique d'une image ou d'un champ (maximum, moyenne, minimum, somme) ;"
+
+#: ../../web/studies.md:60
+msgid "a **table** of every point (parameters, noise realization, outputs), downloaded as **CSV**."
+msgstr "un **tableau** de tous les points (paramètres, réalisation du bruit, sorties), téléchargeable en **CSV**."
+
+#: ../../web/studies.md:62
+msgid "The instance limits the number of points of a study (1000 on your machine by default, fewer on a public instance) and the time of a run."
+msgstr "L'instance limite le nombre de points d'une étude (1000 sur votre machine par défaut, moins sur une instance publique) et la durée d'une exécution."
+
+#: ../../web/studies.md:65
+msgid "The same in Python and for assistants"
+msgstr "La même chose en Python et pour les assistants"
+
+#: ../../web/studies.md:73
+#, python-brace-format
+msgid "AI assistants use the MCP tools `set_seed`, `set_free_parameter`, `run_sweep`, `run_monte_carlo`, `add_feedback`, `run_loop` and `get_study` (see the [reference](../assistant/reference.md)); the HTTP API has `POST /api/contexts/{id}/studies`, `POST /api/contexts/{id}/loops` and `GET /api/jobs/{job}/study` (see [HTTP API](api.md))."
+msgstr "Les assistants IA utilisent les outils MCP `set_seed`, `set_free_parameter`, `run_sweep`, `run_monte_carlo`, `add_feedback`, `run_loop` et `get_study` (voir la [référence](../assistant/reference.md)) ; l'API HTTP a `POST /api/contexts/{id}/studies`, `POST /api/contexts/{id}/loops` et `GET /api/jobs/{job}/study` (voir [API HTTP](api.md))."
+

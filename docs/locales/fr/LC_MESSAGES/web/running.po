@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/running.md:1
+msgid "Running and inspecting"
+msgstr "Exécuter et inspecter"
+
+#: ../../web/running.md:3
+msgid "Running a context"
+msgstr "Exécuter un contexte"
+
+#: ../../web/running.md:5
+msgid "Press **Run** (or **Ctrl+Enter**). The outputs listed by the context are computed (for a preset, those chosen by its author; otherwise every output not connected to anything). While it runs, the progress bar tells which element is being computed; **Cancel** stops the run after the current element."
+msgstr "Appuyez sur **Exécuter** (ou **Ctrl+Entrée**). Les sorties listées par le contexte sont calculées (pour un préréglage, celles choisies par son auteur ; sinon toutes les sorties qui ne sont reliées à rien). Pendant l'exécution, la barre de progression indique l'élément en cours de calcul ; **Annuler** arrête l'exécution après l'élément en cours."
+
+#: ../../web/running.md:9
+msgid "When the run ends, the **Results** tab shows each output with its figure, its statistics (minimum, maximum, mean, sum, with units) and details such as the grid, the power or the beam radius. A failed run shows the error and how to fix it."
+msgstr "À la fin de l'exécution, l'onglet **Résultats** montre chaque sortie avec sa figure, ses statistiques (minimum, maximum, moyenne, somme, avec unités) et des détails comme la grille, la puissance ou le rayon du faisceau. Une exécution qui échoue montre l'erreur et comment la corriger."
+
+#: ../../web/running.md:13
+msgid "Turn on the **archive** button (next to Run) to keep the results of each run on the server, with its metadata, figures, data and journal; the archive can then be downloaded as a `.zip` file."
+msgstr "Activez le bouton **archive** (à côté d'Exécuter) pour garder sur le serveur les résultats de chaque exécution, avec ses métadonnées, figures, données et journal ; l'archive peut ensuite être téléchargée en fichier `.zip`."
+
+#: ../../web/running.md:16
+msgid "Inspecting any port"
+msgstr "Inspecter n'importe quel port"
+
+#: ../../web/running.md:18
+msgid "Click the name of an output on a block (or **Inspect** in the inspector) to compute that port alone and see its summary and figure: the field after the telescope, the image before the coronagraph, the reading of a detector. Inspecting does not need a run."
+msgstr "Cliquez sur le nom d'une sortie d'un bloc (ou sur **Inspecter** dans l'inspecteur) pour calculer ce port seul et voir son résumé et sa figure : le champ après le télescope, l'image avant le coronographe, la lecture d'un détecteur. Inspecter ne demande pas d'exécution."
+
+#: ../../web/running.md:22
+msgid "Downloads"
+msgstr "Téléchargements"
+
+#: ../../web/running.md:24
+msgid "Every output and inspected port can be downloaded as:"
+msgstr "Chaque sortie et chaque port inspecté peuvent être téléchargés en :"
+
+#: ../../web/running.md
+msgid "Format"
+msgstr "Format"
+
+#: ../../web/running.md
+msgid "Content"
+msgstr "Contenu"
+
+#: ../../web/running.md
+msgid "PNG"
+msgstr "PNG"
+
+#: ../../web/running.md
+msgid "the figure"
+msgstr "la figure"
+
+#: ../../web/running.md
+msgid "PltEdit (`.plt`)"
+msgstr "PltEdit (`.plt`)"
+
+#: ../../web/running.md
+msgid "the figure, editable in PltEdit (`pltedit.load`)"
+msgstr "la figure, modifiable dans PltEdit (`pltedit.load`)"
+
+#: ../../web/running.md
+msgid "Data (`.npz`)"
+msgstr "Données (`.npz`)"
+
+#: ../../web/running.md
+msgid "the data: intensity and axes of a field, or the data product; plain arrays with units, no pickled object (`lumos.results.load_data`, `DataProduct.from_npz`)"
+msgstr "les données : intensité et axes d'un champ, ou le produit de données ; de simples tableaux avec unités, aucun objet sérialisé par pickle (`lumos.results.load_data`, `DataProduct.from_npz`)"
+
+#: ../../web/running.md
+msgid "JSON"
+msgstr "JSON"
+
+#: ../../web/running.md
+msgid "the complete signal, as stored in archives (readable by `lumos.load_archive`)"
+msgstr "le signal complet, tel qu'enregistré dans les archives (lisible par `lumos.load_archive`)"
+
+#: ../../web/running.md:33
+msgid "Journal and problems"
+msgstr "Journal et problèmes"
+
+#: ../../web/running.md:35
+msgid "The **Journal** tab lists, as they happen, the runs (outputs and duration), the actions on elements and the messages of the library. The **Problems** tab lists what would make a run fail (an input not connected, a missing observation band...), with a fix; click the element to select it. Blocks with a problem are outlined in red."
+msgstr "L'onglet **Journal** liste, au fur et à mesure, les exécutions (sorties et durée), les actions sur les éléments et les messages de la bibliothèque. L'onglet **Problèmes** liste ce qui ferait échouer une exécution (une entrée non connectée, une bande d'observation manquante…), avec une correction ; cliquez sur l'élément pour le sélectionner. Les blocs qui ont un problème sont entourés de rouge."
+

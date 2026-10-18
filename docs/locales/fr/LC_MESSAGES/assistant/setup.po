@@ -1,0 +1,193 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../assistant/setup.md:1
+msgid "Setting up an assistant"
+msgstr "Configurer un assistant"
+
+#: ../../assistant/setup.md:3
+msgid "The MCP server ships with LUMOS as the extra `mcp`:"
+msgstr "Le serveur MCP est livré avec LUMOS dans l'extra `mcp` :"
+
+#: ../../assistant/setup.md:10
+msgid "`lumos mcp` starts the server on the standard streams (stdio): the assistant launches it and talks to it directly, nothing listens on the network. Most clients only need the command `lumos mcp`."
+msgstr "`lumos mcp` lance le serveur sur les flux standard (stdio) : l'assistant le lance et lui parle directement, rien n'écoute sur le réseau. La plupart des clients n'ont besoin que de la commande `lumos mcp`."
+
+#: ../../assistant/setup.md:14
+msgid "If LUMOS is installed in a virtual environment, give the client the full path of the command, for example `/home/me/project/.venv/bin/lumos` on Linux and macOS or `C:\\Users\\me\\project\\.venv\\Scripts\\lumos.exe` on Windows, since the client does not activate the environment."
+msgstr "Si LUMOS est installé dans un environnement virtuel, donnez au client le chemin complet de la commande, par exemple `/home/moi/projet/.venv/bin/lumos` sous Linux et macOS ou `C:\\Users\\moi\\projet\\.venv\\Scripts\\lumos.exe` sous Windows, car le client n'active pas l'environnement."
+
+#: ../../assistant/setup.md:19
+msgid "Claude Code"
+msgstr "Claude Code"
+
+#: ../../assistant/setup.md:21
+msgid "Install [Claude Code](https://docs.claude.com/en/docs/claude-code) and LUMOS with the extra `mcp`."
+msgstr "Installez [Claude Code](https://docs.claude.com/en/docs/claude-code) et LUMOS avec l'extra `mcp`."
+
+#: ../../assistant/setup.md:24
+msgid "The Claude Code extension of VS Code does not put the command `claude` on the `PATH`. On Windows, install the command line with `winget install Anthropic.ClaudeCode` (or `npm install -g @anthropic-ai/claude-code`) and open a new terminal; `claude --version` must answer."
+msgstr "L'extension Claude Code de VS Code ne met pas la commande `claude` dans le `PATH`. Sous Windows, installez la ligne de commande avec `winget install Anthropic.ClaudeCode` (ou `npm install -g @anthropic-ai/claude-code`) et ouvrez un nouveau terminal ; `claude --version` doit répondre."
+
+#: ../../assistant/setup.md:28
+msgid "Register the server:"
+msgstr "Enregistrez le serveur :"
+
+#: ../../assistant/setup.md:34
+msgid "Everything after `--` is the command that starts the server. Add `--scope user` to use LUMOS in all your projects, or `--scope project` to share the configuration with your team in a `.mcp.json` file at the root of the project."
+msgstr "Tout ce qui suit `--` est la commande qui lance le serveur. Ajoutez `--scope user` pour utiliser LUMOS dans tous vos projets, ou `--scope project` pour partager la configuration avec votre équipe dans un fichier `.mcp.json` à la racine du projet."
+
+#: ../../assistant/setup.md:37
+msgid "Start `claude` and type `/mcp`: `lumos` is listed as connected, with its tools."
+msgstr "Lancez `claude` et tapez `/mcp` : `lumos` apparaît comme connecté, avec ses outils."
+
+#: ../../assistant/setup.md:38
+msgid "Ask, for example: *\"Load the LUMOS coronagraph preset and show me the coronagraphic image.\"*"
+msgstr "Demandez par exemple : *« Charge le préréglage coronographe de LUMOS et montre-moi l'image coronographique. »*"
+
+#: ../../assistant/setup.md:40
+msgid "Options of the server go after `lumos mcp`, for instance a directory for the archives of the runs:"
+msgstr "Les options du serveur se placent après `lumos mcp`, par exemple un dossier pour les archives des exécutions :"
+
+#: ../../assistant/setup.md:46
+msgid "The prompts of LUMOS appear as slash commands (`/mcp__lumos__design_instrument`, ...) and its resources can be attached to a message with `@` (`@lumos:lumos://presets`)."
+msgstr "Les prompts de LUMOS apparaissent comme des commandes slash (`/mcp__lumos__design_instrument`, …) et ses ressources peuvent être jointes à un message avec `@` (`@lumos:lumos://presets`)."
+
+#: ../../assistant/setup.md:49
+msgid "Claude Desktop"
+msgstr "Claude Desktop"
+
+#: ../../assistant/setup.md:51
+msgid "Install [Claude Desktop](https://claude.ai/download) and LUMOS with the extra `mcp`."
+msgstr "Installez [Claude Desktop](https://claude.ai/download) et LUMOS avec l'extra `mcp`."
+
+#: ../../assistant/setup.md:52
+msgid "Open *Settings → Developer → Edit Config*. This opens `claude_desktop_config.json`, found in `~/Library/Application Support/Claude/` on macOS and in `%APPDATA%\\Claude\\` on Windows."
+msgstr "Ouvrez *Paramètres → Développeur → Modifier la configuration*. Cela ouvre `claude_desktop_config.json`, qui se trouve dans `~/Library/Application Support/Claude/` sous macOS et dans `%APPDATA%\\Claude\\` sous Windows."
+
+#: ../../assistant/setup.md:54
+msgid "Add the server:"
+msgstr "Ajoutez le serveur :"
+
+#: ../../assistant/setup.md:67
+msgid "Use the full path of `lumos` if it is installed in a virtual environment, and add options to `args`, for example `[\"mcp\", \"--archive-root\", \"/Users/me/lumos-runs\"]`."
+msgstr "Utilisez le chemin complet de `lumos` s'il est installé dans un environnement virtuel, et ajoutez des options à `args`, par exemple `[\"mcp\", \"--archive-root\", \"/Users/moi/lumos-runs\"]`."
+
+#: ../../assistant/setup.md:69
+msgid "Restart Claude Desktop. The tools of LUMOS are listed under the tools button of the message box; the assistant asks your permission the first time it uses each tool."
+msgstr "Redémarrez Claude Desktop. Les outils de LUMOS sont listés sous le bouton des outils de la zone de message ; l'assistant vous demande la permission la première fois qu'il utilise chaque outil."
+
+#: ../../assistant/setup.md:72
+msgid "Claude Desktop shows the figures returned by `inspect_port` in the conversation."
+msgstr "Claude Desktop affiche dans la conversation les figures renvoyées par `inspect_port`."
+
+#: ../../assistant/setup.md:74
+msgid "Other MCP clients"
+msgstr "Autres clients MCP"
+
+#: ../../assistant/setup.md:76
+msgid "Any client following the Model Context Protocol works; LUMOS is tested against the specification with a client written without the SDK."
+msgstr "Tout client qui suit le Model Context Protocol fonctionne ; LUMOS est testé par rapport à la spécification avec un client écrit sans le SDK."
+
+#: ../../assistant/setup.md:79
+msgid "**stdio** (recommended for local use): command `lumos`, arguments `[\"mcp\"]`."
+msgstr "**stdio** (recommandé pour un usage local) : commande `lumos`, arguments `[\"mcp\"]`."
+
+#: ../../assistant/setup.md:80
+msgid "**Streamable HTTP**: start the server yourself, then give the client its URL:"
+msgstr "**HTTP en flux** : lancez vous-même le serveur, puis donnez son URL au client :"
+
+#: ../../assistant/setup.md:86
+msgid "The server listens on `http://127.0.0.1:8765/mcp` (change it with `--host`, `--port` and `--path`). With Claude Code:"
+msgstr "Le serveur écoute sur `http://127.0.0.1:8765/mcp` (changez-le avec `--host`, `--port` et `--path`). Avec Claude Code :"
+
+#: ../../assistant/setup.md:93
+msgid "Until the web instance brings user accounts, the HTTP server has no authentication: it only listens on your machine unless you pass `--allow-remote`, and it never accepts the operation of equipment from other machines."
+msgstr "Le serveur HTTP de `lumos mcp` n'a pas d'authentification : il n'écoute que sur votre machine, sauf avec `--allow-remote`, et n'accepte jamais l'opération de matériel depuis d'autres machines. Pour un accès authentifié, utilisez le serveur MCP d'une instance web (`/mcp`, voir le panneau assistant)."
+
+#: ../../assistant/setup.md:97
+msgid "Options"
+msgstr "Options"
+
+#: ../../assistant/setup.md:23
+msgid "Option"
+msgstr "Option"
+
+#: ../../assistant/setup.md:23
+msgid "Effect"
+msgstr "Effet"
+
+#: ../../assistant/setup.md:23
+msgid "`--archive-root DIR`"
+msgstr "`--archive-root DIR`"
+
+#: ../../assistant/setup.md:23
+msgid "Directory of the archives of the runs (default: the archive directory of LUMOS)."
+msgstr "Dossier des archives des exécutions (par défaut : le dossier d'archives de LUMOS)."
+
+#: ../../assistant/setup.md:23
+msgid "`--presets-dir DIR`"
+msgstr "`--presets-dir DIR`"
+
+#: ../../assistant/setup.md:23
+msgid "Directory of the preset `.lumos` files offered by `list_presets`."
+msgstr "Dossier des fichiers `.lumos` préréglés proposés par `list_presets`."
+
+#: ../../assistant/setup.md:23
+msgid "`--enable-operation`"
+msgstr "`--enable-operation`"
+
+#: ../../assistant/setup.md:23
+msgid "Allow actions on real equipment, each one confirmed by you (see [Safety](reference.md#safety))."
+msgstr "Autoriser les actions sur du matériel réel, chacune confirmée par vous (voir [Sécurité](reference.md#safety))."
+
+#: ../../assistant/setup.md:23
+msgid "`--transport http`"
+msgstr "`--transport http`"
+
+#: ../../assistant/setup.md:23
+msgid "Serve over streamable HTTP instead of stdio, with `--host`, `--port`, `--path`."
+msgstr "Servir en HTTP en flux au lieu de stdio, avec `--host`, `--port`, `--path`."
+
+#: ../../assistant/setup.md:23
+msgid "`--allow-remote`"
+msgstr "`--allow-remote`"
+
+#: ../../assistant/setup.md:23
+msgid "Accept a non-local address for the HTTP server."
+msgstr "Accepter une adresse non locale pour le serveur HTTP."
+
+#: ../../assistant/setup.md:107
+msgid "Troubleshooting"
+msgstr "Dépannage"
+
+#: ../../assistant/setup.md:109
+msgid "**The server does not start**: run `lumos mcp --help` in a terminal. \"needs the extra 'mcp'\" means that LUMOS was installed without `[mcp]`; \"command not found\" means that the client needs the full path of `lumos`."
+msgstr "**Le serveur ne démarre pas** : lancez `lumos mcp --help` dans un terminal. « needs the extra 'mcp' » signifie que LUMOS a été installé sans `[mcp]` ; « command not found » signifie que le client a besoin du chemin complet de `lumos`."
+
+#: ../../assistant/setup.md:112
+msgid "**The tools are not listed**: in Claude Code, `claude mcp list` shows the state of each server and `claude --debug` shows its errors; in Claude Desktop, the logs are in `~/Library/Logs/Claude/` (macOS) or `%APPDATA%\\Claude\\logs\\` (Windows), in `mcp-server-lumos.log`."
+msgstr "**Les outils ne sont pas listés** : dans Claude Code, `claude mcp list` montre l'état de chaque serveur et `claude --debug` ses erreurs ; dans Claude Desktop, les journaux sont dans `~/Library/Logs/Claude/` (macOS) ou `%APPDATA%\\Claude\\logs\\` (Windows), dans `mcp-server-lumos.log`."
+
+#: ../../assistant/setup.md:115
+msgid "**Long runs**: `run` waits up to `wait_seconds` (300 s by default) while reporting the progress, then lets the computation continue in the background; the assistant follows it with `get_job`."
+msgstr "**Exécutions longues** : `run` attend jusqu'à `wait_seconds` (300 s par défaut) en rapportant la progression, puis laisse le calcul continuer en arrière-plan ; l'assistant le suit avec `get_job`."
+

@@ -1,0 +1,438 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/api.md:1
+msgid "HTTP API"
+msgstr "API HTTP"
+
+#: ../../web/api.md:3
+msgid "The web interface talks to the backend through a JSON API under `/api`. You can use it from any HTTP client; the interactive OpenAPI page of a running instance is at `/api/docs`. Every route is one call of the service layer, so the API, the Python library and the AI assistant give the same results."
+msgstr "L'interface web dialogue avec le serveur par une API JSON sous `/api`. Vous pouvez l'utiliser depuis n'importe quel client HTTP ; la page OpenAPI interactive d'une instance en marche est à `/api/docs`. Chaque route est un appel de la couche de service : l'API, la bibliothèque Python et l'assistant IA donnent les mêmes résultats."
+
+#: ../../web/api.md:7
+msgid "Conventions"
+msgstr "Conventions"
+
+#: ../../web/api.md:9
+msgid "Quantities are text with their unit: `\"0.5 mm\"`, `\"1.6 um\"`, `\"2 mW\"`."
+msgstr "Les grandeurs sont du texte avec leur unité : `\"0.5 mm\"`, `\"1.6 um\"`, `\"2 mW\"`."
+
+#: ../../web/api.md:10
+msgid "Ports are written `element.port` (`laser.out`), parameters `element.parameter` (`laser.power`)."
+msgstr "Les ports s'écrivent `element.port` (`laser.out`), les paramètres `element.parametre` (`laser.power`)."
+
+#: ../../web/api.md:11
+msgid "The first request opens a session and sets the cookie `lumos_session`; send it back with every request. The contexts and runs of a session are only visible to it."
+msgstr "La première requête ouvre une session et pose le cookie `lumos_session` ; renvoyez-le avec chaque requête. Les contextes et les exécutions d'une session ne sont visibles que par elle."
+
+#: ../../web/api.md:13
+#, python-brace-format
+msgid "Errors are JSON objects `{\"error\": ..., \"hint\": ..., \"code\": ...}`, where `hint` says how to fix the request:"
+msgstr "Les erreurs sont des objets JSON `{\"error\": ..., \"hint\": ..., \"code\": ...}`, où `hint` dit comment corriger la requête :"
+
+#: ../../web/api.md
+msgid "`code`"
+msgstr "`code`"
+
+#: ../../web/api.md
+msgid "HTTP status"
+msgstr "Statut HTTP"
+
+#: ../../web/api.md
+msgid "Meaning"
+msgstr "Signification"
+
+#: ../../web/api.md
+msgid "`invalid`"
+msgstr "`invalid`"
+
+#: ../../web/api.md
+msgid "400"
+msgstr "400"
+
+#: ../../web/api.md
+msgid "the request is wrong (unit, port, body)"
+msgstr "la requête est erronée (unité, port, corps)"
+
+#: ../../web/api.md
+msgid "`forbidden`"
+msgstr "`forbidden`"
+
+#: ../../web/api.md
+msgid "403"
+msgstr "403"
+
+#: ../../web/api.md
+msgid "not allowed (operation disabled, role)"
+msgstr "non autorisé (opération désactivée, rôle)"
+
+#: ../../web/api.md
+msgid "`not_found`"
+msgstr "`not_found`"
+
+#: ../../web/api.md
+msgid "404"
+msgstr "404"
+
+#: ../../web/api.md
+msgid "unknown context, element, port, preset..."
+msgstr "contexte, élément, port, préréglage… inconnu"
+
+#: ../../web/api.md
+msgid "`failed`"
+msgstr "`failed`"
+
+#: ../../web/api.md
+msgid "422"
+msgstr "422"
+
+#: ../../web/api.md
+msgid "the computation failed"
+msgstr "le calcul a échoué"
+
+#: ../../web/api.md
+msgid "`quota`"
+msgstr "`quota`"
+
+#: ../../web/api.md
+msgid "429"
+msgstr "429"
+
+#: ../../web/api.md
+msgid "a quota of the instance is reached"
+msgstr "un quota de l'instance est atteint"
+
+#: ../../web/api.md:23
+msgid "Routes"
+msgstr "Routes"
+
+#: ../../web/api.md
+msgid "Route"
+msgstr "Route"
+
+#: ../../web/api.md
+msgid "Purpose"
+msgstr "Rôle"
+
+#: ../../web/api.md
+msgid "`GET /api/info`"
+msgstr "`GET /api/info`"
+
+#: ../../web/api.md
+msgid "version, profile, operation enabled, languages"
+msgstr "version, profil, opération activée, langues"
+
+#: ../../web/api.md
+msgid "`GET /api/element-types?query=`"
+msgstr "`GET /api/element-types?query=`"
+
+#: ../../web/api.md
+msgid "element types, a page at a time"
+msgstr "types d'éléments, une page à la fois"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/element-types/{type}/schema`"
+msgstr "`GET /api/element-types/{type}/schema`"
+
+#: ../../web/api.md
+msgid "JSON Schema of a type (parameters, units, bounds, ports)"
+msgstr "schéma JSON d'un type (paramètres, unités, bornes, ports)"
+
+#: ../../web/api.md
+msgid "`GET /api/palette`"
+msgstr "`GET /api/palette`"
+
+#: ../../web/api.md
+msgid "every type with its schema and category, and the signal classes"
+msgstr "tous les types avec leur schéma et leur catégorie, et les classes de signaux"
+
+#: ../../web/api.md
+msgid "`GET /api/docs/search?q=`"
+msgstr "`GET /api/docs/search?q=`"
+
+#: ../../web/api.md
+msgid "documentation pages"
+msgstr "pages de documentation"
+
+#: ../../web/api.md
+msgid "`GET, POST /api/contexts`"
+msgstr "`GET, POST /api/contexts`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "list, create (`{\"name\", \"mode\"}`)"
+msgstr "lister, créer (`{\"name\", \"mode\"}`)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET, DELETE /api/contexts/{id}`"
+msgstr "`GET, DELETE /api/contexts/{id}`"
+
+#: ../../web/api.md
+msgid "describe, close"
+msgstr "décrire, fermer"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/presets`, `POST /api/presets/{name}/load`"
+msgstr "`GET /api/presets`, `POST /api/presets/{name}/load`"
+
+#: ../../web/api.md
+msgid "presets"
+msgstr "préréglages"
+
+#: ../../web/api.md
+msgid "`POST /api/contexts/import`"
+msgstr "`POST /api/contexts/import`"
+
+#: ../../web/api.md
+msgid "create a context from a `.lumos` document (request body)"
+msgstr "créer un contexte à partir d'un document `.lumos` (corps de la requête)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/contexts/{id}/export.lumos`, `export.py`"
+msgstr "`GET /api/contexts/{id}/export.lumos`, `export.py`"
+
+#: ../../web/api.md
+msgid "download the `.lumos` file, the Python script"
+msgstr "télécharger le fichier `.lumos`, le script Python"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`POST /api/contexts/{id}/elements`"
+msgstr "`POST /api/contexts/{id}/elements`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "add an element (`{\"type_id\", \"name\", \"params\"}`)"
+msgstr "ajouter un élément (`{\"type_id\", \"name\", \"params\"}`)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`DELETE /api/contexts/{id}/elements/{path}`"
+msgstr "`DELETE /api/contexts/{id}/elements/{path}`"
+
+#: ../../web/api.md
+msgid "remove an element"
+msgstr "retirer un élément"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`POST, DELETE /api/contexts/{id}/connections`"
+msgstr "`POST, DELETE /api/contexts/{id}/connections`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "connect (`{\"source\", \"target\"}`), disconnect (query)"
+msgstr "connecter (`{\"source\", \"target\"}`), déconnecter (paramètres de requête)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`PATCH /api/contexts/{id}/params`"
+msgstr "`PATCH /api/contexts/{id}/params`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "set a value (`{\"path\": \"laser.power\", \"value\": \"3 mW\"}`)"
+msgstr "régler une valeur (`{\"path\": \"laser.power\", \"value\": \"3 mW\"}`)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`PUT /api/contexts/{id}/observation`"
+msgstr "`PUT /api/contexts/{id}/observation`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "observation band (`{\"minimum\", \"maximum\", \"n_wavelengths\"}`)"
+msgstr "bande d'observation (`{\"minimum\", \"maximum\", \"n_wavelengths\"}`)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/contexts/{id}/validate`"
+msgstr "`GET /api/contexts/{id}/validate`"
+
+#: ../../web/api.md
+msgid "problems with suggested fixes"
+msgstr "problèmes avec des corrections suggérées"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/contexts/{id}/sampling/{element}`"
+msgstr "`GET /api/contexts/{id}/sampling/{element}`"
+
+#: ../../web/api.md
+msgid "propagation method and why"
+msgstr "méthode de propagation et pourquoi"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`POST /api/contexts/{id}/runs`"
+msgstr "`POST /api/contexts/{id}/runs`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "start a run (`{\"outputs\": [...]}`; none: the default outputs)"
+msgstr "lancer une exécution (`{\"outputs\": [...]}` ; sans sortie : les sorties par défaut)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/jobs/{job}`, `GET /api/jobs/{job}/results/{port}`"
+msgstr "`GET /api/jobs/{job}`, `GET /api/jobs/{job}/results/{port}`"
+
+#: ../../web/api.md
+msgid "follow a run, read an output"
+msgstr "suivre une exécution, lire une sortie"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`PATCH /api/contexts/{id}`"
+msgstr "`PATCH /api/contexts/{id}`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "name, description, seed (`{\"seed\": 42}`)"
+msgstr "nom, description, graine (`{\"seed\": 42}`)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`PUT /api/contexts/{id}/free`"
+msgstr "`PUT /api/contexts/{id}/free`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "free a parameter (`{\"path\", \"free\", \"prior\": {\"kind\": \"normal\", \"mean\", \"std\"}}`)"
+msgstr "libérer un paramètre (`{\"path\", \"free\", \"prior\": {\"kind\": \"normal\", \"mean\", \"std\"}}`)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`POST /api/contexts/{id}/studies`"
+msgstr "`POST /api/contexts/{id}/studies`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "start a sweep (`{\"kind\": \"sweep\", \"parameters\", \"mode\"}`) or a Monte-Carlo run (`{\"kind\": \"sample\", \"n\"}`)"
+msgstr "lancer un balayage (`{\"kind\": \"sweep\", \"parameters\", \"mode\"}`) ou une étude Monte-Carlo (`{\"kind\": \"sample\", \"n\"}`)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`POST, DELETE /api/contexts/{id}/feedbacks`"
+msgstr "`POST, DELETE /api/contexts/{id}/feedbacks`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "close a loop (`{\"source\", \"target\", \"mode\"}`), open it (query)"
+msgstr "fermer une boucle (`{\"source\", \"target\", \"mode\"}`), l'ouvrir (paramètres de requête)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`POST /api/contexts/{id}/loops`"
+msgstr "`POST /api/contexts/{id}/loops`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "run a loop (`{\"steps\": 30, \"period\": \"2 ms\", \"outputs\": [...]}`)"
+msgstr "exécuter une boucle (`{\"steps\": 30, \"period\": \"2 ms\", \"outputs\": [...]}`)"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/jobs/{job}/study`, `study.csv`"
+msgstr "`GET /api/jobs/{job}/study`, `study.csv`"
+
+#: ../../web/api.md
+msgid "points of a study or steps of a loop, as JSON or CSV"
+msgstr "points d'une étude ou pas d'une boucle, en JSON ou en CSV"
+
+#: ../../web/api.md
+msgid "`GET, POST, DELETE /api/assistant/link`"
+msgstr "`GET, POST, DELETE /api/assistant/link`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "connector link of the session (`{\"url\"}`): its MCP server at `/mcp/<secret>`"
+msgstr "lien de connecteur de la session (`{\"url\"}`) : son serveur MCP à `/mcp/<secret>`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/contexts/{id}/ports/{port}`"
+msgstr "`GET /api/contexts/{id}/ports/{port}`"
+
+#: ../../web/api.md
+msgid "summary of the signal of any output"
+msgstr "résumé du signal de n'importe quelle sortie"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/contexts/{id}/ports/{port}/figure.png`"
+msgstr "`GET /api/contexts/{id}/ports/{port}/figure.png`"
+
+#: ../../web/api.md
+msgid "its figure"
+msgstr "sa figure"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "`GET /api/contexts/{id}/journal`"
+msgstr "`GET /api/contexts/{id}/journal`"
+
+#: ../../web/api.md
+msgid "journal (actions, runs, logs)"
+msgstr "journal (actions, exécutions, messages)"
+
+#: ../../web/api.md
+msgid "`GET /api/catalogs/resolve?name=`"
+msgstr "`GET /api/catalogs/resolve?name=`"
+
+#: ../../web/api.md
+msgid "astronomical object"
+msgstr "objet astronomique"
+
+#: ../../web/api.md
+msgid "`GET /api/archives`, `GET /api/archives/metadata?path=`"
+msgstr "`GET /api/archives`, `GET /api/archives/metadata?path=`"
+
+#: ../../web/api.md
+msgid "archives of the runs"
+msgstr "archives des exécutions"
+
+#: ../../web/api.md:59
+msgid "Live updates"
+msgstr "Mises à jour en direct"
+
+#: ../../web/api.md:61
+msgid "The WebSocket `/api/ws` (same cookie) sends JSON messages:"
+msgstr "Le WebSocket `/api/ws` (même cookie) envoie des messages JSON :"
+
+#: ../../web/api.md:63
+#, python-brace-format
+msgid "`{\"type\": \"job\", \"job\": {...}}` when a run of the session changes (status, progress, error);"
+msgstr "`{\"type\": \"job\", \"job\": {...}}` quand une exécution de la session change (statut, progression, erreur) ;"
+
+#: ../../web/api.md:64
+#, python-brace-format
+msgid "`{\"type\": \"journal\", \"context\": \"...\", \"entry\": {...}}` for each new entry of the journal of a context."
+msgstr "`{\"type\": \"journal\", \"context\": \"...\", \"entry\": {...}}` pour chaque nouvelle entrée du journal d'un contexte."
+
+#: ../../web/api.md:66
+msgid "Example"
+msgstr "Exemple"
+

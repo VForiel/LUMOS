@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../user_guide/catalogs.md:1
+msgid "Astronomical catalogues"
+msgstr "Catalogues astronomiques"
+
+#: ../../user_guide/catalogs.md:3
+msgid "`lumos.catalogs` turns names into typed records and records into elements of a scene."
+msgstr "`lumos.catalogs` transforme des noms en enregistrements typés, et des enregistrements en éléments d'une scène."
+
+#: ../../user_guide/catalogs.md:20
+msgid "Providers"
+msgstr "Fournisseurs"
+
+#: ../../user_guide/catalogs.md
+msgid "Provider"
+msgstr "Fournisseur"
+
+#: ../../user_guide/catalogs.md
+msgid "Data"
+msgstr "Données"
+
+#: ../../user_guide/catalogs.md
+msgid "`Simbad`"
+msgstr "`Simbad`"
+
+#: ../../user_guide/catalogs.md
+msgid "identifiers, type, position, parallax, proper motion, radial velocity, spectral type, magnitudes, Teff/log g/[Fe/H]"
+msgstr "identifiants, type, position, parallaxe, mouvement propre, vitesse radiale, type spectral, magnitudes, Teff/log g/[Fe/H]"
+
+#: ../../user_guide/catalogs.md
+msgid "`GaiaDR3`"
+msgstr "`GaiaDR3`"
+
+#: ../../user_guide/catalogs.md
+msgid "astrometry, G/BP/RP photometry, Teff, radial velocity of a source"
+msgstr "astrométrie, photométrie G/BP/RP, Teff, vitesse radiale d'une source"
+
+#: ../../user_guide/catalogs.md
+msgid "`NasaExoplanetArchive`, `ExoplanetEU`"
+msgstr "`NasaExoplanetArchive`, `ExoplanetEU`"
+
+#: ../../user_guide/catalogs.md
+msgid "planets and systems: orbits, radii, masses, host stars"
+msgstr "planètes et systèmes : orbites, rayons, masses, étoiles hôtes"
+
+#: ../../user_guide/catalogs.md
+msgid "`VizierPhotometry`"
+msgstr "`VizierPhotometry`"
+
+#: ../../user_guide/catalogs.md
+msgid "every photometric point of the VizieR catalogues (SED)"
+msgstr "tous les points photométriques des catalogues VizieR (SED)"
+
+#: ../../user_guide/catalogs.md
+msgid "`Calspec`, `PicklesLibrary`"
+msgstr "`Calspec`, `PicklesLibrary`"
+
+#: ../../user_guide/catalogs.md
+msgid "flux standards and stellar library spectra"
+msgstr "étalons de flux et spectres de bibliothèques stellaires"
+
+#: ../../user_guide/catalogs.md
+msgid "`Horizons`"
+msgstr "`Horizons`"
+
+#: ../../user_guide/catalogs.md
+msgid "ephemerides of Solar-System bodies; `solar_spectrum()`"
+msgstr "éphémérides des corps du Système solaire ; `solar_spectrum()`"
+
+#: ../../user_guide/catalogs.md
+msgid "`SvoFilterService`"
+msgstr "`SvoFilterService`"
+
+#: ../../user_guide/catalogs.md
+msgid "filter transmission curves and zero points"
+msgstr "courbes de transmission des filtres et points zéro"
+
+#: ../../user_guide/catalogs.md
+msgid "`Eso`, `Mast`"
+msgstr "`Eso`, `Mast`"
+
+#: ../../user_guide/catalogs.md
+msgid "observations in the ESO and MAST archives (ObsCore)"
+msgstr "observations des archives de l'ESO et de MAST (ObsCore)"
+
+#: ../../user_guide/catalogs.md
+msgid "`Irsa`"
+msgstr "`Irsa`"
+
+#: ../../user_guide/catalogs.md
+msgid "2MASS photometry"
+msgstr "photométrie 2MASS"
+
+#: ../../user_guide/catalogs.md
+msgid "`SkyView`, `Hips2Fits`"
+msgstr "`SkyView`, `Hips2Fits`"
+
+#: ../../user_guide/catalogs.md
+msgid "survey images, turned into mapped components by `survey_component`"
+msgstr "images de relevés, transformées en composantes cartographiées par `survey_component`"
+
+#: ../../user_guide/catalogs.md:35
+msgid "Providers are registered by name (`lumos.catalogs.providers()`); plugins add theirs with the `lumos.catalogs` entry-point group."
+msgstr "Les fournisseurs sont enregistrés par nom (`lumos.catalogs.providers()`) ; les extensions ajoutent les leurs avec le groupe de points d'entrée `lumos.catalogs`."
+
+#: ../../user_guide/catalogs.md:38
+msgid "Records and provenance"
+msgstr "Enregistrements et provenance"
+
+#: ../../user_guide/catalogs.md:40
+msgid "Each field of a record is a `Measurement`: value with unit, uncertainty, provider, bibliographic reference and whether LUMOS estimated it. `StarRecord.distance_estimate()` gives `1/parallax`; `lumos.catalogs.sed` fuses multi-catalogue photometry (one point per filter, priority catalogues, smallest relative uncertainty, median) and completes it with a blackbody fit; `complete_star` fills a missing temperature, distance or radius, flagged as estimated."
+msgstr "Chaque champ d'un enregistrement est une `Measurement` : valeur avec unité, incertitude, fournisseur, référence bibliographique, et l'indication d'une estimation faite par LUMOS. `StarRecord.distance_estimate()` donne `1/parallax` ; `lumos.catalogs.sed` fusionne la photométrie de plusieurs catalogues (un point par filtre, catalogues prioritaires, plus petite incertitude relative, médiane) et la complète par un ajustement de corps noir ; `complete_star` renseigne une température, une distance ou un rayon manquants, marqués comme estimés."
+
+#: ../../user_guide/catalogs.md:46
+msgid "Network, cache and offline use"
+msgstr "Réseau, cache et usage hors ligne"
+
+#: ../../user_guide/catalogs.md:48
+msgid "Every request uses HTTPS with verified certificates and a timeout, and is cached for 7 days in the user cache directory:"
+msgstr "Chaque requête utilise HTTPS avec des certificats vérifiés et un délai d'attente, et sa réponse est mise en cache 7 jours dans le dossier de cache de l'utilisateur :"
+
+#: ../../user_guide/catalogs.md:59
+msgid "The environment variables `LUMOS_CATALOGS_CACHE` and `LUMOS_CATALOGS_OFFLINE=1` set the same defaults: the notebook *Targets from catalogues* runs offline on the answers stored in `examples/catalog_cache`. See [ADR-0012](../adr/0012-catalogues.md)."
+msgstr "Les variables d'environnement `LUMOS_CATALOGS_CACHE` et `LUMOS_CATALOGS_OFFLINE=1` fixent les mêmes valeurs par défaut : le notebook *Cibles issues des catalogues* s'exécute hors ligne sur les réponses enregistrées dans `examples/catalog_cache`. Voir l'[ADR-0012](../adr/0012-catalogues.md)."
+

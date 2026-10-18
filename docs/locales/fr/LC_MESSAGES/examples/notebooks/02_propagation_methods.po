@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:10002
+msgid "2. Propagation methods"
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:10004
+msgid "LUMOS propagates a field sampled on any grid to any other grid. Several methods exist (Fresnel transfer function and impulse response, one-step Fresnel with a matrix Fourier transform, band-limited angular spectrum, direct Rayleigh-Sommerfeld); the **planner** chooses the most efficient one that respects the sampling criteria, and logs its choice."
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:20002
+#, python-format
+msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/02_propagation_methods.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F02_propagation_methods.ipynb)"
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:20002
+msgid "Open in Colab"
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:20002
+msgid "Launch on Binder"
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:60002
+msgid "Every method against the analytic Gaussian beam"
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:60004
+#, python-brace-format
+msgid "The beam radius grows as $w(z) = w_0 \\sqrt{1 + (z / z_R)^2}$ with the Rayleigh range $z_R = \\pi w_0^2 / \\lambda$ (Siegman, *Lasers*, §17.1)."
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:90002
+msgid "The same propagation inside a context"
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:90004
+msgid "The preset `propagation_methods.lumos` lets the planner choose: its choice is in the journal of the context."
+msgstr ""
+
+#: ../../examples/notebooks/02_propagation_methods.ipynb:110002
+#, python-brace-format
+msgid "0.00099999986 \\; \\mathrm{W}"
+msgstr ""
+

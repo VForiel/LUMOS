@@ -1,0 +1,119 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:10002
+msgid "7. Symbolic optics"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:10004
+msgid "LUMOS can carry fields as **closed-form expressions** (SymPy) instead of sampled arrays. This notebook shows:"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:10006
+msgid "symbolic fields, their parameters and their LaTeX rendering;"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:10007
+msgid "Gaussian beams propagated **exactly** through lenses and free space (ABCD law of the complex parameter q);"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:10008
+msgid "tabulated transforms: a circular pupil focused by a lens gives the Airy pattern in closed form;"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:10009
+msgid "the automatic, logged conversion to numbers before elements without symbolic transfer (detectors) or without closed form (pupils with spiders);"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:10011
+msgid "the way back: from sampled fields to expressions (Zernike projection, Gaussian fit)."
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:20002
+#, python-format
+msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/07_symbolic_optics.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F07_symbolic_optics.ipynb)"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:20002
+msgid "Open in Colab"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:20002
+msgid "Launch on Binder"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:50002
+msgid "A symbolic field"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:50004
+msgid "A `SymbolicField` holds an expression of the canonical variables `x, y` (m) and of named parameters given as quantities. Jupyter renders it in LaTeX."
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:60002
+msgid "e^{\\frac{- x^{2} - y^{2}}{w^{2}}}"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:70002
+msgid "A Gaussian beam focused by a lens"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:70004
+msgid "The preset `presets/symbolic_focus.lumos` focuses a Nd:YAG beam (w₀ = 2 mm) with a lens of 500 mm and propagates it to its new waist. Each element applies its ABCD matrix to the complex parameter q, so the field stays a closed form; the power meter at the end needs numbers, and the journal records the conversion."
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:90002
+#, python-brace-format
+msgid "The new waist predicted by Gaussian optics (Self 1983) is $w_0' = \\frac{\\lambda f}{\\pi w_0} / \\sqrt{1 + (f/z_R)^2}$. The closed form carried by the field gives it directly:"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:110002
+msgid "For comparison, the same bench with a sampled laser and numerical propagation. The symbolic profile needs no sampling of the 4 mm beam at the lens, where the numerical bench needs a large grid."
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:130002
+msgid "Tabulated transforms: the Airy pattern"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:130004
+msgid "A plane wave through a circular pupil, then a lens and a propagation over its focal length, gives the Fraunhofer pattern of the pupil in closed form (Goodman, §5.2): a Bessel function $J_1$."
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:140002
+msgid "\\displaystyle \\frac{0.015707963267949 \\left|{J_{1}\\left(20000.0 \\pi \\sqrt{x^{2} + y^{2}}\\right)}\\right|}{\\pi \\sqrt{x^{2} + y^{2}}}"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:160002
+msgid "Logged fallback"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:160004
+msgid "A pupil with spider vanes has no closed form: the field is sampled on its grid hint, the numerical transfer runs, and the journal says so."
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:180002
+msgid "From grids back to expressions"
+msgstr ""
+
+#: ../../examples/notebooks/07_symbolic_optics.ipynb:180004
+msgid "`lumos.symbolic.reconstruct` turns sampled fields into expressions, with the residual error of the reconstruction. Here, the phase of an aberrated pupil is projected on Zernike modes (Noll 1976), and a measured beam is fitted by a Gaussian with curvature."
+msgstr ""
+

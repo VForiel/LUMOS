@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 12:52+0200\n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -24,5 +24,9 @@ msgid "Examples"
 msgstr "Exemples"
 
 #: ../../examples/index.md:3
-msgid "Step-by-step Jupyter notebooks. Each one has a matching preset in the web interface."
-msgstr "Des notebooks Jupyter pas à pas. Chacun a un préréglage correspondant dans l'interface web."
+msgid "Step-by-step Jupyter notebooks, stored in the [`examples/`](https://github.com/VForiel/LUMOS/tree/main/examples) directory of the repository with the presets they use (`examples/presets/*.lumos`). Each preset of the web interface matches one of them. They are executed by the test suite and when this documentation is built, so their figures appear below. Each page starts with buttons to open the notebook on Google Colab or Binder."
+msgstr ""
+
+#~ msgid "Step-by-step Jupyter notebooks. Each one has a matching preset in the web interface."
+#~ msgstr "Des notebooks Jupyter pas à pas. Chacun a un préréglage correspondant dans l'interface web."
+

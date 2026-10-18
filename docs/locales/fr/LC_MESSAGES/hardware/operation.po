@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../hardware/operation.md:1
+msgid "Operating a bench"
+msgstr "Opérer un banc"
+
+#: ../../hardware/operation.md:3
+msgid "The same context runs in **simulation** or in **operation**. In operation, the actions of the elements (move a stage, open a shutter, take an exposure) are sent to drivers, and the **digital twin** keeps simulating the bench beside the equipment (ADR-0006, ADR-0014)."
+msgstr "Le même contexte s'exécute en **simulation** ou en **opération**. En opération, les actions des éléments (déplacer une platine, ouvrir un obturateur, faire une pose) sont envoyées à des pilotes, et le **jumeau numérique** continue de simuler le banc à côté du matériel (ADR-0006, ADR-0014)."
+
+#: ../../hardware/operation.md:7
+msgid "Try it without equipment: the LumosLabs emulators"
+msgstr "Essayer sans matériel : les émulateurs LumosLabs"
+
+#: ../../hardware/operation.md:14
+msgid "The second command serves the nine LumosLabs devices on `tcp://127.0.0.1:5100` to `5108` (local addresses only, unless `--host` says otherwise). Their protocol is described in [](lumoslabs_protocol.md)."
+msgstr "La seconde commande sert les neuf appareils LumosLabs sur `tcp://127.0.0.1:5100` à `5108` (adresses locales seulement, sauf indication contraire par `--host`). Leur protocole est décrit dans [](lumoslabs_protocol.md)."
+
+#: ../../hardware/operation.md:17
+msgid "Lab elements and drivers"
+msgstr "Éléments de laboratoire et pilotes"
+
+#: ../../hardware/operation.md:19
+#, python-brace-format
+msgid "{mod}`lumos.elements.lab` describes stages, piezo controllers, shutters, filter wheels, laser sources and phase controllers; cameras and power meters are the detectors of {mod}`lumos.elements.detectors`. Attach a driver to each element, by hand or by discovery:"
+msgstr "{mod}`lumos.elements.lab` décrit des platines, des contrôleurs piézoélectriques, des obturateurs, des roues à filtres, des sources laser et des contrôleurs de phase ; les caméras et les puissancemètres sont les détecteurs de {mod}`lumos.elements.detectors`. Rattachez un pilote à chaque élément, à la main ou par découverte :"
+
+#: ../../hardware/operation.md:36
+msgid "`ctx.link(\"stage.position\", \"gap.distance\", offset=180 * u.mm)` lets an actuator drive a parameter of the optical model, so that the twin follows the bench."
+msgstr "`ctx.link(\"stage.position\", \"gap.distance\", offset=180 * u.mm)` permet à un actionneur de piloter un paramètre du modèle optique, pour que le jumeau suive le banc."
+
+#: ../../hardware/operation.md:39
+msgid "Safety"
+msgstr "Sécurité"
+
+#: ../../hardware/operation.md:41
+msgid "**Limits**: every command is checked against the limits of its driver (read from the device), even when it is sent directly to the driver."
+msgstr "**Limites** : chaque commande est vérifiée par rapport aux limites de son pilote (lues sur l'appareil), même quand elle est envoyée directement au pilote."
+
+#: ../../hardware/operation.md:43
+msgid "**Dry run**: `driver.dry_run = True` checks and logs the commands without sending them."
+msgstr "**Exécution à blanc** : `driver.dry_run = True` vérifie et journalise les commandes sans les envoyer."
+
+#: ../../hardware/operation.md:44
+msgid "**Confirmations**: dangerous actions (switching a laser on) need `driver.confirm = callback`."
+msgstr "**Confirmations** : les actions dangereuses (allumer un laser) demandent `driver.confirm = callback`."
+
+#: ../../hardware/operation.md:45
+msgid "**Emergency stop**: `ctx.stop_all()` stops every driver, from any thread, and brings the equipment to its safe state; drivers then refuse commands until `driver.reset()`."
+msgstr "**Arrêt d'urgence** : `ctx.stop_all()` arrête tous les pilotes, depuis n'importe quel fil d'exécution, et met le matériel dans son état sûr ; les pilotes refusent ensuite les commandes jusqu'à `driver.reset()`."
+
+#: ../../hardware/operation.md:47
+msgid "**Interruptions**: `with ctx.operation_guard(): ...` secures everything on Ctrl+C or on any error."
+msgstr "**Interruptions** : `with ctx.operation_guard(): ...` met tout en sécurité sur Ctrl+C ou sur toute erreur."
+
+#: ../../hardware/operation.md:48
+msgid "**Recovery**: a lost connection is reopened and the command retried (`retries`, 2 by default); an equipment that does not answer raises `DriverTimeout`."
+msgstr "**Reprise** : une connexion perdue est rouverte et la commande réessayée (`retries`, 2 par défaut) ; un équipement qui ne répond pas lève `DriverTimeout`."
+
+#: ../../hardware/operation.md:51
+msgid "Digital twin"
+msgstr "Jumeau numérique"
+
+#: ../../hardware/operation.md:53
+msgid "In operation, `ctx.run(...)` returns the **measurements** of the detectors attached to drivers. With the twin (the default), `result.twin` holds the simulated outputs and `result.residuals` their differences. Emulated cameras and power meters receive the predictions of the twin and add their own noise and defects, so that the residuals show a controlled gap; a fault injected in an emulator shows in the residuals."
+msgstr "En opération, `ctx.run(...)` renvoie les **mesures** des détecteurs rattachés à des pilotes. Avec le jumeau (par défaut), `result.twin` contient les sorties simulées et `result.residuals` leurs écarts. Les caméras et puissancemètres émulés reçoivent les prédictions du jumeau et y ajoutent leurs propres bruits et défauts, si bien que les résidus montrent un écart maîtrisé ; un défaut injecté dans un émulateur se voit dans les résidus."
+
+#: ../../hardware/operation.md:58
+msgid "Sequences"
+msgstr "Séquences"
+
+#: ../../hardware/operation.md:69
+msgid "The journal of a script is the same in simulation and in operation: only the measured durations differ."
+msgstr "Le journal d'un script est le même en simulation et en opération : seules les durées mesurées diffèrent."
+

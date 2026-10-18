@@ -1,0 +1,178 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0021-api-stability.md:1
+msgid "ADR-0021: Public API and stability of LUMOS 1.x"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:4
+msgid "**Date**: 2026-10-18"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:5
+msgid "**Plan step**: P15.1"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:9
+msgid ""
+"LUMOS 1.0 freezes its API and its `.lumos` format (plan, P15.1). Users "
+"write scripts and notebooks, save `.lumos` files, call the HTTP API and "
+"let assistants call the MCP tools; all of them must keep working through "
+"the 1.x versions. The review of the API before the freeze found few "
+"inconsistencies: two settings and one function spelled in British English"
+" (`normalise`, `subaperture_centres`) among American identifiers "
+"(`normalize`, `center`, `polarization`, `colorbar`), an element class "
+"named differently from its type (`PSFMeasurementElement` for "
+"`lumos.processing.PSFMeasurement`), 110 fields of element types without "
+"description, two subpackages without `__all__` and two absent from the "
+"API reference."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:17
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:19
+msgid "**What is public** in 1.x, and covered by the rules below:"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:20
+msgid ""
+"the names listed in `__all__` of `lumos` and of its public subpackages "
+"(`backend`, `catalogs`, `core`, `elements`, `fields`, `hardware`, `io`, "
+"`plotting`, `processing`, `propagation`, `results`, `scenes`, `service`, "
+"`symbolic`) and documented in the API reference;"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:23
+msgid ""
+"the element types: their identifiers `lumos.<family>.<ClassName>`, fields"
+" (names, kinds, units) and ports;"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:24
+msgid "the `.lumos` format 1.x and its JSON schema;"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:25
+msgid ""
+"the models of the service layer, the routes of the HTTP API, the MCP "
+"tools and their arguments, the commands of the `lumos` command line."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:28
+msgid ""
+"Names starting with `_`, `lumos._vendor`, the internals of `lumos.web` "
+"(other than `create_app` and its configuration) and the web interface "
+"itself are not."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:30
+msgid ""
+"**Semantic versioning**: a 1.x release adds and fixes, it does not remove"
+" or rename. A public name to be removed is deprecated first "
+"(`DeprecationWarning`, documented in the changelog) during at least one "
+"minor release, and removed in 2.0 at the earliest."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:33
+msgid ""
+"**Element types and files**: a change of the fields of an element type "
+"raises its type version and adds a migration (`registry.add_migration`), "
+"so that every `.lumos` file written by a 1.x version is read by the later"
+" ones. A new feature of the format raises its minor version (1.1 added "
+"the feedbacks, ADR-0020): newer readers read older documents; older "
+"readers refuse newer ones with a clear error."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:37
+msgid ""
+"**Conventions of the identifiers**: snake_case; American spelling, as "
+"NumPy, astropy and matplotlib (`normalize`, `center`, `color`, "
+"`polarization`), the prose of the documentation being free; physical "
+"quantities as `astropy.units.Quantity`; counts named `n_<things>`; every "
+"field of an element type has a short description (shown by the web "
+"interface, the JSON schemas and the MCP server)."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:41
+msgid ""
+"The review renames, before the freeze: the setting `normalise` of "
+"`FlatField` and `KernelObservables` and the keyword of `flat_field` and "
+"`kernel_observables` (type version 2, documents of version 1 migrated); "
+"`subaperture_centres` to `subaperture_centers`; the element class "
+"`PSFMeasurementElement` to `PSFMeasurement` (its type identifier) and the"
+" result of `measure_psf` from `PSFMeasurement` to `PSFResult`."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:46
+msgid ""
+"`tests/unit/test_api_review.py` checks points 1 and 4 (documentation of "
+"the element types, identifiers, spelling, `__all__`, API reference) at "
+"every run."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:49
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:51
+msgid ""
+"British spelling everywhere: most identifiers and the scientific Python "
+"ecosystem are American; renaming `polarization`, `center` and `colorbar` "
+"would break more than it fixes."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:53
+msgid ""
+"Aliases keeping the old spellings: LUMOS was not released yet (0.x); "
+"migrations of the type versions keep the files readable, which is what "
+"matters to users."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:56
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:58
+msgid ""
+"Users of 1.x can rely on the public API and on their files; the changelog"
+" lists every deprecation."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:59
+msgid ""
+"New element types and fields must follow the conventions, or the review "
+"test fails."
+msgstr ""
+
+#: ../../adr/0021-api-stability.md:60
+msgid "Adding to the format needs an ADR and a minor version of the format."
+msgstr ""
+

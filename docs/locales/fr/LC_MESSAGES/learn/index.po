@@ -24,9 +24,6 @@ msgid "Learn"
 msgstr "Comprendre"
 
 #: ../../learn/index.md:3
-msgid ""
-"Explanations of the physics behind LUMOS: wave propagation methods and their sampling requirements, imaging"
-" of extended scenes, guided and integrated optics, detectors and noise, radiometry."
-msgstr ""
-"La physique derrière LUMOS : méthodes de propagation des ondes et leurs contraintes d'échantillonnage, "
-"imagerie des scènes étendues, optique guidée et intégrée, détecteurs et bruits, radiométrie."
+msgid "Explanations of the physics behind LUMOS: wave propagation methods and their sampling requirements, imaging of extended scenes, guided and integrated optics, detectors and noise, radiometry."
+msgstr "La physique derrière LUMOS : méthodes de propagation des ondes et leurs contraintes d'échantillonnage, imagerie des scènes étendues, optique guidée et intégrée, détecteurs et bruits, radiométrie."
+

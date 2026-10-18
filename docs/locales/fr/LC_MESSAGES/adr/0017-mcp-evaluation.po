@@ -1,0 +1,137 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0017-mcp-evaluation.md:1
+msgid "ADR-0017: Evaluation of the MCP server"
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:4
+msgid "**Date**: 2026-10-17"
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:5
+msgid "**Plan step**: P13.8 (REQ-MCP-7)"
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:9
+msgid ""
+"The MCP server is useful only if an assistant can reach right results "
+"through it. Unit tests call each tool, but do not show that a task stated"
+" in plain language (UC1, UC8, UC9) can be solved with the tools, nor that"
+" an assistant actually solves it. The answer of an assistant is free "
+"text, and its quality changes with the model."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:13
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:15
+msgid ""
+"`lumos.mcp.evaluation` defines **scenarios**: a task in plain language, "
+"expected values derived from analytic solutions (Bracewell transmission "
+"sin²(π B θ / λ), Gaussian beam radius w(z), Airy ring mean and the "
+"rejection of an ideal vortex), and a rule per value (relative or absolute"
+" tolerance, upper bound). The task asks the assistant to end with a JSON "
+"object of named numbers; `parse_answer` reads the last one."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:19
+msgid ""
+"Each scenario has a **scripted reference solution** that only calls MCP "
+"tools. The tests run it through an in-process client and check its answer"
+" with the same rules: the scenario is solvable with the tools, and the "
+"rules accept a right answer (other tests check that they reject wrong "
+"ones)."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:22
+msgid ""
+"The scripted solutions run at every CI run (they are tests): this is the "
+"periodic part of REQ-MCP-7."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:23
+msgid ""
+"`run_with_claude_code` gives the task to Claude Code (`claude -p`) with "
+"the MCP server of LUMOS as its only tools (`--mcp-config`, `--strict-mcp-"
+"config`, `--allowedTools mcp__lumos`) and checks the final answer, read "
+"from the JSON output. It runs on demand with the subscription of the "
+"user: `tools/mcp_eval.py --claude-code`. Without option, "
+"`tools/mcp_eval.py` runs the scripted solutions."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:27
+msgid ""
+"Missing capabilities found while writing the scenarios became tools: "
+"`radial_profile` (contrast in rings) and the 1/e² beam radius in the "
+"summaries of fields."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:30
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:32
+msgid ""
+"Judging the answers with a language model: not verifiable, and the "
+"results have exact physical references."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:33
+msgid ""
+"Running the evaluation with Claude in every CI run: costs and flakiness "
+"on every commit; the scripted solutions keep the scenarios honest at no "
+"cost."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:35
+msgid ""
+"A weekly run through the Claude API (first version of this ADR): needs an"
+" API key billed per token, too costly for the project; replaced on "
+"2026-10-17 by Claude Code on demand, which uses an existing subscription."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:39
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:41
+msgid ""
+"New use cases join the evaluation as a scenario with an analytic "
+"expectation and a scripted solution."
+msgstr ""
+
+#: ../../adr/0017-mcp-evaluation.md:42
+msgid ""
+"A failure of a run with Claude Code means a regression of the server or "
+"of the guidance it gives (instructions, descriptions, hints), or a model "
+"that needs better guidance; the report holds the answers."
+msgstr ""
+

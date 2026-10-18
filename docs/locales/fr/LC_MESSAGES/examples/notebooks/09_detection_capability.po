@@ -1,0 +1,97 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:10002
+msgid "9. Detection capability"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:10004
+msgid "Can we detect a companion 10⁴ times fainter than its star, 6 λ/D away, behind a vortex coronagraph? This notebook answers with the tools of a detection study (use case UC7):"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:10007
+msgid "a **matched filter** (the Neyman-Pearson test of a known signal) applied to many noisy exposures, with and without the companion;"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:10009
+#, python-brace-format
+msgid "the empirical **ROC curve**, compared with its analytic form $P_D = Q(Q^{-1}(P_{FA}) - d)$;"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:10010
+msgid "the **contrast curve** of a residual image (5σ, with the small-sample penalty of Mawet et al. 2014);"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:10011
+msgid "the **detection capability** versus separation and contrast."
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:20002
+#, python-format
+msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/09_detection_capability.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F09_detection_capability.ipynb)"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:20002
+msgid "Open in Colab"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:20002
+msgid "Launch on Binder"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:50002
+msgid "The instrument"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:50004
+msgid "The preset `presets/coronagraph.lumos` places a star and a companion of contrast 10⁻⁴ at 6 λ/D behind a charge-2 vortex. We add a camera with read noise; at λ = 1.6 µm, D = 8 m and f = 100 m, λf/D = 20 µm, i.e. 4 pixels of 5 µm."
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:70002
+msgid "Matched filter and ROC"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:70004
+#, python-brace-format
+msgid "Each exposure gives a new noise realisation. The residual (frame - bias - star) is filtered by the template of the companion; without it, the statistic follows N(0, 1), with it N(d, 1), the deflection being $d = \\sqrt{\\sum s_i^2/\\sigma_i^2}$."
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:90002
+msgid "Contrast curve"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:90004
+msgid "Without knowing where the companion is, the detection limit at each separation follows from the noise in an annulus of width λ/D of a residual image (Mawet et al. 2014). The contrast is relative to the peak of the off-axis PSF of the star, here the companion template scaled by its contrast."
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:110002
+msgid "Detection capability"
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:110004
+#, python-brace-format
+msgid "Moving the companion over separations gives the deflection per unit contrast $k(r)$; the matched filter then detects a contrast $c$ with probability $Q(Q^{-1}(P_{FA}) - c\\,k(r))$."
+msgstr ""
+
+#: ../../examples/notebooks/09_detection_capability.ipynb:130002
+msgid "The matched filter, which knows where the companion is, reaches fainter contrasts than the blind 5σ search. For the companion of the preset (10⁻⁴ at 6 λ/D), in a single exposure of 0.3 s:"
+msgstr ""
+

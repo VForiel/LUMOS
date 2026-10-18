@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 16:47+0200\n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -24,53 +24,28 @@ msgid "Contexts, graphs and time"
 msgstr "Contextes, graphes et temps"
 
 #: ../../user_guide/context.md:3
-msgid ""
-"A **context** holds the elements of a system, the connections between their ports, a clock and the settings"
-" shared by all elements: operating mode, digital twin, array backend, observation band and random seed."
-msgstr ""
-"Un **contexte** contient les éléments d'un système, les connexions entre leurs ports, une horloge et les "
-"réglages communs à tous les éléments : mode de fonctionnement, jumeau numérique, backend de tableaux, bande"
-" d'observation et graine aléatoire."
+msgid "A **context** holds the elements of a system, the connections between their ports, a clock and the settings shared by all elements: operating mode, digital twin, array backend, observation band and random seed."
+msgstr "Un **contexte** contient les éléments d'un système, les connexions entre leurs ports, une horloge et les réglages communs à tous les éléments : mode de fonctionnement, jumeau numérique, backend de tableaux, bande d'observation et graine aléatoire."
 
 #: ../../user_guide/context.md:16
 msgid "Graph and execution"
 msgstr "Graphe et exécution"
 
 #: ../../user_guide/context.md:18
-msgid ""
-"Elements are connected port to port with `ctx.connect(a.out, b.in_)` or `a >> b` when the ports are unique."
-" A connection is accepted only if the signal produced by the output is the type expected by the input (or a"
-" subtype), if a single input is not already connected, and if it does not create a cycle: physical loops "
-"are iterations in time, not cycles of signals."
-msgstr ""
-"Les éléments se connectent port à port avec `ctx.connect(a.out, b.in_)`, ou `a >> b` quand les ports sont "
-"uniques. Une connexion n'est acceptée que si le signal produit par la sortie est du type attendu par "
-"l'entrée (ou d'un sous-type), si une entrée simple n'est pas déjà connectée et si elle ne crée pas de cycle"
-" : les boucles physiques sont des itérations dans le temps, pas des cycles de signaux."
+msgid "Elements are connected port to port with `ctx.connect(a.out, b.in_)` or `a >> b` when the ports are unique. A connection is accepted only if the signal produced by the output is the type expected by the input (or a subtype), if a single input is not already connected, and if it does not create a cycle: physical loops are iterations in time, not cycles of signals."
+msgstr "Les éléments se connectent port à port avec `ctx.connect(a.out, b.in_)`, ou `a >> b` quand les ports sont uniques. Une connexion n'est acceptée que si le signal produit par la sortie est du type attendu par l'entrée (ou d'un sous-type), si une entrée simple n'est pas déjà connectée et si elle ne crée pas de cycle : les boucles physiques sont des itérations dans le temps, pas des cycles de signaux."
 
 #: ../../user_guide/context.md:23
-msgid ""
-"`ctx.run(outputs)` computes only the elements needed by the requested outputs, in topological order. The "
-"outputs of every element are cached; changing a parameter, a state or a connection invalidates that element"
-" and everything downstream, so the next run recomputes only what changed. Elements are reached by name, "
-"`ctx[\"lens\"]`, and ports by path, `\"cam.out\"`."
-msgstr ""
-"`ctx.run(outputs)` ne calcule que les éléments nécessaires aux sorties demandées, dans l'ordre topologique."
-" Les sorties de chaque élément sont mises en cache ; modifier un paramètre, un état ou une connexion "
-"invalide cet élément et tout ce qui est en aval, si bien que l'exécution suivante ne recalcule que ce qui a"
-" changé. On accède aux éléments par leur nom, `ctx[\"lens\"]`, et aux ports par leur chemin, `\"cam.out\"`."
+msgid "`ctx.run(outputs)` computes only the elements needed by the requested outputs, in topological order. The outputs of every element are cached; changing a parameter, a state or a connection invalidates that element and everything downstream, so the next run recomputes only what changed. Elements are reached by name, `ctx[\"lens\"]`, and ports by path, `\"cam.out\"`."
+msgstr "`ctx.run(outputs)` ne calcule que les éléments nécessaires aux sorties demandées, dans l'ordre topologique. Les sorties de chaque élément sont mises en cache ; modifier un paramètre, un état ou une connexion invalide cet élément et tout ce qui est en aval, si bien que l'exécution suivante ne recalcule que ce qui a changé. On accède aux éléments par leur nom, `ctx[\"lens\"]`, et aux ports par leur chemin, `\"cam.out\"`."
 
 #: ../../user_guide/context.md:28
 msgid "Groups"
 msgstr "Groupes"
 
 #: ../../user_guide/context.md:30
-msgid ""
-"An `ElementGroup` gathers elements into one element, for instance a photonic chip or a planetary system. It"
-" exposes some internal ports as its own:"
-msgstr ""
-"Un `ElementGroup` réunit des éléments en un seul, par exemple une puce photonique ou un système planétaire."
-" Il expose certains ports internes comme les siens :"
+msgid "An `ElementGroup` gathers elements into one element, for instance a photonic chip or a planetary system. It exposes some internal ports as its own:"
+msgstr "Un `ElementGroup` réunit des éléments en un seul, par exemple une puce photonique ou un système planétaire. Il expose certains ports internes comme les siens :"
 
 #: ../../user_guide/context.md:45
 msgid "Groups nest freely and are saved like elements."
@@ -81,88 +56,58 @@ msgid "Time and actions"
 msgstr "Temps et actions"
 
 #: ../../user_guide/context.md:49
-msgid ""
-"The clock has an absolute start date (`ctx.time`, an `astropy.time.Time`) and an elapsed time "
-"(`ctx.elapsed`). It advances when the context waits or when an **action** completes. Actions are methods of"
-" elements declared with a duration, fixed or computed from the element properties:"
-msgstr ""
-"L'horloge a une date de début absolue (`ctx.time`, un `astropy.time.Time`) et un temps écoulé "
-"(`ctx.elapsed`). Elle avance quand le contexte attend ou quand une **action** se termine. Les actions sont "
-"des méthodes d'éléments déclarées avec une durée, fixe ou calculée à partir des propriétés de l'élément :"
+msgid "The clock has an absolute start date (`ctx.time`, an `astropy.time.Time`) and an elapsed time (`ctx.elapsed`). It advances when the context waits or when an **action** completes. Actions are methods of elements declared with a duration, fixed or computed from the element properties:"
+msgstr "L'horloge a une date de début absolue (`ctx.time`, un `astropy.time.Time`) et un temps écoulé (`ctx.elapsed`). Elle avance quand le contexte attend ou quand une **action** se termine. Les actions sont des méthodes d'éléments déclarées avec une durée, fixe ou calculée à partir des propriétés de l'élément :"
 
-#: ../../user_guide/context.md:71
-msgid ""
-"Elements whose transfer function depends on time set `time_dependent = True` and read `values.time`; they "
-"are recomputed whenever the clock advances."
-msgstr ""
-"Les éléments dont la fonction de transfert dépend du temps déclarent `time_dependent = True` et lisent "
-"`values.time` ; ils sont recalculés chaque fois que l'horloge avance."
+#: ../../user_guide/context.md:73
+msgid "Elements whose transfer function depends on time set `time_dependent = True` and read `values.time`; they are recomputed whenever the clock advances."
+msgstr "Les éléments dont la fonction de transfert dépend du temps déclarent `time_dependent = True` et lisent `values.time` ; ils sont recalculés chaque fois que l'horloge avance."
 
-#: ../../user_guide/context.md:74
+#: ../../user_guide/context.md:76
 msgid "Simulation and operation"
 msgstr "Simulation et opération"
 
-#: ../../user_guide/context.md:76
-msgid ""
-"In **simulation** (the default), an action updates the virtual state of the element, is written to the "
-"journal and advances the clock by its predicted duration. In **operation**, the action is sent as a command"
-" to the driver of the element; the clock advances by the measured duration. With the **digital twin** (on "
-"by default) the simulated model is updated too, and the state measured on the equipment is kept next to it;"
-" without the twin, the state is read back from the equipment. `ctx.simulate(element)` keeps one element "
-"simulated in operation mode, for instance a component without real equipment."
-msgstr ""
-"En **simulation** (par défaut), une action met à jour l'état virtuel de l'élément, est inscrite au journal "
-"et fait avancer l'horloge de sa durée prédite. En **opération**, l'action est envoyée comme commande au "
-"driver de l'élément ; l'horloge avance de la durée mesurée. Avec le **jumeau numérique** (activé par "
-"défaut), le modèle simulé est aussi mis à jour et l'état mesuré sur l'équipement est conservé à côté ; sans"
-" jumeau, l'état est relu depuis l'équipement. `ctx.simulate(element)` garde un élément simulé en mode "
-"opération, par exemple un composant sans équipement réel."
+#: ../../user_guide/context.md:78
+msgid "In **simulation** (the default), an action updates the virtual state of the element, is written to the journal and advances the clock by its predicted duration. In **operation**, the action is sent as a command to the driver of the element; the clock advances by the measured duration. With the **digital twin** (on by default) the simulated model is updated too, and the state measured on the equipment is kept next to it; without the twin, the state is read back from the equipment. `ctx.simulate(element)` keeps one element simulated in operation mode, for instance a component without real equipment."
+msgstr "En **simulation** (par défaut), une action met à jour l'état virtuel de l'élément, est inscrite au journal et fait avancer l'horloge de sa durée prédite. En **opération**, l'action est envoyée comme commande au driver de l'élément ; l'horloge avance de la durée mesurée. Avec le **jumeau numérique** (activé par défaut), le modèle simulé est aussi mis à jour et l'état mesuré sur l'équipement est conservé à côté ; sans jumeau, l'état est relu depuis l'équipement. `ctx.simulate(element)` garde un élément simulé en mode opération, par exemple un composant sans équipement réel."
 
-#: ../../user_guide/context.md:83
+#: ../../user_guide/context.md:85
 msgid "Journal"
 msgstr "Journal"
 
-#: ../../user_guide/context.md:85
-msgid ""
-"`ctx.journal` records every action and wait (element, arguments, mode, predicted and measured durations, "
-"driver) and the messages of LUMOS emitted during runs, such as the propagation methods chosen by the "
-"planner. Each entry records whether the action came from Python, the web interface or an AI assistant. The "
-"same entries are emitted on the `lumos.context` logger; `lumos.core.journal.JsonFormatter` writes them as "
-"JSON lines."
-msgstr ""
-"`ctx.journal` enregistre chaque action et chaque attente (élément, arguments, mode, durées prédite et "
-"mesurée, driver) ainsi que les messages de LUMOS émis pendant les exécutions, comme les méthodes de "
-"propagation choisies par le planificateur. Chaque entrée indique si l'action vient de Python, de "
-"l'interface web ou d'un assistant IA. Les mêmes entrées sont émises sur le logger `lumos.context` ; "
-"`lumos.core.journal.JsonFormatter` les écrit en lignes JSON."
+#: ../../user_guide/context.md:87
+msgid "`ctx.journal` records every action and wait (element, arguments, mode, predicted and measured durations, driver) and the messages of LUMOS emitted during runs, such as the propagation methods chosen by the planner. Each entry records whether the action came from Python, the web interface or an AI assistant. The same entries are emitted on the `lumos.context` logger; `lumos.core.journal.JsonFormatter` writes them as JSON lines."
+msgstr "`ctx.journal` enregistre chaque action et chaque attente (élément, arguments, mode, durées prédite et mesurée, driver) ainsi que les messages de LUMOS émis pendant les exécutions, comme les méthodes de propagation choisies par le planificateur. Chaque entrée indique si l'action vient de Python, de l'interface web ou d'un assistant IA. Les mêmes entrées sont émises sur le logger `lumos.context` ; `lumos.core.journal.JsonFormatter` les écrit en lignes JSON."
 
-#: ../../user_guide/context.md:91
+#: ../../user_guide/context.md:93
 msgid "Sweeps and Monte-Carlo"
 msgstr "Balayages et Monte-Carlo"
 
-#: ../../user_guide/context.md:100
-msgid ""
-"The fields get their original values back after a sweep. Draws come from a reproducible random stream: "
-"every element has its own stream, `ctx.rng(element)`, derived from the seed of the context."
-msgstr ""
-"Les champs retrouvent leurs valeurs d'origine après un balayage. Les tirages proviennent d'un flux "
-"aléatoire reproductible : chaque élément a son propre flux, `ctx.rng(element)`, dérivé de la graine du "
-"contexte."
-
 #: ../../user_guide/context.md:103
+msgid "The fields get their original values back after a sweep. Draws come from a reproducible random stream: every element has its own stream, `ctx.rng(element)`, derived from the seed of the context."
+msgstr "Les champs retrouvent leurs valeurs d'origine après un balayage. Les tirages proviennent d'un flux aléatoire reproductible : chaque élément a son propre flux, `ctx.rng(element)`, dérivé de la graine du contexte."
+
+#: ../../user_guide/context.md:106
+msgid "**Noise of the points.** The streams also depend on a *noise realization*, `ctx.realization` (0 by default): every realization gives independent streams, reproducible with the same seed. A Monte-Carlo run draws a new realization at each point (`noise=\"independent\"`, the default of `sample`), so that the spread of its outputs includes the noise of the detectors and of the turbulence; without free parameters it repeats the run with independent noise. A sweep keeps the noise of the context at every point (`noise=\"fixed\"`, the default of `sweep`): its points differ by their parameters only (common random numbers), which makes small differences visible. Every point tells its realization (`point.realization`), and `progress(done, total)` follows long studies."
+msgstr "**Bruit des points.** Les flux aléatoires dépendent aussi d'une *réalisation du bruit*, `ctx.realization` (0 par défaut) : chaque réalisation donne des flux indépendants, reproductibles avec la même graine. Une étude Monte-Carlo tire une nouvelle réalisation à chaque point (`noise=\"independent\"`, le défaut de `sample`), si bien que la dispersion de ses sorties inclut le bruit des détecteurs et de la turbulence ; sans paramètre libre, elle répète l'exécution avec un bruit indépendant. Un balayage garde le bruit du contexte à chaque point (`noise=\"fixed\"`, le défaut de `sweep`) : ses points ne diffèrent que par leurs paramètres (nombres aléatoires communs), ce qui rend visibles de petites différences. Chaque point indique sa réalisation (`point.realization`), et `progress(done, total)` suit les études longues."
+
+#: ../../user_guide/context.md:120
+msgid "Feedback loops"
+msgstr "Boucles de rétroaction"
+
+#: ../../user_guide/context.md:122
+msgid "The graph of a context has no cycle: a loop (adaptive optics, a servo, an iterative calibration) is a series of **time iterations** of the context (ADR-0020). A *feedback* sends the value of an output port to a field at the next iteration; `ctx.loop` runs the iterations, the clock advancing by the period at each one."
+msgstr "Le graphe d'un contexte n'a pas de cycle : une boucle (optique adaptative, asservissement, calibration itérative) est une suite d'**itérations temporelles** du contexte (ADR-0020). Une *rétroaction* envoie la valeur d'un port de sortie vers un champ à l'itération suivante ; `ctx.loop` exécute les itérations, l'horloge avançant d'une période à chacune."
+
+#: ../../user_guide/context.md:133
+msgid "Iteration `k` computes the outputs at `t0 + k·period`, then applies the feedbacks, then advances the clock: a correction always acts one period later, like a real loop. The fields driven by the feedbacks and the clock keep their final values (`restore=True` puts them back). Feedbacks are listed by `ctx.feedbacks`, removed by `ctx.remove_feedback`, saved in `.lumos` files and written by `ctx.to_python()`. An element may refuse a target: an `AOController` drives only a mirror of its own geometry."
+msgstr "L'itération `k` calcule les sorties à `t0 + k·period`, applique les rétroactions, puis avance l'horloge : une correction agit toujours une période plus tard, comme dans une vraie boucle. Les champs pilotés par les rétroactions et l'horloge gardent leurs valeurs finales (`restore=True` les rétablit). Les rétroactions sont listées par `ctx.feedbacks`, retirées par `ctx.remove_feedback`, enregistrées dans les fichiers `.lumos` et écrites par `ctx.to_python()`. Un élément peut refuser une cible : un `AOController` ne pilote qu'un miroir de sa propre géométrie."
+
+#: ../../user_guide/context.md:139
 msgid "Files and scripts"
 msgstr "Fichiers et scripts"
 
-#: ../../user_guide/context.md:105
-msgid ""
-"`lumos.io.save(ctx, \"bench.lumos\")` writes the whole context: settings, clock, elements, groups and "
-"connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back "
-"without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting "
-"point for a system built in the web interface or by an assistant. The JSON Schema of the format is "
-"published with the documentation (`lumos-1.0.schema.json`)."
-msgstr ""
-"`lumos.io.save(ctx, \"bench.lumos\")` écrit le contexte entier : réglages, horloge, éléments, groupes et "
-"connexions ; les tableaux de plus de 64 ko vont dans un fichier `bench.npz` à côté. `lumos.io.load` le "
-"relit sans importer aucun module. `ctx.to_python()` écrit un script Python équivalent, point de départ "
-"lisible pour un système construit dans l'interface web ou par un assistant. Le JSON Schema du format est "
-"publié avec la documentation (`lumos-1.0.schema.json`)."
+#: ../../user_guide/context.md:141
+msgid "`lumos.io.save(ctx, \"bench.lumos\")` writes the whole context: settings, clock, elements, groups and connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting point for a system built in the web interface or by an assistant. The JSON Schema of the format is published with the documentation (`lumos-1.1.schema.json`; `lumos-1.0.schema.json` for the documents of LUMOS 0.x without feedback loops)."
+msgstr "`lumos.io.save(ctx, \"bench.lumos\")` écrit tout le contexte : réglages, horloge, éléments, groupes et connexions ; les tableaux de plus de 64 ko vont dans un fichier `bench.npz` à côté. `lumos.io.load` le relit sans importer aucun module. `ctx.to_python()` écrit un script Python équivalent, point de départ lisible pour un système construit dans l'interface web ou par un assistant. Le schéma JSON du format est publié avec la documentation (`lumos-1.1.schema.json` ; `lumos-1.0.schema.json` pour les documents de LUMOS 0.x sans boucle de rétroaction)."
+

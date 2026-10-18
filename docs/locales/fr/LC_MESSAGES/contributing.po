@@ -36,26 +36,16 @@ msgid "Every development step follows the same cycle: **specify → test → imp
 msgstr "Chaque étape de développement suit le même cycle : **spécifier → tester → implémenter → documenter**."
 
 #: ../../contributing.md:17
-msgid ""
-"Tests are written before the implementation, from the specification, and committed alone (`test(<step>): "
-"…`). Their expected values come from independent sources: analytical solutions, published results or "
-"established independent libraries, never from the code under test."
-msgstr ""
-"Les tests sont écrits avant l'implémentation, à partir de la spécification, et commités seuls "
-"(`test(<step>): …`). Leurs valeurs attendues proviennent de sources indépendantes : solutions analytiques, "
-"résultats publiés ou bibliothèques indépendantes reconnues, jamais du code testé."
+msgid "Tests are written before the implementation, from the specification, and committed alone (`test(<step>): …`). Their expected values come from independent sources: analytical solutions, published results or established independent libraries, never from the code under test."
+msgstr "Les tests sont écrits avant l'implémentation, à partir de la spécification, et commités seuls (`test(<step>): …`). Leurs valeurs attendues proviennent de sources indépendantes : solutions analytiques, résultats publiés ou bibliothèques indépendantes reconnues, jamais du code testé."
 
 #: ../../contributing.md:20
 msgid "The implementation is then written without changing the tests (`feat(<step>): …`)."
 msgstr "L'implémentation est ensuite écrite sans modifier les tests (`feat(<step>): …`)."
 
 #: ../../contributing.md:21
-msgid ""
-"An existing test may only change when the objective changes or the test is proven wrong. This happens in a "
-"dedicated commit `test(<step>)!: …` whose message explains why."
-msgstr ""
-"Un test existant ne peut changer que si l'objectif change ou si le test s'avère faux. Cela se fait dans un "
-"commit dédié `test(<step>)!: …` dont le message explique pourquoi."
+msgid "An existing test may only change when the objective changes or the test is proven wrong. This happens in a dedicated commit `test(<step>)!: …` whose message explains why."
+msgstr "Un test existant ne peut changer que si l'objectif change ou si le test s'avère faux. Cela se fait dans un commit dédié `test(<step>)!: …` dont le message explique pourquoi."
 
 #: ../../contributing.md:24
 msgid "The `tools/check_test_integrity.py` script enforces these rules in continuous integration."
@@ -67,9 +57,7 @@ msgstr "Conventions"
 
 #: ../../contributing.md:28
 msgid "Code, docstrings, notebooks and identifiers are in English; the documentation is translated to French."
-msgstr ""
-"Le code, les docstrings, les notebooks et les identifiants sont en anglais ; la documentation est traduite "
-"en français."
+msgstr "Le code, les docstrings, les notebooks et les identifiants sont en anglais ; la documentation est traduite en français."
 
 #: ../../contributing.md:29
 msgid "Physical quantities in public APIs are `astropy.units.Quantity` objects."
@@ -81,29 +69,19 @@ msgstr "Les commits suivent [Conventional Commits](https://www.conventionalcommi
 
 #: ../../contributing.md:31
 msgid "Structural decisions are recorded as [architecture decision records](adr/index.md)."
-msgstr ""
-"Les décisions structurantes sont consignées dans des [fiches de décision d'architecture](adr/index.md) "
-"(ADR)."
+msgstr "Les décisions structurantes sont consignées dans des [fiches de décision d'architecture](adr/index.md) (ADR)."
 
 #: ../../contributing.md:33
 msgid "Performance-critical code"
 msgstr "Code critique pour les performances"
 
 #: ../../contributing.md:35
-msgid ""
-"Write numerical code once against the Array API (`lumos.backend.current().xp`), so that it runs on every "
-"backend; decorate pure kernels with `lumos.jit` so that JAX compiles them."
-msgstr ""
-"Écrire le code numérique une seule fois avec l'Array API (`lumos.backend.current().xp`), pour qu'il "
-"fonctionne sur tous les backends ; décorer les noyaux purs avec `lumos.jit` pour que JAX les compile."
+msgid "Write numerical code once against the Array API (`lumos.backend.current().xp`), so that it runs on every backend; decorate pure kernels with `lumos.jit` so that JAX compiles them."
+msgstr "Écrire le code numérique une seule fois avec l'Array API (`lumos.backend.current().xp`), pour qu'il fonctionne sur tous les backends ; décorer les noyaux purs avec `lumos.jit` pour que JAX les compile."
 
 #: ../../contributing.md:37
-msgid ""
-"Use `numba` only for CPU loops that cannot be vectorised, in private `_kernels` modules working on NumPy "
-"arrays."
-msgstr ""
-"N'utiliser `numba` que pour les boucles CPU impossibles à vectoriser, dans des modules privés `_kernels` "
-"travaillant sur des tableaux NumPy."
+msgid "Use `numba` only for CPU loops that cannot be vectorised, in private `_kernels` modules working on NumPy arrays."
+msgstr "N'utiliser `numba` que pour les boucles CPU impossibles à vectoriser, dans des modules privés `_kernels` travaillant sur des tableaux NumPy."
 
 #: ../../contributing.md:39
 msgid "Write a native extension only when profiling shows a need, and record the decision in an ADR."
@@ -111,10 +89,9 @@ msgstr "N'écrire une extension native que si le profilage en montre le besoin, 
 
 #: ../../contributing.md:40
 msgid "Benchmarks live in `tests/benchmarks/` and run with `pytest -m benchmark tests/benchmarks`."
-msgstr ""
-"Les benchmarks se trouvent dans `tests/benchmarks/` et se lancent avec `pytest -m benchmark "
-"tests/benchmarks`."
+msgstr "Les benchmarks se trouvent dans `tests/benchmarks/` et se lancent avec `pytest -m benchmark tests/benchmarks`."
 
 #: ../../contributing.md:42
 msgid "Translating the documentation"
 msgstr "Traduire la documentation"
+

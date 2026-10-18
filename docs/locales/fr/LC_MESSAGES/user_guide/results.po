@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../user_guide/results.md:1
+msgid "Figures, archives and results"
+msgstr "Figures, archives et résultats"
+
+#: ../../user_guide/results.md:3
+msgid "Every LUMOS result can be traced back to the exact system and environment that produced it: figures follow a common style with physical units, are saved as images **and** as editable PltEdit files next to their data, and each run can be archived next to the script or notebook that produced it."
+msgstr "Chaque résultat de LUMOS peut être rattaché au système et à l'environnement exacts qui l'ont produit : les figures suivent un style commun avec des unités physiques, sont enregistrées comme images **et** comme fichiers PltEdit modifiables à côté de leurs données, et chaque exécution peut être archivée à côté du script ou du notebook qui l'a produite."
+
+#: ../../user_guide/results.md:7
+msgid "Figure style"
+msgstr "Style des figures"
+
+#: ../../user_guide/results.md:9
+msgid "`lumos.plotting.style` gives all figures the same look:"
+msgstr "`lumos.plotting.style` donne la même apparence à toutes les figures :"
+
+#: ../../user_guide/results.md:11
+msgid "colour maps by role (`style.CMAPS`): perceptually uniform maps for intensities (`inferno`), radiances (`magma`) and data (`viridis`), the cyclic `twilight` map for phases, `RdBu_r` for signed quantities;"
+msgstr "cartes de couleurs selon le rôle (`style.CMAPS`) : cartes perceptuellement uniformes pour les intensités (`inferno`), les luminances (`magma`) et les données (`viridis`), la carte cyclique `twilight` pour les phases, `RdBu_r` pour les grandeurs signées ;"
+
+#: ../../user_guide/results.md:13
+msgid "axis labels with units, `style.axis_label(\"wavelength\", u.um)` → `wavelength (µm)`;"
+msgstr "étiquettes des axes avec unités, `style.axis_label(\"wavelength\", u.um)` → `wavelength (µm)` ;"
+
+#: ../../user_guide/results.md:14
+msgid "publication widths: `style.figure(\"single\")` (88 mm, one column) and `style.figure(\"double\")` (180 mm);"
+msgstr "largeurs de publication : `style.figure(\"single\")` (88 mm, une colonne) et `style.figure(\"double\")` (180 mm) ;"
+
+#: ../../user_guide/results.md:15
+msgid "300 dpi output, small readable fonts, images with the origin at the bottom left."
+msgstr "sortie à 300 dpi, petites polices lisibles, images avec l'origine en bas à gauche."
+
+#: ../../user_guide/results.md:25
+msgid "Plots"
+msgstr "Tracés"
+
+#: ../../user_guide/results.md
+msgid "Function"
+msgstr "Fonction"
+
+#: ../../user_guide/results.md
+msgid "Shows"
+msgstr "Montre"
+
+#: ../../user_guide/results.md
+msgid "`plot_intensity`, `plot_phase`, `plot_field`"
+msgstr "`plot_intensity`, `plot_phase`, `plot_field`"
+
+#: ../../user_guide/results.md
+msgid "intensity and phase (cyclic map) of a field"
+msgstr "l'intensité et la phase (carte cyclique) d'un champ"
+
+#: ../../user_guide/results.md
+msgid "`plot_psf`"
+msgstr "`plot_psf`"
+
+#: ../../user_guide/results.md
+msgid "a point-spread function normalised to its peak, optionally in λ/D units"
+msgstr "une fonction d'étalement du point normalisée à son pic, éventuellement en unités de λ/D"
+
+#: ../../user_guide/results.md
+msgid "`plot_radial_profile`"
+msgstr "`plot_radial_profile`"
+
+#: ../../user_guide/results.md
+msgid "the azimuthal average of an intensity (`lumos.processing.radial_profile`)"
+msgstr "la moyenne azimutale d'une intensité (`lumos.processing.radial_profile`)"
+
+#: ../../user_guide/results.md
+msgid "`plot_spectrum`"
+msgstr "`plot_spectrum`"
+
+#: ../../user_guide/results.md
+msgid "spectra of sources, wavecubes or data products"
+msgstr "les spectres de sources, de cubes d'ondes ou de produits de données"
+
+#: ../../user_guide/results.md
+msgid "`plot_transmission_map`"
+msgstr "`plot_transmission_map`"
+
+#: ../../user_guide/results.md
+msgid "a 2D transmission map"
+msgstr "une carte de transmission 2D"
+
+#: ../../user_guide/results.md
+msgid "`plot_chip_outputs`"
+msgstr "`plot_chip_outputs`"
+
+#: ../../user_guide/results.md
+msgid "the power on each output of a photonic chip"
+msgstr "la puissance sur chaque sortie d'une puce photonique"
+
+#: ../../user_guide/results.md
+msgid "`plot_context`, `save_context_diagram`"
+msgstr "`plot_context`, `save_context_diagram`"
+
+#: ../../user_guide/results.md
+msgid "the graph of a context (SVG, PNG, PDF)"
+msgstr "le graphe d'un contexte (SVG, PNG, PDF)"
+
+#: ../../user_guide/results.md
+msgid "`plot_radiance`, `plot_data`"
+msgstr "`plot_radiance`, `plot_data`"
+
+#: ../../user_guide/results.md
+msgid "radiance fields and data products"
+msgstr "champs de luminance et produits de données"
+
+#: ../../user_guide/results.md:38
+msgid "Exporting figures and data"
+msgstr "Exporter les figures et les données"
+
+#: ../../user_guide/results.md:47
+msgid "Data files are NumPy `.npz` archives of plain arrays; quantities keep their unit and are read back as quantities by `load_data`."
+msgstr "Les fichiers de données sont des archives NumPy `.npz` de simples tableaux ; les grandeurs gardent leur unité et sont relues comme des grandeurs par `load_data`."
+
+#: ../../user_guide/results.md:50
+msgid "Archives"
+msgstr "Archives"
+
+#: ../../user_guide/results.md:52
+msgid "`ctx.run(outputs, archive=\"name\")` creates an archive with [`vfst.archive`](https://github.com/VForiel/VFSciTools) (shipped with LUMOS) in an `archives/` directory **next to the executed script or notebook** (set `lumos.config.archive_root` to change it):"
+msgstr "`ctx.run(outputs, archive=\"name\")` crée une archive avec [`vfst.archive`](https://github.com/VForiel/VFSciTools) (livré avec LUMOS) dans un dossier `archives/` **à côté du script ou du notebook exécuté** (réglez `lumos.config.archive_root` pour le changer) :"
+
+#: ../../user_guide/results.md:77
+msgid "Reading an archive never unpickles or imports anything: `.plt` files are only listed, open them with `pltedit.load` if you trust their origin."
+msgstr "Lire une archive ne désérialise ni n'importe jamais rien : les fichiers `.plt` sont seulement listés ; ouvrez-les avec `pltedit.load` si vous faites confiance à leur origine."
+

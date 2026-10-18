@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0013-script-blocks.md:1
+msgid "ADR-0013: Script blocks"
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:4
+msgid "**Date**: 2026-10-17"
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:5
+msgid "**Plan step**: P11.5 (REQ-PIPE-6, NF-7)"
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:9
+msgid ""
+"Processing pipelines need steps that LUMOS does not provide: a user "
+"function placed in the graph with declared ports (REQ-PIPE-6). The same "
+"contexts are saved in `.lumos` files, shared, loaded by the web instance "
+"and by the MCP server; loading a file must never run code from it (NF-7, "
+"no arbitrary imports)."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:13
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:15
+msgid ""
+"`lumos.processing.script.script(name=..., inputs=..., outputs=...)` turns"
+" a function into an `Element` subclass registered under `name`, like any "
+"element type. Inputs are passed positionally in the declared order; the "
+"function returns a mapping of outputs (or the signal of a single output)."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:18
+msgid ""
+"Keyword-only arguments with defaults become the parameters: quantities "
+"make `Param`s with units, `bool`, `int`, `float` and `str` make "
+"`Setting`s. They are saved, edited and swept like other parameters."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:20
+msgid ""
+"A `.lumos` file stores the type identifier and the parameter values only."
+" Loading needs the script to be defined beforehand, by importing the "
+"module that defines it or through the `lumos.elements` entry points of a "
+"plugin package; otherwise loading fails with `UnknownTypeError`."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:23
+msgid ""
+"Defining again a script with the same name and the same function (module "
+"and qualified name), as when a notebook cell runs twice, replaces the "
+"registration; another function under the same name is refused."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:26
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:28
+msgid ""
+"Storing the source code in the `.lumos` file and executing it on load: "
+"arbitrary code execution from shared files, forbidden by NF-7."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:30
+msgid ""
+"Storing an import path (`module:function`) and importing it on load: an "
+"arbitrary import chosen by the file, also forbidden."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:32
+msgid ""
+"Per-instance ports on a single generic `ScriptBlock` class: every element"
+" type would no longer have fixed ports, which the JSON Schema, the web "
+"palette and the codegen rely on."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:35
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:37
+msgid ""
+"Scripts are visible in the registry, the web palette and the JSON Schema "
+"once defined."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:38
+msgid ""
+"Sharing a context that uses scripts requires sharing the code that "
+"defines them (a module or a plugin)."
+msgstr ""
+
+#: ../../adr/0013-script-blocks.md:39
+msgid ""
+"The web interface does not offer to type code in the browser; scripts "
+"come from Python."
+msgstr ""
+

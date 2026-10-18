@@ -1,0 +1,312 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../hardware/writing_a_driver.md:1
+msgid "Writing a driver"
+msgstr "Écrire un pilote"
+
+#: ../../hardware/writing_a_driver.md:3
+#, python-brace-format
+msgid "A driver connects an element of LUMOS to the equipment it represents. Writing one means subclassing {class}`lumos.core.driver.Driver` (or {class}`lumos.hardware.drivers.lumoslabs.LumosLabsDriver` for a device speaking lines of ASCII), then registering it for the models it supports. The safety mechanisms (limits, dry run, confirmations, recovery, emergency stop, safe state) come from the base class: a driver only implements how to talk to its device."
+msgstr "Un pilote relie un élément de LUMOS à l'équipement qu'il représente. En écrire un consiste à dériver {class}`lumos.core.driver.Driver` (ou {class}`lumos.hardware.drivers.lumoslabs.LumosLabsDriver` pour un appareil qui parle par lignes ASCII), puis à l'enregistrer pour les modèles qu'il prend en charge. Les mécanismes de sécurité (limites, exécution à blanc, confirmations, reprise, arrêt d'urgence, état sûr) viennent de la classe de base : un pilote n'implémente que la façon de parler à son appareil."
+
+#: ../../hardware/writing_a_driver.md:9
+msgid "The interface"
+msgstr "L'interface"
+
+#: ../../hardware/writing_a_driver.md
+msgid "Method or attribute"
+msgstr "Méthode ou attribut"
+
+#: ../../hardware/writing_a_driver.md
+msgid "What to implement"
+msgstr "Ce qu'il faut implémenter"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_connect()`"
+msgstr "`_connect()`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "open the connection (SDK handle, transport), check the identity of the device, read its limits"
+msgstr "ouvrir la connexion (poignée du SDK, transport), vérifier l'identité de l'appareil, lire ses limites"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_disconnect()`"
+msgstr "`_disconnect()`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "close it"
+msgstr "la fermer"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_send(command)`"
+msgstr "`_send(command)`"
+
+#: ../../hardware/writing_a_driver.md
+#, python-brace-format
+msgid "execute a {class}`~lumos.core.driver.Command` (`command.action`, `command.args`, `command.kwargs`) and return a {class}`~lumos.core.driver.Reply` with the state read back (`state={\"position\": ...}`)"
+msgstr "exécuter une {class}`~lumos.core.driver.Command` (`command.action`, `command.args`, `command.kwargs`) et renvoyer une {class}`~lumos.core.driver.Reply` avec l'état relu (`state={\"position\": ...}`)"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_query(name, *arguments)`"
+msgstr "`_query(name, *arguments)`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "read a quantity (`\"position\"`, `\"power\"`...) and return it as a `Quantity`"
+msgstr "lire une grandeur (`\"position\"`, `\"power\"`…) et la renvoyer comme `Quantity`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_stop()`"
+msgstr "`_stop()`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "interrupt any motion or emission **at once**; it is called from another thread while `_send` may be waiting, so it must not block on the same lock"
+msgstr "interrompre tout mouvement ou toute émission **immédiatement** ; elle est appelée depuis un autre fil d'exécution pendant que `_send` attend peut-être, elle ne doit donc pas bloquer sur le même verrou"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_safe_state()`"
+msgstr "`_safe_state()`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "bring the device to its safe state (laser off, shutter closed, heaters off)"
+msgstr "mettre l'appareil dans son état sûr (laser éteint, obturateur fermé, chauffages coupés)"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`signatures`"
+msgstr "`signatures`"
+
+#: ../../hardware/writing_a_driver.md
+#, python-brace-format
+msgid "names of the positional arguments of each action, e.g. `{\"move\": (\"target\",)}`"
+msgstr "noms des arguments positionnels de chaque action, par exemple `{\"move\": (\"target\",)}`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`limits`"
+msgstr "`limits`"
+
+#: ../../hardware/writing_a_driver.md
+#, python-brace-format
+msgid "software limits `{\"move.target\": (0 * u.mm, 25 * u.mm)}`, completed at connection from the device"
+msgstr "limites logicielles `{\"move.target\": (0 * u.mm, 25 * u.mm)}`, complétées à la connexion à partir de l'appareil"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`dangerous` / `is_dangerous(command)`"
+msgstr "`dangerous` / `is_dangerous(command)`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "actions that need the confirmation callback (emission of a laser...)"
+msgstr "actions qui demandent la fonction de confirmation (émission d'un laser…)"
+
+#: ../../hardware/writing_a_driver.md:23
+#, python-brace-format
+msgid "Inside `_send`, wait for long operations with `self.wait(seconds)`, which returns `False` as soon as an emergency stop occurs; then raise {class}`~lumos.core.driver.DriverStopped`. Report a lost connection with {class}`~lumos.core.driver.ConnectionLost` (the base class reconnects and retries) and an equipment that does not answer with {class}`~lumos.core.driver.DriverTimeout`."
+msgstr "Dans `_send`, attendez les opérations longues avec `self.wait(seconds)`, qui renvoie `False` dès qu'un arrêt d'urgence survient ; levez alors {class}`~lumos.core.driver.DriverStopped`. Signalez une connexion perdue avec {class}`~lumos.core.driver.ConnectionLost` (la classe de base se reconnecte et réessaie) et un équipement qui ne répond pas avec {class}`~lumos.core.driver.DriverTimeout`."
+
+#: ../../hardware/writing_a_driver.md:28
+#, python-brace-format
+msgid "Measuring devices also provide `configure(...)`, `acquire()`, which returns a {class}`~lumos.fields.DataProduct` like the simulated detector (REQ-HW-5), and optionally `feed(...)` for emulated devices fed by the digital twin."
+msgstr "Les appareils de mesure fournissent aussi `configure(...)`, `acquire()`, qui renvoie un {class}`~lumos.fields.DataProduct` comme le détecteur simulé (REQ-HW-5), et éventuellement `feed(...)` pour les appareils émulés alimentés par le jumeau numérique."
+
+#: ../../hardware/writing_a_driver.md:32
+msgid "A minimal driver"
+msgstr "Un pilote minimal"
+
+#: ../../hardware/writing_a_driver.md:70
+msgid "Registering it"
+msgstr "L'enregistrer"
+
+#: ../../hardware/writing_a_driver.md:72
+msgid "In the `pyproject.toml` of your package, declare one entry point per model in the group `lumos.drivers`:"
+msgstr "Dans le `pyproject.toml` de votre paquet, déclarez un point d'entrée par modèle dans le groupe `lumos.drivers` :"
+
+#: ../../hardware/writing_a_driver.md:80
+#, python-brace-format
+msgid "{func}`lumos.hardware.drivers.driver_for` then finds them, and the discovery associates them with the elements whose `device_model` (or `lumoslabs_model`) matches. In a script, `register_driver(model, cls)` does the same."
+msgstr "{func}`lumos.hardware.drivers.driver_for` les trouve alors, et la découverte les associe aux éléments dont le `device_model` (ou `lumoslabs_model`) correspond. Dans un script, `register_driver(model, cls)` fait de même."
+
+#: ../../hardware/writing_a_driver.md:83
+msgid "Testing it"
+msgstr "Le tester"
+
+#: ../../hardware/writing_a_driver.md:85
+msgid "Test the driver against an emulator or a fake transport, like the LumosLabs drivers: limits refused even for commands sent directly, an emergency stop interrupting a long operation, recovery after a lost connection, and a measured duration consistent with the duration predicted by the element. The LumosLabs emulators (`lumos emulators start`) are a reference implementation of these behaviours."
+msgstr "Testez le pilote face à un émulateur ou à un faux transport, comme les pilotes LumosLabs : limites refusées même pour des commandes envoyées directement, arrêt d'urgence interrompant une opération longue, reprise après une connexion perdue, et durée mesurée cohérente avec la durée prédite par l'élément. Les émulateurs LumosLabs (`lumos emulators start`) sont une implémentation de référence de ces comportements."
+
+#: ../../hardware/writing_a_driver.md:90
+msgid "Coverage of the Thorlabs SDKs"
+msgstr "Couverture des SDK Thorlabs"
+
+#: ../../hardware/writing_a_driver.md:92
+msgid "The first vendor drivers will target Thorlabs. Their SDKs map onto the interface as follows (from the public documentation of the SDKs; to be confirmed on the hardware):"
+msgstr "Les premiers pilotes de fabricants viseront Thorlabs. Leurs SDK se rattachent à l'interface comme suit (d'après la documentation publique des SDK ; à confirmer sur le matériel) :"
+
+#: ../../hardware/writing_a_driver.md
+msgid "SDK"
+msgstr "SDK"
+
+#: ../../hardware/writing_a_driver.md
+msgid "Operation"
+msgstr "Opération"
+
+#: ../../hardware/writing_a_driver.md
+msgid "Interface of LUMOS"
+msgstr "Interface de LUMOS"
+
+#: ../../hardware/writing_a_driver.md
+msgid "Kinesis (motion, e.g. `CC_*` of the KCube DC servo)"
+msgstr "Kinesis (mouvement, par exemple `CC_*` du servo KCube DC)"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`CC_Open`, `CC_Close`, `CC_StartPolling`"
+msgstr "`CC_Open`, `CC_Close`, `CC_StartPolling`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_connect`, `_disconnect`"
+msgstr "`_connect`, `_disconnect`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "Kinesis"
+msgstr "Kinesis"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`CC_Home`, `CC_MoveToPosition`, status bits"
+msgstr "`CC_Home`, `CC_MoveToPosition`, bits d'état"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_send` (`home`, `move`) waiting with `self.wait`"
+msgstr "`_send` (`home`, `move`) avec attente par `self.wait`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`CC_GetPosition`, device units ↔ real units"
+msgstr "`CC_GetPosition`, unités de l'appareil ↔ unités réelles"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_query(\"position\")`, quantities"
+msgstr "`_query(\"position\")`, grandeurs"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`CC_SetVelParams`"
+msgstr "`CC_SetVelParams`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "velocity and acceleration of the element, as for `LL-LS100`"
+msgstr "vitesse et accélération de l'élément, comme pour `LL-LS100`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`CC_StopImmediate` / `CC_StopProfiled`"
+msgstr "`CC_StopImmediate` / `CC_StopProfiled`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_stop` / `_safe_state`"
+msgstr "`_stop` / `_safe_state`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "travel limits of the stage"
+msgstr "limites de course de la platine"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`limits` read in `_connect`"
+msgstr "`limits` lues dans `_connect`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`TLI_BuildDeviceList`, `TLI_GetDeviceListByTypeExt`"
+msgstr "`TLI_BuildDeviceList`, `TLI_GetDeviceListByTypeExt`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "discovery: **gap**, the discovery identifies devices by `*IDN?` over transports; SDK enumeration needs a discovery hook for plugins"
+msgstr "découverte : **manque**, la découverte identifie les appareils par `*IDN?` sur les transports ; l'énumération par SDK demande un point d'accroche de découverte pour les extensions"
+
+#: ../../hardware/writing_a_driver.md
+msgid "TSI cameras (`thorlabs_tsi_sdk`)"
+msgstr "Caméras TSI (`thorlabs_tsi_sdk`)"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`discover_available_cameras`, `open_camera`"
+msgstr "`discover_available_cameras`, `open_camera`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`_connect` (enumeration: same gap)"
+msgstr "`_connect` (énumération : même manque)"
+
+#: ../../hardware/writing_a_driver.md
+msgid "TSI"
+msgstr "TSI"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`exposure_time_us`, gain, black level, `roi`"
+msgstr "`exposure_time_us`, gain, niveau de noir, `roi`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`configure(exposure=..., gain=..., roi=...)`"
+msgstr "`configure(exposure=..., gain=..., roi=...)`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`arm`, `issue_software_trigger`, `get_pending_frame_or_null`, `disarm`"
+msgstr "`arm`, `issue_software_trigger`, `get_pending_frame_or_null`, `disarm`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`acquire()` returning a `DataProduct` in adu, polling with `self.wait`"
+msgstr "`acquire()` renvoyant un `DataProduct` en adu, avec interrogation par `self.wait`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "hardware triggering, continuous streaming"
+msgstr "déclenchement matériel, flux continu"
+
+#: ../../hardware/writing_a_driver.md
+msgid "**gap**: the camera element has no trigger mode nor frame stream yet"
+msgstr "**manque** : l'élément caméra n'a encore ni mode de déclenchement ni flux d'images"
+
+#: ../../hardware/writing_a_driver.md
+msgid "TLPM (power meters, VISA)"
+msgstr "TLPM (puissancemètres, VISA)"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`TLPM_findRsrc`, `TLPM_init`, `TLPM_close`"
+msgstr "`TLPM_findRsrc`, `TLPM_init`, `TLPM_close`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "discovery over VISA (`*IDN?` answers `Thorlabs,PM100D,...`), `_connect`"
+msgstr "découverte par VISA (`*IDN?` répond `Thorlabs,PM100D,...`), `_connect`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "TLPM"
+msgstr "TLPM"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`TLPM_setWavelength`, `TLPM_setPowerRange`, `TLPM_setAvgTime`"
+msgstr "`TLPM_setWavelength`, `TLPM_setPowerRange`, `TLPM_setAvgTime`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`configure(wavelength=..., range=..., integration=...)`"
+msgstr "`configure(wavelength=..., range=..., integration=...)`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`TLPM_measPower`"
+msgstr "`TLPM_measPower`"
+
+#: ../../hardware/writing_a_driver.md
+msgid "`acquire()` returning a `DataProduct` in W"
+msgstr "`acquire()` renvoyant un `DataProduct` en W"
+
+#: ../../hardware/writing_a_driver.md:112
+msgid "The two gaps (enumeration through vendor SDKs, hardware triggering and streaming of cameras) are to be closed with the first Thorlabs drivers."
+msgstr "Les deux manques (énumération par les SDK des fabricants, déclenchement matériel et flux des caméras) seront comblés avec les premiers pilotes Thorlabs."
+

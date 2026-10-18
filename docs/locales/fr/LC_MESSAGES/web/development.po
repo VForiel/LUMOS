@@ -1,0 +1,117 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../web/development.md:1
+msgid "Developing the interface"
+msgstr "Développer l'interface"
+
+#: ../../web/development.md:3
+msgid "The interface lives in `web/` (Vite, React, TypeScript, `@xyflow/react`, Tailwind CSS, i18next, driver.js). It is built into `src/lumos/web/static/`, which `lumos web` serves at `/`."
+msgstr "L'interface se trouve dans `web/` (Vite, React, TypeScript, `@xyflow/react`, Tailwind CSS, i18next, driver.js). Elle est construite dans `src/lumos/web/static/`, que `lumos web` sert à `/`."
+
+#: ../../web/development.md:6
+msgid "Build once"
+msgstr "Construire une fois"
+
+#: ../../web/development.md:15
+msgid "Work on it"
+msgstr "Travailler dessus"
+
+#: ../../web/development.md:17
+msgid "Run the backend and the Vite development server side by side; Vite reloads the page as you edit and forwards `/api` (and its WebSocket) to the backend:"
+msgstr "Lancez le serveur et le serveur de développement Vite côte à côte ; Vite recharge la page à chaque modification et renvoie `/api` (et son WebSocket) vers le serveur :"
+
+#: ../../web/development.md:25
+msgid "Set `LUMOS_BACKEND=http://127.0.0.1:9000` before `npm run dev` if the backend listens elsewhere."
+msgstr "Réglez `LUMOS_BACKEND=http://127.0.0.1:9000` avant `npm run dev` si le serveur écoute ailleurs."
+
+#: ../../web/development.md:27
+msgid "Principles"
+msgstr "Principes"
+
+#: ../../web/development.md:29
+msgid "**No code per element.** The palette, the blocks, their ports, the forms and the units come from `/api/palette` (JSON Schemas of the registry, signal classes, units with their conversion factors). A new element type appears in the interface as soon as it is registered."
+msgstr "**Aucun code par élément.** La palette, les blocs, leurs ports, les formulaires et les unités viennent de `/api/palette` (schémas JSON du registre, classes de signaux, unités avec leurs facteurs de conversion). Un nouveau type d'élément apparaît dans l'interface dès qu'il est enregistré."
+
+#: ../../web/development.md:32
+msgid "**The backend decides.** Connections are checked in the browser for comfort (colours, refusal while dragging), and again by the service, whose message and hint are shown when it refuses."
+msgstr "**Le serveur décide.** Les connexions sont vérifiées dans le navigateur pour le confort (couleurs, refus pendant le glisser), puis de nouveau par le service, dont le message et l'indice sont affichés en cas de refus."
+
+#: ../../web/development.md:34
+msgid "**Every text is translated.** Texts are in `web/src/locales/en.json` and `fr.json`, with the same keys (checked by the tests). Element names and their documentation come from the library, in English."
+msgstr "**Chaque texte est traduit.** Les textes sont dans `web/src/locales/en.json` et `fr.json`, avec les mêmes clés (vérifié par les tests). Les noms des éléments et leur documentation viennent de la bibliothèque, en anglais."
+
+#: ../../web/development.md:37
+msgid "Tests"
+msgstr "Tests"
+
+#: ../../web/development.md
+msgid "Command"
+msgstr "Commande"
+
+#: ../../web/development.md
+msgid "What"
+msgstr "Quoi"
+
+#: ../../web/development.md
+msgid "`npm test` (in `web/`)"
+msgstr "`npm test` (dans `web/`)"
+
+#: ../../web/development.md
+msgid "unit tests of the pure logic (`tests/frontend`, Vitest): units, forms from schemas, typed ports, layout, translations"
+msgstr "tests unitaires de la logique pure (`tests/frontend`, Vitest) : unités, formulaires issus des schémas, ports typés, disposition, traductions"
+
+#: ../../web/development.md
+msgid "`npm run typecheck`"
+msgstr "`npm run typecheck`"
+
+#: ../../web/development.md
+msgid "TypeScript"
+msgstr "TypeScript"
+
+#: ../../web/development.md
+msgid "`pytest tests/unit/web`"
+msgstr "`pytest tests/unit/web`"
+
+#: ../../web/development.md
+msgid "HTTP API, authentication, configuration"
+msgstr "API HTTP, authentification, configuration"
+
+#: ../../web/development.md
+msgid "`pytest -m e2e tests/e2e`"
+msgstr "`pytest -m e2e tests/e2e`"
+
+#: ../../web/development.md
+msgid "the interface in Chromium (Playwright), in English and in French: editing, runs, presets and tour, operation with an emulated stage, accounts, assistant (Claude API replaced by a scripted stand-in), UC5 on a public instance"
+msgstr "l'interface dans Chromium (Playwright), en anglais et en français : édition, exécutions, préréglages et visite guidée, études et boucles, opération avec une platine émulée, comptes, assistant (fournisseurs remplacés par des doublures scriptées), UC5 sur une instance publique"
+
+#: ../../web/development.md
+msgid "`pytest tests/integration/test_web_parity.py`"
+msgstr "`pytest tests/integration/test_web_parity.py`"
+
+#: ../../web/development.md
+msgid "the same bench built in Python, over HTTP and through MCP: same `.lumos` document, same reading"
+msgstr "le même banc construit en Python, par HTTP et via MCP : même document `.lumos`, même lecture"
+
+#: ../../web/development.md:47
+msgid "The browser tests need the built interface and a browser: `pip install -e \".[e2e]\"` then `playwright install chromium`."
+msgstr "Les tests navigateur demandent l'interface construite et un navigateur : `pip install -e \".[e2e]\"` puis `playwright install chromium`."
+

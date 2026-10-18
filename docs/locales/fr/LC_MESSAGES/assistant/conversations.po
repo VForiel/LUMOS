@@ -1,0 +1,150 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../assistant/conversations.md:1
+msgid "Example conversations"
+msgstr "Exemples de conversations"
+
+#: ../../assistant/conversations.md:3
+msgid "These conversations show how an assistant connected to LUMOS works. The tool calls are those it makes, with their arguments; the answers of LUMOS are abridged. Your assistant may take other paths to the same result: what matters is that every number comes from a computation of LUMOS, with its unit."
+msgstr "Ces conversations montrent comment travaille un assistant connecté à LUMOS. Les appels d'outils sont ceux qu'il fait, avec leurs arguments ; les réponses de LUMOS sont abrégées. Votre assistant peut prendre d'autres chemins vers le même résultat : ce qui compte, c'est que chaque nombre vienne d'un calcul de LUMOS, avec son unité."
+
+#: ../../assistant/conversations.md:7
+msgid "What contrast does this coronagraph reach at 3 λ/D?"
+msgstr "Quel contraste ce coronographe atteint-il à 3 λ/D ?"
+
+#: ../../assistant/conversations.md:9
+msgid "**You:** Load the vortex coronagraph preset. What raw contrast does it reach at 3 λ/D?"
+msgstr "**Vous :** Charge le préréglage du coronographe vortex. Quel contraste brut atteint-il à 3 λ/D ?"
+
+#: ../../assistant/conversations.md:11
+msgid "The assistant loads the preset and reads it:"
+msgstr "L'assistant charge le préréglage et le lit :"
+
+#: ../../assistant/conversations.md:13
+msgid "`load_preset(name=\"coronagraph\")`: an 8 m telescope observing a star and a companion 10⁻⁴ fainter at 6 λ/D, a charge-2 vortex coronagraph with a Lyot stop of 0.95 D, and a lens of 100 m focal length forming the image on 81 × 81 pixels of 5 µm, at 1.6 µm."
+msgstr "`load_preset(name=\"coronagraph\")` : un télescope de 8 m observant une étoile et un compagnon 10⁻⁴ fois plus faible à 6 λ/D, un coronographe vortex de charge 2 avec un diaphragme de Lyot de 0,95 D, et une lentille de 100 m de focale formant l'image sur 81 × 81 pixels de 5 µm, à 1,6 µm."
+
+#: ../../assistant/conversations.md:16
+msgid "`describe_context()` gives the values with their units."
+msgstr "`describe_context()` donne les valeurs avec leurs unités."
+
+#: ../../assistant/conversations.md:18
+msgid "It works out the scale of the image: λ/D = 1.6 µm / 8 m = 0.2 µrad (41 mas), that is f λ/D = 20 µm or 4 pixels in the focal plane, so 3 λ/D lies 12 pixels from the star."
+msgstr "Il calcule l'échelle de l'image : λ/D = 1,6 µm / 8 m = 0,2 µrad (41 mas), soit f λ/D = 20 µm ou 4 pixels dans le plan focal ; 3 λ/D se trouve donc à 12 pixels de l'étoile."
+
+#: ../../assistant/conversations.md:21
+msgid "To measure the raw contrast, it switches the companion off, then compares the light left around 3 λ/D with the peak of the star seen without the coronagraph:"
+msgstr "Pour mesurer le contraste brut, il éteint le compagnon, puis compare la lumière restant autour de 3 λ/D au pic de l'étoile vue sans coronographe :"
+
+#: ../../assistant/conversations.md:24
+msgid "`set_param(path=\"planet.flux_density\", value=\"0 Jy\")`"
+msgstr "`set_param(path=\"planet.flux_density\", value=\"0 Jy\")`"
+
+#: ../../assistant/conversations.md:25
+msgid "`inspect_port(port=\"image.out\")`: the coronagraphic image of the star alone, with its figure;"
+msgstr "`inspect_port(port=\"image.out\")` : l'image coronographique de l'étoile seule, avec sa figure ;"
+
+#: ../../assistant/conversations.md:26
+msgid "`radial_profile(port=\"image.out\", bin_width=\"20 um\")`: the mean intensity in rings 1 λ/D wide;"
+msgstr "`radial_profile(port=\"image.out\", bin_width=\"20 um\")` : l'intensité moyenne dans des anneaux larges de 1 λ/D ;"
+
+#: ../../assistant/conversations.md:27
+msgid "`disconnect(source=\"telescope.out\", target=\"coronagraph.in\")`, `disconnect(source=\"coronagraph.out\", target=\"lens.in\")`, `connect(source=\"telescope.out\", target=\"lens.in\")`, then `inspect_port(port=\"image.out\")` and `radial_profile(port=\"image.out\", bin_width=\"20 um\")`: the point-spread function without coronagraph, whose maximum is the reference peak."
+msgstr "`disconnect(source=\"telescope.out\", target=\"coronagraph.in\")`, `disconnect(source=\"coronagraph.out\", target=\"lens.in\")`, `connect(source=\"telescope.out\", target=\"lens.in\")`, puis `inspect_port(port=\"image.out\")` et `radial_profile(port=\"image.out\", bin_width=\"20 um\")` : la fonction d'étalement du point sans coronographe, dont le maximum est le pic de référence."
+
+#: ../../assistant/conversations.md:33
+msgid "**Assistant:** Between 3 and 4 λ/D (124 to 165 mas from the star), the mean intensity is about 2 × 10⁻¹⁰ of the peak of the star with the coronagraph, against 9 × 10⁻⁴ without it (the Airy rings of the telescope). This is expected: a charge-2 vortex cancels the light of an on-axis star for a circular unobstructed pupil (Mawet et al. 2005), and what remains comes from the sampling of the simulation. With a central obstruction, spiders or wavefront errors the contrast would degrade; I can add them if you want."
+msgstr "**Assistant :** Entre 3 et 4 λ/D (124 à 165 mas de l'étoile), l'intensité moyenne vaut environ 2 × 10⁻¹⁰ du pic de l'étoile avec le coronographe, contre 9 × 10⁻⁴ sans (les anneaux d'Airy du télescope). C'est attendu : un vortex de charge 2 annule la lumière d'une étoile sur l'axe pour une pupille circulaire sans obstruction (Mawet et al. 2005), et ce qui reste vient de l'échantillonnage de la simulation. Avec une obstruction centrale, des araignées ou des erreurs de front d'onde, le contraste se dégraderait ; je peux les ajouter si vous voulez."
+
+#: ../../assistant/conversations.md:39
+msgid "Build me a bench to measure the MTF of this lens"
+msgstr "Construis-moi un banc pour mesurer la FTM de cet objectif"
+
+#: ../../assistant/conversations.md:41
+msgid "**You:** Build me a bench to measure the MTF of a 50 mm f/4 lens at 550 nm with a slanted edge."
+msgstr "**Vous :** Construis-moi un banc pour mesurer la FTM d'un objectif de 50 mm ouvert à f/4 à 550 nm avec un bord incliné."
+
+#: ../../assistant/conversations.md:43
+msgid "`search_docs(query=\"slanted edge MTF\")` and `list_element_types(query=\"edge\")` find the slanted-edge target and the processing element `lumos.processing.MTFMeasurement` (ISO 12233)."
+msgstr "`search_docs(query=\"slanted edge MTF\")` et `list_element_types(query=\"edge\")` trouvent la mire à bord incliné et l'élément de traitement `lumos.processing.MTFMeasurement` (ISO 12233)."
+
+#: ../../assistant/conversations.md:45
+msgid "`get_element_schema(type_id=\"lumos.processing.MTFMeasurement\")` gives its settings (oversampling...)."
+msgstr "`get_element_schema(type_id=\"lumos.processing.MTFMeasurement\")` donne ses réglages (suréchantillonnage…)."
+
+#: ../../assistant/conversations.md:46
+msgid "`create_context(name=\"MTF bench\")`, then `add_element(...)` for the target, the lens (focal length `\"50 mm\"`, aperture `\"12.5 mm\"`) and a camera with its pixel pitch, and `connect(...)` from one to the next."
+msgstr "`create_context(name=\"MTF bench\")`, puis `add_element(...)` pour la mire, l'objectif (focale `\"50 mm\"`, ouverture `\"12.5 mm\"`) et une caméra avec son pas de pixel, et `connect(...)` de l'un au suivant."
+
+#: ../../assistant/conversations.md:48
+#, python-brace-format
+msgid "`build_pipeline(source=\"camera.out\", steps=[{\"type\": \"lumos.processing.MTFMeasurement\", \"name\": \"mtf\"}])`"
+msgstr "`build_pipeline(source=\"camera.out\", steps=[{\"type\": \"lumos.processing.MTFMeasurement\", \"name\": \"mtf\"}])`"
+
+#: ../../assistant/conversations.md:49
+msgid "`validate_context()` reports no issue; `run(outputs=[\"mtf.out\"])`, then `get_result(job=..., port=\"mtf.out\", figure=true)` returns the MTF curve with its figure."
+msgstr "`validate_context()` ne signale aucun problème ; `run(outputs=[\"mtf.out\"])`, puis `get_result(job=..., port=\"mtf.out\", figure=true)` renvoie la courbe de FTM avec sa figure."
+
+#: ../../assistant/conversations.md:52
+msgid "**Assistant:** The bench is ready: edge target → lens → camera → MTF measurement. The measured MTF follows the diffraction limit of an f/4 aperture, with a cut-off at 1/(λN) = 455 cycles/mm; the camera samples up to its Nyquist frequency. Do you want the Python script (`export_python`) or the `.lumos` file (`export_lumos`)?"
+msgstr "**Assistant :** Le banc est prêt : mire à bord → objectif → caméra → mesure de FTM. La FTM mesurée suit la limite de diffraction d'une ouverture f/4, avec une coupure à 1/(λN) = 455 cycles/mm ; la caméra échantillonne jusqu'à sa fréquence de Nyquist. Voulez-vous le script Python (`export_python`) ou le fichier `.lumos` (`export_lumos`) ?"
+
+#: ../../assistant/conversations.md:57
+msgid "Why is my simulation under-sampled?"
+msgstr "Pourquoi ma simulation est-elle sous-échantillonnée ?"
+
+#: ../../assistant/conversations.md:59
+msgid "**You:** My PSF looks blocky and aliased. Why?"
+msgstr "**Vous :** Ma PSF paraît pixellisée et repliée. Pourquoi ?"
+
+#: ../../assistant/conversations.md:61
+msgid "`describe_context()` shows the elements and their grids."
+msgstr "`describe_context()` montre les éléments et leurs grilles."
+
+#: ../../assistant/conversations.md:62
+msgid "`validate_context()` reports no structural problem."
+msgstr "`validate_context()` ne signale aucun problème de structure."
+
+#: ../../assistant/conversations.md:63
+msgid "`explain_sampling(element=\"image\")` tells how each propagation is computed: the method (chosen by the planner or forced by the element), the reason, and the input and output grids."
+msgstr "`explain_sampling(element=\"image\")` dit comment chaque propagation est calculée : la méthode (choisie par le planificateur ou imposée par l'élément), la raison, et les grilles d'entrée et de sortie."
+
+#: ../../assistant/conversations.md:65
+msgid "`inspect_port(port=\"image.out\")` shows the image with its pixel scale."
+msgstr "`inspect_port(port=\"image.out\")` montre l'image avec sa taille de pixel."
+
+#: ../../assistant/conversations.md:67
+msgid "**Assistant:** The output grid of `image` has pixels of 5 µm while f λ/D is 20 µm: 4 pixels per λ/D, so the core of the PSF is sampled, but the camera behind it bins them 4 × 4, which leaves 1 pixel per λ/D, below the Nyquist limit of 2. Either reduce the binning of the camera (`set_param(path=\"camera.binning\", value=1)`) or use a smaller pixel pitch. After the change, `explain_sampling` and the new image confirm the sampling."
+msgstr "**Assistant :** La grille de sortie de `image` a des pixels de 5 µm alors que f λ/D vaut 20 µm : 4 pixels par λ/D, le cœur de la PSF est donc échantillonné, mais la caméra derrière les regroupe par 4 × 4, ce qui laisse 1 pixel par λ/D, sous la limite de Nyquist de 2. Réduisez le regroupement de la caméra (`set_param(path=\"camera.binning\", value=1)`) ou utilisez un pas de pixel plus petit. Après la modification, `explain_sampling` et la nouvelle image confirment l'échantillonnage."
+
+#: ../../assistant/conversations.md:73
+msgid "Can this instrument detect the companion?"
+msgstr "Cet instrument peut-il détecter le compagnon ?"
+
+#: ../../assistant/conversations.md:75
+msgid "**You:** Can we detect a planet 10⁻⁵ fainter than its star at 6 λ/D with this set-up?"
+msgstr "**Vous :** Peut-on détecter une planète 10⁻⁵ fois plus faible que son étoile à 6 λ/D avec ce montage ?"
+
+#: ../../assistant/conversations.md:77
+msgid "The prompt `estimate_detection` guides this workflow: `resolve_object` for the properties of a real target, the instrument from a preset, `run`, then `evaluate_detection(port=..., peak=..., resolution=...)` for the 5σ contrast curve of the residual image (with the small-sample correction of Mawet et al. 2014), compared with the contrast of the planet at its separation."
+msgstr "Le prompt `estimate_detection` guide cette démarche : `resolve_object` pour les propriétés d'une cible réelle, l'instrument depuis un préréglage, `run`, puis `evaluate_detection(port=..., peak=..., resolution=...)` pour la courbe de contraste à 5σ de l'image résiduelle (avec la correction des petits échantillons de Mawet et al. 2014), comparée au contraste de la planète à sa séparation."
+
