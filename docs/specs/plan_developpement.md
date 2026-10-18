@@ -323,8 +323,8 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [ ] **P16.2 Scènes terrestres** — cartes de radiance géoréférencées (GeoTIFF), repère WGS84, illumination solaire.
 - [ ] **P16.3 Modes de détection** — matriciel, *pushbroom*, TDI ; flou de bougé.
 - [ ] **P16.4 Atmosphère simple** et plugins de transfert radiatif.
-- [ ] **P16.5 Métriques** — MTF, GSD, SNR ; notebook `11_earth_observation`.
-- [ ] **P16.6 Photographie** — scène image + profondeur, objectif épais, mise au point, filtre de Bayer et dématriçage ; notebook `12_camera`.
+- [ ] **P16.5 Métriques** — MTF, GSD, SNR ; notebook `13_earth_observation`.
+- [ ] **P16.6 Photographie** — scène image + profondeur, objectif épais, mise au point, filtre de Bayer et dématriçage ; notebook `14_camera`.
 
 ---
 
