@@ -9,7 +9,7 @@ Pour répondre : un commit distant modifiant ce fichier, dont le message commenc
 
 ## À faire maintenant (18/10) — une commande dans ton terminal VPS
 
-- [ ] **Autoriser ma clé SSH sur le VPS** : je n'ai pas accès au terminal VS Code connecté au VPS, et le serveur
+- [x] **Autoriser ma clé SSH sur le VPS** (fait, merci) : je n'ai pas accès au terminal VS Code connecté au VPS, et le serveur
   refuse la connexion sans mot de passe. J'ai créé la clé `~/.ssh/id_ed25519_vps1` et le profil `VPS1`
   (`~/.ssh/config`, utilisateur `ubuntu`). Colle cette ligne **dans le terminal connecté au VPS** :
 
@@ -32,7 +32,12 @@ Pour répondre : un commit distant modifiant ce fichier, dont le message commenc
   `assistant/setup` ligne 93 à mettre à jour en anglais). Outil : `tools/translate_po.py`.
 - Restent P15.3 (performance), P15.4 (qualité, sécurité, CSP à prévoir pour les fournisseurs de l'assistant),
   P15.5 (PyPI : il faudra ton accord et un compte ; VPS).
-- **VPS** : toujours en attente de la ligne `authorized_keys` ci-dessus.
+- **VPS : instance publique en ligne** sur https://lumos.vincent.foriel.pro (Docker, Caddy + certificat
+  Let's Encrypt, profil public, opération désactivée, quotas pour 2 cœurs / 4 Go dans `~/lumos-vps.toml`).
+  Préréglage exécuté et lien de connecteur MCP vérifiés depuis Internet. Mise à jour :
+  `ssh VPS1 'cd LUMOS && git pull && docker compose -f deploy/public/compose.yaml up -d --build'`.
+  À faire : la version affichée est 0.0.0 (image construite sans historique git) ; tester le connecteur depuis
+  Claude.ai / ChatGPT avec ton abonnement (panneau Assistant › Créer un lien de connecteur).
 
 ## Retours du 18/10 traités (P14.12 à P14.15)
 
