@@ -21,7 +21,7 @@ def open_preset(page, name):
     page.goto("/")
     expect(page.get_by_test_id("palette")).to_be_visible()
     page.get_by_test_id("open-presets").click()
-    page.get_by_test_id(f"preset-{name}").click()
+    page.get_by_role("dialog").get_by_test_id(f"preset-{name}").click()  # not the gallery of a first visit
     expect(page.locator(".react-flow__node").first).to_be_visible()
 
 
