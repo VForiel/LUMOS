@@ -19,6 +19,7 @@ __all__ = [
     "DocHit",
     "ElementSummary",
     "ElementTypeInfo",
+    "FeedbackInfo",
     "GroupInfo",
     "Issue",
     "JobInfo",
@@ -119,6 +120,14 @@ class ConnectionInfo(BaseModel):
     target: str
 
 
+class FeedbackInfo(BaseModel):
+    """A feedback of a loop: the port ``source`` drives the field ``target`` (``mode`` ``set`` or ``add``)."""
+
+    source: str
+    target: str
+    mode: str
+
+
 class GroupInfo(BaseModel):
     """The inside of a group: connections of its elements and exposed ports (``port: "child.port"``)."""
 
@@ -139,6 +148,7 @@ class ContextSummary(BaseModel):
     n_wavelengths: int = 1
     elements: list[ElementSummary]
     connections: list[ConnectionInfo]
+    feedbacks: list[FeedbackInfo] = []
     outputs: list[str] = []
     groups: dict[str, GroupInfo] = {}
     ui: dict[str, Any] = {}
@@ -169,7 +179,7 @@ class JobInfo(BaseModel):
     """A run or a study: its status (``queued``, ``running``, ``done``, ``failed``), progress and outputs."""
 
     id: str
-    kind: str = Field(default="run", description="run, sweep or sample (Monte-Carlo run)")
+    kind: str = Field(default="run", description="run, sweep, sample (Monte-Carlo run) or loop")
     context: str
     outputs: list[str]
     status: str
@@ -203,7 +213,7 @@ class StudyPoint(BaseModel):
 
 
 class StudyResult(BaseModel):
-    """The points of a sweep or of a Monte-Carlo run."""
+    """The points of a sweep or of a Monte-Carlo run, or the steps of a loop (parameter ``time``)."""
 
     job: str
     context: str

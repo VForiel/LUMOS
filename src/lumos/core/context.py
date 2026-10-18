@@ -51,6 +51,37 @@ Noise = Literal["fixed", "independent"]
 _REALIZATION_SEPARATOR = 0xFF
 
 
+FeedbackMode = Literal["set", "add"]
+
+
+@dataclass(frozen=True)
+class Feedback:
+    """A feedback of a loop (ADR-0020): the value of the port ``source`` drives the field ``target``.
+
+    Attributes
+    ----------
+    source
+        Output port, ``"element.port"``.
+    target
+        Field, ``"element.field"``.
+    mode
+        ``"set"``: the field takes the value; ``"add"``: the value is added to the field (an integrator).
+    """
+
+    source: str
+    target: str
+    mode: FeedbackMode = "set"
+
+
+@dataclass(frozen=True)
+class LoopStep:
+    """One iteration of a loop: its index, the elapsed time of the context and the computed outputs."""
+
+    step: int
+    time: u.Quantity
+    outputs: Result
+
+
 @dataclass(frozen=True)
 class SweepPoint:
     """One point of a sweep or Monte-Carlo run.
@@ -182,6 +213,7 @@ class Context:
         self._overrides: dict[int, str] = {}
         self._twin_states: dict[int, dict[str, Any]] = {}
         self._links: list[tuple[str, str, Any, Any, Any]] = []
+        self._feedbacks: list[Feedback] = []
         self._recording: Any = None
         self._recording_start = 0.0
         self.journal = Journal()
@@ -820,6 +852,118 @@ class Context:
             if self._realization != realization:
                 self.realization = realization
         return points
+
+    # --- Feedback loops (ADR-0020) ---------------------------------------------------------------
+
+    @property
+    def feedbacks(self) -> list[Feedback]:
+        """The feedbacks of the loops of the context, in the order they are applied."""
+        return list(self._feedbacks)
+
+    def feedback(self, source: str, target: str, *, mode: FeedbackMode = "set") -> Feedback:
+        """Feed the value of the output port ``source`` back to the field ``target`` between iterations.
+
+        The graph of signals stays acyclic: feedbacks are applied by :meth:`loop` after each iteration, so a
+        loop has a delay of one period. With ``mode="add"`` the value is added to the field (an integrator
+        whose gain is in the element computing the correction); with ``"set"`` it replaces it. The source
+        element may refuse a target (method ``check_feedback(element, field)``).
+        """
+        if mode not in ("set", "add"):
+            raise ValueError(f"the mode of a feedback is 'set' or 'add', got {mode!r}")
+        port = self.port(source)
+        element, field = self._parameter(target)
+        if any(f.source == source and f.target == target for f in self._feedbacks):
+            raise ValueError(f"the feedback {source} -> {target} already exists")
+        check = getattr(port.owner, "check_feedback", None)
+        if check is not None:
+            check(element, field)
+        created = Feedback(source, target, mode)
+        self._feedbacks.append(created)
+        return created
+
+    def remove_feedback(self, source: str, target: str) -> None:
+        """Remove the feedback from ``source`` to ``target``."""
+        for index, existing in enumerate(self._feedbacks):
+            if existing.source == source and existing.target == target:
+                del self._feedbacks[index]
+                return
+        raise KeyError(f"no feedback {source} -> {target}")
+
+    def _apply_feedback(self, feedback: Feedback, signal: Any) -> None:
+        element, field = self._parameter(feedback.target)
+        value = getattr(signal, "data", signal)
+        declared = type(element).declared()[field]
+        unit = getattr(declared, "unit", None)
+        if isinstance(value, u.Quantity) and unit is not None:
+            try:
+                value = value.to(unit, equivalencies=u.spectral())
+            except u.UnitsError as error:
+                raise u.UnitsError(
+                    f"feedback {feedback.source} -> {feedback.target}: {value.unit} is not compatible with "
+                    f"{unit} ({error})"
+                ) from error
+        if feedback.mode == "add":
+            value = getattr(element, field) + value
+        setattr(element, field, value)
+
+    def loop(
+        self,
+        steps: int,
+        *,
+        period: Any,
+        outputs: Iterable[Any],
+        restore: bool = False,
+        progress: Callable[[int, int], None] | None = None,
+    ) -> list[LoopStep]:
+        """Run the context as a closed loop: ``steps`` iterations of ``period`` (REQ-CTX-2, ADR-0020).
+
+        Iteration ``k`` computes ``outputs`` (and the sources of the feedbacks) at the elapsed time ``t_0 +
+        k·period``, applies the feedbacks, then advances the clock by ``period``: a correction computed from
+        a measurement acts on the next iteration.
+
+        Parameters
+        ----------
+        steps
+            Number of iterations.
+        period
+            Duration of an iteration (a time quantity).
+        outputs
+            Outputs to compute and return at each iteration (see :meth:`run`).
+        restore
+            Put back the fields driven by the feedbacks and the clock afterwards (default: keep them, the loop
+            has run).
+        progress
+            Called as ``progress(done, steps)`` after each iteration; it may raise to stop the loop.
+        """
+        steps = int(steps)
+        if steps < 1:
+            raise ValueError(f"a loop needs steps >= 1, got {steps}")
+        seconds = duration_si(period, name="period")
+        wanted = list(outputs)
+        references = wanted + [f.source for f in self._feedbacks if f.source not in wanted]
+        saved = [(f.target, getattr(*self._parameter(f.target))) for f in self._feedbacks]
+        elapsed = self.clock.elapsed
+        records: list[LoopStep] = []
+        try:
+            for step in range(steps):
+                time_now = self.clock.elapsed
+                result = self.run(references)
+                records.append(LoopStep(step, time_now, result))
+                for feedback in self._feedbacks:
+                    self._apply_feedback(feedback, result[feedback.source])
+                self._advance(seconds)
+                if progress is not None:
+                    progress(step + 1, steps)
+        finally:
+            if restore:
+                for target, value in saved:
+                    element, field = self._parameter(target)
+                    setattr(element, field, value)
+                self.clock.reset(elapsed=elapsed)
+                for element in self._walk():
+                    if type(element).time_dependent:
+                        element._on_field_changed("time")
+        return records
 
     def _ordered_elements(self) -> list[tuple[str, Any]]:
         """``(path, element)`` of every element, groups expanded depth-first in insertion order."""

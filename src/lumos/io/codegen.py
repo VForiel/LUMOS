@@ -140,6 +140,10 @@ def to_python(ctx: Context) -> str:
     for identifier, element in ctx.elements.items():
         if ctx.mode == "operation" and ctx.mode_of(element) == "simulation":
             lines.append(f"ctx.simulate({variables[identifier]})")
+    if ctx.feedbacks:
+        lines.append("")
+    for feedback in ctx.feedbacks:
+        lines.append(f'ctx.feedback("{feedback.source}", "{feedback.target}", mode="{feedback.mode}")')
     if ctx.ui:
         lines.append(f"ctx.ui = {ctx.ui!r}")
 

@@ -2,7 +2,8 @@
 
 The schema describes the envelope and the structure of element, group and context documents. The values of
 the parameters of each element type are described by :meth:`lumos.core.element.Element.schema` and checked
-when the element is loaded. The same schema is shipped as ``lumos/io/schemas/lumos-1.0.schema.json``.
+when the element is loaded. The same schema is shipped as ``lumos/io/schemas/lumos-1.1.schema.json`` (format
+1.1, ADR-0020: feedbacks of contexts); the schema of the format 1.0 is kept next to it.
 """
 
 from __future__ import annotations
@@ -11,7 +12,7 @@ from typing import Any
 
 __all__ = ["SCHEMA_ID", "document_schema"]
 
-SCHEMA_ID = "https://lumos-maxima.readthedocs.io/en/latest/lumos-1.0.schema.json"
+SCHEMA_ID = "https://lumos-maxima.readthedocs.io/en/latest/lumos-1.1.schema.json"
 
 
 def document_schema() -> dict[str, Any]:
@@ -42,6 +43,7 @@ def document_schema() -> dict[str, Any]:
             "context": {"$ref": "#/$defs/settings"},
             "elements": {"type": "array", "items": {"$ref": "#/$defs/child"}},
             "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
+            "feedbacks": {"type": "array", "items": {"$ref": "#/$defs/feedback"}},
             "ui": {"type": "object"},
         },
         "additionalProperties": False,
@@ -90,6 +92,12 @@ def document_schema() -> dict[str, Any]:
             "connection": {
                 "type": "object",
                 "properties": {"from": port_path, "to": port_path},
+                "required": ["from", "to"],
+                "additionalProperties": False,
+            },
+            "feedback": {
+                "type": "object",
+                "properties": {"from": port_path, "to": port_path, "mode": {"enum": ["set", "add"]}},
                 "required": ["from", "to"],
                 "additionalProperties": False,
             },

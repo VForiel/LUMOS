@@ -51,6 +51,7 @@ from lumos.service.models import (
     DocHit,
     ElementSummary,
     ElementTypeInfo,
+    FeedbackInfo,
     GroupInfo,
     Issue,
     JobInfo,
@@ -400,6 +401,7 @@ class Service:
             n_wavelengths=int(ctx.observation.n_wavelengths),
             elements=elements,
             connections=connections,
+            feedbacks=[FeedbackInfo(source=f.source, target=f.target, mode=f.mode) for f in ctx.feedbacks],
             outputs=list(ctx.meta.get("outputs", [])),
             groups=self._groups(ctx),
             ui=json.loads(json.dumps(ctx.ui, default=str)),
@@ -738,6 +740,37 @@ class Service:
                 ctx.observation.n_wavelengths = int(n_wavelengths)
         except ValueError as error:
             raise ServiceError(str(error), hint="give 0 < minimum < maximum") from error
+        return self._summary(context, ctx)
+
+    def add_feedback(
+        self, session: str, context: str, source: str, target: str, mode: str = "set"
+    ) -> ContextSummary:
+        """Feed the output ``source`` (``"id.port"``) back to the field ``target`` of a loop (ADR-0020).
+
+        ``mode="add"`` adds the value to the field at each step (an integrator), ``"set"`` replaces it. Run
+        the loop with :meth:`run_loop`.
+        """
+        ctx = self._context(session, context)
+        try:
+            with self._editing(session, context):
+                ctx.feedback(source, target, mode=mode)  # type: ignore[arg-type]
+        except (KeyError, AttributeError, ValueError, GraphError) as error:
+            message = str(error).strip("'\"")
+            raise ServiceError(
+                message,
+                hint="source is an output 'element.port', target a field 'element.field' (describe_context), "
+                "mode 'set' or 'add'",
+            ) from error
+        return self._summary(context, ctx)
+
+    def remove_feedback(self, session: str, context: str, source: str, target: str) -> ContextSummary:
+        """Remove the feedback from ``source`` to ``target``."""
+        ctx = self._context(session, context)
+        if not any(f.source == source and f.target == target for f in ctx.feedbacks):
+            listed = ", ".join(f"{f.source} -> {f.target}" for f in ctx.feedbacks) or "none"
+            raise ServiceError(f"no feedback {source} -> {target}", hint=f"feedbacks: {listed}")
+        with self._editing(session, context):
+            ctx.remove_feedback(source, target)
         return self._summary(context, ctx)
 
     def build_pipeline(
@@ -1125,6 +1158,70 @@ class Service:
 
         return self._start(session, context, kind, names, compute)
 
+    def run_loop(
+        self,
+        session: str,
+        context: str,
+        *,
+        steps: int,
+        period: Any,
+        outputs: Iterable[str] | None = None,
+    ) -> JobInfo:
+        """Run the context as a closed loop of ``steps`` iterations of ``period`` (ADR-0020).
+
+        At each step the outputs are computed, then the feedbacks are applied and the clock advances. The
+        fields driven by the feedbacks and the clock keep their final values; :meth:`undo` puts them back.
+        Read the steps with :meth:`get_study` (parameter ``time``).
+        """
+        ctx = self._context(session, context)
+        if not ctx.feedbacks:
+            raise ServiceError(
+                "the context has no feedback to loop on",
+                hint="add one with add_feedback(source='ctrl.commands', target='dm.commands', mode='add')",
+            )
+        if int(steps) < 1:
+            raise ServiceError(f"a loop needs at least one step, got {steps}", hint="e.g. steps=20")
+        if int(steps) > self.config.max_study_points:
+            raise ServiceError(
+                f"the loop has {steps} steps",
+                hint=f"this instance computes at most {self.config.max_study_points} steps per loop",
+                code="quota",
+            )
+        seconds = float(parse_quantity(period, u.s, name="period").to(u.s).value)  # type: ignore[arg-type]
+        if not seconds > 0:
+            raise ServiceError(f"the period must be positive, got {period}", hint="e.g. period='2 ms'")
+        names = list(outputs or self.default_outputs(session, context))
+        if not names:
+            raise ServiceError("no outputs to compute", hint="give outputs, e.g. outputs=['wfs.residual']")
+        count = int(steps)
+        seed = ctx.seed
+
+        def compute(ctx: Context, job: _Job, progress: Callable[[int, int, str], None]) -> None:
+            def step(done: int, total: int) -> None:
+                progress(done, total, f"step {done}")
+                job.info.message = f"computed step {done}/{total}"
+
+            with self._editing(session, context):  # the loop changes the states and the clock: undoable
+                records = ctx.loop(count, period=seconds * u.s, outputs=names, progress=step)
+            job.study = StudyResult(
+                job=job.info.id,
+                context=context,
+                kind="loop",
+                noise="fixed",
+                seed=seed,
+                parameters=["time"],
+                outputs=names,
+                points=[
+                    StudyPoint(
+                        params={"time": str(format_value(r.time.to(u.s)))},
+                        outputs={name: summarize(name, r.outputs[name]) for name in names},
+                    )
+                    for r in records
+                ],
+            )
+
+        return self._start(session, context, "loop", names, compute)
+
     def _study_point(self, ctx: Context, point: Any, names: list[str]) -> StudyPoint:
         params = {}
         for path, value in point.params.items():
@@ -1139,7 +1236,7 @@ class Service:
         record = self._session(session).jobs.get(job)
         if record is None:
             raise ServiceError(f"unknown job {job!r}", hint="start one with run_study()", code="not_found")
-        if record.info.kind not in ("sweep", "sample"):
+        if record.info.kind not in ("sweep", "sample", "loop"):
             raise ServiceError(
                 f"job {job} is a {record.info.kind}, not a study", hint="read it with get_result()"
             )

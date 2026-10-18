@@ -76,7 +76,10 @@ also listed by any MCP client (`/mcp` in Claude Code).
 | `set_free_parameter` | Free a parameter with a prior (uniform, log-uniform, normal), or fix it again. |
 | `run_sweep` | Run the context for listed values or ranges of some parameters (grid or zip). |
 | `run_monte_carlo` | Draw the free parameters from their priors `n` times, each draw with its own noise. |
-| `get_study` | Points of a sweep or Monte-Carlo run as a CSV table, with the structured data. |
+| `get_study` | Points of a sweep, Monte-Carlo run or loop as a CSV table, with the structured data. |
+| `add_feedback` | Close a loop: an output (`ctrl.commands`) drives a field (`dm.commands`) at the next step. |
+| `remove_feedback` | Open a loop again. |
+| `run_loop` | Run the context as a closed loop of `steps` iterations of `period`. |
 
 ### Catalogues and processing
 

@@ -123,4 +123,5 @@ fixed = ctx.sample(100, outputs=["cam.out"], noise="fixed")  # priors only, the 
 connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back
 without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting point
 for a system built in the web interface or by an assistant. The JSON Schema of the format is published with
-the documentation (`lumos-1.0.schema.json`).
+the documentation (`lumos-1.1.schema.json`; `lumos-1.0.schema.json` for the documents of LUMOS 0.x without
+feedback loops).

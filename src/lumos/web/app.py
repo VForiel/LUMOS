@@ -191,6 +191,22 @@ class FreeChange(BaseModel):
     prior: dict[str, Any] | None = None
 
 
+class FeedbackChange(BaseModel):
+    """Body of ``POST /api/contexts/{id}/feedbacks``."""
+
+    source: str
+    target: str
+    mode: str = "set"
+
+
+class LoopRequest(BaseModel):
+    """Body of ``POST /api/contexts/{id}/loops``."""
+
+    steps: int
+    period: Any
+    outputs: list[str] = Field(default_factory=list)
+
+
 class StudyRequest(BaseModel):
     """Body of ``POST /api/contexts/{id}/studies`` (see :meth:`lumos.service.Service.run_study`)."""
 
@@ -874,6 +890,20 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
             mode=body.mode,
             n=body.n,
             noise=body.noise,
+        )
+
+    @app.post("/api/contexts/{cid}/feedbacks", status_code=201, dependencies=[simulator])
+    def add_feedback(request: Request, cid: str, body: FeedbackChange) -> ContextSummary:
+        return service.add_feedback(sid(request), cid, body.source, body.target, body.mode)
+
+    @app.delete("/api/contexts/{cid}/feedbacks", dependencies=[simulator])
+    def remove_feedback(request: Request, cid: str, source: str, target: str) -> ContextSummary:
+        return service.remove_feedback(sid(request), cid, source, target)
+
+    @app.post("/api/contexts/{cid}/loops", status_code=202, dependencies=[simulator])
+    def loop(request: Request, cid: str, body: LoopRequest) -> JobInfo:
+        return service.run_loop(
+            sid(request), cid, steps=body.steps, period=body.period, outputs=body.outputs or None
         )
 
     @app.get("/api/jobs/{job}/study", dependencies=[viewer])

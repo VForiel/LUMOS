@@ -505,6 +505,39 @@ def create_server(
         return await follow(ctx, job, wait_seconds)
 
     @tool
+    def add_feedback(
+        source: str, target: str, mode: str = "set", context: str | None = None
+    ) -> ContextSummary:
+        """Close a loop: feed the output ``source`` (``"ctrl.commands"``) back to the field ``target``.
+
+        ``target`` is a field ``"element.field"`` (``"dm.commands"``); ``mode="add"`` adds the value at each
+        step (an integrator), ``"set"`` replaces it. The graph stays acyclic: run the loop with run_loop.
+        """
+        return service.add_feedback(session, state.context(context), source, target, mode)
+
+    @tool
+    def remove_feedback(source: str, target: str, context: str | None = None) -> ContextSummary:
+        """Remove the feedback from ``source`` to ``target``."""
+        return service.remove_feedback(session, state.context(context), source, target)
+
+    @tool
+    async def run_loop(
+        ctx: MCPContext,
+        steps: int,
+        period: str,
+        outputs: list[str] | None = None,
+        wait_seconds: float = 300.0,
+        context: str | None = None,
+    ) -> Annotated[CallToolResult, JobInfo]:
+        """Run the context as a closed loop: ``steps`` iterations of ``period`` (e.g. ``"2 ms"``).
+
+        Each step computes the outputs, applies the feedbacks and advances the clock; the fields driven by the
+        feedbacks keep their final values. Read the steps (against time) with get_study.
+        """
+        job = service.run_loop(session, state.context(context), steps=steps, period=period, outputs=outputs)
+        return await follow(ctx, job, wait_seconds)
+
+    @tool
     def get_study(job: str, max_rows: int = 50) -> Annotated[CallToolResult, StudyResult]:
         """Points of a sweep or Monte-Carlo run: a CSV table (parameters, then outputs) and their data."""
         return _study_result(service.get_study(session, job), max_rows)

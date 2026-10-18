@@ -65,8 +65,8 @@ __all__ = [
     "to_document",
 ]
 
-FORMAT_VERSION = "1.0"
-_SUPPORTED = (1, 0)
+FORMAT_VERSION = "1.1"
+_SUPPORTED = (1, 1)
 _VERSION_RE = re.compile(r"^(\d+)\.(\d+)$")
 _BODY_KEYS = ("name", "params", "settings", "state")
 
@@ -134,6 +134,7 @@ def _context_document(ctx: Context, reg: Registry) -> dict[str, Any]:
             {"id": identifier, **entry_of(element, reg)} for identifier, element in ctx.elements.items()
         ],
         "connections": _connections_of(ctx.graph),
+        "feedbacks": [{"from": f.source, "to": f.target, "mode": f.mode} for f in ctx.feedbacks],
         "ui": dict(ctx.ui),
     }
 
@@ -261,6 +262,8 @@ def _context_from_document(document: Mapping[str, Any], reg: Registry) -> Contex
             ctx.connect(ctx.port(connection["from"]), ctx.port(connection["to"]))
         for identifier in settings.get("simulate", []):
             ctx.simulate(ctx[identifier])
+        for feedback in document.get("feedbacks", []):
+            ctx.feedback(feedback["from"], feedback["to"], mode=feedback.get("mode", "set"))
     except LumosFormatError:
         raise
     except (KeyError, TypeError, ValueError) as error:
