@@ -193,6 +193,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Tests of the web interface: HTTP API, security (access refused without authentication, elevation of role,
   replay of SSH challenges), browser tests in English and French (Playwright, run in CI), parity of the Python
   API, the web interface and the MCP server.
+- Ergonomics of the web editor (P14.12): pointer mode (move the view or select a zone, keys H and V); badge
+  and confirmation for unsaved changes (new context, file, preset, tour, closing the page); removal of a link
+  alone; palette, inspector and bottom panel resized from their edge and hidden, sizes kept by the browser.
 
 ### Changed
 

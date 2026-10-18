@@ -17,8 +17,17 @@ category (sources, scenes, telescopes, optics, detectors, processing...).
 
 Drag from an output (right) to an input (left). The colour of a port tells the kind of signal it carries
 (wavefront, wavecube, incoherent bundle, scene, data product...). Ports that cannot be connected refuse the wire
-while you drag; the server checks again and explains a refusal. Select a wire and press **Delete** to remove
-it.
+while you drag; the server checks again and explains a refusal. To remove a wire alone, click it: the button
+at its middle removes it (or press **Delete**); its blocks stay.
+
+## Moving around
+
+- The **pointer mode** (top left of the canvas) chooses what a drag on the empty canvas does: the hand (**H**)
+  moves the view, the box (**V**) selects the blocks it touches. In both modes, **Space+drag** and the middle
+  or right button move the view, and the wheel zooms.
+- **F** fits the view to the blocks; the minimap (bottom right) moves and zooms too.
+- Drag the edge of the palette, of the inspector or of the bottom panel to resize it; the button at the top of
+  the palette and of the inspector hides it. The interface remembers these sizes in your browser.
 
 ## Editing values
 
@@ -37,7 +46,8 @@ With nothing selected, the inspector shows the context: its name, description an
 
 - **Ctrl+Z** undoes any edit (values, connections, moves, groups...); **Ctrl+Shift+Z** or **Ctrl+Y** redoes it.
 - **Ctrl+C** / **Ctrl+V** copy and paste the selected blocks with the wires between them; **Ctrl+D** duplicates.
-- **Shift+click** adds a block to the selection, **Shift+drag** selects a region, **Ctrl+A** selects everything.
+- **Shift+click** adds a block to the selection, **Shift+drag** (or a drag in the box mode) selects a region,
+  **Ctrl+A** selects everything.
 - **Ctrl+G** turns the selection into a **group**: one block whose ports are the free ports of its elements.
   Expand it to see and edit its elements, collapse it to keep the graph readable, or ungroup it.
 - **Save as block** keeps a group in *My blocks* (in your browser) to insert it in any context; *Download*
@@ -48,6 +58,10 @@ With nothing selected, the inspector shows the context: its name, description an
 - **Save** (Ctrl+S) downloads the context as a `.lumos` file, positions of the blocks included.
 - **Open** (Ctrl+O) loads a `.lumos` file, made in the interface, by the Python library or by an assistant.
 - **Python** shows the script that builds the same context with the library.
+
+A context with changes that are not saved shows **Not saved** next to its name (and a dot in the title of
+the tab). Opening another context, a file or a preset then asks first: save, discard the changes or cancel;
+closing or reloading the page asks too.
 
 If the server restarts, the interface restores the context you were editing.
 
