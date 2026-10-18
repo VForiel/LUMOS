@@ -376,6 +376,7 @@ class Crop(Element):
         cx, cy = _on_axis(values.x, product.axes[x_name]), _on_axis(values.y, product.axes[y_name])
         return {"out": crop(product, center=(cx, cy), size=(int(values.nx), int(values.ny)))}
 
+
 @registry.add_migration("lumos.processing.FlatField", from_version=1)
 def _rename_normalise(body: dict[str, Any]) -> dict[str, Any]:
     """Version 2 spells the setting ``normalize`` (ADR-0021, American spelling of the identifiers)."""

@@ -171,6 +171,7 @@ class KernelObservables(Element):
             )
         }
 
+
 @registry.add_migration("lumos.processing.KernelObservables", from_version=1)
 def _rename_normalise(body: dict[str, Any]) -> dict[str, Any]:
     """Version 2 spells the setting ``normalize`` (ADR-0021, American spelling of the identifiers)."""
