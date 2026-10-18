@@ -111,7 +111,7 @@ def test_kernels_are_robust_to_second_order():
     np.testing.assert_allclose(ratio, 8.0, rtol=0.02)  # third order
     dark_ratio = big.data.value[1:] / small.data.value[1:]
     np.testing.assert_allclose(dark_ratio, 4.0, rtol=0.02)  # second order
-    normalised = kernel_observables(big, normalise=True)
+    normalised = kernel_observables(big, normalize=True)
     np.testing.assert_allclose(normalised.data.value, k_big.data.value / big.data.value[0])
 
 

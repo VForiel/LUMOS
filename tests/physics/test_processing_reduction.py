@@ -73,7 +73,7 @@ def test_flat_field_propagates_uncertainties():
     result = reduction.flat_field(
         DataProduct(np.array([signal]) * E, uncertainty=np.array([sigma_s]) * E),
         DataProduct(np.array([flat]) * u.one, uncertainty=np.array([sigma_f]) * u.one),
-        normalise=False,
+        normalize=False,
     )
     expected = math.sqrt((sigma_s / flat) ** 2 + (signal * sigma_f / flat**2) ** 2)
     assert result.data[0].to_value(E) == pytest.approx(signal / flat)
