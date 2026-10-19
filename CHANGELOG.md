@@ -219,6 +219,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   context (`Service.focus`, `get_focus`, `/api/focus`), pushed on the WebSocket; the tools work by default on
   the context open in the interface and the interface opens the contexts the assistant creates; MCP tool
   `get_view_link` and route `/view/<secret>` opening a context of the session in another browser.
+- Storage of the sessions (P14.21): `session_storage`, `max_session_bytes`, `min_free_disk_bytes` and
+  `max_jobs_kept` in `ServiceConfig` (public profile: per-session archives deleted with the session, 1 GB per
+  session, 2 GB kept free, 20 runs in memory); `Service.storage` and `/api/storage`; job warnings; the
+  results panel shows the data of the session.
 
 ### Changed
 
@@ -237,6 +241,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Fixed
 
+- Security: the archives of a public instance were listed and downloadable by every visitor; they are now
+  those of the session only (`session_storage`).
 - Editor: adding or removing a block no longer moves the other blocks of a context laid out automatically
   (they piled up in one column); the handles of the ports no longer slide off the edge of the block when
   pointed at; the content of the result cards no longer spills out of them in a low bottom panel.

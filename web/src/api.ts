@@ -76,6 +76,9 @@ export type GroupInfo = { connections: Connection[]; exposed: Record<string, str
 /** The context in the foreground of the session, who focused it, and a count of the changes. */
 export type Focus = { context: string | null; origin: string | null; count: number };
 
+/** Disk used by the data of the session (archives, recordings), its limit and warnings (P14.21). */
+export type StorageInfo = { used_bytes: number; limit_bytes: number | null; disk_free_bytes: number; disk_total_bytes: number; warnings: string[] };
+
 export type ContextSummary = {
   id: string;
   name: string;
@@ -111,6 +114,7 @@ export type JobInfo = {
   hint: string | null;
   seconds: number | null;
   archive: string | null;
+  warnings?: string[];
 };
 
 export type PortSummary = {
@@ -199,6 +203,7 @@ export const api = {
   close: (id: string) => request<void>("DELETE", ctx(id)),
   /** Bring a context to the foreground of the session: the assistant works on it by default. */
   focus: (id: string | null) => request<Focus>("PUT", "/api/focus", { context: id }),
+  storage: () => request<StorageInfo>("GET", "/api/storage"),
   setContext: (id: string, change: { name?: string; description?: string; seed?: number }) =>
     request<ContextSummary>("PATCH", ctx(id), change),
   setFree: (id: string, path: string, free: boolean, prior?: Record<string, unknown> | null) =>

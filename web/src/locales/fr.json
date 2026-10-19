@@ -199,12 +199,14 @@
     "study": "Étude"
   },
   "results": {
+    "storage": "Données de la session : {{used}} sur {{limit}}",
+    "storageHint": "Données gardées pour cette session (archives, enregistrements). Elles sont supprimées à la fin de la session ; au-delà de la limite, les plus anciennes partent d'abord.",
     "inspected": "Port",
     "computing": "Calcul en cours…",
     "lastRun": "Dernier calcul",
     "archive": "Archive (fichier .zip)",
     "data": "Données",
-    "empty": "Lancez le calcul (Ctrl+Entrée), ou cliquez sur une sortie d'un bloc pour l'inspecter.",
+    "empty": "Lancez le calcul (Ctrl+Entrée), ou appuyez sur le bouton Inspecter d'un bloc pour voir sa sortie.",
     "min": "min",
     "max": "max",
     "mean": "moyenne",

@@ -48,6 +48,7 @@ from lumos.service.models import (
     PortFile,
     PortSummary,
     PresetInfo,
+    StorageInfo,
 )
 from lumos.web.assistant import PATH, McpGateway
 from lumos.web.auth import (
@@ -1035,16 +1036,22 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         return service.resolve_object(name)
 
     @app.get("/api/archives", dependencies=[viewer])
-    def archives(limit: int = Query(50, ge=1, le=1000)) -> list[ArchiveInfo]:
-        return service.list_archives(limit=limit)
+    def archives(request: Request, limit: int = Query(50, ge=1, le=1000)) -> list[ArchiveInfo]:
+        return service.list_archives(limit=limit, session=sid(request))
 
     @app.get("/api/archives/download", dependencies=[viewer])
-    def archive_download(path: str) -> Response:
-        return _attachment(service.archive_zip(path), f"{Path(path).name}.zip", "application/zip")
+    def archive_download(request: Request, path: str) -> Response:
+        data = service.archive_zip(path, session=sid(request))
+        return _attachment(data, f"{Path(path).name}.zip", "application/zip")
 
     @app.get("/api/archives/metadata", dependencies=[viewer])
-    def archive_metadata(path: str) -> dict[str, Any]:
-        return service.read_archive_metadata(path)
+    def archive_metadata(request: Request, path: str) -> dict[str, Any]:
+        return service.read_archive_metadata(path, session=sid(request))
+
+    @app.get("/api/storage", dependencies=[viewer])
+    def storage(request: Request) -> StorageInfo:
+        """Return the disk used by the data of the session, its limit and the warnings (P14.21)."""
+        return service.storage(sid(request))
 
     # --- Operation -------------------------------------------------------------------------------------
 

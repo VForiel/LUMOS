@@ -307,7 +307,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P14.18 Connecteur MCP** — la page suit ce que fait l'assistant (révision de chaque contexte et contexte au premier plan partagés par la session, poussés par WebSocket) ; outil `get_view_link` donnant à l'utilisateur le lien qui ouvre ce contexte dans son navigateur.
 - [ ] **P14.19 Composant à matrice de transfert** — MMI simplifié décrit par sa matrice complexe (amplitude et phase) à une longueur d'onde donnée ; éditeur de matrice dans l'inspecteur.
 - [ ] **P14.20 Navigateur de résultats** — fenêtre parcourant les exécutions et les études de la session ; curseur sur les pas d'une boucle ou les points d'une étude, pour les sorties enregistrées (bloc *Recorder* ou mode archive).
-- [ ] **P14.21 Stockage des sessions publiques** — archives et enregistrements propres à chaque session, effacés à sa fin ; 1 Go au plus par session (les plus anciens supprimés au-delà) ; avertissement quand la session approche de cette limite ou que le disque est presque plein.
+- [x] **P14.21 Stockage des sessions publiques** — archives et enregistrements propres à chaque session, effacés à sa fin ; 1 Go au plus par session (les plus anciens supprimés au-delà) ; avertissement quand la session approche de cette limite ou que le disque est presque plein.
 
 **Critères d'acceptation (v0.7) :** UC5 réalisé sur l'instance publique ; opération impossible sur l'instance publique sans configuration et authentification ; parité web, Python et MCP vérifiée.
 

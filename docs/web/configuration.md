@@ -80,6 +80,10 @@ Quotas of the computations (`[service]`), shared with the MCP server:
 | `max_workers` | 4 | threads computing the runs |
 | `operation_enabled` | `false` | allow actions on real equipment |
 | `archive_root`, `presets_dir` | — | directories of the archives and of the presets |
+| `session_storage` | `false` / `true` | archives of each visitor in a directory of their own, listed to them only and deleted when their session ends |
+| `max_session_bytes` | none / 10⁹ (1 GB) | data kept per session; beyond, its oldest archives and recordings are deleted |
+| `min_free_disk_bytes` | none / 2 × 10⁹ | free disk below which archiving is refused; visitors are warned below twice this value |
+| `max_jobs_kept` | 50 / 20 | finished runs and studies of a session whose results stay in memory |
 
 A refused computation answers with the code `quota` and says which limit applies, so that the user can
 reduce the number of pixels or of wavelengths.

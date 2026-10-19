@@ -60,6 +60,17 @@ The quotas bound what one visitor and all visitors together may compute ([Config
 
 The compose file also limits the CPU and memory of the container, so that the proxy stays responsive.
 
+### Disk
+
+Results do not pile up on a public instance: the archives of a visitor are kept in a directory of their
+session (`session-<id>` under `archive_root`), which only they can list and download, and which is deleted
+when the session ends (logout, idle time). A session keeps at most `max_session_bytes` (1 GB): beyond, its
+oldest data are deleted and the visitor is told so. Visitors see the data of their session in the results
+panel and are warned when they reach 80 % of it, or when less than twice `min_free_disk_bytes` stays free
+on the disk; below `min_free_disk_bytes` (2 GB), archiving is refused while runs go on. Only the 20 latest
+finished runs of a session keep their results in memory (`max_jobs_kept`). Size the volume for
+`max_sessions` × `max_session_bytes` in the worst case, or lower these values.
+
 ### Accounts
 
 Anonymous visitors need no account. To give some users more rights (or to require a login with

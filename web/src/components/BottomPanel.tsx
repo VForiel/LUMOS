@@ -95,6 +95,30 @@ function Figure({ src, alt }: { src: string | null; alt: string }) {
   );
 }
 
+/** Bytes in decimal units: 12.3 MB. */
+export function bytes(count: number): string {
+  const units = ["B", "kB", "MB", "GB", "TB"];
+  let k = 0;
+  while (count >= 1000 && k < units.length - 1) {
+    count /= 1000;
+    k += 1;
+  }
+  return `${Number(count.toPrecision(3))} ${units[k]}`;
+}
+
+/** The disk used by the data of the session (public instances: limited, deleted with the session). */
+function StorageLine() {
+  const { t } = useTranslation();
+  const storage = useStore((s) => s.storage);
+  if (!storage || storage.limit_bytes === null) return null;
+  const warn = storage.warnings.length > 0;
+  return (
+    <span data-testid="storage" title={[t("results.storageHint"), ...storage.warnings].join("\n")} className={`mt-1 ${warn ? "text-amber-600 dark:text-amber-400" : "text-slate-400"}`}>
+      {t("results.storage", { used: bytes(storage.used_bytes), limit: bytes(storage.limit_bytes) })}
+    </span>
+  );
+}
+
 function Results() {
   const { t } = useTranslation();
   const context = useStore((s) => s.context);
@@ -152,6 +176,7 @@ function Results() {
             {job.error && <span className="text-red-600 dark:text-red-400">{job.error}</span>}
             {job.hint && job.status === "failed" && <span className="text-slate-500">{job.hint}</span>}
             {job.archive && <DownloadLink href={api.archiveUrl(job.archive)} label={t("results.archive")} icon={<Archive className="size-3" />} testId="download-archive" />}
+            <StorageLine />
           </div>
           {job.status === "done" &&
             job.outputs.map((port) => {

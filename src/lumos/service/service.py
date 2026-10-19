@@ -17,6 +17,7 @@ import contextvars
 import difflib
 import json
 import logging
+import shutil
 import threading
 import time
 import uuid
@@ -62,6 +63,7 @@ from lumos.service.models import (
     PresetInfo,
     ServiceConfig,
     SessionInfo,
+    StorageInfo,
     StudyPoint,
     StudyResult,
 )
@@ -207,6 +209,8 @@ class Service:
                 except DriverError:
                     logger.exception("closing a driver failed")
         del self._sessions[session]
+        if self.config.session_storage:  # the data of a session go with it (P14.21)
+            shutil.rmtree(self._storage_dir(session), ignore_errors=True)
 
     def _session(self, session: str) -> _Session:
         try:
@@ -1004,10 +1008,12 @@ class Service:
         """Start a run of ``outputs`` in the background; follow it with :meth:`get_job`."""
         names = list(outputs)
 
+        if archive:
+            self._check_disk()
+        root = self._archive_root_of(session)
+
         def compute(ctx: Context, job: _Job, progress: Callable[[int, int, str], None]) -> None:
-            job.result = ctx.run(
-                names, archive=archive, archive_root=self.config.archive_root, progress=progress
-            )
+            job.result = ctx.run(names, archive=archive, archive_root=root, progress=progress)
             if job.result.archive is not None:
                 job.info.archive = str(job.result.archive.path)
 
@@ -1068,6 +1074,7 @@ class Service:
                 with state.lock, ctx.as_origin(origin):
                     compute(ctx, job, progress)
                 job.info.progress = 1.0
+                job.info.warnings = self._enforce_storage(session)
                 job.info.status = "done"
             except _Cancelled:
                 job.info.status = "cancelled"
@@ -1079,6 +1086,7 @@ class Service:
                 logger.info("run %s failed: %s", job.info.id, error)
             finally:
                 job.info.seconds = time.perf_counter() - job.started
+                self._prune_jobs(state)
 
         job.future = self._executor.submit(work)
         return job.info.model_copy()
@@ -1624,11 +1632,11 @@ class Service:
 
         return Path(self.config.archive_root) if self.config.archive_root else default_archive_root()
 
-    def list_archives(self, *, limit: int = 50) -> list[ArchiveInfo]:
-        """Return the archives of the runs, most recent first."""
+    def list_archives(self, *, limit: int = 50, session: str | None = None) -> list[ArchiveInfo]:
+        """Return the archives of the runs, most recent first (those of ``session`` with session storage)."""
         import yaml
 
-        root = self.archive_root()
+        root = self._archives_of(session)
         found = []
         for metadata in sorted(root.glob("*/*/metadata.yml"), reverse=True)[:limit]:
             data = yaml.safe_load(metadata.read_text(encoding="utf-8")) or {}
@@ -1638,12 +1646,113 @@ class Service:
                     name=metadata.parent.name,
                     created_at=str(data.get("created_at", "")),
                     outputs=list(data.get("outputs", [])),
+                    size_bytes=_size(metadata.parent),
                 )
             )
         return found
 
-    def _archive_path(self, path: str) -> Path:
-        root = self.archive_root().resolve()
+    # --- Storage of the sessions (P14.21) ------------------------------------------------------------------
+
+    def _storage_dir(self, session: str) -> Path:
+        """Directory of the data of ``session`` (with session storage)."""
+        return self.archive_root() / f"session-{session}"
+
+    def _archive_root_of(self, session: str) -> str | None:
+        """Directory given to the archives of the runs of ``session`` (``None``: the default directory)."""
+        if self.config.session_storage:
+            return str(self._storage_dir(session))
+        return self.config.archive_root
+
+    def _archives_of(self, session: str | None) -> Path:
+        if self.config.session_storage and session is not None:
+            self._session(session)  # it exists
+            return self._storage_dir(session)
+        return self.archive_root()
+
+    def _disk(self) -> tuple[int, int]:
+        """Free and total bytes of the disk of the archives."""
+        place = self.archive_root()
+        while not place.exists() and place.parent != place:
+            place = place.parent
+        usage = shutil.disk_usage(place)
+        return int(usage.free), int(usage.total)
+
+    def _check_disk(self) -> None:
+        minimum = self.config.min_free_disk_bytes
+        if minimum is None:
+            return
+        free, _ = self._disk()
+        if free < minimum:
+            raise ServiceError(
+                f"the disk of the instance is nearly full ({_bytes(free)} free): no more archives",
+                hint="run without archive, or delete old archives (on a public instance, wait for room)",
+                code="quota",
+            )
+
+    def _units(self, session: str) -> list[Path]:
+        """Return the pieces of data of a session deleted whole (archives, recordings), oldest first."""
+        root = self._storage_dir(session)
+        if not root.is_dir():
+            return []
+        units = {metadata.parent for metadata in root.rglob("metadata.yml")}
+        recordings = root / "recordings"
+        if recordings.is_dir():
+            units.update(path for path in recordings.iterdir() if path.is_dir())
+        return sorted(units, key=lambda path: path.stat().st_mtime)
+
+    def _enforce_storage(self, session: str) -> list[str]:
+        """Delete the oldest data of ``session`` beyond its limit; return what to tell the user."""
+        limit = self.config.max_session_bytes
+        if not self.config.session_storage or limit is None:
+            return []
+        units = self._units(session)
+        sizes = {unit: _size(unit) for unit in units}
+        total = sum(sizes.values())
+        deleted = []
+        for unit in units[:-1]:  # the newest stays, even alone above the limit
+            if total <= limit:
+                break
+            shutil.rmtree(unit, ignore_errors=True)
+            with contextlib.suppress(OSError):
+                unit.parent.rmdir()  # the dated directory of the archives, once empty
+            total -= sizes[unit]
+            deleted.append(unit.name)
+        if not deleted:
+            return []
+        names = ", ".join(deleted)
+        return [f"the oldest data of the session were deleted to stay within {_bytes(limit)}: {names}"]
+
+    def _prune_jobs(self, state: _Session) -> None:
+        """Forget the results of the oldest finished jobs beyond ``max_jobs_kept``."""
+        finished = [job for job in list(state.jobs.values()) if job.info.status not in ("queued", "running")]
+        for job in finished[: max(len(finished) - self.config.max_jobs_kept, 0)]:
+            state.jobs.pop(job.info.id, None)
+
+    def storage(self, session: str) -> StorageInfo:
+        """Return the disk used by the data of ``session``, its limit, the free disk and the warnings."""
+        self._session(session)
+        limit = self.config.max_session_bytes if self.config.session_storage else None
+        used = _size(self._storage_dir(session)) if self.config.session_storage else 0
+        free, total = self._disk()
+        warnings = []
+        if limit is not None and used >= 0.8 * limit:
+            warnings.append(
+                f"the session uses {100 * used / limit:.0f} % of its {_bytes(limit)}: "
+                "beyond, its oldest data are deleted"
+            )
+        minimum = self.config.min_free_disk_bytes
+        if minimum is not None and free < 2 * minimum:
+            warnings.append(f"the disk of the instance is nearly full: {_bytes(free)} free")
+        return StorageInfo(
+            used_bytes=used,
+            limit_bytes=limit,
+            disk_free_bytes=free,
+            disk_total_bytes=total,
+            warnings=warnings,
+        )
+
+    def _archive_path(self, path: str, session: str | None = None) -> Path:
+        root = self._archives_of(session).resolve()
         target = Path(path).resolve()
         if root not in target.parents:
             raise ServiceError(
@@ -1657,12 +1766,12 @@ class Service:
             )
         return target
 
-    def archive_zip(self, path: str) -> bytes:
+    def archive_zip(self, path: str, *, session: str | None = None) -> bytes:
         """Return an archive of the archive directory as the bytes of a ``.zip`` file."""
         import io
         import zipfile
 
-        target = self._archive_path(path)
+        target = self._archive_path(path, session)
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
             for file in sorted(target.rglob("*")):
@@ -1670,11 +1779,11 @@ class Service:
                     archive.write(file, Path(target.name) / file.relative_to(target))
         return buffer.getvalue()
 
-    def read_archive_metadata(self, path: str) -> dict[str, Any]:
-        """``metadata.yml`` of an archive (only inside the archive directory of the service)."""
+    def read_archive_metadata(self, path: str, *, session: str | None = None) -> dict[str, Any]:
+        """``metadata.yml`` of an archive (only inside the archive directory of the service or session)."""
         import yaml
 
-        root = self.archive_root().resolve()
+        root = self._archives_of(session).resolve()
         target = Path(path).resolve()
         if root not in target.parents and target != root:
             raise ServiceError(
@@ -1817,6 +1926,27 @@ class Service:
         for session in list(self._sessions):
             self.close_session(session)
         self._executor.shutdown(wait=False, cancel_futures=True)
+
+
+def _size(path: Path) -> int:
+    """Bytes of the files under ``path``."""
+    if not path.exists():
+        return 0
+    total = 0
+    for file in path.rglob("*"):
+        with contextlib.suppress(OSError):
+            if file.is_file():
+                total += file.stat().st_size
+    return total
+
+
+def _bytes(count: float) -> str:
+    """``1.5 GB``, ``87 MB``: a size in decimal units."""
+    for unit in ("B", "kB", "MB", "GB", "TB"):
+        if count < 1000 or unit == "TB":
+            return f"{count:.3g} {unit}"
+        count /= 1000
+    return f"{count:.3g} TB"
 
 
 def _has_unit(value: Any) -> bool:

@@ -30,6 +30,7 @@ __all__ = [
     "PresetInfo",
     "ServiceConfig",
     "SessionInfo",
+    "StorageInfo",
     "StudyPoint",
     "StudyResult",
 ]
@@ -56,6 +57,20 @@ class ServiceConfig(BaseModel):
         default=1000, ge=1, description="points of a sweep or draws of a Monte-Carlo run"
     )
     archive_root: str | None = Field(default=None, description="directory of the archives of the runs")
+    session_storage: bool = Field(
+        default=False,
+        description="keep the archives of each session in a directory of its own, listed to it only and "
+        "deleted with it (public instances)",
+    )
+    max_session_bytes: int | None = Field(
+        default=None, ge=1, description="bytes kept per session (session_storage): the oldest data go beyond"
+    )
+    min_free_disk_bytes: int | None = Field(
+        default=None, ge=0, description="free disk below which archiving is refused (warning below twice)"
+    )
+    max_jobs_kept: int = Field(
+        default=50, ge=1, description="finished runs and studies of a session whose results stay in memory"
+    )
     presets_dir: str | None = Field(default=None, description="directory of the preset .lumos files")
 
 
@@ -203,6 +218,7 @@ class JobInfo(BaseModel):
     hint: str | None = None
     seconds: float | None = None
     archive: str | None = None
+    warnings: list[str] = Field(default=[], description="e.g. old data deleted to stay within the storage")
 
 
 class PortSummary(BaseModel):
@@ -255,6 +271,17 @@ class ArchiveInfo(BaseModel):
     name: str
     created_at: str | None = None
     outputs: list[str] = []
+    size_bytes: int = 0
+
+
+class StorageInfo(BaseModel):
+    """Disk used by the data of a session (archives, recordings), its limit and the free disk (P14.21)."""
+
+    used_bytes: int = 0
+    limit_bytes: int | None = None
+    disk_free_bytes: int = 0
+    disk_total_bytes: int = 0
+    warnings: list[str] = []
 
 
 class DeviceModel(BaseModel):

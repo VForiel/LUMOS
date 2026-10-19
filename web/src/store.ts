@@ -9,6 +9,7 @@ import {
   fileName,
   type ContextSummary,
   type Focus,
+  type StorageInfo,
   type Fragment,
   type Info,
   type Issue,
@@ -96,6 +97,8 @@ type State = {
   studyJob: string | null;
   study: StudyResult | null;
   studyRequest: StudyRequest | LoopRequest | null;
+  /** Disk used by the data of the session, read again after each job (P14.21). */
+  storage: StorageInfo | null;
 };
 
 type Actions = {
@@ -307,6 +310,7 @@ export const useStore = create<State & Actions>((set, get) => {
     studyJob: null,
     study: null,
     studyRequest: null,
+    storage: null,
     pointer: storage()?.getItem(POINTER_KEY) === "select" ? "select" : "pan",
     layout: readLayout(),
 
@@ -751,6 +755,18 @@ export const useStore = create<State & Actions>((set, get) => {
 
     onJob(job) {
       set({ jobs: { ...get().jobs, [job.id]: job } });
+      if (job.status === "done" && !announced.has(`${job.id}:storage`)) {
+        announced.add(`${job.id}:storage`);
+        for (const warning of job.warnings ?? []) get().toast({ kind: "info", title: warning });
+        void api
+          .storage()
+          .then((storage) => {
+            const known = new Set(get().storage?.warnings ?? []);
+            for (const warning of storage.warnings) if (!known.has(warning)) get().toast({ kind: "error", title: warning });
+            set({ storage });
+          })
+          .catch(() => undefined);
+      }
       if (job.id === get().studyJob) {
         if (announced.has(`${job.id}:${job.status}`)) return;
         if (job.status === "done") {

@@ -665,12 +665,12 @@ def create_server(
     @tool
     def list_archives(limit: int = 50) -> list[ArchiveInfo]:
         """List the archives of runs, most recent first."""
-        return service.list_archives(limit=limit)
+        return service.list_archives(limit=limit, session=session)
 
     @tool
     def read_archive_metadata(path: str) -> dict[str, Any]:
         """Metadata of an archived run (parameters, versions, origin, outputs); path from list_archives."""
-        return service.read_archive_metadata(path)
+        return service.read_archive_metadata(path, session=session)
 
     register_operation_tools(server, state, tool, can_operate=can_operate)
     register_resources(server, state)

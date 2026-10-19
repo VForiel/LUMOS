@@ -199,12 +199,14 @@
     "study": "Study"
   },
   "results": {
+    "storage": "Session data: {{used}} of {{limit}}",
+    "storageHint": "Data kept for this session (archives, recordings). They are deleted when the session ends; beyond the limit, the oldest go first.",
     "inspected": "Port",
     "computing": "Computing…",
     "lastRun": "Last run",
     "archive": "Archive (.zip)",
     "data": "Data",
-    "empty": "Run the context (Ctrl+Enter), or click an output of a block to inspect it.",
+    "empty": "Run the context (Ctrl+Enter), or press the Inspect button of a block to see its output.",
     "min": "min",
     "max": "max",
     "mean": "mean",

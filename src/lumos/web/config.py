@@ -49,6 +49,11 @@ PUBLIC_SERVICE_DEFAULTS: dict[str, Any] = {
     "max_grid_pixels": 1024,
     "max_memory_mb": 2048.0,
     "max_concurrent_runs": 4,
+    # data of the visitors (P14.21): apart, deleted with their session, 1 GB each, 2 GB kept free on the disk
+    "session_storage": True,
+    "max_session_bytes": 10**9,
+    "min_free_disk_bytes": 2 * 10**9,
+    "max_jobs_kept": 20,
 }
 
 

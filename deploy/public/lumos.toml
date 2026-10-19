@@ -24,3 +24,7 @@ max_contexts_per_session = 5
 max_run_seconds = 60
 max_grid_pixels = 1024
 max_memory_mb = 1500
+# data of the visitors (defaults of the public profile): apart, deleted with their session
+# session_storage = true
+# max_session_bytes = 1_000_000_000   # 1 GB per session, the oldest data go beyond
+# min_free_disk_bytes = 2_000_000_000 # archiving refused below, visitors warned below twice
