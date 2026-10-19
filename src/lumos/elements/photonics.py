@@ -20,6 +20,10 @@ Components
 - :class:`MMI`: :math:`N \times N` multimode interference coupler computed with the slab mode solver of
   :mod:`lumos.physics.photonics`; with ``length = 0`` it is the general-interference coupler of length
   :math:`3 L_\pi / N` at the reference wavelength (Soldano & Pennings 1995).
+- :class:`TransferMatrix`: a simplified MMI given by its matrix :math:`S_{ij} = A_{ij} e^{i\phi_{ij}}` (output
+  :math:`i`, input :math:`j`) at a wavelength :math:`\lambda_0`; the same at every wavelength, or with phases
+  that are optical paths (:math:`\phi\lambda_0/\lambda`). It may have more or fewer outputs than inputs; a
+  passive component has a largest singular value at most 1 (a matrix that amplifies is refused).
 """
 
 from __future__ import annotations
@@ -49,6 +53,7 @@ __all__ = [
     "DirectionalCoupler",
     "PhaseShifter",
     "PhotonicComponent",
+    "TransferMatrix",
     "Waveguide",
     "YJunction",
     "bracewell",
@@ -323,6 +328,101 @@ class MMI(PhotonicComponent):
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
         """Mix the selected channels."""
         return MMI._transfer(values, inputs)
+
+
+_HALF = 1 / math.sqrt(2)
+
+#: Gain tolerated by the check of passivity: the rounding of values typed with 5 or 6 significant digits
+#: (0.707107 √2 = 1.0000004).
+PASSIVITY_TOLERANCE = 1e-4
+
+
+@register("lumos.photonics.TransferMatrix")
+class TransferMatrix(PhotonicComponent):
+    """Simplified MMI: a component given by its complex transfer matrix (amplitude and phase) at a wavelength.
+
+    Row ``i`` of the matrix is the output ``i``, column ``j`` the input ``j``: the output amplitudes are
+    ``a_out = S a_in`` with ``S_ij = amplitudes[i][j] exp(i phases[i][j])``. The default is the ideal 3-dB
+    coupler ``(1/√2) [[1, i], [i, 1]]``.
+    """
+
+    amplitudes = Param(
+        shape=None,
+        default=[[_HALF, _HALF], [_HALF, _HALF]],
+        bounds=(0, None),
+        doc="moduli |S_ij| (rows: outputs, columns: inputs)",
+    )
+    phases = Param(
+        unit=u.rad,
+        shape=None,
+        default=[[0.0, math.pi / 2], [math.pi / 2, 0.0]] * u.rad,
+        doc="phases arg S_ij at the wavelength of the matrix (rows: outputs, columns: inputs)",
+    )
+    wavelength = Param(
+        unit=u.nm,
+        default=1550 * u.nm,
+        bounds=(0 * u.m, None),
+        inclusive=(False, True),
+        doc="wavelength at which the matrix is given",
+    )
+    dispersion = Setting(
+        str,
+        default="achromatic",
+        choices=("achromatic", "optical_path"),
+        doc="achromatic: the same matrix at every wavelength; optical_path: phases scaled as λ0/λ",
+    )
+
+    @staticmethod
+    def _problems(amplitudes: np.ndarray, phases: np.ndarray) -> list[str]:
+        if amplitudes.ndim != 2 or amplitudes.size == 0:
+            return [
+                f"the amplitudes must be a matrix (outputs × inputs), got the shape {list(amplitudes.shape)}"
+            ]
+        if phases.shape != amplitudes.shape:
+            return [
+                f"the phases have the shape {list(phases.shape)}, the amplitudes {list(amplitudes.shape)}: "
+                "give a phase per amplitude"
+            ]
+        largest = float(np.linalg.norm(amplitudes * np.exp(1j * phases), 2))
+        if largest > 1 + PASSIVITY_TOLERANCE:
+            return [
+                f"the matrix amplifies light (largest singular value {largest:.4g} > 1): a passive component "
+                "has a largest singular value at most 1"
+            ]
+        return []
+
+    def problems(self) -> list[str]:
+        """Return why the matrix cannot be used: not a matrix, phases of another shape, or amplification."""
+        return self._problems(np.asarray(self.si("amplitudes"), float), np.asarray(self.si("phases"), float))
+
+    @classmethod
+    def _transfer(cls, values: Values, inputs: Any) -> dict[str, Any]:
+        field: ModalField = inputs["in"]
+        amplitudes = np.asarray(values.amplitudes, dtype=float)
+        phases = np.asarray(values.phases, dtype=float)
+        problems = cls._problems(amplitudes, phases)
+        if problems:
+            raise ValueError(problems[0])
+        n_in = amplitudes.shape[1]
+        if not values.channels and field.n_channels != n_in:
+            raise ValueError(
+                f"the matrix has {n_in} input(s) but the field has {field.n_channels} channels: "
+                "list the channels it acts on in the setting channels"
+            )
+        selected = _selected(values, field.n_channels, n_in)
+        wavelengths = np.asarray(field.wavelengths_si, dtype=float)
+        scale = (
+            np.ones_like(wavelengths)
+            if values.dispersion == "achromatic"
+            else float(values.wavelength) / wavelengths
+        )
+        block = amplitudes[None] * np.exp(1j * phases[None] * scale[:, None, None])
+        return {"out": _embed(field, selected, block)}
+
+    @staticmethod
+    def transfer(values: Values, inputs: Any) -> dict[str, Any]:
+        """Apply the matrix to the selected channels."""
+        return TransferMatrix._transfer(values, inputs)
 
 
 # --- Chips ---------------------------------------------------------------------------------------------

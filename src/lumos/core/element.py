@@ -439,6 +439,14 @@ class Element(ParamHost):
             text += "  [free]"
         return text
 
+    def problems(self) -> list[str]:
+        """Return what in the values of this element would make a run fail (none by default).
+
+        Elements whose fields must agree with each other (shapes, a passive matrix...) override it; the
+        validation of a context reports these problems before any run.
+        """
+        return []
+
     def describe(self) -> str:
         """Return a readable description of the element: fields, values and ports."""
         lines = [f"{type(self).__name__}" + (f" {self.name!r}" if self.name else "")]

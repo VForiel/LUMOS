@@ -464,5 +464,21 @@
     "claude": "Claude: Settings › Connectors › Add custom connector, paste the link, then enable LUMOS in the conversation.",
     "chatgpt": "ChatGPT: Settings › Apps & Connectors › Advanced settings › Developer mode, then Create, paste the link, no authentication.",
     "code": "Claude Code:"
+  },
+  "matrix": {
+    "title": "Transfer matrix",
+    "shape": "{{rows}} × {{columns}} (outputs × inputs)",
+    "hint": "Each cell gives the modulus and the phase of S_ij, from the input j (column) to the output i (row), at the wavelength of the block.",
+    "units": "Moduli without unit; phases in rad.",
+    "amplitude": "modulus of S {{i}},{{j}}",
+    "phase": "phase of S {{i}},{{j}}",
+    "addInput": "input",
+    "removeInput": "input",
+    "addOutput": "output",
+    "removeOutput": "output",
+    "lossless": "The matrix is lossless (unitary): the power is conserved.",
+    "lossy": "The matrix is lossy (passive): largest singular value {{value}}.",
+    "amplifies": "The matrix amplifies light (largest singular value {{value}} > 1): a passive component cannot, it is refused.",
+    "shapeMismatch": "Amplitudes and phases differ in shape."
   }
 }

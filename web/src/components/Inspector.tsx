@@ -31,6 +31,7 @@ import { formatNumber, parseQuantity } from "../lib/units";
 import { useStore } from "../store";
 import { Resizer } from "./Resizer";
 import { FieldInput, FieldRow, inputClass, QuantityInput } from "./Fields";
+import { MatrixEditor } from "./MatrixEditor";
 import { plain } from "./Palette";
 import { priorText } from "./Study";
 
@@ -431,6 +432,7 @@ function ElementPanel({ element, type, onInspect }: { element: ElementSummary; t
           )}
         </div>
       )}
+      {element.type_id === "lumos.photonics.TransferMatrix" && <MatrixEditor element={element} editable={editable} />}
       {groups.map(([title, list]) =>
         list.length ? (
           <Section key={title} title={title} defaultOpen={title !== t("inspector.state")}>

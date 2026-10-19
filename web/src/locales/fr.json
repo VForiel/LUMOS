@@ -464,5 +464,21 @@
     "claude": "Claude : Paramètres › Connecteurs › Ajouter un connecteur personnalisé, collez le lien, puis activez LUMOS dans la conversation.",
     "chatgpt": "ChatGPT : Paramètres › Applications et connecteurs › Paramètres avancés › Mode développeur, puis Créer, collez le lien, sans authentification.",
     "code": "Claude Code :"
+  },
+  "matrix": {
+    "title": "Matrice de transfert",
+    "shape": "{{rows}} × {{columns}} (sorties × entrées)",
+    "hint": "Chaque case donne le module et la phase de S_ij, de l'entrée j (colonne) vers la sortie i (ligne), à la longueur d'onde du bloc.",
+    "units": "Modules sans unité ; phases en rad.",
+    "amplitude": "module de S {{i}},{{j}}",
+    "phase": "phase de S {{i}},{{j}}",
+    "addInput": "entrée",
+    "removeInput": "entrée",
+    "addOutput": "sortie",
+    "removeOutput": "sortie",
+    "lossless": "La matrice est sans pertes (unitaire) : la puissance est conservée.",
+    "lossy": "La matrice a des pertes (passive) : plus grande valeur singulière {{value}}.",
+    "amplifies": "La matrice amplifie la lumière (plus grande valeur singulière {{value}} > 1) : un composant passif ne le peut pas, elle est refusée.",
+    "shapeMismatch": "Les amplitudes et les phases n'ont pas la même forme."
   }
 }

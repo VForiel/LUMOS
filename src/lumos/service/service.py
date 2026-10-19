@@ -952,6 +952,16 @@ class Service:
                             hint=_hint_for(GraphError("not connected")),
                         )
                     )
+            problems = getattr(element, "problems", None)
+            for problem in problems() if problems is not None else []:
+                issues.append(
+                    Issue(
+                        severity="error",
+                        element=path,
+                        message=f"{path}: {problem}",
+                        hint="change the values of this element (inspector)",
+                    )
+                )
             if getattr(type(element), "observation_dependent", False) and ctx.observation.band is None:
                 issues.append(
                     Issue(

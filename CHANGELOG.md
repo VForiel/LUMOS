@@ -224,6 +224,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `set_target`, `lumos.core.param.parse_target`); `.lumos` format 1.2; in the editor, dice on numeric settings
   and on arrays (component chosen in the editor of the prior), intermediate outputs in the study dialog, and
   an explanation of the feedback loops in the inspector.
+- `TransferMatrix` (P14.19): a simplified MMI given by the moduli and phases of its transfer matrix at a
+  wavelength, achromatic or with phases that are optical paths, square or not, refused when it amplifies;
+  `Element.problems()`, reported by the validation of the contexts; matrix editor in the inspector (cells,
+  inputs and outputs added or removed, lossless, lossy or amplifying).
 - Storage of the sessions (P14.21): `session_storage`, `max_session_bytes`, `min_free_disk_bytes` and
   `max_jobs_kept` in `ServiceConfig` (public profile: per-session archives deleted with the session, 1 GB per
   session, 2 GB kept free, 20 runs in memory); `Service.storage` and `/api/storage`; job warnings; the

@@ -13,7 +13,7 @@ context, connected with `>>`, saved in a `.lumos` file and rebuilt by the genera
 | Atmosphere and AO | `lumos.elements.atmosphere` | `Atmosphere`, `DeformableMirror`, `WavefrontSensor`, `AOController` |
 | Coronagraphs | `lumos.elements.coronagraphs` | `VortexCoronagraph`, `FourQuadrantPhaseMask`, `LyotCoronagraph` |
 | Guided optics | `lumos.elements.fibers` | `Fiber` |
-| Integrated photonics | `lumos.elements.photonics` | `Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`; chips `bracewell()`, `kernel_nuller()` |
+| Integrated photonics | `lumos.elements.photonics` | `Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`, `TransferMatrix` (a simplified MMI given by its matrix); chips `bracewell()`, `kernel_nuller()` |
 | Detectors | `lumos.elements.detectors` | `Camera`, `Photodiode`, `PowerMeter` |
 
 The physics of each element, with its references, is given in the docstring of its module (see the
