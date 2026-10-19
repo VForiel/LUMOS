@@ -22,14 +22,86 @@ Pour répondre : un commit distant modifiant ce fichier, dont le message commenc
 -> C'est fait
 - [ ] **WSL n'est pas installé** sur ta machine (`wsl -l` : « Le sous-système Windows pour Linux n'est pas
   installé »). Après `wsl --install`, dans WSL : `mkdir -p ~/.ssh && cp /mnt/c/Users/vince/.ssh/{config,id_ed25519_vps1*} ~/.ssh/ && chmod 600 ~/.ssh/id_ed25519_vps1 ~/.ssh/config`.
--> j'ai installé le WSL via wsl --install et j'ai essayé d'installer une distribution ubuntu depuis le MS store mais quand je le lance il me fait une erreur indiquant une fonctionnalité manquante
+-> J'ai installé le WSL via wsl --install et j'ai essayé d'installer une distribution ubuntu depuis le MS store mais quand je le lance il me fait une erreur indiquant une fonctionnalité manquante, aide moi à comprendre pourquoi et voit si tu peux résoudre toi même ce soucis.
+  **Diagnostic (19/10)** : `wsl --status` dit « WSL2 ne peut pas démarrer, car la virtualisation n'est pas
+  activée ». La virtualisation du processeur est pourtant active (la sécurité basée sur la virtualisation de
+  Windows tourne, un hyperviseur est présent) : il manque le **composant Windows « Plateforme d'ordinateur
+  virtuel »** que `wsl --install` n'a pas activé. Je ne peux pas le faire : il faut une élévation
+  (administrateur) que je n'ai pas. À faire dans un **PowerShell lancé en administrateur** :
 
-## Où j'en suis (18/10, arrêt pour quota)
+  ```
+  dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+  dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+  ```
 
-- Phase 15 : **P15.1 fait** (revue d'API, ADR-0021, gel 1.x). **P15.2 en cours** : traductions FR faites pour le
-  guide utilisateur, l'interface web, l'assistant et le matériel ; restent les notebooks (`examples/`) puis la
-  resynchronisation EN (deux phrases FR plus complètes que l'anglais : `web/index`, `web/development`, et
-  `assistant/setup` ligne 93 à mettre à jour en anglais). Outil : `tools/translate_po.py`.
+  puis **redémarrer**, et relancer Ubuntu. Si l'erreur reste, vérifier dans le BIOS/UEFI que « Intel VT-x » ou
+  « AMD-V / SVM » est activé (c'est probablement déjà le cas).
+
+## Retours du 19/10 traités (P14.16 à P14.21, tout est poussé)
+
+- **Éditeur (P14.16)** : la cause de l'empilement des blocs était que l'ajout d'un bloc remplaçait toutes les
+  positions enregistrées par la sienne seule (les autres retombaient sur la disposition automatique, en colonne) ;
+  les positions sont maintenant conservées et enregistrées à chaque ajout/suppression. Les ports : l'étiquette
+  *est* la poignée (cliquer-glisser ou cliquer deux ports pour relier), elle s'élargit sur le côté au survol (le
+  survol remplaçait le `translate` de React Flow, d'où le glissement vers le bas). Bouton **Inspecter** en haut à
+  droite des blocs, catégories de la palette repliées (mémorisées), cartes de résultats qui défilent au lieu de
+  déborder, inspecteur déplié au clic sur un bloc.
+- **Études (P14.17, ADR-0022)** : sorties intermédiaires (« Afficher les sorties intermédiaires » : tout port de
+  tout bloc) ; balayages et Monte-Carlo sur **les réglages numériques** (57 réglages, ex. `n_pixels`, magnitude
+  d'une étoile ; les entiers sont arrondis) et sur **chaque composante d'un tableau** (`coefficients[3]`,
+  `amplitudes[0, 1]`), avec le dé dans l'inspecteur ; format `.lumos` **1.2**. Bouton **i** dans la section
+  *Boucles de rétroaction* de l'inspecteur qui explique comment s'en servir.
+- **Connecteur (P14.18)** : la page ne savait pas ce que faisait l'assistant (le WebSocket n'envoyait que les
+  tâches et le journal) et un préréglage chargé par Claude allait dans un nouveau contexte jamais affiché.
+  Maintenant : chaque contexte a une révision, la session a un « contexte au premier plan » partagé (les outils
+  MCP travaillent par défaut sur le contexte ouvert dans la page, la page ouvre les contextes que l'assistant crée
+  ou charge) ; nouvel outil MCP **`get_view_link`** : un lien `/view/<secret>?context=<id>` qui rattache n'importe
+  quel navigateur à la session et ouvre le contexte (valable un jour). Demande-lui « donne-moi le lien pour voir
+  ce que tu as fait ».
+- **MMI simplifié (P14.19)** : `TransferMatrix` (catégorie Photonique), matrice complexe en modules + phases à une
+  longueur d'onde, achromatique ou à phases « chemin optique » (φ λ0/λ), carrée ou non ; éditeur de matrice dans
+  l'inspecteur (case par case, ajout/retrait d'entrées et sorties, indication *sans pertes / avec pertes /
+  amplifie*). Une matrice qui amplifie (plus grande valeur singulière > 1) est refusée, signalée dans les
+  problèmes avant même de lancer. À noter : baisser une seule case d'une matrice unitaire peut la faire
+  amplifier (on casse une interférence destructive) — l'éditeur le dit.
+- **Navigateur de résultats (P14.20)** : bouton *Parcourir les résultats* (à droite des onglets du bas) : liste
+  des exécutions et études de la session ; curseur et lecture sur les points d'une étude / les pas d'une boucle.
+  Les figures sont gardées si l'étude est lancée avec « Enregistrer les figures de chaque point » (coché par défaut
+  quand l'archivage est actif) ou pour les ports branchés sur un nouveau bloc **Recorder** (Traitement).
+- **Stockage (P14.21)** — réponse à ta question sur le disque : oui, rien n'était jamais supprimé, et pire, sur
+  l'instance publique **les archives de tous les visiteurs étaient listées et téléchargeables par tous**
+  (corrigé). Profil public : données de chaque session dans son propre dossier, supprimé à la fin de la session ;
+  **1 Go max par session** (les plus anciennes données supprimées au-delà, avec un message) ; avertissement à 80 %
+  et quand le disque a moins de 4 Go libres ; archivage refusé sous 2 Go libres ; seules les 20 dernières
+  exécutions d'une session restent en mémoire. L'occupation de la session est affichée dans le panneau Résultats.
+- **Corrigés au passage** : 3 erreurs pyright dans `tools/translate_po.py`.
+
+## À discuter (non implémenté) — voir `docs/specs/pistes_evolution.md`
+
+Ports multiples des MMI, composants utilisateur (éditeur, catalogue), analyses procédurales : constat, options,
+recommandation, effort et questions pour chacun. En bref : ports « à voies » (`mmi.in[2]`) dans le cœur ;
+**pas de code utilisateur sur l'instance publique** (seulement des composants déclaratifs) ; un onglet
+« Procédures » en blocs d'instructions (fermer l'obturateur, mesurer ×20, moyenner → dark, mesurer, soustraire),
+avec un mode script local seulement ; le tout en phase 18 « Extensibilité », après la v1.0.
+->
+
+## Décisions du 19/10 (à valider)
+
+- Les retours sont devenus les étapes P14.16 à P14.21 (plan mis à jour), avant de reprendre la phase 15.
+- Format `.lumos` **1.2** (cibles libres : réglages et composantes) ; les fichiers 1.0 et 1.1 restent lus.
+- Tolérance de passivité de `TransferMatrix` : 10⁻⁴ (les valeurs sont affichées et ressaisies avec 6 chiffres :
+  0,707107 × √2 = 1,0000004).
+- Quand l'assistant ouvre un contexte, la page bascule dessus et garde l'ancien dans la session (pas de
+  confirmation demandée : rien n'est perdu).
+- Le lien de visualisation remplace le cookie du navigateur qui l'ouvre (il rejoint la session de l'assistant).
+- Les tests qui cliquaient « out » pour inspecter, et ceux qui supposaient les catégories ouvertes, ont été
+  adaptés (commits `test(P14.16)!`).
+
+## Où j'en suis (mis à jour le 19/10)
+
+- Phase 15 : **P15.1 fait** (revue d'API, ADR-0021, gel 1.x). **P15.2 fait (19/10)** : toute la documentation
+  utilisateur est traduite (y compris les 12 notebooks et les pages ajoutées le 19/10), et les trois phrases où
+  le français était plus complet sont reportées en anglais. Les ADR et la référence d'API restent en anglais.
 - Restent P15.3 (performance), P15.4 (qualité, sécurité, CSP à prévoir pour les fournisseurs de l'assistant),
   P15.5 (PyPI : il faudra ton accord et un compte ; VPS).
 - **VPS : instance publique en ligne** sur https://lumos.vincent.foriel.pro (Docker, Caddy + certificat
