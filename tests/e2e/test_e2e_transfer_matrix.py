@@ -29,8 +29,12 @@ def test_the_matrix_is_shown_and_edited_cell_by_cell(editor):
     expect(matrix.get_by_test_id("matrix-p-0-1")).to_have_value("1.5708")
     expect(matrix.get_by_test_id("matrix-status")).to_contain_text("lossless")
 
-    matrix.get_by_test_id("matrix-a-0-1").fill("0.5")
-    matrix.get_by_test_id("matrix-a-0-1").press("Enter")
+    # the column of input 0 scaled by 0.5 / 0.707107: S = U diag(0.707, 1), passive (lowering a single cell of
+    # a unitary matrix may break a destructive interference and amplify: 0.5 in cell (0, 1) gives 1.033)
+    for cell in ("matrix-a-0-0", "matrix-a-1-0"):
+        matrix.get_by_test_id(cell).fill("0.5")
+        matrix.get_by_test_id(cell).press("Enter")
+        expect(matrix.get_by_test_id(cell)).to_have_value("0.5", timeout=10_000)
     expect(matrix.get_by_test_id("matrix-status")).to_contain_text("lossy", timeout=10_000)
     matrix.get_by_test_id("matrix-a-0-1").fill("1.5")
     matrix.get_by_test_id("matrix-a-0-1").press("Enter")
