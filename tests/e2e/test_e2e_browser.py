@@ -5,6 +5,8 @@ outputs; a study recorded (switch *Record the figures* of the study dialog) is b
 slider (and a play button), the figure and the values of the chosen port following the slider.
 """
 
+import re
+
 import pytest
 from playwright.sync_api import expect
 
@@ -54,7 +56,7 @@ def test_a_recorded_sweep_is_browsed_point_by_point(bench):
     expect(browser).to_be_visible()
     jobs = browser.get_by_test_id("browser-job")
     expect(jobs).to_have_count(2)
-    expect(jobs.first).to_contain_text("sweep")  # newest first
+    expect(jobs.first).to_contain_text(re.compile("sweep", re.IGNORECASE))  # newest first
 
     jobs.first.click()
     slider = browser.get_by_test_id("browser-slider")
