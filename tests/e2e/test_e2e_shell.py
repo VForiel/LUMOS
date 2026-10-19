@@ -27,6 +27,9 @@ def test_the_palette_is_generated_from_the_registry(page):
     palette = page.request.get("/api/palette").json()
     categories = {item["category"] for item in palette["types"]}
     expect(page.get_by_test_id("palette-category")).to_have_count(len(categories))
+    expect(page.get_by_test_id("palette-item")).to_have_count(0)  # categories start collapsed (P14.16)
+    for header in page.get_by_test_id("palette-category").all():
+        header.locator("button").first.click()
     expect(page.get_by_test_id("palette-item")).to_have_count(len(palette["types"]))
     page.get_by_test_id("palette-search").fill("laser")
     items = page.get_by_test_id("palette-item")

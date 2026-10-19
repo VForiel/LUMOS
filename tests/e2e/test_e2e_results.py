@@ -46,7 +46,7 @@ def test_any_port_is_inspected_and_downloaded(page):
         .filter(has=page.locator('.react-flow__handle[data-handleid="out"]'))
         .first
     )
-    node.locator("button", has_text="out").first.click()
+    node.get_by_test_id("node-inspect").click()  # the labels of the ports start links (P14.16)
     inspected = page.get_by_test_id("inspected")
     expect(inspected).to_be_visible()
     expect(inspected.get_by_test_id("statistics")).to_be_visible(timeout=30_000)
