@@ -56,7 +56,7 @@ def test_the_revision_grows_at_every_change_and_only_then(service, session):
     same = service.describe_context(session, cid).revision
     service.list_contexts(session)
     service.export_lumos(session, cid)
-    service.validate(session, cid)
+    service.validate_context(session, cid)
     assert service.describe_context(session, cid).revision == same
 
 
