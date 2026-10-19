@@ -372,7 +372,9 @@
     "high": "max",
     "mean": "moyenne",
     "std": "écart-type",
-    "fix": "Fixer à nouveau"
+    "fix": "Fixer à nouveau",
+    "componentHint": "Choisissez une composante du tableau, puis sa loi a priori : les Monte-Carlo la tirent, les balayages la font varier.",
+    "component": "Composante"
   },
   "study": {
     "title": "Étude",
@@ -424,7 +426,10 @@
     "period": "Période",
     "noFeedback": "Aucune rétroaction : sélectionnez le bloc qui calcule la correction et fermez la boucle dans son inspecteur.",
     "loopSummary": "{{count}} pas · graine {{seed}}",
-    "loopDetails": "Chaque pas calcule les sorties, applique les rétroactions, puis avance l'horloge d'une période. La boucle garde son état final (Annuler le rétablit)."
+    "loopDetails": "Chaque pas calcule les sorties, applique les rétroactions, puis avance l'horloge d'une période. La boucle garde son état final (Annuler le rétablit).",
+    "showIntermediate": "Afficher les sorties intermédiaires ({{count}})",
+    "hideIntermediate": "Masquer les sorties intermédiaires",
+    "intermediateTag": "intermédiaire"
   },
   "feedback": {
     "section": "Boucles de rétroaction",
@@ -439,7 +444,14 @@
     },
     "add": "Fermer la boucle",
     "remove": "Supprimer cette rétroaction",
-    "title": "{{source}} pilote {{target}} au pas suivant ({{mode}})"
+    "title": "{{source}} pilote {{target}} au pas suivant ({{mode}})",
+    "help": "Comment marchent les boucles ?",
+    "helpTitle": "Boucles de rétroaction",
+    "helpWhat": "Une rétroaction prend la valeur d'une sortie de ce bloc (par exemple les commandes calculées par un contrôleur) et l'écrit dans un champ d'un bloc (par exemple les commandes d'un miroir déformable) entre deux itérations d'une boucle.",
+    "helpStep1": "Ajoutez la rétroaction ici : la sortie, le mode (ajouter : la valeur s'ajoute, un intégrateur ; remplacer : elle remplace le champ) et le champ piloté.",
+    "helpStep2": "Ouvrez Étude › Boucle, indiquez le nombre de pas et la période, puis lancez : à chaque pas les sorties sont calculées, puis les rétroactions appliquées et l'horloge avance d'une période (un retard d'une période, comme une vraie boucle).",
+    "helpStep3": "L'étude montre les sorties pas à pas. Les champs pilotés gardent leur valeur finale : Annuler la rétablit.",
+    "helpExample": "Exemple : le préréglage Adaptive optics loop (analyseur de surface d'onde → contrôleur → miroir déformable)."
   },
   "connector": {
     "title": "Utiliser votre abonnement Claude ou ChatGPT",

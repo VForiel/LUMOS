@@ -8,6 +8,7 @@ import {
   Download,
   FolderOpen,
   FolderTree,
+  Info,
   Layers,
   PackagePlus,
   PanelRightClose,
@@ -25,6 +26,7 @@ import { category, categoryOf } from "../lib/categories";
 import { signalOfPort } from "../lib/ports";
 import { fieldsOf, type Field } from "../lib/schema";
 import { signalColor } from "../lib/signals";
+import { componentsOf, isArrayParam, isNumericSetting } from "../lib/targets";
 import { formatNumber, parseQuantity } from "../lib/units";
 import { useStore } from "../store";
 import { Resizer } from "./Resizer";
@@ -101,12 +103,20 @@ function inUnit(text: string, unit: string): string {
   return quantity && quantity.unit ? text.trim() : `${text.trim()} ${unit}`.trim();
 }
 
-/** Free a parameter with a prior (Monte-Carlo runs draw it), or fix it again. */
+/**
+ * Free a parameter, a numeric setting or a component of an array with a prior (Monte-Carlo runs draw it, sweeps
+ * vary it), or fix it again (ADR-0022).
+ */
 function PriorEditor({ element, field, onClose }: { element: ElementSummary; field: Field; onClose: () => void }) {
   const { t } = useTranslation();
   const setFree = useStore((s) => s.setFree);
-  const current = parseQuantity(String(element.params[field.name] ?? "")) ?? { value: 0, unit: field.unit ?? "" };
-  const prior = element.free?.[field.name] ?? null;
+  const components = isArrayParam(field) ? componentsOf(field.name, valueOf(element, field)) : [];
+  const [target, setTarget] = useState(() => components.find((c) => c.name in (element.free ?? {}))?.name ?? components[0]?.name ?? field.name);
+  const component = components.find((c) => c.name === target);
+  const current = component
+    ? { value: component.value, unit: component.unit }
+    : (parseQuantity(String(valueOf(element, field) ?? "")) ?? { value: 0, unit: field.unit ?? "" });
+  const prior = element.free?.[target] ?? null;
   const strip = (text: string | undefined) => (text === undefined ? "" : formatNumber(parseQuantity(text)?.value ?? Number(text)));
   const [kind, setKind] = useState<PriorKind>((prior?.kind as PriorKind) ?? "normal");
   const initial = (choice: PriorKind): [string, string] => {
@@ -119,12 +129,30 @@ function PriorEditor({ element, field, onClose }: { element: ElementSummary; fie
   const [first, second] = PRIOR_VALUES[kind];
   const name = field.name;
   const apply = async () => {
-    if (await setFree(`${element.id}.${name}`, true, { kind, [first]: inUnit(a, current.unit), [second]: inUnit(b, current.unit) })) onClose();
+    if (await setFree(`${element.id}.${target}`, true, { kind, [first]: inUnit(a, current.unit), [second]: inUnit(b, current.unit) })) onClose();
   };
   return (
     <div data-testid={`prior-${name}`} className="mt-1 space-y-1.5 rounded-lg border border-amber-200 bg-amber-50/60 p-2 text-xs dark:border-amber-900 dark:bg-amber-950/30">
-      <p className="text-slate-600 dark:text-slate-300">{t("prior.hint")}</p>
+      <p className="text-slate-600 dark:text-slate-300">{t(components.length ? "prior.componentHint" : "prior.hint")}</p>
+      {components.length > 0 && (
+        <select
+          data-testid={`prior-index-${name}`}
+          aria-label={t("prior.component")}
+          value={target}
+          onChange={(event) => setTarget(event.target.value)}
+          className={`${inputClass} py-0.5 font-mono text-xs`}
+        >
+          {components.map((c) => (
+            <option key={c.name} value={c.name}>
+              {c.name} = {formatNumber(c.value)}
+              {c.unit ? ` ${c.unit}` : ""}
+              {c.name in (element.free ?? {}) ? " ∼" : ""}
+            </option>
+          ))}
+        </select>
+      )}
       <select
+        key={target}
         data-testid={`prior-kind-${name}`}
         value={kind}
         onChange={(event) => {
@@ -161,8 +189,8 @@ function PriorEditor({ element, field, onClose }: { element: ElementSummary; fie
         ))}
       </div>
       <div className="flex justify-end gap-1.5">
-        {prior !== null || name in (element.free ?? {}) ? (
-          <ActionButton icon={null} label={t("prior.fix")} testId={`prior-remove-${name}`} onClick={() => void setFree(`${element.id}.${name}`, false).then(onClose)} />
+        {prior !== null || target in (element.free ?? {}) ? (
+          <ActionButton icon={null} label={t("prior.fix")} testId={`prior-remove-${name}`} onClick={() => void setFree(`${element.id}.${target}`, false).then(onClose)} />
         ) : (
           <ActionButton icon={null} label={t("common.cancel")} onClick={onClose} />
         )}
@@ -172,12 +200,14 @@ function PriorEditor({ element, field, onClose }: { element: ElementSummary; fie
   );
 }
 
-/** The row of a parameter: its input, the button freeing it, its prior. */
+/** The row of a parameter or of a numeric setting: its input, the button freeing it, its priors. */
 function ParamRow({ element, field, editable }: { element: ElementSummary; field: Field; editable: boolean }) {
   const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
-  const free = field.name in (element.free ?? {});
-  const canFree = field.kind === "param" && field.input === "quantity";
+  const array = isArrayParam(field);
+  const components = array ? Object.keys(element.free ?? {}).filter((key) => key.startsWith(`${field.name}[`)) : [];
+  const free = array ? components.length > 0 : field.name in (element.free ?? {});
+  const canFree = (field.kind === "param" && field.input === "quantity") || isNumericSetting(field) || (array && componentsOf(field.name, valueOf(element, field)).length > 0);
   return (
     <FieldRow field={{ ...field, free }}>
       <div className="flex items-start gap-1">
@@ -200,11 +230,17 @@ function ParamRow({ element, field, editable }: { element: ElementSummary; field
           </button>
         )}
       </div>
-      {free && !editing && (
+      {free && !editing && !array && (
         <p data-testid={`prior-summary-${field.name}`} className="mt-0.5 font-mono text-[11px] text-amber-700 dark:text-amber-300">
           ∼ {priorText(element.free?.[field.name])}
         </p>
       )}
+      {!editing &&
+        components.map((key) => (
+          <p key={key} data-testid={`prior-summary-${key}`} className="mt-0.5 font-mono text-[11px] text-amber-700 dark:text-amber-300">
+            {key} ∼ {priorText(element.free?.[key])}
+          </p>
+        ))}
       {editing && <PriorEditor element={element} field={field} onClose={() => setEditing(false)} />}
     </FieldRow>
   );
@@ -230,9 +266,36 @@ function FeedbackSection({ element, editable }: { element: ElementSummary; edita
   const [port, setPort] = useState(element.outputs[0] ?? "");
   const [target, setTarget] = useState("");
   const [mode, setMode] = useState<"set" | "add">("add");
+  const [help, setHelp] = useState(false);
   const select = `${inputClass} py-0.5 text-xs`;
+  const helpButton = (
+    <button
+      type="button"
+      data-testid="feedback-help"
+      aria-pressed={help}
+      aria-label={t("feedback.help")}
+      title={t("feedback.help")}
+      onClick={() => setHelp(!help)}
+      className={`rounded p-1 ${help ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200" : "text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"}`}
+    >
+      <Info className="size-3.5" />
+    </button>
+  );
   return (
-    <Section title={t("feedback.section")} defaultOpen={mine.length > 0}>
+    <>
+    {help && (
+      <div data-testid="feedback-help-text" className="space-y-1.5 border-b border-amber-100 bg-amber-50/70 px-4 py-2 text-xs leading-relaxed text-slate-700 dark:border-amber-950 dark:bg-amber-950/30 dark:text-slate-300">
+        <p className="font-semibold text-amber-800 dark:text-amber-300">{t("feedback.helpTitle")}</p>
+        <p>{t("feedback.helpWhat")}</p>
+        <ol className="list-decimal space-y-0.5 pl-4">
+          <li>{t("feedback.helpStep1")}</li>
+          <li>{t("feedback.helpStep2")}</li>
+          <li>{t("feedback.helpStep3")}</li>
+        </ol>
+        <p className="text-slate-500 dark:text-slate-400">{t("feedback.helpExample")}</p>
+      </div>
+    )}
+    <Section title={t("feedback.section")} defaultOpen={mine.length > 0} extra={helpButton}>
       <div data-testid="feedbacks" className="space-y-2 text-xs">
         <p className="text-slate-500 dark:text-slate-400">{t("feedback.hint")}</p>
         {mine.length > 0 && (
@@ -284,6 +347,7 @@ function FeedbackSection({ element, editable }: { element: ElementSummary; edita
         )}
       </div>
     </Section>
+    </>
   );
 }
 
@@ -371,7 +435,7 @@ function ElementPanel({ element, type, onInspect }: { element: ElementSummary; t
         list.length ? (
           <Section key={title} title={title} defaultOpen={title !== t("inspector.state")}>
             {list.map((field) =>
-              field.kind === "param" ? (
+              field.kind === "param" || isNumericSetting(field) ? (
                 <ParamRow key={field.name} element={element} field={field} editable={editable} />
               ) : (
                 <FieldRow key={field.name} field={field}>

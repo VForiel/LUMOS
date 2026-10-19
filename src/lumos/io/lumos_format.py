@@ -65,8 +65,8 @@ __all__ = [
     "to_document",
 ]
 
-FORMAT_VERSION = "1.1"
-_SUPPORTED = (1, 1)
+FORMAT_VERSION = "1.2"
+_SUPPORTED = (1, 2)
 _VERSION_RE = re.compile(r"^(\d+)\.(\d+)$")
 _BODY_KEYS = ("name", "params", "settings", "state")
 
@@ -166,9 +166,9 @@ def entry_of(element: Element, registry: Registry | None = None) -> dict[str, An
         groups[field.kind][name] = (
             field.encode(value) if isinstance(field, Setting) else quantity_to_json(value)
         )
-        if isinstance(field, Param) and element.is_free(name):
-            prior = element.prior(name)
-            free[name] = {"prior": None if prior is None else prior_to_json(prior)}
+    for name in element.free_names():  # parameters, numeric settings, components "field[i]" (ADR-0022)
+        prior = element.prior(name)
+        free[name] = {"prior": None if prior is None else prior_to_json(prior)}
     return {
         "type": type_id,
         "type_version": reg.version(type_id),
@@ -361,18 +361,17 @@ def _apply_free(element: Element, free: Any) -> None:
     if not isinstance(free, Mapping):
         raise ValueError("'free' must be an object")
     physical = [name for name, field in type(element).declared().items() if isinstance(field, Param)]
-    unknown = sorted(set(free) - set(physical))
-    if unknown:
-        raise ValueError(f"unknown free parameter(s) {unknown}")
     for name in physical:
         if name not in free:
             element.set_free(name, False)
-            continue
-        spec = free[name]
+    for name, spec in free.items():
         if not isinstance(spec, Mapping) or set(spec) != {"prior"}:
             raise ValueError(f"free parameter {name!r} must be described as {{'prior': ...}}")
         prior = None if spec["prior"] is None else prior_from_json(spec["prior"])
-        element.set_free(name, True, prior)
+        try:
+            element.set_free(name, True, prior)
+        except (KeyError, TypeError, IndexError) as error:
+            raise ValueError(f"unknown free parameter {name!r}: {error}") from error
 
 
 def _reject_constant(constant: str) -> Any:

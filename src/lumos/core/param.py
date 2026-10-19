@@ -28,6 +28,7 @@ invalidate cached results).
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Mapping
 from typing import Any, ClassVar, Literal
 
@@ -37,7 +38,7 @@ from astropy import units as u
 from lumos.core.priors import Prior
 from lumos.units import require_unit, to_si
 
-__all__ = ["MISSING", "Field", "Param", "ParamHost", "Setting", "State"]
+__all__ = ["MISSING", "Field", "Param", "ParamHost", "Setting", "State", "parse_target", "target_name"]
 
 
 class _Missing:
@@ -256,6 +257,43 @@ class Setting(Field):
         return data
 
 
+_TARGET = re.compile(r"^\s*([A-Za-z_]\w*)\s*(?:\[\s*(\d+(?:\s*,\s*\d+)*)\s*\])?\s*$")
+
+
+def parse_target(name: str) -> tuple[str, tuple[int, ...] | None]:
+    """Split the name of a free target into its field and indices (ADR-0022).
+
+    ``"focal_length"`` gives ``("focal_length", None)``, ``"coefficients[3]"`` gives
+    ``("coefficients", (3,))`` and ``"matrix[1, 0]"`` gives ``("matrix", (1, 0))``.
+    """
+    match = _TARGET.match(name)
+    if match is None:
+        raise ValueError(
+            f"{name!r} is not a field or a component such as 'coefficients[3]' or 'matrix[1, 0]'"
+        )
+    indices = match.group(2)
+    return match.group(1), None if indices is None else tuple(int(i) for i in indices.split(","))
+
+
+def target_name(field: str, index: tuple[int, ...] | None) -> str:
+    """Return the canonical name of a target: ``"field"`` or ``"field[i, j]"``."""
+    return field if index is None else f"{field}[{', '.join(str(i) for i in index)}]"
+
+
+def _numeric_setting(field: Field) -> bool:
+    return isinstance(field, Setting) and field.type in (int, float) and field.choices is None
+
+
+def _plain(value: Any, name: str) -> float:
+    """Return the number of a number or of a dimensionless quantity."""
+    if isinstance(value, u.Quantity):
+        return float(np.asarray(value.to_value(u.dimensionless_unscaled)))
+    try:
+        return float(value)
+    except (TypeError, ValueError) as error:
+        raise TypeError(f"{name}: expected a number, got {value!r}") from error
+
+
 class ParamHost:
     """Base class of objects declaring :class:`Param`, :class:`State` and :class:`Setting` fields.
 
@@ -321,27 +359,95 @@ class ParamHost:
 
     # --- Free parameters -------------------------------------------------------------
 
-    def _physical_field(self, name: str) -> Param:
-        field = type(self)._lumos_fields.get(name)
+    def free_target(self, name: str) -> tuple[str, Field, tuple[int, ...] | None]:
+        """Return the canonical name, the field and the indices of the free target ``name`` (ADR-0022)."""
+        field_name, index = parse_target(name)
+        field = type(self)._lumos_fields.get(field_name)
         if field is None:
-            raise KeyError(f"{type(self).__name__} has no field {name!r}")
-        if not isinstance(field, Param):
-            raise TypeError(f"{name}: only physical parameters can be free, not {field.kind}s")
-        return field
+            raise KeyError(f"{type(self).__name__} has no field {field_name!r}")
+        if index is None:
+            if not (isinstance(field, Param) or _numeric_setting(field)):
+                raise TypeError(
+                    f"{name}: only physical parameters, numeric settings and components of array parameters "
+                    f"can be free, not this {field.kind}"
+                )
+        else:
+            if not isinstance(field, Param) or field.dtype == "complex":
+                raise TypeError(f"{name}: only components of real array parameters can be free")
+            shape = np.shape(self._lumos_values[field_name])
+            if len(index) != len(shape) or any(i >= n for i, n in zip(index, shape, strict=False)):
+                raise IndexError(
+                    f"{name}: {field_name} has the shape {list(shape)}, no component {list(index)}"
+                )
+        return target_name(field_name, index), field, index
+
+    @staticmethod
+    def _check_target_prior(name: str, field: Field, prior: Prior | None) -> None:
+        if isinstance(field, Param):
+            field.check_prior(prior)
+        elif prior is not None and not prior.unit.is_equivalent(u.dimensionless_unscaled):
+            raise u.UnitConversionError(
+                f"{name}: a setting takes a prior without unit, not in '{prior.unit}'"
+            )
+
+    def _free_state(self, key: str, field: Field, index: tuple[int, ...] | None) -> tuple[bool, Prior | None]:
+        if index is None and isinstance(field, Param):
+            return self._lumos_free.get(key, (field.free, field.prior))
+        return self._lumos_free.get(key, (False, None))
 
     def is_free(self, name: str) -> bool:
-        """Whether parameter ``name`` is free (fitted by calibration or inference)."""
-        field = self._physical_field(name)
-        return self._lumos_free.get(name, (field.free, field.prior))[0]
+        """Whether the target ``name`` is free (a parameter, a numeric setting or a component)."""
+        key, field, index = self.free_target(name)
+        return self._free_state(key, field, index)[0]
 
     def prior(self, name: str) -> Prior | None:
-        """Return the prior of parameter ``name`` (``None`` if fixed or without prior)."""
-        field = self._physical_field(name)
-        free, prior = self._lumos_free.get(name, (field.free, field.prior))
+        """Return the prior of the target ``name`` (``None`` if fixed or without prior)."""
+        key, field, index = self.free_target(name)
+        free, prior = self._free_state(key, field, index)
         return prior if free else None
 
     def set_free(self, name: str, free: bool = True, prior: Prior | None = None) -> None:
-        """Mark parameter ``name`` as free (with an optional prior) or fixed, for this object only."""
-        field = self._physical_field(name)
-        field.check_prior(prior)
-        self._lumos_free[name] = (free, prior if free else None)
+        """Mark a target as free (with an optional prior) or fixed, for this object only.
+
+        ``name`` is a physical parameter, a numeric setting (prior without unit) or a component of an array
+        parameter such as ``"coefficients[3]"`` (prior in the unit of the parameter), see ADR-0022.
+        """
+        key, field, _ = self.free_target(name)
+        self._check_target_prior(key, field, prior)
+        self._lumos_free[key] = (free, prior if free else None)
+
+    def free_names(self) -> list[str]:
+        """Return the free targets: free parameters in their order of declaration, then the others."""
+        fields = type(self)._lumos_fields
+        names = [
+            name
+            for name, field in fields.items()
+            if isinstance(field, Param) and self._lumos_free.get(name, (field.free, field.prior))[0]
+        ]
+        names += [key for key, (free, _) in self._lumos_free.items() if free and key not in names]
+        return names
+
+    def get_target(self, name: str) -> Any:
+        """Return the value of a target: a field, or the component ``"field[i]"`` of an array parameter."""
+        field_name, index = parse_target(name)
+        value = getattr(self, field_name)
+        return value if index is None else value[index]
+
+    def set_target(self, name: str, value: Any) -> None:
+        """Set a target: an integer setting takes the nearest integer, a component changes alone."""
+        field_name, index = parse_target(name)
+        field = type(self)._lumos_fields.get(field_name)
+        if field is None:
+            raise KeyError(f"{type(self).__name__} has no field {field_name!r}")
+        if index is not None:
+            if not isinstance(field, Param):
+                raise TypeError(f"{name}: only array parameters have components")
+            array = u.Quantity(getattr(self, field_name), copy=True)
+            array[index] = require_unit(value, field.unit, name=name, equivalencies=field.equivalencies)
+            setattr(self, field_name, array)
+        elif isinstance(field, Setting) and field.type is int and not isinstance(value, bool | int):
+            setattr(self, field_name, int(np.rint(_plain(value, name))))
+        elif isinstance(field, Setting) and field.type is float and isinstance(value, u.Quantity):
+            setattr(self, field_name, _plain(value, name))
+        else:
+            setattr(self, field_name, value)

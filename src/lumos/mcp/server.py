@@ -495,10 +495,13 @@ def create_server(
     def set_free_parameter(
         path: str, free: bool = True, prior: dict[str, Any] | None = None, context: str | None = None
     ) -> ElementSummary:
-        """Mark a parameter ``"element.field"`` as free with a prior, or fixed again (``free=false``).
+        """Mark ``"element.field"`` as free with a prior, or fixed again (``free=false``).
 
+        The field is a physical parameter, a numeric setting (prior without unit, integers rounded) or a
+        component of an array parameter, ``"plate.coefficients[3]"`` or ``"chip.amplitudes[0, 1]"``.
         ``prior``: ``{"kind": "uniform" | "loguniform", "low": "190 mm", "high": "210 mm"}`` or
-        ``{"kind": "normal", "mean": "200 mm", "std": "2 mm"}``. run_monte_carlo draws the free parameters.
+        ``{"kind": "normal", "mean": "200 mm", "std": "2 mm"}``. run_monte_carlo draws the free parameters;
+        run_sweep takes the same paths.
         """
         return service.set_free(session, state.context(context), path, free, prior)
 

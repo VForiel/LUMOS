@@ -20,15 +20,25 @@ normal (Gaussian), with values in the unit of the parameter (or with their own u
 parameter shows its prior under its value (`∼ N(200 mm, 2 mm)`) and its block carries a small die. *Fix again*
 removes the prior. Free parameters are also those that calibrations and inferences fit.
 
+Numeric settings have the dice too (the number of pixels of a laser, the magnitude of a star): their prior
+has no unit, and an integer setting takes the nearest integer of each value drawn or swept. An array
+parameter (the Zernike coefficients of a phase plate, the transmissions of a filter wheel) frees one
+component at a time: choose it in the editor of the prior; each free component shows its prior under the
+array (`transmissions[2] ∼ N(0.5, 0.05)`).
+
 ## Sweeps
 
-Choose **Sweep**, then for each parameter its range: from, to, number of values, and *Log* for a geometric
+Choose **Sweep**, then for each parameter (numeric settings and components of arrays included) its range: from, to, number of values, and *Log* for a geometric
 spacing (1, 10, 100...). With several parameters, *every combination* runs the grid of their values, *in
 pairs* runs their i-th values together. The dialog counts the points before you start.
 
 By default every point of a sweep has the **same noise** (that of the seed): the points differ by their
 parameters only, so that small effects show. Tick *Independent noise per point* to draw a new noise at each
 point.
+
+The outputs of the study are those of the context by default. *Show the intermediate outputs* lists every
+other output of every block, also those connected to another block: the field before the coronagraph, the
+image before the processing.
 
 ## Monte-Carlo runs
 
@@ -47,7 +57,8 @@ the block it drives; select it to remove it.
 Choose **Loop** in the study dialog, the number of steps and the period (`2 ms`): each step computes the
 outputs, applies the feedbacks, then advances the clock by the period. The study tab plots the outputs
 against time (the residual of the wavefront sensor falls as the loop closes). The loop keeps its final state,
-the commands of the mirror for instance; **Undo** puts back the state before the loop.
+the commands of the mirror for instance; **Undo** puts back the state before the loop. The *i* button of the
+*Feedback loops* section recalls these steps in the inspector.
 
 ## Results
 

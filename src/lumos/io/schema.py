@@ -2,8 +2,9 @@
 
 The schema describes the envelope and the structure of element, group and context documents. The values of
 the parameters of each element type are described by :meth:`lumos.core.element.Element.schema` and checked
-when the element is loaded. The same schema is shipped as ``lumos/io/schemas/lumos-1.1.schema.json`` (format
-1.1, ADR-0020: feedbacks of contexts); the schema of the format 1.0 is kept next to it.
+when the element is loaded. The same schema is shipped as ``lumos/io/schemas/lumos-1.2.schema.json`` (format
+1.2: feedbacks of contexts since 1.1, ADR-0020; free settings and components since 1.2, ADR-0022); the schemas
+of the formats 1.0 and 1.1 are kept next to it.
 """
 
 from __future__ import annotations
@@ -12,7 +13,7 @@ from typing import Any
 
 __all__ = ["SCHEMA_ID", "document_schema"]
 
-SCHEMA_ID = "https://lumos-maxima.readthedocs.io/en/latest/lumos-1.1.schema.json"
+SCHEMA_ID = "https://lumos-maxima.readthedocs.io/en/latest/lumos-1.2.schema.json"
 
 
 def document_schema() -> dict[str, Any]:

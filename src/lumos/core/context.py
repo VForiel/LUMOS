@@ -772,7 +772,9 @@ class Context:
         if not owner:
             raise KeyError(f"{path!r} is not of the form 'element.field'")
         element = self[owner]
-        if field not in type(element).declared():
+        from lumos.core.param import parse_target
+
+        if parse_target(field)[0] not in type(element).declared():
             raise AttributeError(f"{owner} has no field {field!r}")
         return element, field
 
@@ -833,23 +835,23 @@ class Context:
         progress: Callable[[int, int], None] | None = None,
     ) -> list[SweepPoint]:
         combinations = list(combinations)
-        original = [getattr(element, field) for _, element, field in targets]
+        original = [_get(element, field) for _, element, field in targets]
         realization = self._realization
         points: list[SweepPoint] = []
         try:
             for index, combination in enumerate(combinations, start=1):
                 for (_, element, field), value in zip(targets, combination, strict=True):
-                    setattr(element, field, value)
+                    _set(element, field, value)
                 if noise == "independent":
                     self.realization = index
                 result = self.run(wanted)
-                params = {path: getattr(element, field) for path, element, field in targets}
+                params = {path: _get(element, field) for path, element, field in targets}
                 points.append(SweepPoint(params, result, self._realization))
                 if progress is not None:
                     progress(index, len(combinations))
         finally:
             for (_, element, field), value in zip(targets, original, strict=True):
-                setattr(element, field, value)
+                _set(element, field, value)
             if self._realization != realization:
                 self.realization = realization
         return points
@@ -873,6 +875,8 @@ class Context:
             raise ValueError(f"the mode of a feedback is 'set' or 'add', got {mode!r}")
         port = self.port(source)
         element, field = self._parameter(target)
+        if "[" in field:
+            raise ValueError(f"a feedback drives a whole field, not the component {target!r}")
         if any(f.source == source and f.target == target for f in self._feedbacks):
             raise ValueError(f"the feedback {source} -> {target} already exists")
         check = getattr(port.owner, "check_feedback", None)
@@ -985,14 +989,11 @@ class Context:
         """Return the priors of the free parameters, by path ``"element.field"`` (``None`` without prior)."""
         found: dict[str, Any] = {}
         for path, element in self._ordered_elements():
-            for name in type(element).declared():
-                is_free = getattr(element, "is_free", None)
-                try:
-                    free = bool(is_free(name)) if is_free is not None else False
-                except (TypeError, KeyError):
-                    free = False
-                if free:
-                    found[f"{path}.{name}"] = element.prior(name)
+            names = getattr(element, "free_names", None)
+            if names is None:
+                continue
+            for name in names():
+                found[f"{path}.{name}"] = element.prior(name)
         return found
 
     def sample(
@@ -1044,6 +1045,21 @@ class Context:
         """Summarise the context."""
         name = f" {self.name!r}" if self.name else ""
         return f"<Context{name} mode={self._mode} elements={len(self)}>"
+
+
+def _get(element: Any, field: str) -> Any:
+    """Value of a field or of the component ``"field[i]"`` of an element (ADR-0022)."""
+    get = getattr(element, "get_target", None)
+    return get(field) if get is not None else getattr(element, field)
+
+
+def _set(element: Any, field: str, value: Any) -> None:
+    """Set a field or a component; an integer setting takes the nearest integer (ADR-0022)."""
+    put = getattr(element, "set_target", None)
+    if put is not None:
+        put(field, value)
+    else:
+        setattr(element, field, value)
 
 
 def _residual(measured: Any, simulated: Any) -> Any:

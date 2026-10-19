@@ -372,7 +372,9 @@
     "high": "high",
     "mean": "mean",
     "std": "standard deviation",
-    "fix": "Fix again"
+    "fix": "Fix again",
+    "componentHint": "Choose a component of the array, then its prior: Monte-Carlo runs draw it, sweeps vary it.",
+    "component": "Component"
   },
   "study": {
     "title": "Study",
@@ -424,7 +426,10 @@
     "period": "Period",
     "noFeedback": "No feedback yet: select the block computing the correction and close the loop in its inspector.",
     "loopSummary": "{{count}} steps · seed {{seed}}",
-    "loopDetails": "Each step computes the outputs, applies the feedbacks, then advances the clock by the period. The loop keeps its final state (Undo puts it back)."
+    "loopDetails": "Each step computes the outputs, applies the feedbacks, then advances the clock by the period. The loop keeps its final state (Undo puts it back).",
+    "showIntermediate": "Show the intermediate outputs ({{count}})",
+    "hideIntermediate": "Hide the intermediate outputs",
+    "intermediateTag": "intermediate"
   },
   "feedback": {
     "section": "Feedback loops",
@@ -439,7 +444,14 @@
     },
     "add": "Close the loop",
     "remove": "Remove this feedback",
-    "title": "{{source}} drives {{target}} at the next step ({{mode}})"
+    "title": "{{source}} drives {{target}} at the next step ({{mode}})",
+    "help": "How do loops work?",
+    "helpTitle": "Feedback loops",
+    "helpWhat": "A feedback takes the value of an output of this block (e.g. the commands computed by a controller) and writes it into a field of a block (e.g. the commands of a deformable mirror) between two iterations of a loop.",
+    "helpStep1": "Add the feedback here: the output, the mode (add: the value is added, an integrator; set: it replaces the field) and the field it drives.",
+    "helpStep2": "Open Study › Loop, give the number of steps and the period, and run: at each step the outputs are computed, then the feedbacks are applied and the clock advances by one period (one period of delay, as a real loop).",
+    "helpStep3": "The study shows the outputs step by step. The fields driven keep their final values: Undo puts them back.",
+    "helpExample": "Example: the preset Adaptive optics loop (wavefront sensor → controller → deformable mirror)."
   },
   "connector": {
     "title": "Use your Claude or ChatGPT subscription",

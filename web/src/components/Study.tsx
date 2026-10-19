@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type ContextSummary, type ElementType, type LoopRequest, type StudyKind, type StudyRequest, type StudyResult, type SweepSpec } from "../api";
 import { fieldsOf } from "../lib/schema";
+import { componentsOf, isArrayParam, isNumericSetting } from "../lib/targets";
 import { formatNumber, parseQuantity } from "../lib/units";
 import { useStore } from "../store";
 import { Button, Modal } from "./Dialogs";
@@ -33,10 +34,16 @@ export function candidatesOf(context: ContextSummary, types: Map<string, Element
     const type = types.get(element.type_id);
     if (!type) continue;
     for (const field of fieldsOf(type.schema)) {
-      if (field.kind !== "param" || field.input !== "quantity") continue;
-      const current = parseQuantity(String(element.params[field.name] ?? ""));
-      if (!current) continue;
-      found.push({ path: `${element.id}.${field.name}`, unit: current.unit, value: current.value });
+      if (field.kind === "param" && field.input === "quantity") {
+        const current = parseQuantity(String(element.params[field.name] ?? ""));
+        if (current) found.push({ path: `${element.id}.${field.name}`, unit: current.unit, value: current.value });
+      } else if (isNumericSetting(field)) {
+        const value = Number(element.settings[field.name]);
+        if (Number.isFinite(value)) found.push({ path: `${element.id}.${field.name}`, unit: "", value });
+      } else if (isArrayParam(field)) {
+        // each component of an array parameter (ADR-0022)
+        for (const c of componentsOf(field.name, element.params[field.name])) found.push({ path: `${element.id}.${c.name}`, unit: c.unit, value: c.value });
+      }
     }
   }
   return found;
@@ -99,10 +106,13 @@ export function StudyDialog() {
   const [n, setN] = useState(previous?.n ?? defaults.n ?? 50);
   const [independent, setIndependent] = useState<boolean | null>(null);
   const available = defaultOutputs(context);
+  // every other output of every block: intermediate signals (the field before a detector...)
+  const intermediate = context.elements.flatMap((e) => e.outputs.map((port) => `${e.id}.${port}`)).filter((port) => !available.includes(port));
   const [outputs, setOutputs] = useState<string[]>(() => {
     const wanted = last?.outputs ?? defaults.outputs ?? available;
-    return wanted.filter((port) => available.includes(port) || context.outputs.includes(port));
+    return wanted.filter((port) => available.includes(port) || intermediate.includes(port) || context.outputs.includes(port));
   });
+  const [showIntermediate, setShowIntermediate] = useState(() => outputs.some((port) => intermediate.includes(port)));
   const noise = independent ?? kind === "sample";
   const periodOk = /^\s*[0-9.eE+-]+\s*(s|ms|us|µs|ns|min|h)\s*$/.test(period);
   const close = () => useStore.getState().setDialog(null);
@@ -290,8 +300,8 @@ export function StudyDialog() {
         <div className="grid gap-3 sm:grid-cols-2">
           <fieldset className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
             <legend className="px-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-400">{t("study.outputs")}</legend>
-            {available.length === 0 && <p className="text-xs text-slate-500">{t("study.noOutputs")}</p>}
-            {available.map((port) => (
+            {available.length === 0 && intermediate.length === 0 && <p className="text-xs text-slate-500">{t("study.noOutputs")}</p>}
+            {[...available, ...(showIntermediate ? intermediate : [])].map((port) => (
               <label key={port} className="flex items-center gap-2 py-0.5 font-mono text-xs">
                 <input
                   type="checkbox"
@@ -301,8 +311,20 @@ export function StudyDialog() {
                   className="size-4 accent-accent-600"
                 />
                 {port}
+                {intermediate.includes(port) && <span className="font-sans text-[10px] text-slate-400">{t("study.intermediateTag")}</span>}
               </label>
             ))}
+            {intermediate.length > 0 && (
+              <button
+                type="button"
+                data-testid="study-intermediate"
+                aria-expanded={showIntermediate}
+                onClick={() => setShowIntermediate(!showIntermediate)}
+                className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-accent-600 hover:underline dark:text-accent-300"
+              >
+                {showIntermediate ? t("study.hideIntermediate") : t("study.showIntermediate", { count: intermediate.length })}
+              </button>
+            )}
           </fieldset>
           <label className={`flex items-start gap-2 rounded-lg border border-slate-200 p-3 text-xs dark:border-slate-700 ${kind === "loop" ? "invisible" : ""}`}>
             <input type="checkbox" data-testid="study-noise" checked={noise} onChange={(e) => setIndependent(e.target.checked)} className="mt-0.5 size-4 accent-accent-600" />

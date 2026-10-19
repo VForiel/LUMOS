@@ -219,6 +219,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   context (`Service.focus`, `get_focus`, `/api/focus`), pushed on the WebSocket; the tools work by default on
   the context open in the interface and the interface opens the contexts the assistant creates; MCP tool
   `get_view_link` and route `/view/<secret>` opening a context of the session in another browser.
+- Free targets (P14.17, ADR-0022): numeric settings and components of array parameters (`"field[i]"`,
+  `"field[i, j]"`) can be free, swept and drawn (`ParamHost.free_target`, `free_names`, `get_target`,
+  `set_target`, `lumos.core.param.parse_target`); `.lumos` format 1.2; in the editor, dice on numeric settings
+  and on arrays (component chosen in the editor of the prior), intermediate outputs in the study dialog, and
+  an explanation of the feedback loops in the inspector.
 - Storage of the sessions (P14.21): `session_storage`, `max_session_bytes`, `min_free_disk_bytes` and
   `max_jobs_kept` in `ServiceConfig` (public profile: per-session archives deleted with the session, 1 GB per
   session, 2 GB kept free, 20 runs in memory); `Service.storage` and `/api/storage`; job warnings; the

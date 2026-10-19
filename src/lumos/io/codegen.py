@@ -88,11 +88,13 @@ class _Writer:
             else:
                 arguments.append(f"{name}={self.quantity(value)}")
         self.lines.append(f"{variable} = {cls.__qualname__}({', '.join(arguments)})")
-        for name, field in cls.declared().items():
-            if not isinstance(field, Param):
-                continue
+        declared = cls.declared()
+        names = [name for name, field in declared.items() if isinstance(field, Param)]
+        names += [name for name in element.free_names() if name not in names]  # settings, components
+        for name in names:
+            field = declared.get(name)
             free, prior = element.is_free(name), element.prior(name)
-            if free == field.free and prior is None:
+            if free == bool(getattr(field, "free", False)) and prior is None:
                 continue
             if prior is None:
                 self.lines.append(f"{variable}.set_free({name!r}, {free!r})")

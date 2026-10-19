@@ -36,7 +36,7 @@ from lumos.core.driver import DriverError, LimitError
 from lumos.core.element import Element
 from lumos.core.graph import GraphError, Result
 from lumos.core.group import GROUP_TYPE, ElementGroup, group_type_of
-from lumos.core.param import Param
+from lumos.core.param import Param, Setting, parse_target
 from lumos.core.port import PortCompatibilityError
 from lumos.core.registry import UnknownTypeError, registry
 from lumos.io.lumos_format import entry_of, from_document
@@ -501,9 +501,9 @@ class Service:
         if is_free is None or isinstance(element, ElementGroup):
             return {}
         found: dict[str, dict[str, str] | None] = {}
-        for name, declared in type(element).declared().items():
-            if isinstance(declared, Param) and is_free(name):
-                found[name] = studies.prior_summary(element.prior(name), declared.unit)
+        for name in element.free_names():  # parameters, numeric settings, components (ADR-0022)
+            _, declared, _ = element.free_target(name)
+            found[name] = studies.prior_summary(element.prior(name), getattr(declared, "unit", None))
         return found
 
     # --- History -------------------------------------------------------------------------------------------
@@ -627,16 +627,23 @@ class Service:
         ctx = self._context(session, context)
         owner, _, name = path.rpartition(".")
         element = self._element(ctx, owner)
-        field = type(element).declared().get(name)
-        if not isinstance(field, Param):
-            physical = [n for n, f in type(element).declared().items() if isinstance(f, Param)]
+        try:
+            key, field, _ = element.free_target(name)
+        except (KeyError, TypeError, IndexError, ValueError) as error:
+            targets = [
+                n
+                for n, f in type(element).declared().items()
+                if isinstance(f, Param)
+                or (isinstance(f, Setting) and f.type in (int, float) and not f.choices)
+            ]
             raise ServiceError(
-                f"{owner} has no parameter {name!r}",
-                hint=f"physical parameters: {', '.join(physical) or 'none'}",
-            )
+                f"{owner}: {name!r} cannot be free ({error})",
+                hint=f"free one of {', '.join(targets) or 'nothing'}, or a component such as "
+                "'coefficients[0]' of an array parameter",
+            ) from error
         parsed = studies.parse_prior(field, prior, name=path) if free and prior is not None else None
         with self._editing(session, context):
-            element.set_free(name, bool(free), parsed)
+            element.set_free(key, bool(free), parsed)
         return self._element_summary(owner, element)
 
     # --- Editing -------------------------------------------------------------------------------------------
@@ -1148,12 +1155,24 @@ class Service:
             for path, spec in parameters.items():
                 owner, _, name = path.rpartition(".")
                 element = self._element(ctx, owner)
-                field = type(element).declared().get(name)
+                try:
+                    field_name, index = parse_target(name)
+                except ValueError as error:
+                    hint = "e.g. 'lens.focal_length' or 'plate.coefficients[2]'"
+                    raise ServiceError(str(error), hint=hint) from error
+                field = type(element).declared().get(field_name)
                 if field is None:
                     raise ServiceError(
-                        f"{owner} has no field {name!r}",
+                        f"{owner} has no field {field_name!r}",
                         hint=f"fields: {', '.join(type(element).declared())}",
                     )
+                if index is not None:
+                    try:
+                        element.free_target(name)  # the component exists
+                    except (TypeError, IndexError) as error:
+                        raise ServiceError(
+                            f"{path}: {error}", hint="give a component inside the array"
+                        ) from error
                 values[path] = studies.sweep_values(field, spec, name=path)
             count = studies.count_points([len(v) for v in values.values()], mode)
         else:
@@ -1273,7 +1292,7 @@ class Service:
         params = {}
         for path, value in point.params.items():
             element, field = ctx._parameter(path)
-            unit = getattr(type(element).declared()[field], "unit", None)
+            unit = getattr(type(element).declared()[parse_target(field)[0]], "unit", None)
             params[path] = str(format_value(value, unit))
         outputs = {name: summarize(name, point.outputs[name]) for name in names}
         return StudyPoint(params=params, realization=point.realization, outputs=outputs)

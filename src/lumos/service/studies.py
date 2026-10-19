@@ -17,7 +17,7 @@ from typing import Any, cast
 import numpy as np
 from astropy import units as u
 
-from lumos.core.param import Param
+from lumos.core.param import Param, Setting
 from lumos.core.priors import LogUniform, Normal, Prior, Uniform
 from lumos.service.errors import ServiceError
 from lumos.service.models import StudyResult
@@ -99,8 +99,12 @@ def count_points(lengths: Sequence[int], mode: str) -> int:
     )
 
 
-def parse_prior(field: Param, request: Mapping[str, Any], *, name: str) -> Prior:
-    """Return the prior described by ``{"kind": "normal", "mean": "1 mm", "std": "50 um"}``."""
+def parse_prior(field: Param | Setting, request: Mapping[str, Any], *, name: str) -> Prior:
+    """Return the prior described by ``{"kind": "normal", "mean": "1 mm", "std": "50 um"}``.
+
+    The values have the unit of a parameter (also for a component of an array parameter); those of a numeric
+    setting have no unit (``{"kind": "uniform", "low": 2, "high": 6}``, ADR-0022).
+    """
     kind = str(request.get("kind", ""))
     if kind not in PRIORS:
         raise ServiceError(
@@ -112,15 +116,15 @@ def parse_prior(field: Param, request: Mapping[str, Any], *, name: str) -> Prior
         raise ServiceError(
             f"{name}: a {kind} prior needs {first} and {second}", hint=f"give {first} and {second}"
         )
+    unit = field.unit if isinstance(field, Param) else u.dimensionless_unscaled
     values = [
-        parse_quantity(request[key], field.unit, name=f"{name}.{key}").to(
-            field.unit, equivalencies=u.spectral()
-        )
+        parse_quantity(request[key], unit, name=f"{name}.{key}").to(unit, equivalencies=u.spectral())
         for key in (first, second)
     ]
     try:
         prior = cls(*values)
-        field.check_prior(prior)
+        if isinstance(field, Param):
+            field.check_prior(prior)
     except (TypeError, ValueError, u.UnitsError) as error:
         raise ServiceError(f"{name}: {error}", hint=f"check {first} and {second}") from error
     return prior

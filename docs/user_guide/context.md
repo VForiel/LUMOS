@@ -100,6 +100,16 @@ stage.set_free("velocity", True, Normal(2 * u.mm / u.s, 0.1 * u.mm / u.s))
 draws = ctx.sample(100, outputs=["cam.out"])  # free parameters drawn from their priors
 ```
 
+A free target is a physical parameter, a numeric setting (prior without unit; an integer setting takes the
+nearest integer of each value) or a component of an array parameter, named `"field[i]"` or `"field[i, j]"`
+(ADR-0022):
+
+```python
+ctx["aperture"].set_free("n_spiders", True, Uniform(2.5, 6.5))  # 3, 4, 5 or 6 spiders
+ctx["plate"].set_free("coefficients[3]", True, Normal(20 * u.nm, 5 * u.nm))  # defocus only
+ctx.sweep({"plate.coefficients[3]": [0, 10, 20] * u.nm}, outputs=["cam.out"])
+```
+
 The fields get their original values back after a sweep. Draws come from a reproducible random stream: every
 element has its own stream, `ctx.rng(element)`, derived from the seed of the context.
 
@@ -142,5 +152,5 @@ an `AOController` drives only a mirror of its own geometry.
 connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back
 without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting point
 for a system built in the web interface or by an assistant. The JSON Schema of the format is published with
-the documentation (`lumos-1.1.schema.json`; `lumos-1.0.schema.json` for the documents of LUMOS 0.x without
-feedback loops).
+the documentation (`lumos-1.2.schema.json`; `lumos-1.1.schema.json` for documents without free settings or
+components, `lumos-1.0.schema.json` for those without feedback loops).
