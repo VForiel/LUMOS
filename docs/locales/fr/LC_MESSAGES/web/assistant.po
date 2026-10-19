@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -124,34 +124,38 @@ msgid "**Claude Code**: `claude mcp add --transport http lumos <link>`."
 msgstr "**Claude Code** : `claude mcp add --transport http lumos <lien>`."
 
 #: ../../web/assistant.md:46
+msgid "The page follows the assistant: its edits appear in the open context, and a context it creates or loads is opened in the editor (the previous one stays in the session). If your page is closed, or you never opened it, ask the assistant for **the link to see its work**: the tool `get_view_link` gives a link opening the context in your browser, in the same session. Like the connector link, it gives access to your session: keep it to yourself. It lasts a day."
+msgstr "La page suit l'assistant : ses modifications apparaissent dans le contexte ouvert, et un contexte qu'il crée ou charge est ouvert dans l'éditeur (le précédent reste dans la session). Si votre page est fermée, ou que vous ne l'avez jamais ouverte, demandez à l'assistant **le lien pour voir son travail** : l'outil `get_view_link` donne un lien qui ouvre le contexte dans votre navigateur, dans la même session. Comme le lien de connecteur, il donne accès à votre session : gardez-le pour vous. Il dure un jour."
+
+#: ../../web/assistant.md:52
 msgid "Claude.ai and ChatGPT reach the connector from the Internet: use the link of a public instance (HTTPS). On your own machine (`lumos web`), only local clients can use it: Claude Code, Claude Desktop, or `lumos mcp` directly."
 msgstr "Claude.ai et ChatGPT atteignent le connecteur depuis Internet : utilisez le lien d'une instance publique (HTTPS). Sur votre propre machine (`lumos web`), seuls les clients locaux peuvent l'utiliser : Claude Code, Claude Desktop, ou directement `lumos mcp`."
 
-#: ../../web/assistant.md:50
+#: ../../web/assistant.md:56
 msgid "What it can do"
 msgstr "Ce qu'il sait faire"
 
-#: ../../web/assistant.md:52
+#: ../../web/assistant.md:58
 msgid "The assistant uses the tools of the MCP server of the instance (the same as `lumos mcp`, see the [AI assistant guide](../assistant/index.md)), in **your session**: what it adds or changes appears at once in the editor, and you can undo it like any edit. Its actions are journaled with the origin `mcp`. Figures returned by the tools (inspected ports) are shown in the conversation and given to models that read images."
 msgstr "L'assistant utilise les outils du serveur MCP de l'instance (les mêmes que `lumos mcp`, voir le [guide de l'assistant IA](../assistant/index.md)), dans **votre session** : ce qu'il ajoute ou modifie apparaît aussitôt dans l'éditeur, et vous pouvez l'annuler comme toute modification. Ses actions sont journalisées avec l'origine `mcp`. Les figures renvoyées par les outils (ports inspectés) sont affichées dans la conversation et données aux modèles qui lisent les images."
 
-#: ../../web/assistant.md:57
+#: ../../web/assistant.md:63
 msgid "Viewers cannot use the assistant; simulators can; only operators get the tools that drive equipment, and every action on equipment is confirmed in a dialog, whoever asks for it."
 msgstr "Les lecteurs ne peuvent pas utiliser l'assistant ; les simulateurs le peuvent ; seuls les opérateurs obtiennent les outils qui pilotent le matériel, et chaque action sur le matériel est confirmée dans une boîte de dialogue, quel que soit le demandeur."
 
-#: ../../web/assistant.md:59
+#: ../../web/assistant.md:65
 msgid "An administrator turns the panel and the connector links off with `assistant = false` in the configuration."
 msgstr "Un administrateur désactive le panneau et les liens de connecteur avec `assistant = false` dans la configuration."
 
-#: ../../web/assistant.md:62
+#: ../../web/assistant.md:68
 msgid "Other MCP clients"
 msgstr "Autres clients MCP"
 
-#: ../../web/assistant.md:64
+#: ../../web/assistant.md:70
 msgid "The same server is at `/mcp` on the instance (streamable HTTP), with the authentication of the interface. A client such as Claude Code connects with a bearer token from `lumos login`:"
 msgstr "Le même serveur est à `/mcp` sur l'instance (HTTP en flux), avec l'authentification de l'interface. Un client comme Claude Code s'y connecte avec un jeton porteur obtenu par `lumos login` :"
 
-#: ../../web/assistant.md:72
+#: ../../web/assistant.md:78
 msgid "On your own machine, `lumos mcp` (stdio) remains the simplest way."
 msgstr "Sur votre propre machine, `lumos mcp` (stdio) reste le moyen le plus simple."
 

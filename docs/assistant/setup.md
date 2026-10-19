@@ -90,9 +90,9 @@ client written without the SDK.
   $ claude mcp add --transport http lumos http://127.0.0.1:8765/mcp
   ```
 
-  Until the web instance brings user accounts, the HTTP server has no authentication: it only listens on your
-  machine unless you pass `--allow-remote`, and it never accepts the operation of equipment from other
-  machines.
+  The HTTP server of `lumos mcp` has no authentication: it only listens on your machine unless you pass
+  `--allow-remote`, and it never accepts the operation of equipment from other machines. For an authenticated
+  access, use the MCP server of a web instance (`/mcp`, see the assistant panel).
 
 ## Options
 

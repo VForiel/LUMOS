@@ -21,58 +21,58 @@ msgstr ""
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:10002
 msgid "5. Extended scenes"
-msgstr ""
+msgstr "5. Scènes étendues"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:10004
 msgid "A **scene** gathers what an instrument observes: point sources (stars, planets) and diffuse objects (disks, nebulae, backgrounds, maps). Extended scenes are incoherent: their image is the sum of the images of their points. LUMOS images them with one of three strategies, chosen automatically and logged:"
-msgstr ""
+msgstr "Une **scène** rassemble ce qu'observe un instrument : des sources ponctuelles (étoiles, planètes) et des objets diffus (disques, nébuleuses, fonds, cartes). Les scènes étendues sont incohérentes : leur image est la somme des images de leurs points. LUMOS les image selon l'une de trois stratégies, choisie automatiquement et journalisée :"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:10008
 msgid "**isoplanatic**: the scene convolved by the PSF, for shift-invariant systems;"
-msgstr ""
+msgstr "**isoplanétique** : la scène convoluée par la PSF, pour les systèmes invariants par translation ;"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:10009
 msgid "**anisoplanatic**: PSFs on a grid of field points, interpolated;"
-msgstr ""
+msgstr "**anisoplanétique** : des PSF sur une grille de points du champ, interpolées ;"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:10010
 msgid "**decomposition**: every pixel becomes a point source, compulsory for coronagraphs and interferometers."
-msgstr ""
+msgstr "**décomposition** : chaque pixel devient une source ponctuelle, obligatoire pour les coronographes et les interféromètres."
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/05_extended_scenes.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F05_extended_scenes.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/05_extended_scenes.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F05_extended_scenes.ipynb)"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:50002
 msgid "A debris disk behind a coronagraph"
-msgstr ""
+msgstr "Un disque de débris derrière un coronographe"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:50004
 msgid "The preset `debris_disk.lumos` holds a star and an inclined ring 1000 times fainter, decomposed into point sources by the `SceneToSources` element and imaged through an 8 m telescope and a vortex coronagraph."
-msgstr ""
+msgstr "Le préréglage `debris_disk.lumos` contient une étoile et un anneau incliné 1000 fois moins lumineux, décomposé en sources ponctuelles par l'élément `SceneToSources` et imagé à travers un télescope de 8 m et un coronographe vortex."
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:70002
 msgid "The same scene with `image_scene`"
-msgstr ""
+msgstr "La même scène avec `image_scene`"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:70004
 msgid "`image_scene` probes the system: an off-axis PSF is compared with the on-axis one. The coronagraph removes the on-axis star but not the off-axis light: it is not shift-invariant, so the scene is decomposed."
-msgstr ""
+msgstr "`image_scene` sonde le système : une PSF hors axe est comparée à la PSF sur l'axe. Le coronographe éteint l'étoile sur l'axe mais pas la lumière hors axe : il n'est pas invariant par translation, la scène est donc décomposée."
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:100002
 msgid "A nebula"
-msgstr ""
+msgstr "Une nébuleuse"
 
 #: ../../examples/notebooks/05_extended_scenes.ipynb:100004
 msgid "A random texture with a power-law spectrum stands for a nebula; imaged by a plain telescope, the system is shift-invariant and the scene is convolved by the PSF."
-msgstr ""
+msgstr "Une texture aléatoire à spectre en loi de puissance figure une nébuleuse ; imagé par un simple télescope, le système est invariant par translation et la scène est convoluée par la PSF."
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -132,8 +132,8 @@ msgid "`lumos.elements.photonics`"
 msgstr "`lumos.elements.photonics`"
 
 #: ../../user_guide/elements.md
-msgid "`Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`; chips `bracewell()`, `kernel_nuller()`"
-msgstr "`Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI` ; puces `bracewell()`, `kernel_nuller()`"
+msgid "`Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`, `TransferMatrix` (a simplified MMI given by its matrix); chips `bracewell()`, `kernel_nuller()`"
+msgstr "`Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`, `TransferMatrix` (un MMI simplifié donné par sa matrice) ; puces `bracewell()`, `kernel_nuller()`"
 
 #: ../../user_guide/elements.md ../../user_guide/elements.md:113
 msgid "Detectors"

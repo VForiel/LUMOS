@@ -21,71 +21,71 @@ msgstr ""
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:10002
 msgid "1. First simulation"
-msgstr ""
+msgstr "1. Première simulation"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:10004
 msgid "This notebook builds a small optical bench: a HeNe laser focused by a lens on a camera. It shows the main concepts of LUMOS:"
-msgstr ""
+msgstr "Ce notebook construit un petit banc optique : un laser HeNe focalisé par une lentille sur une caméra. Il montre les notions principales de LUMOS :"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:10007
 msgid "**elements** with physical parameters (astropy quantities) and typed ports;"
-msgstr ""
+msgstr "les **éléments**, avec leurs paramètres physiques (quantités astropy) et leurs ports typés ;"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:10008
 msgid "the **context**, which holds the graph of elements and computes the requested outputs;"
-msgstr ""
+msgstr "le **contexte**, qui contient le graphe des éléments et calcule les sorties demandées ;"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:10009
 msgid "**figures** with physical axes, and **archives** that keep every run traceable."
-msgstr ""
+msgstr "les **figures** aux axes physiques, et les **archives** qui rendent chaque exécution traçable."
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/01_first_simulation.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F01_first_simulation.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/01_first_simulation.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F01_first_simulation.ipynb)"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:50002
 msgid "Build the bench"
-msgstr ""
+msgstr "Construire le banc"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:50004
 msgid "Elements are added to a context and connected with `>>` (output of the left element to the input of the right one). The focal plane is sampled on its own grid: 64 × 64 pixels of 2 µm."
-msgstr ""
+msgstr "Les éléments sont ajoutés à un contexte et reliés par `>>` (la sortie de l'élément de gauche vers l'entrée de celui de droite). Le plan focal est échantillonné sur sa propre grille : 64 × 64 pixels de 2 µm."
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:80002
 msgid "Run and archive"
-msgstr ""
+msgstr "Exécuter et archiver"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:80004
 msgid "`ctx.run` computes only what the requested outputs need. With `archive=...`, the run is archived in an `archives/` directory next to this notebook: the context (`context.lumos`), the metadata (versions, git commit, hardware, seed...), the journal and the computed outputs."
-msgstr ""
+msgstr "`ctx.run` ne calcule que ce dont les sorties demandées ont besoin. Avec `archive=...`, l'exécution est archivée dans un dossier `archives/` à côté de ce notebook : le contexte (`context.lumos`), les métadonnées (versions, commit git, matériel, graine…), le journal et les sorties calculées."
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:110002
 msgid "Compare with Gaussian optics"
-msgstr ""
+msgstr "Comparer avec l'optique gaussienne"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:110004
 msgid "A Gaussian beam of waist $w_0$ focused by a lens of focal length $f$ has a waist $w_f = \\lambda f / (\\pi w_0)$ in the focal plane (Siegman, *Lasers*, §17.1), so its intensity profile is $I(r) = I_0 \\exp(-2 r^2 / w_f^2)$."
-msgstr ""
+msgstr "Un faisceau gaussien de col $w_0$ focalisé par une lentille de focale $f$ a un col $w_f = \\lambda f / (\\pi w_0)$ dans le plan focal (Siegman, *Lasers*, §17.1) ; son profil d'intensité est donc $I(r) = I_0 \\exp(-2 r^2 / w_f^2)$."
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:120002
 #, python-brace-format
 msgid "40.298032 \\; \\mathrm{\\mu m}"
-msgstr ""
+msgstr "40.298032 \\; \\mathrm{\\mu m}"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:130002
 msgid "Save, reload and share"
-msgstr ""
+msgstr "Enregistrer, recharger et partager"
 
 #: ../../examples/notebooks/01_first_simulation.ipynb:130004
 msgid "The context can be saved as a `.lumos` file, exported as an equivalent Python script, and the presets of the web interface are such files."
-msgstr ""
+msgstr "Le contexte peut être enregistré dans un fichier `.lumos` ou exporté en un script Python équivalent ; les préréglages de l'interface web sont de tels fichiers."
 

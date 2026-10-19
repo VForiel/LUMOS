@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -387,15 +387,68 @@ msgstr "`archive_root`, `presets_dir`"
 msgid "directories of the archives and of the presets"
 msgstr "dossiers des archives et des préréglages"
 
-#: ../../web/configuration.md:84
+#: ../../web/configuration.md
+#, fuzzy
+msgid "`session_storage`"
+msgstr "`max_sessions`"
+
+#: ../../web/configuration.md
+#, fuzzy
+msgid "`false` / `true`"
+msgstr "`false`"
+
+#: ../../web/configuration.md
+msgid "archives of each visitor in a directory of their own, listed to them only and deleted when their session ends"
+msgstr "archives de chaque visiteur dans un dossier à lui, listées pour lui seul et supprimées à la fin de sa session"
+
+#: ../../web/configuration.md
+#, fuzzy
+msgid "`max_session_bytes`"
+msgstr "`max_sessions`"
+
+#: ../../web/configuration.md
+msgid "none / 10⁹ (1 GB)"
+msgstr "aucun / 10⁹ (1 Go)"
+
+#: ../../web/configuration.md
+msgid "data kept per session; beyond, its oldest archives and recordings are deleted"
+msgstr "données gardées par session ; au-delà, ses archives et enregistrements les plus anciens sont supprimés"
+
+#: ../../web/configuration.md
+msgid "`min_free_disk_bytes`"
+msgstr ""
+
+#: ../../web/configuration.md
+msgid "none / 2 × 10⁹"
+msgstr "aucun / 2 × 10⁹"
+
+#: ../../web/configuration.md
+msgid "free disk below which archiving is refused; visitors are warned below twice this value"
+msgstr "espace disque libre sous lequel l'archivage est refusé ; les visiteurs sont avertis sous deux fois cette valeur"
+
+#: ../../web/configuration.md
+#, fuzzy
+msgid "`max_jobs_kept`"
+msgstr "`max_jobs_per_session`"
+
+#: ../../web/configuration.md
+#, fuzzy
+msgid "50 / 20"
+msgstr "600 / 60"
+
+#: ../../web/configuration.md
+msgid "finished runs and studies of a session whose results stay in memory"
+msgstr "exécutions et études terminées d'une session dont les résultats restent en mémoire"
+
+#: ../../web/configuration.md:88
 msgid "A refused computation answers with the code `quota` and says which limit applies, so that the user can reduce the number of pixels or of wavelengths."
 msgstr "Un calcul refusé répond avec le code `quota` et indique la limite en cause, pour que l'utilisateur puisse réduire le nombre de pixels ou de longueurs d'onde."
 
-#: ../../web/configuration.md:87
+#: ../../web/configuration.md:91
 msgid "Enabling the operation on a public instance"
 msgstr "Activer l'opération sur une instance publique"
 
-#: ../../web/configuration.md:89
+#: ../../web/configuration.md:93
 msgid "Set `operation_enabled = true` in `[service]`, serve the instance over TLS (`tls_certfile` and `tls_keyfile`, or `trust_proxy = true` behind a proxy with HTTPS) and register at least one operator in the users file. Anonymous visitors can never be operators there. Each action is still confirmed in the interface and written to the audit journal."
 msgstr "Réglez `operation_enabled = true` dans `[service]`, servez l'instance en TLS (`tls_certfile` et `tls_keyfile`, ou `trust_proxy = true` derrière un mandataire en HTTPS) et enregistrez au moins un opérateur dans le fichier des utilisateurs. Les visiteurs anonymes ne peuvent jamais y être opérateurs. Chaque action reste confirmée dans l'interface et écrite dans le journal d'audit."
 

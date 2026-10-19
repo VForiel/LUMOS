@@ -21,77 +21,77 @@ msgstr ""
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:10002
 msgid "9. Detection capability"
-msgstr ""
+msgstr "9. Capacité de détection"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:10004
 msgid "Can we detect a companion 10⁴ times fainter than its star, 6 λ/D away, behind a vortex coronagraph? This notebook answers with the tools of a detection study (use case UC7):"
-msgstr ""
+msgstr "Peut-on détecter un compagnon 10⁴ fois moins lumineux que son étoile, à 6 λ/D, derrière un coronographe vortex ? Ce notebook répond avec les outils d'une étude de détection (cas d'usage UC7) :"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:10007
 msgid "a **matched filter** (the Neyman-Pearson test of a known signal) applied to many noisy exposures, with and without the companion;"
-msgstr ""
+msgstr "un **filtre adapté** (le test de Neyman-Pearson d'un signal connu) appliqué à de nombreuses poses bruitées, avec et sans le compagnon ;"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:10009
 #, python-brace-format
 msgid "the empirical **ROC curve**, compared with its analytic form $P_D = Q(Q^{-1}(P_{FA}) - d)$;"
-msgstr ""
+msgstr "la **courbe ROC** empirique, comparée à sa forme analytique $P_D = Q(Q^{-1}(P_{FA}) - d)$ ;"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:10010
 msgid "the **contrast curve** of a residual image (5σ, with the small-sample penalty of Mawet et al. 2014);"
-msgstr ""
+msgstr "la **courbe de contraste** d'une image résiduelle (5σ, avec la pénalité des petits échantillons de Mawet et al. 2014) ;"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:10011
 msgid "the **detection capability** versus separation and contrast."
-msgstr ""
+msgstr "la **capacité de détection** en fonction de la séparation et du contraste."
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/09_detection_capability.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F09_detection_capability.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/09_detection_capability.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F09_detection_capability.ipynb)"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:50002
 msgid "The instrument"
-msgstr ""
+msgstr "L'instrument"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:50004
 msgid "The preset `presets/coronagraph.lumos` places a star and a companion of contrast 10⁻⁴ at 6 λ/D behind a charge-2 vortex. We add a camera with read noise; at λ = 1.6 µm, D = 8 m and f = 100 m, λf/D = 20 µm, i.e. 4 pixels of 5 µm."
-msgstr ""
+msgstr "Le préréglage `presets/coronagraph.lumos` place une étoile et un compagnon de contraste 10⁻⁴ à 6 λ/D derrière un vortex de charge 2. Nous ajoutons une caméra avec bruit de lecture ; à λ = 1,6 µm, D = 8 m et f = 100 m, λf/D = 20 µm, soit 4 pixels de 5 µm."
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:70002
 msgid "Matched filter and ROC"
-msgstr ""
+msgstr "Filtre adapté et ROC"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:70004
 #, python-brace-format
 msgid "Each exposure gives a new noise realisation. The residual (frame - bias - star) is filtered by the template of the companion; without it, the statistic follows N(0, 1), with it N(d, 1), the deflection being $d = \\sqrt{\\sum s_i^2/\\sigma_i^2}$."
-msgstr ""
+msgstr "Chaque pose donne une nouvelle réalisation du bruit. Le résidu (image - biais - étoile) est filtré par le gabarit du compagnon ; sans lui, la statistique suit N(0, 1), avec lui N(d, 1), la déflexion valant $d = \\sqrt{\\sum s_i^2/\\sigma_i^2}$."
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:90002
 msgid "Contrast curve"
-msgstr ""
+msgstr "Courbe de contraste"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:90004
 msgid "Without knowing where the companion is, the detection limit at each separation follows from the noise in an annulus of width λ/D of a residual image (Mawet et al. 2014). The contrast is relative to the peak of the off-axis PSF of the star, here the companion template scaled by its contrast."
-msgstr ""
+msgstr "Sans savoir où est le compagnon, la limite de détection à chaque séparation découle du bruit dans un anneau de largeur λ/D d'une image résiduelle (Mawet et al. 2014). Le contraste est relatif au pic de la PSF hors axe de l'étoile, ici le gabarit du compagnon divisé par son contraste."
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:110002
 msgid "Detection capability"
-msgstr ""
+msgstr "Capacité de détection"
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:110004
 #, python-brace-format
 msgid "Moving the companion over separations gives the deflection per unit contrast $k(r)$; the matched filter then detects a contrast $c$ with probability $Q(Q^{-1}(P_{FA}) - c\\,k(r))$."
-msgstr ""
+msgstr "Déplacer le compagnon sur plusieurs séparations donne la déflexion par unité de contraste $k(r)$ ; le filtre adapté détecte alors un contraste $c$ avec la probabilité $Q(Q^{-1}(P_{FA}) - c\\,k(r))$."
 
 #: ../../examples/notebooks/09_detection_capability.ipynb:130002
 msgid "The matched filter, which knows where the companion is, reaches fainter contrasts than the blind 5σ search. For the companion of the preset (10⁻⁴ at 6 λ/D), in a single exposure of 0.3 s:"
-msgstr ""
+msgstr "Le filtre adapté, qui sait où est le compagnon, atteint des contrastes plus faibles que la recherche aveugle à 5σ. Pour le compagnon du préréglage (10⁻⁴ à 6 λ/D), en une seule pose de 0,3 s :"
 

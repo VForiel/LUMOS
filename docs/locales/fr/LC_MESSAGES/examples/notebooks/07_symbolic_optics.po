@@ -21,99 +21,99 @@ msgstr ""
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:10002
 msgid "7. Symbolic optics"
-msgstr ""
+msgstr "7. Optique symbolique"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:10004
 msgid "LUMOS can carry fields as **closed-form expressions** (SymPy) instead of sampled arrays. This notebook shows:"
-msgstr ""
+msgstr "LUMOS peut transporter des champs sous forme d'**expressions analytiques** (SymPy) au lieu de tableaux échantillonnés. Ce notebook montre :"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:10006
 msgid "symbolic fields, their parameters and their LaTeX rendering;"
-msgstr ""
+msgstr "les champs symboliques, leurs paramètres et leur rendu LaTeX ;"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:10007
 msgid "Gaussian beams propagated **exactly** through lenses and free space (ABCD law of the complex parameter q);"
-msgstr ""
+msgstr "des faisceaux gaussiens propagés **exactement** à travers des lentilles et l'espace libre (loi ABCD du paramètre complexe q) ;"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:10008
 msgid "tabulated transforms: a circular pupil focused by a lens gives the Airy pattern in closed form;"
-msgstr ""
+msgstr "des transformées tabulées : une pupille circulaire focalisée par une lentille donne la tache d'Airy sous forme analytique ;"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:10009
 msgid "the automatic, logged conversion to numbers before elements without symbolic transfer (detectors) or without closed form (pupils with spiders);"
-msgstr ""
+msgstr "la conversion automatique et journalisée en nombres avant les éléments sans transfert symbolique (détecteurs) ou sans forme analytique (pupilles avec araignées) ;"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:10011
 msgid "the way back: from sampled fields to expressions (Zernike projection, Gaussian fit)."
-msgstr ""
+msgstr "le chemin inverse : des champs échantillonnés vers des expressions (projection sur les polynômes de Zernike, ajustement gaussien)."
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/07_symbolic_optics.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F07_symbolic_optics.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/07_symbolic_optics.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F07_symbolic_optics.ipynb)"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:50002
 msgid "A symbolic field"
-msgstr ""
+msgstr "Un champ symbolique"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:50004
 msgid "A `SymbolicField` holds an expression of the canonical variables `x, y` (m) and of named parameters given as quantities. Jupyter renders it in LaTeX."
-msgstr ""
+msgstr "Un `SymbolicField` contient une expression des variables canoniques `x, y` (m) et de paramètres nommés donnés en quantités. Jupyter l'affiche en LaTeX."
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:60002
 msgid "e^{\\frac{- x^{2} - y^{2}}{w^{2}}}"
-msgstr ""
+msgstr "e^{\\frac{- x^{2} - y^{2}}{w^{2}}}"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:70002
 msgid "A Gaussian beam focused by a lens"
-msgstr ""
+msgstr "Un faisceau gaussien focalisé par une lentille"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:70004
 msgid "The preset `presets/symbolic_focus.lumos` focuses a Nd:YAG beam (w₀ = 2 mm) with a lens of 500 mm and propagates it to its new waist. Each element applies its ABCD matrix to the complex parameter q, so the field stays a closed form; the power meter at the end needs numbers, and the journal records the conversion."
-msgstr ""
+msgstr "Le préréglage `presets/symbolic_focus.lumos` focalise un faisceau Nd:YAG (w₀ = 2 mm) avec une lentille de 500 mm et le propage jusqu'à son nouveau col. Chaque élément applique sa matrice ABCD au paramètre complexe q, si bien que le champ reste une forme analytique ; le puissance-mètre final a besoin de nombres, et le journal enregistre la conversion."
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:90002
 #, python-brace-format
 msgid "The new waist predicted by Gaussian optics (Self 1983) is $w_0' = \\frac{\\lambda f}{\\pi w_0} / \\sqrt{1 + (f/z_R)^2}$. The closed form carried by the field gives it directly:"
-msgstr ""
+msgstr "Le nouveau col prédit par l'optique gaussienne (Self 1983) est $w_0' = \\frac{\\lambda f}{\\pi w_0} / \\sqrt{1 + (f/z_R)^2}$. La forme analytique portée par le champ le donne directement :"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:110002
 msgid "For comparison, the same bench with a sampled laser and numerical propagation. The symbolic profile needs no sampling of the 4 mm beam at the lens, where the numerical bench needs a large grid."
-msgstr ""
+msgstr "Pour comparaison, le même banc avec un laser échantillonné et une propagation numérique. Le profil symbolique n'a pas besoin d'échantillonner le faisceau de 4 mm sur la lentille, alors que le banc numérique demande une grande grille."
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:130002
 msgid "Tabulated transforms: the Airy pattern"
-msgstr ""
+msgstr "Transformées tabulées : la tache d'Airy"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:130004
 msgid "A plane wave through a circular pupil, then a lens and a propagation over its focal length, gives the Fraunhofer pattern of the pupil in closed form (Goodman, §5.2): a Bessel function $J_1$."
-msgstr ""
+msgstr "Une onde plane à travers une pupille circulaire, puis une lentille et une propagation sur sa distance focale, donne la figure de Fraunhofer de la pupille sous forme analytique (Goodman, §5.2) : une fonction de Bessel $J_1$."
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:140002
 msgid "\\displaystyle \\frac{0.015707963267949 \\left|{J_{1}\\left(20000.0 \\pi \\sqrt{x^{2} + y^{2}}\\right)}\\right|}{\\pi \\sqrt{x^{2} + y^{2}}}"
-msgstr ""
+msgstr "\\displaystyle \\frac{0.015707963267949 \\left|{J_{1}\\left(20000.0 \\pi \\sqrt{x^{2} + y^{2}}\\right)}\\right|}{\\pi \\sqrt{x^{2} + y^{2}}}"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:160002
 msgid "Logged fallback"
-msgstr ""
+msgstr "Repli journalisé"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:160004
 msgid "A pupil with spider vanes has no closed form: the field is sampled on its grid hint, the numerical transfer runs, and the journal says so."
-msgstr ""
+msgstr "Une pupille avec des araignées n'a pas de forme analytique : le champ est échantillonné sur la grille suggérée, le transfert numérique s'exécute, et le journal le signale."
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:180002
 msgid "From grids back to expressions"
-msgstr ""
+msgstr "Des grilles vers les expressions"
 
 #: ../../examples/notebooks/07_symbolic_optics.ipynb:180004
 msgid "`lumos.symbolic.reconstruct` turns sampled fields into expressions, with the residual error of the reconstruction. Here, the phase of an aberrated pupil is projected on Zernike modes (Noll 1976), and a measured beam is fitted by a Gaussian with curvature."
-msgstr ""
+msgstr "`lumos.symbolic.reconstruct` transforme des champs échantillonnés en expressions, avec l'erreur résiduelle de la reconstruction. Ici, la phase d'une pupille aberrante est projetée sur les modes de Zernike (Noll 1976), et un faisceau mesuré est ajusté par une gaussienne avec courbure."
 

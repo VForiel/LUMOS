@@ -1,0 +1,105 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-19 19:13+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0022-free-targets.md:1
+msgid "ADR-0022: Free settings and components of array parameters"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:4
+msgid "**Date**: 2026-10-19"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:5
+msgid "**Plan step**: P14.17"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:9
+msgid "Sweeps and Monte-Carlo runs (REQ-CTX-10, P14.13) vary *free parameters*, which were only the scalar physical parameters (`Param`) of the elements. A review of the web interface (19/10/2026) found that many values a user wants to vary could not be: numeric settings without unit (`Star.magnitude`, `CircularAperture.n_spiders`, `Telescope.oversize`, 57 of them) and the components of array parameters (the Zernike coefficients of a `PhasePlate`, the wind speeds of the layers of an `Atmosphere`, the entries of a transfer matrix)."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:15
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:17
+msgid "A **free target** of an element is named by a string:"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:18
+msgid "`\"field\"`: a physical parameter (as before) or a **numeric setting** (`int` or `float`, without a list of choices);"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:20
+msgid "`\"field[i]\"` or `\"field[i, j]\"`: a **component** of an array parameter, indices in the order of the array (C order), checked against its current shape. `ParamHost.set_free`, `is_free`, `prior`, `free_names`, `get_target` and `set_target` take these names; `Context.free_parameters`, `sweep` and `sample` take paths `\"element.field[i]\"` the same way."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:24
+msgid "Priors of numeric settings are dimensionless; priors of components have the unit of their parameter. An **integer setting** takes the nearest integer of a drawn or swept value (`numpy.rint`), so a uniform prior on `[2.5, 6.5]` draws 3 to 6 with equal chances."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:27
+msgid "Setting a component writes a copy of the whole array with this component changed (the element sees an ordinary change of its parameter, caches are invalidated as usual)."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:29
+msgid "`.lumos` documents keep these targets in the `\"free\"` object of the element, under the same names (`\"n_spiders\"`, `\"coefficients[3]\"`). This is a new feature of the format, which becomes **1.2**; LUMOS reads 1.0, 1.1 and 1.2 documents, a 1.1 reader refuses a 1.2 document instead of dropping free targets (ADR-0021)."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:34
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:36
+msgid "Free whole arrays with a prior of the same shape: the priors (`Uniform`, `LogUniform`, `Normal`) are scalar; a component at a time covers the needs met (a mode of a phase plate, a layer of turbulence) and keeps the draws reproducible and readable in the tables of the studies."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:39
+msgid "Convert numeric settings into dimensionless `Param`: it would change the types of many elements (type versions and migrations) for no gain to the users of the Python API."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:41
+msgid "Free boolean or choice settings: a prior over categories is a different object (discrete distribution); sweeps already take lists of values for them."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:44
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:46
+msgid "The web interface frees any numeric field and any component of an array, and sweeps them."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:47
+msgid "Format 1.2: documents written by this version are refused by readers of 1.1."
+msgstr ""
+
+#: ../../adr/0022-free-targets.md:48
+msgid "Studies name their parameters with the same paths; their tables and CSV files show them as such."
+msgstr ""
+

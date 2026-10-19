@@ -25,7 +25,7 @@ msgstr "Exemples"
 
 #: ../../examples/index.md:3
 msgid "Step-by-step Jupyter notebooks, stored in the [`examples/`](https://github.com/VForiel/LUMOS/tree/main/examples) directory of the repository with the presets they use (`examples/presets/*.lumos`). Each preset of the web interface matches one of them. They are executed by the test suite and when this documentation is built, so their figures appear below. Each page starts with buttons to open the notebook on Google Colab or Binder."
-msgstr ""
+msgstr "Des notebooks Jupyter pas à pas, rangés dans le dossier [`examples/`](https://github.com/VForiel/LUMOS/tree/main/examples) du dépôt avec les préréglages qu'ils utilisent (`examples/presets/*.lumos`). Chaque préréglage de l'interface web correspond à l'un d'eux. Ils sont exécutés par la suite de tests et lors de la construction de cette documentation : leurs figures apparaissent donc ci-dessous. Chaque page commence par des boutons pour ouvrir le notebook sur Google Colab ou Binder."
 
 #~ msgid "Step-by-step Jupyter notebooks. Each one has a matching preset in the web interface."
 #~ msgstr "Des notebooks Jupyter pas à pas. Chacun a un préréglage correspondant dans l'interface web."

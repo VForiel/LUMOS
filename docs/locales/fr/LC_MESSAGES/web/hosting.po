@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -145,42 +145,51 @@ msgid "The compose file also limits the CPU and memory of the container, so that
 msgstr "Le fichier compose limite aussi le processeur et la mémoire du conteneur, pour que le mandataire reste réactif."
 
 #: ../../web/hosting.md:63
+msgid "Disk"
+msgstr "Disque"
+
+#: ../../web/hosting.md:65
+#, python-format
+msgid "Results do not pile up on a public instance: the archives of a visitor are kept in a directory of their session (`session-<id>` under `archive_root`), which only they can list and download, and which is deleted when the session ends (logout, idle time). A session keeps at most `max_session_bytes` (1 GB): beyond, its oldest data are deleted and the visitor is told so. Visitors see the data of their session in the results panel and are warned when they reach 80 % of it, or when less than twice `min_free_disk_bytes` stays free on the disk; below `min_free_disk_bytes` (2 GB), archiving is refused while runs go on. Only the 20 latest finished runs of a session keep their results in memory (`max_jobs_kept`). Size the volume for `max_sessions` × `max_session_bytes` in the worst case, or lower these values."
+msgstr "Les résultats ne s'accumulent pas sur une instance publique : les archives d'un visiteur sont gardées dans un dossier de sa session (`session-<id>` sous `archive_root`), que lui seul peut lister et télécharger, et qui est supprimé à la fin de la session (déconnexion, inactivité). Une session garde au plus `max_session_bytes` (1 Go) : au-delà, ses données les plus anciennes sont supprimées et le visiteur en est informé. Les visiteurs voient les données de leur session dans le panneau des résultats et sont avertis quand ils en atteignent 80 %, ou quand il reste moins de deux fois `min_free_disk_bytes` libres sur le disque ; sous `min_free_disk_bytes` (2 Go), l'archivage est refusé mais les calculs continuent. Seules les 20 dernières exécutions terminées d'une session gardent leurs résultats en mémoire (`max_jobs_kept`). Dimensionnez le volume pour `max_sessions` × `max_session_bytes` dans le pire cas, ou baissez ces valeurs."
+
+#: ../../web/hosting.md:74
 msgid "Accounts"
 msgstr "Comptes"
 
-#: ../../web/hosting.md:65
+#: ../../web/hosting.md:76
 msgid "Anonymous visitors need no account. To give some users more rights (or to require a login with `anonymous_role = \"none\"`), create the users file in the volume and point `users_file` to it:"
 msgstr "Les visiteurs anonymes n'ont besoin d'aucun compte. Pour donner plus de droits à certains utilisateurs (ou exiger une connexion avec `anonymous_role = \"none\"`), créez le fichier des utilisateurs dans le volume et faites-y pointer `users_file` :"
 
-#: ../../web/hosting.md:72
+#: ../../web/hosting.md:83
 msgid "See [Accounts and security](accounts.md)."
 msgstr "Voir [Comptes et sécurité](accounts.md)."
 
-#: ../../web/hosting.md:74
+#: ../../web/hosting.md:85
 msgid "Operating equipment from a public instance"
 msgstr "Opérer du matériel depuis une instance publique"
 
-#: ../../web/hosting.md:76
+#: ../../web/hosting.md:87
 msgid "It stays disabled unless you decide otherwise: set `operation_enabled = true`, keep the instance behind TLS (`trust_proxy = true` with the proxy above) and register at least one operator. The server refuses to start when one of these is missing. Every action is confirmed in the interface and written to the audit journal."
 msgstr "Cela reste désactivé à moins que vous n'en décidiez autrement : réglez `operation_enabled = true`, gardez l'instance derrière TLS (`trust_proxy = true` avec le mandataire ci-dessus) et enregistrez au moins un opérateur. Le serveur refuse de démarrer s'il en manque un. Chaque action est confirmée dans l'interface et écrite dans le journal d'audit."
 
-#: ../../web/hosting.md:80
+#: ../../web/hosting.md:91
 msgid "Maintenance"
 msgstr "Maintenance"
 
-#: ../../web/hosting.md:82
+#: ../../web/hosting.md:93
 msgid "**Updates**: pull the new version, then `docker compose -f deploy/public/compose.yaml up -d --build`. Sessions are kept in memory: a restart logs everybody out (the interface restores the context of each visitor from their browser)."
 msgstr "**Mises à jour** : récupérez la nouvelle version, puis `docker compose -f deploy/public/compose.yaml up -d --build`. Les sessions sont gardées en mémoire : un redémarrage déconnecte tout le monde (l'interface restaure le contexte de chaque visiteur depuis son navigateur)."
 
-#: ../../web/hosting.md:85
+#: ../../web/hosting.md:96
 msgid "**Backups**: the `lumos-data` volume holds the users file, the audit journal and the archives."
 msgstr "**Sauvegardes** : le volume `lumos-data` contient le fichier des utilisateurs, le journal d'audit et les archives."
 
-#: ../../web/hosting.md:86
+#: ../../web/hosting.md:97
 msgid "**Logs**: `docker compose logs lumos`; security events are in `/data/audit.log` (one JSON object per line)."
 msgstr "**Journaux** : `docker compose logs lumos` ; les événements de sécurité sont dans `/data/audit.log` (un objet JSON par ligne)."
 
-#: ../../web/hosting.md:87
+#: ../../web/hosting.md:98
 msgid "**Checklist**: HTTPS only (Caddy redirects HTTP), `allowed_hosts` set, operation disabled or guarded, quotas adapted, volume backed up, the image updated with LUMOS."
 msgstr "**Liste de contrôle** : HTTPS seulement (Caddy redirige HTTP), `allowed_hosts` renseigné, opération désactivée ou protégée, quotas adaptés, volume sauvegardé, image mise à jour avec LUMOS."
 

@@ -21,47 +21,47 @@ msgstr ""
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:10002
 msgid "12. A closed adaptive optics loop"
-msgstr ""
+msgstr "12. Une boucle d'optique adaptative fermée"
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:10004
 msgid "The turbulence of the atmosphere corrugates the wavefront of a star; a deformable mirror, a wavefront sensor and a controller correct it in a closed loop. LUMOS keeps the graph of a context acyclic: the loop is a series of time iterations, where an output (the commands computed by the controller) is **fed back** to a field (the commands of the mirror) at the next step (ADR-0020). The preset `adaptive_optics.lumos` observes a star in the H band with an 8.2 m telescope through turbulence in frozen flow ($r_0$ = 15 cm at 500 nm, wind 10 m/s)."
-msgstr ""
+msgstr "La turbulence de l'atmosphère plisse le front d'onde d'une étoile ; un miroir déformable, un analyseur de surface d'onde et un contrôleur le corrigent en boucle fermée. LUMOS garde le graphe d'un contexte acyclique : la boucle est une suite d'itérations temporelles, où une sortie (les commandes calculées par le contrôleur) est **réinjectée** dans un champ (les commandes du miroir) au pas suivant (ADR-0020). Le préréglage `adaptive_optics.lumos` observe une étoile en bande H avec un télescope de 8,2 m à travers une turbulence en écoulement figé ($r_0$ = 15 cm à 500 nm, vent de 10 m/s)."
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/12_adaptive_optics.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F12_adaptive_optics.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/12_adaptive_optics.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F12_adaptive_optics.ipynb)"
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:50002
 msgid "Open loop"
-msgstr ""
+msgstr "Boucle ouverte"
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:50004
 msgid "Before the loop runs, the mirror is flat: the image of the star is a speckle cloud spread over $\\lambda / r_0$ instead of $\\lambda / D$."
-msgstr ""
+msgstr "Avant que la boucle tourne, le miroir est plat : l'image de l'étoile est un nuage de tavelures étalé sur $\\lambda / r_0$ au lieu de $\\lambda / D$."
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:70002
 msgid "Closing the loop"
-msgstr ""
+msgstr "Fermer la boucle"
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:70004
 #, python-brace-format
 msgid "The controller is an integrator: $\\Delta c = -g R s$, with $s$ the slopes measured by the Shack-Hartmann sensor and $R$ the regularised pseudo-inverse of the interaction matrix of the mirror. Each iteration of 2 ms computes the outputs, then adds $\\Delta c$ to the commands of the mirror, then advances the clock: the correction acts one frame later. With a gain $g$ the error of a static aberration decreases as $(1 - g)^k$; on turbulence the residual settles near the fitting error of the mirror, about $0.3 (d / r_0)^{5/3}$ rad² for an actuator pitch $d$ (Hudgin 1977), plus the error due to the wind during the delay."
-msgstr ""
+msgstr "Le contrôleur est un intégrateur : $\\Delta c = -g R s$, avec $s$ les pentes mesurées par l'analyseur de Shack-Hartmann et $R$ la pseudo-inverse régularisée de la matrice d'interaction du miroir. Chaque itération de 2 ms calcule les sorties, ajoute $\\Delta c$ aux commandes du miroir, puis avance l'horloge : la correction agit une image plus tard. Avec un gain $g$, l'erreur d'une aberration statique décroît comme $(1 - g)^k$ ; sur la turbulence, le résidu se stabilise près de l'erreur de fitting du miroir, environ $0.3 (d / r_0)^{5/3}$ rad² pour un pas d'actionneurs $d$ (Hudgin 1977), plus l'erreur due au vent pendant le retard."
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:90002
 msgid "Closed loop"
-msgstr ""
+msgstr "Boucle fermée"
 
 #: ../../examples/notebooks/12_adaptive_optics.ipynb:90004
 msgid "The image of the star is now close to the diffraction limit of the telescope; the loop has kept its state: the mirror holds the last commands."
-msgstr ""
+msgstr "L'image de l'étoile est maintenant proche de la limite de diffraction du télescope ; la boucle a gardé son état : le miroir conserve les dernières commandes."
 

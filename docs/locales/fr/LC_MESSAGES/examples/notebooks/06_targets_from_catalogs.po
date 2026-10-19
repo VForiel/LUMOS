@@ -21,58 +21,58 @@ msgstr ""
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:10002
 msgid "6. Targets from astronomical catalogues"
-msgstr ""
+msgstr "6. Cibles tirées des catalogues astronomiques"
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:10004
 msgid "LUMOS reads astronomical catalogues (SIMBAD, Gaia, VizieR, the NASA Exoplanet Archive, JPL Horizons, CALSPEC, SkyView...) and turns their answers into **typed records** with units, uncertainties and the provenance of every value, then into elements of a scene."
-msgstr ""
+msgstr "LUMOS lit des catalogues astronomiques (SIMBAD, Gaia, VizieR, NASA Exoplanet Archive, JPL Horizons, CALSPEC, SkyView…) et transforme leurs réponses en **enregistrements typés**, avec unités, incertitudes et provenance de chaque valeur, puis en éléments d'une scène."
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:10008
 msgid "Every request goes through a cache. This notebook ships with the answers it needs (`catalog_cache/`): the tests run it offline. Remove the two `LUMOS_CATALOGS_*` environment variables (or set `settings.offline = False`) to query the services live."
-msgstr ""
+msgstr "Chaque requête passe par un cache. Ce notebook est livré avec les réponses dont il a besoin (`catalog_cache/`) : les tests l'exécutent hors ligne. Supprimez les deux variables d'environnement `LUMOS_CATALOGS_*` (ou mettez `settings.offline = False`) pour interroger les services en direct."
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/06_targets_from_catalogs.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F06_targets_from_catalogs.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/06_targets_from_catalogs.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F06_targets_from_catalogs.ipynb)"
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:50002
 msgid "Resolve a name"
-msgstr ""
+msgstr "Résoudre un nom"
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:50004
 msgid "`resolve` decides which catalogue answers: SIMBAD for stars and nebulae, the NASA Exoplanet Archive for planets, JPL Horizons for the planets of the Solar System."
-msgstr ""
+msgstr "`resolve` choisit le catalogue qui répond : SIMBAD pour les étoiles et les nébuleuses, le NASA Exoplanet Archive pour les planètes, JPL Horizons pour les planètes du Système solaire."
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:80002
 msgid "The spectral energy distribution of Vega"
-msgstr ""
+msgstr "La distribution spectrale d'énergie de Véga"
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:80004
 msgid "The VizieR photometry service gathers every photometric point of the VizieR catalogues. `fuse` keeps one point per filter (priority catalogues, then the smallest relative uncertainty, then the median), and a blackbody fit completes the SED where it has no point (flagged as estimated)."
-msgstr ""
+msgstr "Le service de photométrie de VizieR rassemble tous les points photométriques des catalogues VizieR. `fuse` garde un point par filtre (catalogues prioritaires, puis plus petite incertitude relative, puis médiane), et un ajustement de corps noir complète la SED là où elle n'a pas de point (signalé comme estimé)."
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:100002
 msgid "A star and its planets: TRAPPIST-1"
-msgstr ""
+msgstr "Une étoile et ses planètes : TRAPPIST-1"
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:100004
 msgid "`Scene.from_catalog` builds the celestial scene of a star and of its known planets."
-msgstr ""
+msgstr "`Scene.from_catalog` construit la scène céleste d'une étoile et de ses planètes connues."
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:130002
 msgid "A nebula from a sky survey"
-msgstr ""
+msgstr "Une nébuleuse issue d'un relevé du ciel"
 
 #: ../../examples/notebooks/06_targets_from_catalogs.ipynb:130004
 msgid "Survey images are rarely calibrated in brightness: give the total flux density of the image (or the brightness of one data unit)."
-msgstr ""
+msgstr "Les images de relevés sont rarement étalonnées en brillance : donnez la densité de flux totale de l'image (ou la brillance d'une unité de donnée)."
 

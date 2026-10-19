@@ -21,44 +21,44 @@ msgstr ""
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:10002
 msgid "2. Propagation methods"
-msgstr ""
+msgstr "2. Méthodes de propagation"
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:10004
 msgid "LUMOS propagates a field sampled on any grid to any other grid. Several methods exist (Fresnel transfer function and impulse response, one-step Fresnel with a matrix Fourier transform, band-limited angular spectrum, direct Rayleigh-Sommerfeld); the **planner** chooses the most efficient one that respects the sampling criteria, and logs its choice."
-msgstr ""
+msgstr "LUMOS propage un champ échantillonné sur une grille quelconque vers n'importe quelle autre grille. Plusieurs méthodes existent (fonction de transfert et réponse impulsionnelle de Fresnel, Fresnel en une étape par transformée de Fourier matricielle, spectre angulaire à bande limitée, Rayleigh-Sommerfeld direct) ; le **planificateur** choisit la plus efficace qui respecte les critères d'échantillonnage, et journalise son choix."
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/02_propagation_methods.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F02_propagation_methods.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/02_propagation_methods.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F02_propagation_methods.ipynb)"
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:60002
 msgid "Every method against the analytic Gaussian beam"
-msgstr ""
+msgstr "Chaque méthode face au faisceau gaussien analytique"
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:60004
 #, python-brace-format
 msgid "The beam radius grows as $w(z) = w_0 \\sqrt{1 + (z / z_R)^2}$ with the Rayleigh range $z_R = \\pi w_0^2 / \\lambda$ (Siegman, *Lasers*, §17.1)."
-msgstr ""
+msgstr "Le rayon du faisceau croît comme $w(z) = w_0 \\sqrt{1 + (z / z_R)^2}$, avec la longueur de Rayleigh $z_R = \\pi w_0^2 / \\lambda$ (Siegman, *Lasers*, §17.1)."
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:90002
 msgid "The same propagation inside a context"
-msgstr ""
+msgstr "La même propagation dans un contexte"
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:90004
 msgid "The preset `propagation_methods.lumos` lets the planner choose: its choice is in the journal of the context."
-msgstr ""
+msgstr "Le préréglage `propagation_methods.lumos` laisse choisir le planificateur : son choix figure dans le journal du contexte."
 
 #: ../../examples/notebooks/02_propagation_methods.ipynb:110002
 #, python-brace-format
 msgid "0.00099999986 \\; \\mathrm{W}"
-msgstr ""
+msgstr "0.00099999986 \\; \\mathrm{W}"
 

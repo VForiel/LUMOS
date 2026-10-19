@@ -21,38 +21,38 @@ msgstr ""
 
 #: ../../examples/notebooks/04_interferometry.ipynb:10002
 msgid "4. Nulling interferometry"
-msgstr ""
+msgstr "4. Interférométrie en frange noire"
 
 #: ../../examples/notebooks/04_interferometry.ipynb:10004
 msgid "Arrays of telescopes are combined by photonic chips. A **Bracewell nuller** sends the light of an on-axis star to a bright output and transmits $2P\\sin^2(\\pi B\\theta/\\lambda)$ from a source at angle $\\theta$ on its dark output (Bracewell 1978). A **kernel nuller** (Martinache & Ireland 2018) combines four telescopes into observables robust to small phase errors."
-msgstr ""
+msgstr "Les réseaux de télescopes sont recombinés par des puces photoniques. Un **nuller de Bracewell** envoie la lumière d'une étoile sur l'axe vers une sortie brillante et transmet $2P\\sin^2(\\pi B\\theta/\\lambda)$ d'une source à l'angle $\\theta$ sur sa sortie sombre (Bracewell 1978). Un **kernel nuller** (Martinache & Ireland 2018) recombine quatre télescopes en observables robustes aux petites erreurs de phase."
 
 #: ../../examples/notebooks/04_interferometry.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/04_interferometry.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F04_interferometry.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/04_interferometry.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F04_interferometry.ipynb)"
 
 #: ../../examples/notebooks/04_interferometry.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/04_interferometry.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/04_interferometry.ipynb:50002
 msgid "Transmission of a Bracewell nuller"
-msgstr ""
+msgstr "Transmission d'un nuller de Bracewell"
 
 #: ../../examples/notebooks/04_interferometry.ipynb:50004
 msgid "The preset `bracewell.lumos` holds a source, two telescopes 20 m apart and the nuller. Moving the source across the field gives the transmission map."
-msgstr ""
+msgstr "Le préréglage `bracewell.lumos` contient une source, deux télescopes séparés de 20 m et le nuller. Déplacer la source dans le champ donne la carte de transmission."
 
 #: ../../examples/notebooks/04_interferometry.ipynb:80002
 msgid "Outputs of a kernel nuller"
-msgstr ""
+msgstr "Sorties d'un kernel nuller"
 
 #: ../../examples/notebooks/04_interferometry.ipynb:80004
 msgid "The preset `kernel_nuller.lumos` observes a star and a planet 100 times fainter: output 0 collects the star, the six dark outputs the planet, and the kernels are differences of pairs of dark outputs."
-msgstr ""
+msgstr "Le préréglage `kernel_nuller.lumos` observe une étoile et une planète 100 fois moins lumineuse : la sortie 0 recueille l'étoile, les six sorties sombres la planète, et les kernels sont des différences de paires de sorties sombres."
 

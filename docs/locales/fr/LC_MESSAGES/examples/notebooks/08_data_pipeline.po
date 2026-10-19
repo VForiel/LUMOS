@@ -21,84 +21,84 @@ msgstr ""
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:10002
 msgid "8. Data pipeline"
-msgstr ""
+msgstr "8. Chaîne de traitement des données"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:10004
 msgid "A star observed by an 8.2 m telescope in the H band, recorded by a camera with dark current, read noise and bias. This notebook reduces the frames the way an observer would:"
-msgstr ""
+msgstr "Une étoile observée par un télescope de 8,2 m en bande H, enregistrée par une caméra avec courant d'obscurité, bruit de lecture et biais. Ce notebook réduit les images comme le ferait un observateur :"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:10007
 msgid "take dark frames and science frames;"
-msgstr ""
+msgstr "prendre des images d'obscurité (darks) et des images scientifiques ;"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:10008
 msgid "build a master dark, stack the science frames and subtract the dark;"
-msgstr ""
+msgstr "construire un dark maître, empiler les images scientifiques et soustraire le dark ;"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:10009
 msgid "measure the flux of the star by aperture photometry and compare its signal-to-noise ratio with the CCD equation;"
-msgstr ""
+msgstr "mesurer le flux de l'étoile par photométrie d'ouverture et comparer son rapport signal sur bruit à l'équation CCD ;"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:10011
 msgid "run the same steps as **processing elements** in the graph of the context, with a custom **script block**."
-msgstr ""
+msgstr "refaire les mêmes étapes avec des **éléments de traitement** dans le graphe du contexte, dont un **bloc script** personnalisé."
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:10013
 msgid "Every function propagates the uncertainties of the data (GUM)."
-msgstr ""
+msgstr "Chaque fonction propage les incertitudes des données (GUM)."
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/08_data_pipeline.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F08_data_pipeline.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/08_data_pipeline.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F08_data_pipeline.ipynb)"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:50002
 msgid "The observation"
-msgstr ""
+msgstr "L'observation"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:50004
 msgid "The preset `presets/vlt_psf.lumos` holds the star, the telescope (central obstruction and four spiders) and an ideal camera. We make the star fainter and give the camera realistic defects."
-msgstr ""
+msgstr "Le préréglage `presets/vlt_psf.lumos` contient l'étoile, le télescope (obstruction centrale et quatre araignées) et une caméra idéale. Nous rendons l'étoile plus faible et donnons à la caméra des défauts réalistes."
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:70002
 msgid "Reduction"
-msgstr ""
+msgstr "Réduction"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:70004
 msgid "Without per-frame uncertainties, the stacks estimate them from the scatter of the frames: σ/√N for the mean, √(π/2) σ/√N for the median. The subtraction adds the uncertainties in quadrature."
-msgstr ""
+msgstr "Sans incertitudes par image, les empilements les estiment à partir de la dispersion des images : σ/√N pour la moyenne, √(π/2) σ/√N pour la médiane. La soustraction additionne les incertitudes en quadrature."
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:90002
 msgid "Photometry and signal-to-noise ratio"
-msgstr ""
+msgstr "Photométrie et rapport signal sur bruit"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:90004
 #, python-brace-format
 msgid "The aperture weights every pixel by its exact overlap with the disk; the background annulus removes what is left of the bias and the dark. The flux is compared with the expected number of electrons (a noiseless run of the same context), and the scatter of the single-frame measurements with the CCD equation $S/\\sqrt{S + n(1 + n/n_B)(B + D + R^2)}$ (Howell 2006), whose factor $1 + n/n_B$ is the noise of the background measured over $n_B$ pixels."
-msgstr ""
+msgstr "L'ouverture pondère chaque pixel par son recouvrement exact avec le disque ; l'anneau de fond retire ce qui reste du biais et du courant d'obscurité. Le flux est comparé au nombre d'électrons attendu (une exécution sans bruit du même contexte), et la dispersion des mesures sur une seule image à l'équation CCD $S/\\sqrt{S + n(1 + n/n_B)(B + D + R^2)}$ (Howell 2006), dont le facteur $1 + n/n_B$ est le bruit du fond mesuré sur $n_B$ pixels."
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:110002
 #, python-brace-format
 msgid "The measured scatter over 40 frames is itself uncertain by about $1/\\sqrt{2(N-1)} \\approx 11\\,\\%$, so the two SNR values agree within that precision."
-msgstr ""
+msgstr "La dispersion mesurée sur 40 images est elle-même incertaine d'environ $1/\\sqrt{2(N-1)} \\approx 11\\,\\%$ : les deux valeurs du RSB concordent à cette précision près."
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:110005
 msgid "The same pipeline in the graph"
-msgstr ""
+msgstr "La même chaîne dans le graphe"
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:110007
 msgid "Processing blocks are elements with `DataProduct` ports. A **script block** wraps a function of ours, here the subtraction of the master dark measured above; its parameters (a level in ADU) are saved in `.lumos` files, its code is not."
-msgstr ""
+msgstr "Les blocs de traitement sont des éléments à ports `DataProduct`. Un **bloc script** enveloppe une de nos fonctions, ici la soustraction du dark maître mesuré plus haut ; ses paramètres (un niveau en ADU) sont enregistrés dans les fichiers `.lumos`, pas son code."
 
 #: ../../examples/notebooks/08_data_pipeline.ipynb:140002
 msgid "The context, with its processing blocks, is saved like any other one; `lumos.io.load` needs the script block to be defined first (here, by running the cell above)."
-msgstr ""
+msgstr "Le contexte, avec ses blocs de traitement, s'enregistre comme n'importe quel autre ; `lumos.io.load` a besoin que le bloc script soit défini au préalable (ici, en exécutant la cellule ci-dessus)."
 

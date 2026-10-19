@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -120,7 +120,7 @@ msgid "The server listens on `http://127.0.0.1:8765/mcp` (change it with `--host
 msgstr "Le serveur écoute sur `http://127.0.0.1:8765/mcp` (changez-le avec `--host`, `--port` et `--path`). Avec Claude Code :"
 
 #: ../../assistant/setup.md:93
-msgid "Until the web instance brings user accounts, the HTTP server has no authentication: it only listens on your machine unless you pass `--allow-remote`, and it never accepts the operation of equipment from other machines."
+msgid "The HTTP server of `lumos mcp` has no authentication: it only listens on your machine unless you pass `--allow-remote`, and it never accepts the operation of equipment from other machines. For an authenticated access, use the MCP server of a web instance (`/mcp`, see the assistant panel)."
 msgstr "Le serveur HTTP de `lumos mcp` n'a pas d'authentification : il n'écoute que sur votre machine, sauf avec `--allow-remote`, et n'accepte jamais l'opération de matériel depuis d'autres machines. Pour un accès authentifié, utilisez le serveur MCP d'une instance web (`/mcp`, voir le panneau assistant)."
 
 #: ../../assistant/setup.md:97

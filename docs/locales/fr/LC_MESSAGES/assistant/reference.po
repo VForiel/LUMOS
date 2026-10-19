@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -40,22 +40,22 @@ msgid "**Ports** are written `\"element.port\"` (`\"laser.out\"`, `\"meter.in\"`
 msgstr "Les **ports** s'écrivent `\"element.port\"` (`\"laser.out\"`, `\"meter.in\"`) ; les enfants des groupes `\"groupe.enfant\"`."
 
 #: ../../assistant/reference.md:11
-msgid "**Current context**: the last context created, loaded, imported or named. Tools that take `context` use it when the argument is omitted."
-msgstr "**Contexte courant** : le dernier contexte créé, chargé, importé ou nommé. Les outils qui prennent `context` l'utilisent quand l'argument est omis."
+msgid "**Current context**: the context in the foreground of the session: the last one created, loaded, imported or named, or the one open in the web interface when the assistant works in its session (connector link, assistant panel). Tools that take `context` use it when the argument is omitted."
+msgstr "**Contexte courant** : le contexte au premier plan de la session : le dernier créé, chargé, importé ou nommé, ou celui ouvert dans l'interface web quand l'assistant travaille dans sa session (lien de connecteur, panneau assistant). Les outils qui prennent `context` l'utilisent quand l'argument est omis."
 
-#: ../../assistant/reference.md:13
+#: ../../assistant/reference.md:14
 msgid "**Errors** give the cause, a `hint:` saying how to fix the request and a `code:` (`invalid`, `not_found`, `forbidden`, `quota`, `failed`)."
 msgstr "Les **erreurs** donnent la cause, un `hint:` disant comment corriger la demande et un `code:` (`invalid`, `not_found`, `forbidden`, `quota`, `failed`)."
 
-#: ../../assistant/reference.md:15
+#: ../../assistant/reference.md:16
 msgid "**Results** are a short text with units, a figure for signals, and structured data (JSON) for programs."
 msgstr "Les **résultats** sont un texte court avec unités, une figure pour les signaux, et des données structurées (JSON) pour les programmes."
 
-#: ../../assistant/reference.md:17
+#: ../../assistant/reference.md:18
 msgid "Tools"
 msgstr "Outils"
 
-#: ../../assistant/reference.md:19
+#: ../../assistant/reference.md:20
 msgid "Discovery"
 msgstr "Découverte"
 
@@ -91,7 +91,7 @@ msgstr "`search_docs`"
 msgid "Excerpts of the documentation matching a query."
 msgstr "Extraits de la documentation correspondant à une requête."
 
-#: ../../assistant/reference.md:27
+#: ../../assistant/reference.md:28
 msgid "Contexts and construction"
 msgstr "Contextes et construction"
 
@@ -142,6 +142,14 @@ msgstr "`close_context`"
 #: ../../assistant/reference.md
 msgid "Forget a context."
 msgstr "Oublier un contexte."
+
+#: ../../assistant/reference.md
+msgid "`get_view_link`"
+msgstr ""
+
+#: ../../assistant/reference.md
+msgid "Link opening a context in the web interface, to give to the user (servers of a web instance)."
+msgstr "Lien ouvrant un contexte dans l'interface web, à donner à l'utilisateur (serveurs d'une instance web)."
 
 #: ../../assistant/reference.md
 msgid "`add_element`"
@@ -231,7 +239,7 @@ msgstr "`export_python`"
 msgid "The equivalent Python script."
 msgstr "Le script Python équivalent."
 
-#: ../../assistant/reference.md:49
+#: ../../assistant/reference.md:51
 msgid "Verification"
 msgstr "Vérification"
 
@@ -259,7 +267,7 @@ msgstr "`plan_propagation`"
 msgid "Same as `explain_sampling`."
 msgstr "Identique à `explain_sampling`."
 
-#: ../../assistant/reference.md:57
+#: ../../assistant/reference.md:59
 msgid "Execution and results"
 msgstr "Exécution et résultats"
 
@@ -335,7 +343,7 @@ msgstr "`read_archive_metadata`"
 msgid "Metadata of an archived run."
 msgstr "Métadonnées d'une exécution archivée."
 
-#: ../../assistant/reference.md:71
+#: ../../assistant/reference.md:73
 msgid "Studies"
 msgstr "Études"
 
@@ -403,7 +411,7 @@ msgstr "`run_loop`"
 msgid "Run the context as a closed loop of `steps` iterations of `period`."
 msgstr "Exécuter le contexte en boucle fermée sur `steps` itérations de durée `period`."
 
-#: ../../assistant/reference.md:84
+#: ../../assistant/reference.md:86
 msgid "Catalogues and processing"
 msgstr "Catalogues et traitement"
 
@@ -423,7 +431,7 @@ msgstr "`evaluate_detection`"
 msgid "5σ contrast curve of a residual image."
 msgstr "Courbe de contraste à 5σ d'une image résiduelle."
 
-#: ../../assistant/reference.md:91
+#: ../../assistant/reference.md:93
 msgid "Operation"
 msgstr "Opération"
 
@@ -475,7 +483,7 @@ msgstr "`associate_devices`"
 msgid "Attach the discovered devices to elements (only with `--enable-operation`)."
 msgstr "Rattacher les équipements découverts aux éléments (seulement avec `--enable-operation`)."
 
-#: ../../assistant/reference.md:102
+#: ../../assistant/reference.md:104
 msgid "Resources"
 msgstr "Ressources"
 
@@ -581,7 +589,7 @@ msgstr "`lumos://archives`"
 msgid "`lumos://archives/{+path}`"
 msgstr "`lumos://archives/{+path}`"
 
-#: ../../assistant/reference.md:119
+#: ../../assistant/reference.md:121
 msgid "Prompts"
 msgstr "Prompts"
 
@@ -645,39 +653,39 @@ msgstr "`problem`, `context`"
 msgid "Find why a simulation is wrong, slow or suspicious."
 msgstr "Trouver pourquoi une simulation est fausse, lente ou suspecte."
 
-#: ../../assistant/reference.md:128
+#: ../../assistant/reference.md:130
 msgid "Evaluation"
 msgstr "Évaluation"
 
-#: ../../assistant/reference.md:130
+#: ../../assistant/reference.md:132
 msgid "The scenarios of `lumos.mcp.evaluation` check that an assistant reaches verifiable results through the server: the transmission map of a Bracewell nuller (UC1), a Gaussian beam propagated with two methods (UC8) and the raw contrast of a vortex coronagraph (UC9), each compared with its analytic solution. `tools/mcp_eval.py` solves them with scripted tool calls, as the tests do; `tools/mcp_eval.py --claude-code` lets Claude Code solve them with your subscription (no API key) and checks its answers."
 msgstr "Les scénarios de `lumos.mcp.evaluation` vérifient qu'un assistant atteint des résultats vérifiables par le serveur : la carte de transmission d'un nuller de Bracewell (UC1), un faisceau gaussien propagé par deux méthodes (UC8) et le contraste brut d'un coronographe vortex (UC9), chacun comparé à sa solution analytique. `tools/mcp_eval.py` les résout par des appels d'outils scriptés, comme les tests ; `tools/mcp_eval.py --claude-code` les fait résoudre par Claude Code avec votre abonnement (sans clé d'API) et vérifie ses réponses."
 
-#: ../../assistant/reference.md:136
+#: ../../assistant/reference.md:138
 msgid "Safety"
 msgstr "Sécurité"
 
-#: ../../assistant/reference.md:138
+#: ../../assistant/reference.md:140
 msgid "**Operation disabled by default.** Without `--enable-operation`, the assistant cannot discover or drive equipment; actions on elements in operation mode are refused. Actions on simulated elements are allowed."
 msgstr "**Opération désactivée par défaut.** Sans `--enable-operation`, l'assistant ne peut ni découvrir ni piloter d'équipement ; les actions sur les éléments en mode opération sont refusées. Les actions sur des éléments simulés sont permises."
 
-#: ../../assistant/reference.md:140
+#: ../../assistant/reference.md:142
 msgid "**Human confirmation.** With `--enable-operation`, every action on real equipment is confirmed by you: the server itself asks the question through the client (MCP elicitation), so the assistant cannot answer it. A client that cannot ask you cannot act on equipment."
 msgstr "**Confirmation humaine.** Avec `--enable-operation`, chaque action sur du matériel réel est confirmée par vous : le serveur pose lui-même la question par le client (élicitation MCP), si bien que l'assistant ne peut pas y répondre. Un client qui ne peut pas vous interroger ne peut pas agir sur le matériel."
 
-#: ../../assistant/reference.md:143
+#: ../../assistant/reference.md:145
 msgid "**Limits enforced by the server.** Software limits, dry runs and confirmations of the drivers apply whatever the request ([Operating a bench](../hardware/operation.md)); `stop_all` is always available and never asks."
 msgstr "**Limites imposées par le serveur.** Les limites logicielles, les exécutions à blanc et les confirmations des pilotes s'appliquent quelle que soit la demande ([Opérer un banc](../hardware/operation.md)) ; `stop_all` est toujours disponible et ne demande jamais rien."
 
-#: ../../assistant/reference.md:145
+#: ../../assistant/reference.md:147
 msgid "**Traceability.** Every run and action is recorded in the journal of its context with the origin `mcp`, and archives record it too."
 msgstr "**Traçabilité.** Chaque exécution et chaque action sont enregistrées dans le journal de leur contexte avec l'origine `mcp`, et les archives les enregistrent aussi."
 
-#: ../../assistant/reference.md:147
+#: ../../assistant/reference.md:149
 msgid "**Quotas.** Contexts per session, runs at a time and run duration are limited by the service."
 msgstr "**Quotas.** Les contextes par session, les exécutions simultanées et la durée d'une exécution sont limités par le service."
 
-#: ../../assistant/reference.md:148
+#: ../../assistant/reference.md:150
 msgid "**Network.** The HTTP transport listens on your machine only, unless `--allow-remote`; remote clients can never drive equipment."
 msgstr "**Réseau.** Le transport HTTP n'écoute que sur votre machine, sauf avec `--allow-remote` ; les clients distants ne peuvent jamais piloter d'équipement."
 

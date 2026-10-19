@@ -21,74 +21,74 @@ msgstr ""
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:10002
 msgid "10. Operating a bench"
-msgstr ""
+msgstr "10. Piloter un banc"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:10004
 msgid "The same description of a bench is simulated, then operated, with the digital twin running beside the equipment. The equipment here is the fictitious **LumosLabs** range: its emulators speak the LumosLabs protocol over TCP, so LUMOS drives them exactly as it would drive real devices (same drivers, errors and latencies)."
-msgstr ""
+msgstr "La même description d'un banc est simulée, puis pilotée, avec le jumeau numérique qui tourne à côté des équipements. Les équipements sont ici ceux de la gamme fictive **LumosLabs** : leurs émulateurs parlent le protocole LumosLabs sur TCP, si bien que LUMOS les pilote exactement comme de vrais appareils (mêmes drivers, erreurs et latences)."
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:10008
 msgid "**UC3**: describe a bench (laser, shutter, lens on a stage, camera), record a sequence in simulation, then replay it on the equipment and compare the measured and simulated images;"
-msgstr ""
+msgstr "**UC3** : décrire un banc (laser, obturateur, lentille sur une platine, caméra), enregistrer une séquence en simulation, puis la rejouer sur les équipements et comparer les images mesurées et simulées ;"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:10010
 msgid "safety: limits, emergency stop;"
-msgstr ""
+msgstr "la sécurité : limites, arrêt d'urgence ;"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:10011
 msgid "**UC4**: calibrate the phase of a photonic chip in operation, against the twin."
-msgstr ""
+msgstr "**UC4** : étalonner la phase d'une puce photonique en opération, face au jumeau."
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:20002
 #, python-format
 msgid "[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/10_bench_operation.ipynb) [![Launch on Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F10_bench_operation.ipynb)"
-msgstr ""
+msgstr "[![Ouvrir dans Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/VForiel/LUMOS/blob/main/examples/10_bench_operation.ipynb) [![Lancer sur Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/VForiel/LUMOS/main?labpath=examples%2F10_bench_operation.ipynb)"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:20002
 msgid "Open in Colab"
-msgstr ""
+msgstr "Ouvrir dans Colab"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:20002
 msgid "Launch on Binder"
-msgstr ""
+msgstr "Lancer sur Binder"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:50002
 msgid "The equipment"
-msgstr ""
+msgstr "Les équipements"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:50004
 msgid "In a laboratory, the devices are plugged into the computer. Here we start their emulators in this process (`lumos emulators start` does the same from a terminal) and **discover** them: LUMOS asks every address `*IDN?` and keeps the devices that answer."
-msgstr ""
+msgstr "Au laboratoire, les appareils sont branchés à l'ordinateur. Ici nous démarrons leurs émulateurs dans ce processus (`lumos emulators start` fait de même depuis un terminal) et nous les **découvrons** : LUMOS envoie `*IDN?` à chaque adresse et garde les appareils qui répondent."
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:70002
 msgid "UC3: one bench, simulated then operated"
-msgstr ""
+msgstr "UC3 : un banc, simulé puis piloté"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:70004
 msgid "A laser goes through a shutter and a lens carried by a stage, which focuses it on a camera. `ctx.link` makes the propagation distance follow the stage, so that the twin sees the same focus as the bench. The camera is described with the nominal parameters of the `LL-CAM` (gain, bias, dark current, read noise)."
-msgstr ""
+msgstr "Un laser traverse un obturateur et une lentille portée par une platine, qui le focalise sur une caméra. `ctx.link` fait suivre la platine à la distance de propagation, pour que le jumeau voie la même mise au point que le banc. La caméra est décrite avec les paramètres nominaux de la `LL-CAM` (gain, biais, courant d'obscurité, bruit de lecture)."
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:90002
 msgid "The same sequence is replayed on the equipment. Switching the laser on is a dangerous action: the driver asks for a confirmation (here a function that accepts; in the web interface or through an AI assistant, a human answers). `operation_guard` brings everything to a safe state if anything goes wrong."
-msgstr ""
+msgstr "La même séquence est rejouée sur les équipements. Allumer le laser est une action dangereuse : le driver demande une confirmation (ici une fonction qui accepte ; dans l'interface web ou par un assistant d'IA, un humain répond). `operation_guard` ramène tout dans un état sûr si quelque chose se passe mal."
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:120002
 msgid "Safety"
-msgstr ""
+msgstr "Sécurité"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:120004
 msgid "Every command is checked against the limits of its driver, read from the device, even when it is sent directly to the driver. An emergency stop interrupts a motion in progress, from any thread."
-msgstr ""
+msgstr "Chaque commande est vérifiée par rapport aux limites de son driver, lues sur l'appareil, même quand elle est envoyée directement au driver. Un arrêt d'urgence interrompt un mouvement en cours, depuis n'importe quel fil d'exécution."
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:140002
 msgid "UC4: calibrating the phase of a chip"
-msgstr ""
+msgstr "UC4 : étalonner la phase d'une puce"
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:140004
 msgid "A laser injected in a fibre is split into the two arms of a Bracewell combiner. One arm has a fabrication error of 0.4 rad; a heater driven by the `LL-PCU` controller corrects it (phase κV²). The dark output is read by the `LL-PM` power meter. The calibration scans the heater phase and keeps the deepest null, **measured on the equipment**; the twin shows what the model predicts at the same settings."
-msgstr ""
+msgstr "Un laser injecté dans une fibre est séparé dans les deux bras d'un recombinateur de Bracewell. Un bras a une erreur de fabrication de 0,4 rad ; une résistance chauffante pilotée par le contrôleur `LL-PCU` la corrige (phase κV²). La sortie sombre est lue par le puissance-mètre `LL-PM`. L'étalonnage balaie la phase de la résistance et garde l'extinction la plus profonde, **mesurée sur les équipements** ; le jumeau montre ce que le modèle prédit pour les mêmes réglages."
 
 #: ../../examples/notebooks/10_bench_operation.ipynb:170002
 msgid "The measured null follows the twin, up to the gain error (2 %), the offset (1 nW) and the noise of the power meter: the controlled gap between the bench and its model."
-msgstr ""
+msgstr "L'extinction mesurée suit le jumeau, à l'erreur de gain (2 %), au décalage (1 nW) et au bruit du puissance-mètre près : l'écart maîtrisé entre le banc et son modèle."
 

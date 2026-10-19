@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -84,30 +84,34 @@ msgid "Sweeps and Monte-Carlo"
 msgstr "Balayages et Monte-Carlo"
 
 #: ../../user_guide/context.md:103
+msgid "A free target is a physical parameter, a numeric setting (prior without unit; an integer setting takes the nearest integer of each value) or a component of an array parameter, named `\"field[i]\"` or `\"field[i, j]\"` (ADR-0022):"
+msgstr "Une cible libre est un paramètre physique, un réglage numérique (loi a priori sans unité ; un réglage entier prend l'entier le plus proche de chaque valeur) ou une composante d'un paramètre tableau, nommée `\"field[i]\"` ou `\"field[i, j]\"` (ADR-0022) :"
+
+#: ../../user_guide/context.md:113
 msgid "The fields get their original values back after a sweep. Draws come from a reproducible random stream: every element has its own stream, `ctx.rng(element)`, derived from the seed of the context."
 msgstr "Les champs retrouvent leurs valeurs d'origine après un balayage. Les tirages proviennent d'un flux aléatoire reproductible : chaque élément a son propre flux, `ctx.rng(element)`, dérivé de la graine du contexte."
 
-#: ../../user_guide/context.md:106
+#: ../../user_guide/context.md:116
 msgid "**Noise of the points.** The streams also depend on a *noise realization*, `ctx.realization` (0 by default): every realization gives independent streams, reproducible with the same seed. A Monte-Carlo run draws a new realization at each point (`noise=\"independent\"`, the default of `sample`), so that the spread of its outputs includes the noise of the detectors and of the turbulence; without free parameters it repeats the run with independent noise. A sweep keeps the noise of the context at every point (`noise=\"fixed\"`, the default of `sweep`): its points differ by their parameters only (common random numbers), which makes small differences visible. Every point tells its realization (`point.realization`), and `progress(done, total)` follows long studies."
 msgstr "**Bruit des points.** Les flux aléatoires dépendent aussi d'une *réalisation du bruit*, `ctx.realization` (0 par défaut) : chaque réalisation donne des flux indépendants, reproductibles avec la même graine. Une étude Monte-Carlo tire une nouvelle réalisation à chaque point (`noise=\"independent\"`, le défaut de `sample`), si bien que la dispersion de ses sorties inclut le bruit des détecteurs et de la turbulence ; sans paramètre libre, elle répète l'exécution avec un bruit indépendant. Un balayage garde le bruit du contexte à chaque point (`noise=\"fixed\"`, le défaut de `sweep`) : ses points ne diffèrent que par leurs paramètres (nombres aléatoires communs), ce qui rend visibles de petites différences. Chaque point indique sa réalisation (`point.realization`), et `progress(done, total)` suit les études longues."
 
-#: ../../user_guide/context.md:120
+#: ../../user_guide/context.md:130
 msgid "Feedback loops"
 msgstr "Boucles de rétroaction"
 
-#: ../../user_guide/context.md:122
+#: ../../user_guide/context.md:132
 msgid "The graph of a context has no cycle: a loop (adaptive optics, a servo, an iterative calibration) is a series of **time iterations** of the context (ADR-0020). A *feedback* sends the value of an output port to a field at the next iteration; `ctx.loop` runs the iterations, the clock advancing by the period at each one."
 msgstr "Le graphe d'un contexte n'a pas de cycle : une boucle (optique adaptative, asservissement, calibration itérative) est une suite d'**itérations temporelles** du contexte (ADR-0020). Une *rétroaction* envoie la valeur d'un port de sortie vers un champ à l'itération suivante ; `ctx.loop` exécute les itérations, l'horloge avançant d'une période à chacune."
 
-#: ../../user_guide/context.md:133
+#: ../../user_guide/context.md:143
 msgid "Iteration `k` computes the outputs at `t0 + k·period`, then applies the feedbacks, then advances the clock: a correction always acts one period later, like a real loop. The fields driven by the feedbacks and the clock keep their final values (`restore=True` puts them back). Feedbacks are listed by `ctx.feedbacks`, removed by `ctx.remove_feedback`, saved in `.lumos` files and written by `ctx.to_python()`. An element may refuse a target: an `AOController` drives only a mirror of its own geometry."
 msgstr "L'itération `k` calcule les sorties à `t0 + k·period`, applique les rétroactions, puis avance l'horloge : une correction agit toujours une période plus tard, comme dans une vraie boucle. Les champs pilotés par les rétroactions et l'horloge gardent leurs valeurs finales (`restore=True` les rétablit). Les rétroactions sont listées par `ctx.feedbacks`, retirées par `ctx.remove_feedback`, enregistrées dans les fichiers `.lumos` et écrites par `ctx.to_python()`. Un élément peut refuser une cible : un `AOController` ne pilote qu'un miroir de sa propre géométrie."
 
-#: ../../user_guide/context.md:139
+#: ../../user_guide/context.md:149
 msgid "Files and scripts"
 msgstr "Fichiers et scripts"
 
-#: ../../user_guide/context.md:141
-msgid "`lumos.io.save(ctx, \"bench.lumos\")` writes the whole context: settings, clock, elements, groups and connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting point for a system built in the web interface or by an assistant. The JSON Schema of the format is published with the documentation (`lumos-1.1.schema.json`; `lumos-1.0.schema.json` for the documents of LUMOS 0.x without feedback loops)."
-msgstr "`lumos.io.save(ctx, \"bench.lumos\")` écrit tout le contexte : réglages, horloge, éléments, groupes et connexions ; les tableaux de plus de 64 ko vont dans un fichier `bench.npz` à côté. `lumos.io.load` le relit sans importer aucun module. `ctx.to_python()` écrit un script Python équivalent, point de départ lisible pour un système construit dans l'interface web ou par un assistant. Le schéma JSON du format est publié avec la documentation (`lumos-1.1.schema.json` ; `lumos-1.0.schema.json` pour les documents de LUMOS 0.x sans boucle de rétroaction)."
+#: ../../user_guide/context.md:151
+msgid "`lumos.io.save(ctx, \"bench.lumos\")` writes the whole context: settings, clock, elements, groups and connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting point for a system built in the web interface or by an assistant. The JSON Schema of the format is published with the documentation (`lumos-1.2.schema.json`; `lumos-1.1.schema.json` for documents without free settings or components, `lumos-1.0.schema.json` for those without feedback loops)."
+msgstr "`lumos.io.save(ctx, \"bench.lumos\")` écrit tout le contexte : réglages, horloge, éléments, groupes et connexions ; les tableaux de plus de 64 ko vont dans un fichier `bench.npz` à côté. `lumos.io.load` le relit sans importer aucun module. `ctx.to_python()` écrit un script Python équivalent, un point de départ lisible pour un système construit dans l'interface web ou par un assistant. Le schéma JSON du format est publié avec la documentation (`lumos-1.2.schema.json` ; `lumos-1.1.schema.json` pour les documents sans réglages ni composantes libres, `lumos-1.0.schema.json` pour ceux sans boucles de rétroaction)."
 

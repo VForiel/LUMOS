@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -40,6 +40,6 @@ msgid "First steps"
 msgstr "Premiers pas"
 
 #: ../../web/index.md:17
-msgid "On a first visit, the canvas offers the **presets**: ready-made contexts (a laser focused on a camera, the PSF of the VLT, a vortex coronagraph, nullers, a debris disk...), the same `.lumos` files as the example notebooks. Open one and press **Run**. The **guided tour** (graduation cap in the toolbar) walks you through the interface step by step on the first simulation, from the palette to the results, in English or in French. The **Presets** button of the toolbar opens the gallery again at any time."
+msgid "On a first visit, the canvas offers the **presets**: ready-made contexts (a laser focused on a camera, the PSF of the VLT, a vortex coronagraph, nullers, a debris disk, a Monte-Carlo study, an adaptive optics loop...), the same `.lumos` files as the example notebooks. Open one and press **Run**. The **guided tour** (graduation cap in the toolbar) walks you through the interface step by step on the first simulation, from the palette to the results, in English or in French. The **Presets** button of the toolbar opens the gallery again at any time."
 msgstr "À la première visite, le canevas propose les **préréglages** : des contextes prêts à l'emploi (un laser focalisé sur une caméra, la PSF du VLT, un coronographe vortex, des nullers, un disque de débris, une étude Monte-Carlo, une boucle d'optique adaptative…), les mêmes fichiers `.lumos` que les notebooks d'exemple. Ouvrez-en un et appuyez sur **Exécuter**. La **visite guidée** (toque de diplômé dans la barre d'outils) vous fait parcourir l'interface pas à pas sur la première simulation, de la palette aux résultats, en anglais ou en français. Le bouton **Préréglages** de la barre d'outils rouvre la galerie à tout moment."
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-19 19:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -100,7 +100,7 @@ msgid "`pytest -m e2e tests/e2e`"
 msgstr "`pytest -m e2e tests/e2e`"
 
 #: ../../web/development.md
-msgid "the interface in Chromium (Playwright), in English and in French: editing, runs, presets and tour, operation with an emulated stage, accounts, assistant (Claude API replaced by a scripted stand-in), UC5 on a public instance"
+msgid "the interface in Chromium (Playwright), in English and in French: editing, runs, presets and tour, studies and loops, operation with an emulated stage, accounts, assistant (providers replaced by scripted stand-ins), UC5 on a public instance"
 msgstr "l'interface dans Chromium (Playwright), en anglais et en français : édition, exécutions, préréglages et visite guidée, études et boucles, opération avec une platine émulée, comptes, assistant (fournisseurs remplacés par des doublures scriptées), UC5 sur une instance publique"
 
 #: ../../web/development.md
