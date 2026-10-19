@@ -170,7 +170,7 @@ def test_feedbacks_are_saved_loaded_and_written_in_python(tmp_path):
     ctx.add(Constant(name="source"))
     ctx.feedback("source.out", "counter.x", mode="add")
     document = lumos.io.to_document(ctx, registry=registry)
-    assert document["lumos_format"] == "1.1"
+    assert document["lumos_format"] == "1.2"  # 1.1 added the feedbacks, 1.2 the free targets
     assert document["feedbacks"] == [{"from": "source.out", "to": "counter.x", "mode": "add"}]
 
     path = tmp_path / "loop.lumos"
