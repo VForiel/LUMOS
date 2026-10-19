@@ -60,8 +60,8 @@ def connect(client, path):
     return session
 
 
-def call(client, path, session, name, **arguments):
-    answer = rpc(client, path, session, "tools/call", {"name": name, "arguments": arguments})
+def call(client, path, session, tool, **arguments):
+    answer = rpc(client, path, session, "tools/call", {"name": tool, "arguments": arguments})
     result = answer["result"]
     assert not result.get("isError"), result
     return result
