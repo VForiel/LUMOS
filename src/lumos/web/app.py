@@ -27,6 +27,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.requests import HTTPConnection
 from starlette.routing import Route
 
 import lumos
@@ -495,7 +496,7 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     def address(connection: Request | WebSocket) -> str:
         return client_address(connection, trust_proxy=config.trust_proxy)
 
-    def secure(connection: Request | WebSocket) -> bool:
+    def secure(connection: HTTPConnection) -> bool:
         return is_secure(connection, trust_proxy=config.trust_proxy)
 
     def role_of(session: WebSession) -> str | None:

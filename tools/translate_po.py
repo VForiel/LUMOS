@@ -23,7 +23,9 @@ def export(paths: list[str]) -> None:
         po = pathlib.Path(path).resolve()
         with po.open(encoding="utf-8") as stream:
             catalog = read_po(stream)
-        missing = {m.id: "" for m in catalog if m.id and (not m.string or m.fuzzy) and not code_only(m.id)}
+        missing = {
+            str(m.id): "" for m in catalog if m.id and (not m.string or m.fuzzy) and not code_only(str(m.id))
+        }
         if missing:
             found[po.relative_to(ROOT).as_posix()] = missing
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
@@ -46,7 +48,7 @@ def copy_code(paths: list[str]) -> None:
             catalog = read_po(stream)
         done = 0
         for message in catalog:
-            if message.id and not message.string and code_only(message.id):
+            if message.id and not message.string and code_only(str(message.id)):
                 message.string = message.id
                 done += 1
         with po.open("wb") as stream:
