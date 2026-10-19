@@ -67,7 +67,7 @@ from lumos.service.models import (
     StudyPoint,
     StudyResult,
 )
-from lumos.service.summaries import summarize
+from lumos.service.summaries import figure_png, summarize
 from lumos.service.values import format_value, parse_quantity, parse_value
 
 __all__ = ["Service", "acting_as"]
@@ -184,6 +184,7 @@ class Service:
         self._devices: list[Any] = []
         self._histories: dict[str, _History] = {}
         self._revisions: dict[str, int] = {}  # changes of each context (P14.18)
+        self._scratch: Path | None = None  # recordings without session storage (P14.20)
 
     # --- Sessions ------------------------------------------------------------------------------------------
 
@@ -211,6 +212,8 @@ class Service:
         del self._sessions[session]
         if self.config.session_storage:  # the data of a session go with it (P14.21)
             shutil.rmtree(self._storage_dir(session), ignore_errors=True)
+        else:
+            shutil.rmtree(self._recordings_dir(session), ignore_errors=True)
 
     def _session(self, session: str) -> _Session:
         try:
@@ -1119,6 +1122,7 @@ class Service:
         mode: str = "grid",
         n: int | None = None,
         noise: str | None = None,
+        record: bool = False,
     ) -> JobInfo:
         """Start a study in the background: a sweep or a Monte-Carlo run (REQ-CTX-10).
 
@@ -1141,6 +1145,9 @@ class Service:
         noise
             ``"fixed"`` (the noise of the context at every point, default of sweeps) or ``"independent"`` (a
             new noise realization per point, default of Monte-Carlo runs).
+        record
+            Keep the figure of every drawable output at every point (:meth:`get_recording`); the outputs of
+            ``Recorder`` blocks are recorded anyway.
         """
         ctx = self._context(session, context)
         if kind not in ("sweep", "sample"):
@@ -1151,6 +1158,7 @@ class Service:
         names = list(outputs or self.default_outputs(session, context))
         if not names:
             raise ServiceError("no outputs to compute", hint="give outputs, e.g. outputs=['camera.out']")
+        recorders = self._recorders(ctx, names)
         noise = noise or ("fixed" if kind == "sweep" else "independent")
         if noise not in ("fixed", "independent"):
             raise ServiceError(f"unknown noise {noise!r}", hint="noise='fixed' or 'independent'")
@@ -1230,6 +1238,9 @@ class Service:
                 parameters=list(values) if kind == "sweep" else list(ctx.free_parameters()),
                 outputs=names,
                 points=[self._study_point(ctx, p, names) for p in points],
+                recorded=self._record(
+                    session, job.info.id, [p.outputs for p in points], names if record else [], recorders
+                ),
             )
 
         return self._start(session, context, kind, names, compute)
@@ -1242,6 +1253,7 @@ class Service:
         steps: int,
         period: Any,
         outputs: Iterable[str] | None = None,
+        record: bool = False,
     ) -> JobInfo:
         """Run the context as a closed loop of ``steps`` iterations of ``period`` (ADR-0020).
 
@@ -1269,6 +1281,7 @@ class Service:
         names = list(outputs or self.default_outputs(session, context))
         if not names:
             raise ServiceError("no outputs to compute", hint="give outputs, e.g. outputs=['wfs.residual']")
+        recorders = self._recorders(ctx, names)
         count = int(steps)
         seed = ctx.seed
 
@@ -1294,9 +1307,90 @@ class Service:
                     )
                     for r in records
                 ],
+                recorded=self._record(
+                    session, job.info.id, [r.outputs for r in records], names if record else [], recorders
+                ),
             )
 
         return self._start(session, context, "loop", names, compute)
+
+    # --- Recordings (P14.20) -----------------------------------------------------------------------------
+
+    @staticmethod
+    def _recorders(ctx: Context, names: list[str]) -> dict[str, int]:
+        """Ports of the ``Recorder`` blocks (added to ``names``) and how often they record."""
+        from lumos.processing.recording import Recorder
+
+        found = {}
+        for path, element in ctx.walk():
+            if isinstance(element, Recorder):
+                port = f"{path}.out"
+                found[port] = max(int(element.every), 1)
+                if port not in names:
+                    names.append(port)
+        return found
+
+    def _recordings_dir(self, session: str) -> Path:
+        """Directory of the recordings of a session (in its storage, or in a scratch directory)."""
+        if self.config.session_storage:
+            return self._storage_dir(session) / "recordings"
+        if self._scratch is None:
+            import tempfile
+
+            self._scratch = Path(tempfile.mkdtemp(prefix="lumos-recordings-"))
+        return self._scratch / session
+
+    def _record(
+        self,
+        session: str,
+        job: str,
+        results: list[Any],
+        ports: list[str],
+        recorders: Mapping[str, int],
+    ) -> dict[str, list[int]]:
+        """Keep the figures of ``ports`` at every point and of the recorders every few points."""
+        wanted = {port: 1 for port in ports} | dict(recorders)
+        if not wanted:
+            return {}
+        root = self._recordings_dir(session) / job
+        recorded: dict[str, list[int]] = {}
+        budget = self.config.max_recorded_figures
+        for index, outputs in enumerate(results):
+            for port, every in wanted.items():
+                if index % every or budget <= 0:
+                    continue
+                png = figure_png(outputs[port])
+                if png is None:
+                    continue
+                folder = root / f"{index:05d}"
+                folder.mkdir(parents=True, exist_ok=True)
+                (folder / f"{port}.png").write_bytes(png)
+                recorded.setdefault(port, []).append(index)
+                budget -= 1
+        return recorded
+
+    def get_recording(self, session: str, job: str, point: int, port: str) -> bytes:
+        """Return the PNG figure of ``port`` recorded at the point ``point`` of a study (from 0)."""
+        record = self._session(session).jobs.get(job)
+        if record is None:
+            raise ServiceError(
+                f"unknown job {job!r}", hint="list the jobs with list_jobs()", code="not_found"
+            )
+        recorded = record.study.recorded if record.study is not None else {}
+        if int(point) not in recorded.get(port, []):
+            raise ServiceError(
+                f"no figure of {port} recorded at point {point} of job {job}",
+                hint="record the study (record=True) or tap the port with a Recorder block",
+                code="not_found",
+            )
+        path = self._recordings_dir(session) / job / f"{int(point):05d}" / f"{port}.png"
+        if not path.is_file():
+            raise ServiceError(
+                f"the figure of {port} at point {point} was deleted",
+                hint="the storage of the session was full: its oldest data went",
+                code="not_found",
+            )
+        return path.read_bytes()
 
     def _study_point(self, ctx: Context, point: Any, names: list[str]) -> StudyPoint:
         params = {}
@@ -1756,6 +1850,7 @@ class Service:
         finished = [job for job in list(state.jobs.values()) if job.info.status not in ("queued", "running")]
         for job in finished[: max(len(finished) - self.config.max_jobs_kept, 0)]:
             state.jobs.pop(job.info.id, None)
+            shutil.rmtree(self._recordings_dir(job.session) / job.info.id, ignore_errors=True)
 
     def storage(self, session: str) -> StorageInfo:
         """Return the disk used by the data of ``session``, its limit, the free disk and the warnings."""
@@ -1955,6 +2050,8 @@ class Service:
         for session in list(self._sessions):
             self.close_session(session)
         self._executor.shutdown(wait=False, cancel_futures=True)
+        if self._scratch is not None:
+            shutil.rmtree(self._scratch, ignore_errors=True)
 
 
 def _size(path: Path) -> int:

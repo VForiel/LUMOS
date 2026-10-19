@@ -429,7 +429,9 @@
     "loopDetails": "Chaque pas calcule les sorties, applique les rétroactions, puis avance l'horloge d'une période. La boucle garde son état final (Annuler le rétablit).",
     "showIntermediate": "Afficher les sorties intermédiaires ({{count}})",
     "hideIntermediate": "Masquer les sorties intermédiaires",
-    "intermediateTag": "intermédiaire"
+    "intermediateTag": "intermédiaire",
+    "record": "Enregistrer les figures de chaque point",
+    "recordHint": "Parcourez-les point par point dans le navigateur de résultats (elles comptent dans les données de la session). Les blocs Recorder sont enregistrés de toute façon."
   },
   "feedback": {
     "section": "Boucles de rétroaction",
@@ -480,5 +482,26 @@
     "lossy": "La matrice a des pertes (passive) : plus grande valeur singulière {{value}}.",
     "amplifies": "La matrice amplifie la lumière (plus grande valeur singulière {{value}} > 1) : un composant passif ne le peut pas, elle est refusée.",
     "shapeMismatch": "Les amplitudes et les phases n'ont pas la même forme."
+  },
+  "browser": {
+    "open": "Parcourir les résultats",
+    "title": "Navigateur de résultats",
+    "empty": "Aucune exécution ni étude dans cette session pour l'instant.",
+    "kinds": {
+      "run": "Exécution",
+      "sweep": "Balayage",
+      "sample": "Monte-Carlo",
+      "loop": "Boucle"
+    },
+    "recorded": "figures enregistrées en {{count}} points",
+    "notRecorded": "valeurs seulement : aucune figure enregistrée pour ce port",
+    "howToRecord": "Pour voir les figures point par point, cochez « Enregistrer les figures de chaque point » dans le dialogue d'étude, ou branchez un bloc Recorder sur le port.",
+    "step": "pas {{index}} / {{count}}",
+    "point": "Point {{index}} / {{count}}",
+    "play": "Lecture",
+    "pause": "Pause",
+    "first": "Premier point",
+    "last": "Dernier point",
+    "slider": "Point de l'étude"
   }
 }

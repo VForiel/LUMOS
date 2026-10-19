@@ -35,7 +35,8 @@ export type Dialog =
   | { kind: "confirm-action"; element: string; action: string; device: string; onConfirm: () => void }
   | { kind: "elicit"; message: string; answer: (accepted: boolean) => void }
   | { kind: "discard"; answer: (choice: "save" | "discard" | "cancel") => void }
-  | { kind: "study" };
+  | { kind: "study" }
+  | { kind: "browser" };
 export type Pointer = "pan" | "select";
 /** Sizes (pixels) and visibility of the panels around the canvas, kept by the browser. */
 export type Layout = { palette: number; inspector: number; bottom: number; paletteOpen: boolean; inspectorOpen: boolean };

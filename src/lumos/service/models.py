@@ -68,6 +68,9 @@ class ServiceConfig(BaseModel):
     min_free_disk_bytes: int | None = Field(
         default=None, ge=0, description="free disk below which archiving is refused (warning below twice)"
     )
+    max_recorded_figures: int = Field(
+        default=2000, ge=0, description="figures recorded per study (record=True, Recorder blocks)"
+    )
     max_jobs_kept: int = Field(
         default=50, ge=1, description="finished runs and studies of a session whose results stay in memory"
     )
@@ -254,6 +257,9 @@ class StudyResult(BaseModel):
     parameters: list[str]
     outputs: list[str]
     points: list[StudyPoint]
+    recorded: dict[str, list[int]] = Field(
+        default={}, description="points with a recorded figure, by port (results browser, P14.20)"
+    )
 
 
 class PortFile(BaseModel):

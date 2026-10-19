@@ -105,6 +105,7 @@ export function StudyDialog() {
   const [mode, setMode] = useState<"grid" | "zip">(previous?.mode ?? "grid");
   const [n, setN] = useState(previous?.n ?? defaults.n ?? 50);
   const [independent, setIndependent] = useState<boolean | null>(null);
+  const [record, setRecord] = useState<boolean>(() => last?.record ?? useStore.getState().archive);
   const available = defaultOutputs(context);
   // every other output of every block: intermediate signals (the field before a detector...)
   const intermediate = context.elements.flatMap((e) => e.outputs.map((port) => `${e.id}.${port}`)).filter((port) => !available.includes(port));
@@ -135,11 +136,11 @@ export function StudyDialog() {
 
   const start = async () => {
     if (kind === "loop") {
-      const loop: LoopRequest = { kind: "loop", steps, period: period.trim(), outputs };
+      const loop: LoopRequest = { kind: "loop", steps, period: period.trim(), outputs, record };
       if (await useStore.getState().runStudy(loop)) close();
       return;
     }
-    const request: StudyRequest = { kind, outputs, noise: noise ? "independent" : "fixed" };
+    const request: StudyRequest = { kind, outputs, noise: noise ? "independent" : "fixed", record };
     if (kind === "sample") request.n = n;
     else {
       request.mode = mode;
@@ -326,13 +327,22 @@ export function StudyDialog() {
               </button>
             )}
           </fieldset>
-          <label className={`flex items-start gap-2 rounded-lg border border-slate-200 p-3 text-xs dark:border-slate-700 ${kind === "loop" ? "invisible" : ""}`}>
-            <input type="checkbox" data-testid="study-noise" checked={noise} onChange={(e) => setIndependent(e.target.checked)} className="mt-0.5 size-4 accent-accent-600" />
-            <span>
-              <span className="block font-semibold text-slate-700 dark:text-slate-200">{t("study.independent")}</span>
-              <span className="text-slate-500 dark:text-slate-400">{t("study.independentHint", { seed: context.seed })}</span>
-            </span>
-          </label>
+          <div className="space-y-3">
+            <label className={`flex items-start gap-2 rounded-lg border border-slate-200 p-3 text-xs dark:border-slate-700 ${kind === "loop" ? "hidden" : ""}`}>
+              <input type="checkbox" data-testid="study-noise" checked={noise} onChange={(e) => setIndependent(e.target.checked)} className="mt-0.5 size-4 accent-accent-600" />
+              <span>
+                <span className="block font-semibold text-slate-700 dark:text-slate-200">{t("study.independent")}</span>
+                <span className="text-slate-500 dark:text-slate-400">{t("study.independentHint", { seed: context.seed })}</span>
+              </span>
+            </label>
+            <label className="flex items-start gap-2 rounded-lg border border-slate-200 p-3 text-xs dark:border-slate-700">
+              <input type="checkbox" data-testid="study-record" checked={record} onChange={(e) => setRecord(e.target.checked)} className="mt-0.5 size-4 accent-accent-600" />
+              <span>
+                <span className="block font-semibold text-slate-700 dark:text-slate-200">{t("study.record")}</span>
+                <span className="text-slate-500 dark:text-slate-400">{t("study.recordHint")}</span>
+              </span>
+            </label>
+          </div>
         </div>
 
         <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">

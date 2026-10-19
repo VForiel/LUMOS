@@ -228,6 +228,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   wavelength, achromatic or with phases that are optical paths, square or not, refused when it amplifies;
   `Element.problems()`, reported by the validation of the contexts; matrix editor in the inspector (cells,
   inputs and outputs added or removed, lossless, lossy or amplifying).
+- Results browser (P14.20): `run_study` and `run_loop` take `record`, keeping the figure of every drawable
+  output at every point (`StudyResult.recorded`, `Service.get_recording`, `/api/jobs/{job}/points/{k}/figure.png`);
+  `lumos.processing.Recorder` taps a port and records it in every study (one point out of `every`); in the
+  editor, a window listing the runs and studies of the session, with a slider and a play button over the
+  points of a study.
 - Storage of the sessions (P14.21): `session_storage`, `max_session_bytes`, `min_free_disk_bytes` and
   `max_jobs_kept` in `ServiceConfig` (public profile: per-session archives deleted with the session, 1 GB per
   session, 2 GB kept free, 20 runs in memory); `Service.storage` and `/api/storage`; job warnings; the

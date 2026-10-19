@@ -1,6 +1,6 @@
 // Bottom panel (REQ-WEB-5): results of the last run and of inspected ports, live journal, problems.
 
-import { AlertTriangle, Archive, CheckCircle2, ChevronDown, ChevronUp, Download, FileJson, FlaskConical, Image, ListTree, Loader2, ScrollText, Table2, X } from "lucide-react";
+import { AlertTriangle, Archive, CheckCircle2, ChevronDown, ChevronUp, Download, FileJson, FlaskConical, GalleryHorizontalEnd, Image, ListTree, Loader2, ScrollText, Table2, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type JournalEntry, type PortSummary } from "../api";
@@ -308,7 +308,17 @@ export function BottomPanel({ extraTabs, renderExtra }: { extraTabs?: typeof TAB
             {tab === "problems" && errors > 0 && <span className="rounded-full bg-red-500 px-1.5 text-[10px] text-white">{errors}</span>}
           </button>
         ))}
-        <button type="button" onClick={() => setBottom(bottom ? null : "results")} className="ml-auto rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label={t(bottom ? "tabs.hide" : "tabs.show")}>
+        <button
+          type="button"
+          data-testid="open-browser"
+          onClick={() => useStore.getState().setDialog({ kind: "browser" })}
+          className="ml-auto inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          title={t("browser.open")}
+        >
+          <GalleryHorizontalEnd className="size-3.5" />
+          {t("browser.open")}
+        </button>
+        <button type="button" onClick={() => setBottom(bottom ? null : "results")} className="rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label={t(bottom ? "tabs.hide" : "tabs.show")}>
           {bottom ? <ChevronDown className="size-4" /> : <ChevronUp className="size-4" />}
         </button>
       </div>

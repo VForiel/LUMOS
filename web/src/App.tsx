@@ -1,3 +1,4 @@
+import { ResultsBrowser } from "./components/Browser";
 import { ReactFlowProvider } from "@xyflow/react";
 import { Bot, Code2, Cpu, FilePlus2, FlaskConical, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
@@ -127,6 +128,8 @@ function Editor() {
             <PresetsDialog />
           ) : dialog.kind === "study" ? (
             <StudyDialog />
+          ) : dialog.kind === "browser" ? (
+            <ResultsBrowser />
           ) : dialog.kind === "login" ? (
             <LoginDialog />
           ) : dialog.kind === "elicit" ? (

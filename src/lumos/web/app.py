@@ -214,6 +214,7 @@ class LoopRequest(BaseModel):
     steps: int
     period: Any
     outputs: list[str] = Field(default_factory=list)
+    record: bool = False
 
 
 class StudyRequest(BaseModel):
@@ -225,6 +226,7 @@ class StudyRequest(BaseModel):
     mode: str = "grid"
     n: int | None = None
     noise: str | None = None
+    record: bool = False
 
 
 class Rename(BaseModel):
@@ -949,6 +951,7 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
             mode=body.mode,
             n=body.n,
             noise=body.noise,
+            record=body.record,
         )
 
     @app.post("/api/contexts/{cid}/feedbacks", status_code=201, dependencies=[simulator])
@@ -962,7 +965,12 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     @app.post("/api/contexts/{cid}/loops", status_code=202, dependencies=[simulator])
     def loop(request: Request, cid: str, body: LoopRequest) -> JobInfo:
         return service.run_loop(
-            sid(request), cid, steps=body.steps, period=body.period, outputs=body.outputs or None
+            sid(request),
+            cid,
+            steps=body.steps,
+            period=body.period,
+            outputs=body.outputs or None,
+            record=body.record,
         )
 
     @app.get("/api/jobs/{job}/study", dependencies=[viewer])
@@ -995,6 +1003,12 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     @app.get("/api/jobs/{job}/results/{port:path}/download", dependencies=[viewer])
     def result_download(request: Request, job: str, port: str, format: str = "png") -> Response:
         return send(service.result_file(sid(request), job, port, format))
+
+    @app.get("/api/jobs/{job}/points/{point}/figure.png", dependencies=[viewer])
+    def point_figure(request: Request, job: str, point: int, port: str) -> Response:
+        """Return the figure of ``port`` recorded at a point of a study (results browser, P14.20)."""
+        data = service.get_recording(sid(request), job, point, port)
+        return Response(data, media_type="image/png", headers={"cache-control": "private, max-age=3600"})
 
     @app.get("/api/jobs/{job}/results/{port:path}/figure.png", dependencies=[viewer])
     def result_figure(request: Request, job: str, port: str) -> Response:

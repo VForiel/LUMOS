@@ -45,7 +45,7 @@ export type ElementSummary = {
 export type Prior = { kind: "uniform" | "loguniform" | "normal"; [value: string]: string };
 export type StudyKind = "sweep" | "sample" | "loop";
 export type Feedback = { source: string; target: string; mode: "set" | "add" };
-export type LoopRequest = { kind: "loop"; steps: number; period: string; outputs: string[] };
+export type LoopRequest = { kind: "loop"; steps: number; period: string; outputs: string[]; record?: boolean };
 /** A sweep range or list of values, by path "element.field". */
 export type SweepSpec = { start: string; stop: string; num: number; log?: boolean } | string[];
 export type StudyRequest = {
@@ -55,6 +55,8 @@ export type StudyRequest = {
   mode?: "grid" | "zip";
   n?: number;
   noise?: "fixed" | "independent";
+  /** Keep the figures of every point for the results browser. */
+  record?: boolean;
 };
 export type StudyPoint = { params: Record<string, string>; realization: number; outputs: Record<string, PortSummary> };
 export type StudyResult = {
@@ -67,6 +69,8 @@ export type StudyResult = {
   parameters: string[];
   outputs: string[];
   points: StudyPoint[];
+  /** Points with a recorded figure, by port (results browser). */
+  recorded?: Record<string, number[]>;
 };
 
 export type Connection = { source: string; target: string };
@@ -252,6 +256,8 @@ export const api = {
   run: (id: string, outputs: string[] = [], archive = false) =>
     request<JobInfo>("POST", `${ctx(id)}/runs`, { outputs, archive }),
   job: (job: string) => request<JobInfo>("GET", `/api/jobs/${enc(job)}`),
+  jobs: () => request<JobInfo[]>("GET", "/api/jobs"),
+  pointFigureUrl: (job: string, point: number, port: string) => `/api/jobs/${enc(job)}/points/${point}/figure.png?port=${encodeURIComponent(port)}`,
   result: (job: string, port: string) => request<PortSummary>("GET", `/api/jobs/${enc(job)}/results/${port}`),
   inspect: (id: string, port: string) => request<PortSummary>("GET", `${ctx(id)}/ports/${port}`),
   figureUrl: (id: string, port: string) => `${ctx(id)}/ports/${port}/figure.png`,

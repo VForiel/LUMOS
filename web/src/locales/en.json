@@ -429,7 +429,9 @@
     "loopDetails": "Each step computes the outputs, applies the feedbacks, then advances the clock by the period. The loop keeps its final state (Undo puts it back).",
     "showIntermediate": "Show the intermediate outputs ({{count}})",
     "hideIntermediate": "Hide the intermediate outputs",
-    "intermediateTag": "intermediate"
+    "intermediateTag": "intermediate",
+    "record": "Record the figures of each point",
+    "recordHint": "Browse them point by point in the results browser (they count in the data of the session). Recorder blocks are recorded anyway."
   },
   "feedback": {
     "section": "Feedback loops",
@@ -480,5 +482,26 @@
     "lossy": "The matrix is lossy (passive): largest singular value {{value}}.",
     "amplifies": "The matrix amplifies light (largest singular value {{value}} > 1): a passive component cannot, it is refused.",
     "shapeMismatch": "Amplitudes and phases differ in shape."
+  },
+  "browser": {
+    "open": "Browse results",
+    "title": "Results browser",
+    "empty": "No run or study yet in this session.",
+    "kinds": {
+      "run": "Run",
+      "sweep": "Sweep",
+      "sample": "Monte-Carlo",
+      "loop": "Loop"
+    },
+    "recorded": "figures recorded at {{count}} points",
+    "notRecorded": "values only: no figure recorded for this port",
+    "howToRecord": "To see the figures point by point, tick “Record the figures of each point” in the study dialog, or tap the port with a Recorder block.",
+    "step": "step {{index}} / {{count}}",
+    "point": "point {{index}} / {{count}}",
+    "play": "Play",
+    "pause": "Pause",
+    "first": "First point",
+    "last": "Last point",
+    "slider": "Point of the study"
   }
 }

@@ -40,6 +40,9 @@ The outputs of the study are those of the context by default. *Show the intermed
 other output of every block, also those connected to another block: the field before the coronagraph, the
 image before the processing.
 
+Tick *Record the figures of each point* to browse the study point by point afterwards in the results
+browser ([Running](running.md)).
+
 ## Monte-Carlo runs
 
 Choose **Monte-Carlo** and the number of draws. Each draw takes the free parameters from their priors and,
