@@ -134,7 +134,8 @@ def test_a_port_label_is_its_handle_and_grows_sideways_in_place(editor):
     expect(source).to_contain_text("out")
     expect(target).to_contain_text("in")
     box = source.bounding_box()
-    assert box["width"] >= 24 and box["height"] >= 16  # easy to catch
+    assert box["width"] >= 24
+    assert box["height"] >= 16
 
     editor.mouse.move(10, 10)
     editor.wait_for_timeout(200)
@@ -144,7 +145,9 @@ def test_a_port_label_is_its_handle_and_grows_sideways_in_place(editor):
     hovered = source.bounding_box()
     assert hovered["height"] == pytest.approx(still["height"], abs=1)  # it does not grow downwards...
     assert hovered["width"] > still["width"]  # ...but sideways,
-    assert hovered["x"] + hovered["width"] == pytest.approx(still["x"] + still["width"], abs=1.5)  # from its edge
+    assert hovered["x"] + hovered["width"] == pytest.approx(
+        still["x"] + still["width"], abs=1.5
+    )  # from its edge
     assert centre(hovered)[1] == pytest.approx(centre(still)[1], abs=1)
 
     # a drag from the label of the output to the label of the input connects them
