@@ -294,9 +294,12 @@ def test_prior_unit_must_match_param_unit():
         Lens().set_free("focal_length", prior=Uniform(0 * u.s, 1 * u.s))
 
 
-def test_settings_cannot_be_freed():
+def test_only_numeric_settings_can_be_freed():
     with pytest.raises(TypeError):
-        Lens().set_free("modes")
+        Lens().set_free("method")  # a choice
+    lens = Lens()
+    lens.set_free("modes", True, Uniform(0.5, 3.5))  # a number: free since ADR-0022
+    assert lens.is_free("modes")
 
 
 @pytest.mark.parametrize(
