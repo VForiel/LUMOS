@@ -30,7 +30,9 @@ def session(service):
 
 def wheel_bench(service, session):
     ctx = service.create_context(session, name="wheel").id
-    service.add_element(session, ctx, "lumos.sources.GaussianLaser", name="laser", params={"power": "2 mW"})
+    # pixels of 0.25 mm: the 1 mm beam fits in the smallest grid drawn (32 pixels), the power is all measured
+    laser = {"power": "2 mW", "pixel_scale": "0.25 mm"}
+    service.add_element(session, ctx, "lumos.sources.GaussianLaser", name="laser", params=laser)
     service.add_element(session, ctx, "lumos.lab.FilterWheel", name="wheel")
     service.add_element(session, ctx, "lumos.detectors.PowerMeter", name="meter")
     service.connect(session, ctx, "laser.out", "wheel.in")
@@ -84,8 +86,8 @@ def test_a_monte_carlo_run_draws_them(service, session):
         pixels = point.params["laser.n_pixels"]
         assert pixels == str(int(pixels))
         assert 32 <= int(pixels) <= 64
-        transmission = float(point.params["wheel.transmissions[0]"])
-        assert watts(point.outputs["meter.out"]) == pytest.approx(2e-3 * transmission, rel=1e-6)
+        transmission = float(point.params["wheel.transmissions[0]"])  # written with 6 significant digits
+        assert watts(point.outputs["meter.out"]) == pytest.approx(2e-3 * transmission, rel=1e-5)
 
 
 def test_a_sweep_varies_a_component_and_computes_an_intermediate_output(service, session):
