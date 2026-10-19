@@ -21,6 +21,7 @@ from mcp.server.mcpserver import Context as MCPContext
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import CallToolResult, ImageContent, TextContent
+from pydantic import BaseModel
 from starlette.applications import Starlette
 
 from lumos.mcp.operation import register_operation_tools
@@ -44,9 +45,18 @@ from lumos.service.models import (
 from lumos.service.service import acting_as
 from lumos.service.summaries import job_text, study_text, summary_text
 
-__all__ = ["INSTRUCTIONS", "LumosTools", "create_http_app", "create_server"]
+__all__ = ["INSTRUCTIONS", "LumosTools", "ViewLink", "create_http_app", "create_server"]
 
 logger = logging.getLogger("lumos.mcp")
+
+
+class ViewLink(BaseModel):
+    """A link opening a context in the web interface, to give to the user (tool ``get_view_link``)."""
+
+    url: str
+    context: str
+    message: str
+
 
 #: Instructions given to the assistant when it connects.
 INSTRUCTIONS = """\
@@ -150,6 +160,9 @@ def _port_result(summary: PortSummary) -> CallToolResult:
 class LumosTools:
     """The state shared by the tools of one server: the service, its session and the current context.
 
+    The current context is the *focus* of the session (:meth:`Service.focus`, P14.18): in the session of a
+    browser it is the context open in the interface, and the interface follows the contexts the tools focus.
+
     Parameters
     ----------
     service
@@ -159,7 +172,15 @@ class LumosTools:
     def __init__(self, service: Service, session: str | None = None) -> None:
         self.service = service
         self.session = session or service.create_session(origin="mcp").id
-        self.current: str | None = None
+
+    @property
+    def current(self) -> str | None:
+        """The current context: the one in the foreground of the session."""
+        return self.service.get_focus(self.session).context
+
+    @current.setter
+    def current(self, context: str | None) -> None:
+        self.service.focus(self.session, context)
 
     def context(self, context: str | None) -> str:
         """Return ``context``, or the current context when it is ``None``; ``context`` becomes current."""
@@ -171,8 +192,7 @@ class LumosTools:
                     code="not_found",
                 )
             return self.current
-        self.service.describe_context(self.session, context)  # checks that it exists
-        self.current = context
+        self.current = context  # checks that it exists
         return context
 
     def opened(self, summary: ContextSummary) -> ContextSummary:
@@ -188,6 +208,7 @@ def create_server(
     name: str = "lumos",
     session: str | None = None,
     can_operate: bool = True,
+    view_link: Callable[[str], str] | None = None,
 ) -> MCPServer:
     """Create the MCP server of LUMOS.
 
@@ -204,6 +225,9 @@ def create_server(
         the assistant sees the contexts of the interface); a new session of origin ``mcp`` by default.
     can_operate
         Whether the user may drive real equipment (operators); otherwise actions reach simulated elements.
+    view_link
+        Gives the URL opening a context of the session in the web interface (tool ``get_view_link``); ``None``
+        for a server without web interface (stdio).
 
     Returns
     -------
@@ -269,6 +293,27 @@ def create_server(
         service.close_context(session, identifier)
         state.current = None
         return f"context {identifier} closed"
+
+    @tool
+    def get_view_link(context: str | None = None) -> ViewLink:
+        """Give the link showing a context to the user in the web interface (current context by default).
+
+        Share it with the user so that they see what you built, also when their page is closed or was never
+        opened (e.g. when LUMOS is a connector of Claude.ai or ChatGPT). Anyone with the link opens this
+        session: give it to the user only.
+        """
+        if view_link is None:
+            raise ServiceError(
+                "this MCP server has no web interface",
+                hint="run `lumos web` and connect the assistant with its connector link (Assistant panel); "
+                "or give the user the .lumos document of export_lumos to open in the interface",
+                code="not_found",
+            )
+        identifier = state.context(context)
+        url = view_link(identifier)
+        return ViewLink(
+            url=url, context=identifier, message=f"Open {url} to see the context {identifier} in LUMOS."
+        )
 
     @tool
     def list_presets() -> list[PresetInfo]:

@@ -77,6 +77,8 @@
   },
   "toast": {
     "restored": "Votre dernier contexte a été restauré.",
+    "followed": "L'assistant a ouvert {{name}}.",
+    "viewMissing": "Ce contexte n'est plus dans votre session.",
     "opened": "{{name}} ouvert.",
     "copied_one": "{{count}} élément copié.",
     "copied_other": "{{count}} éléments copiés.",

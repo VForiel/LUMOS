@@ -8,8 +8,9 @@ also listed by any MCP client (`/mcp` in Claude Code).
 - **Quantities** are written as text with their unit: `"0.5 mm"`, `"1.6 um"`, `"2 mW"`, `"10 mas"`; arrays as
   `"[1, 2, 3] nm"`. A number alone is only accepted for dimensionless values.
 - **Ports** are written `"element.port"` (`"laser.out"`, `"meter.in"`); children of groups `"group.child"`.
-- **Current context**: the last context created, loaded, imported or named. Tools that take `context` use it
-  when the argument is omitted.
+- **Current context**: the context in the foreground of the session: the last one created, loaded, imported
+  or named, or the one open in the web interface when the assistant works in its session (connector link,
+  assistant panel). Tools that take `context` use it when the argument is omitted.
 - **Errors** give the cause, a `hint:` saying how to fix the request and a `code:` (`invalid`, `not_found`,
   `forbidden`, `quota`, `failed`).
 - **Results** are a short text with units, a figure for signals, and structured data (JSON) for programs.
@@ -34,6 +35,7 @@ also listed by any MCP client (`/mcp` in Claude Code).
 | `list_contexts` | Contexts of the conversation. |
 | `describe_context` | Elements with their values and units, connections, mode, observation band. |
 | `close_context` | Forget a context. |
+| `get_view_link` | Link opening a context in the web interface, to give to the user (servers of a web instance). |
 | `add_element` | Add an element with parameter values. |
 | `remove_element` | Remove an element and its connections. |
 | `connect` | Connect an output to an input. |

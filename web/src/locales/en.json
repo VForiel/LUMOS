@@ -77,6 +77,8 @@
   },
   "toast": {
     "restored": "Your last context was restored.",
+    "followed": "The assistant opened {{name}}.",
+    "viewMissing": "This context is no longer in your session.",
     "opened": "{{name}} opened.",
     "copied_one": "{{count}} element copied.",
     "copied_other": "{{count}} elements copied.",

@@ -1,4 +1,5 @@
-// Live updates from the server (WebSocket /api/ws): progress of the runs and journal entries.
+// Live updates from the server (WebSocket /api/ws): progress of the runs, journal entries, and the changes
+// made by someone else in the session (an assistant through a connector link): revisions and focus.
 
 import { useStore } from "./store";
 
@@ -18,6 +19,8 @@ export function connectEvents(): void {
     const store = useStore.getState();
     if (message.type === "job") store.onJob(message.job);
     else if (message.type === "journal") store.onJournal(message.context, message.entry);
+    else if (message.type === "context") store.onRevision(message.context, message.revision);
+    else if (message.type === "focus") store.onFocus(message);
   };
   socket.onclose = () => {
     socket = null;

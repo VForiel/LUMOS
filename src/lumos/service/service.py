@@ -52,6 +52,7 @@ from lumos.service.models import (
     ElementSummary,
     ElementTypeInfo,
     FeedbackInfo,
+    FocusInfo,
     GroupInfo,
     Issue,
     JobInfo,
@@ -123,6 +124,7 @@ class _History:
 class _Session:
     info: SessionInfo
     contexts: dict[str, Context] = field(default_factory=dict)
+    focus: FocusInfo = field(default_factory=FocusInfo)
     jobs: dict[str, _Job] = field(default_factory=dict)
     lock: threading.RLock = field(default_factory=threading.RLock)
 
@@ -179,6 +181,7 @@ class Service:
         )
         self._devices: list[Any] = []
         self._histories: dict[str, _History] = {}
+        self._revisions: dict[str, int] = {}  # changes of each context (P14.18)
 
     # --- Sessions ------------------------------------------------------------------------------------------
 
@@ -243,7 +246,35 @@ class Service:
             )
         identifier = uuid.uuid4().hex[:8]
         state.contexts[identifier] = ctx
+        self._touch(identifier)
+        self._set_focus(state, identifier)  # a new context comes to the foreground
         return self._summary(identifier, ctx)
+
+    # --- Revisions and focus (P14.18) ---------------------------------------------------------------------
+
+    def _touch(self, context: str) -> None:
+        """Count a change of ``context`` (its summary gives the count as ``revision``)."""
+        self._revisions[context] = self._revisions.get(context, 0) + 1
+
+    def _set_focus(self, state: _Session, context: str | None) -> FocusInfo:
+        if state.focus.context != context:
+            state.focus = FocusInfo(context=context, origin=self._origin(state), count=state.focus.count + 1)
+        return state.focus
+
+    def focus(self, session: str, context: str | None) -> FocusInfo:
+        """Bring ``context`` to the foreground of the session (``None``: no context).
+
+        The web interface focuses the context it shows; the tools of an assistant working on the same session
+        use the focused context by default, and the interface follows the contexts they focus.
+        """
+        state = self._session(session)
+        if context is not None:
+            self._context(session, context)  # it exists
+        return self._set_focus(state, context)
+
+    def get_focus(self, session: str) -> FocusInfo:
+        """Return the context in the foreground of the session, who focused it and the count of changes."""
+        return self._session(session).focus
 
     # --- Discovery -----------------------------------------------------------------------------------------
 
@@ -312,8 +343,12 @@ class Service:
     def close_context(self, session: str, context: str) -> None:
         """Forget a context."""
         self._context(session, context)
-        del self._session(session).contexts[context]
+        state = self._session(session)
+        del state.contexts[context]
         self._histories.pop(context, None)
+        self._revisions.pop(context, None)
+        if state.focus.context == context:
+            self._set_focus(state, None)
 
     def presets_dir(self) -> Path:
         """Directory of the preset ``.lumos`` files."""
@@ -407,6 +442,7 @@ class Service:
             ui=json.loads(json.dumps(ctx.ui, default=str)),
             can_undo=bool(self._histories.get(identifier, _History()).undo),
             can_redo=bool(self._histories.get(identifier, _History()).redo),
+            revision=self._revisions.get(identifier, 0),
         )
 
     def _groups(self, ctx: Context) -> dict[str, GroupInfo]:
@@ -483,6 +519,7 @@ class Service:
             history.undo.append(before)
             del history.undo[:-HISTORY_DEPTH]
             history.redo.clear()
+        self._touch(context)
 
     def _rebuild(self, session: str, context: str, document: Mapping[str, Any]) -> ContextSummary:
         """Replace a context by the one ``document`` describes (same identifier)."""
@@ -493,6 +530,7 @@ class Service:
                 f"the edit gives an invalid context: {error}", hint="check the elements involved"
             ) from error
         self._session(session).contexts[context] = ctx
+        self._touch(context)
         return self._summary(context, ctx)
 
     def _edit_document(
@@ -544,6 +582,7 @@ class Service:
             merged = dict(ctx.ui)
             merged.update(json.loads(json.dumps(dict(ui))))
             ctx.ui = merged
+        self._touch(context)
         return self._summary(context, self._context(session, context))
 
     def set_context(
@@ -1758,6 +1797,7 @@ class Service:
         finally:
             if target.driver is not None:
                 target.driver.confirm = None
+        self._touch(context)  # the action changed the state of the element
         entry = ctx.journal.entries("action")[-1]
         return ActionResult(
             element=element,

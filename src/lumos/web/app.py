@@ -40,6 +40,7 @@ from lumos.service.models import (
     DocHit,
     ElementSummary,
     ElementTypeInfo,
+    FocusInfo,
     Issue,
     JobInfo,
     Page,
@@ -106,6 +107,12 @@ class RateLimited(ServiceError):
 
 
 # --- Request bodies -----------------------------------------------------------------------------------------
+
+
+class FocusRequest(BaseModel):
+    """The context to bring to the foreground (``null``: none)."""
+
+    context: str | None
 
 
 class NewContext(BaseModel):
@@ -501,6 +508,7 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         role_of=role_of,
         anonymous_role=config.anonymous_role,
         enabled=config.assistant,
+        base_url=lambda connection: f"{'https' if secure(connection) else 'http'}://{connection.url.netloc}",
     )
     methods = ["GET", "POST", "DELETE"]
     app.router.routes.insert(0, Route(PATH, endpoint=gateway, methods=methods))
@@ -766,6 +774,17 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         session: WebSession = request.state.web_session
         sessions.revoke_link(session)
         return Response(status_code=204)
+
+    # --- Focus (P14.18) --------------------------------------------------------------------------------
+
+    @app.get("/api/focus", dependencies=[viewer])
+    def get_focus(request: Request) -> FocusInfo:
+        """Return the context in the foreground of the session (open here, used by the assistant)."""
+        return service.get_focus(sid(request))
+
+    @app.put("/api/focus", dependencies=[viewer])
+    def put_focus(request: Request, body: FocusRequest) -> FocusInfo:
+        return service.focus(sid(request), body.context)
 
     # --- Contexts --------------------------------------------------------------------------------------
 
@@ -1117,16 +1136,29 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         await websocket.accept()
         sent_jobs: dict[str, dict[str, Any]] = {}
         journal_seen: dict[str, int] = {}
+        revisions: dict[str, int] = {}  # changes of the contexts, sent when they grow (P14.18)
+        focus_count: int | None = None
         try:
             for summary in service.list_contexts(session.service_session):
                 journal_seen[summary.id] = len(service.journal_since(session.service_session, summary.id))
             while True:
                 try:
                     state = service.list_jobs(session.service_session)
-                    contexts_ = [c.id for c in service.list_contexts(session.service_session)]
+                    summaries = service.list_contexts(session.service_session)
+                    focus = service.get_focus(session.service_session)
                 except ServiceError:
                     await websocket.close(code=1008, reason="session expired")
                     return
+                contexts_ = [c.id for c in summaries]
+                for summary in summaries:
+                    if revisions.get(summary.id) != summary.revision:
+                        revisions[summary.id] = summary.revision
+                        await websocket.send_json(
+                            {"type": "context", "context": summary.id, "revision": summary.revision}
+                        )
+                if focus.count != focus_count:
+                    focus_count = focus.count
+                    await websocket.send_json({"type": "focus", **focus.model_dump(mode="json")})
                 for cid in contexts_:
                     start = journal_seen.get(cid, 0)
                     try:
@@ -1145,6 +1177,27 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
                 await asyncio.sleep(0.2)
         except (WebSocketDisconnect, RuntimeError):
             return
+
+    # --- View links (P14.18) ---------------------------------------------------------------------------
+
+    @app.get("/view/{secret}", include_in_schema=False)
+    def view(request: Request, secret: str, context: str = "") -> Response:
+        """Attach this browser to the session of a view link (from an assistant), then open its context."""
+        session = sessions.by_view(secret)
+        if session is None:
+            return _error(
+                404,
+                "unknown or expired view link",
+                "ask the assistant for a new link (get_view_link)",
+                "not_found",
+            )
+        audit.record("view-link", "success", ip=address(request), user=session.user)
+        target = f"/?context={context}" if re.fullmatch(r"[0-9a-f]{1,32}", context) else "/"
+        response = Response(status_code=303, headers={"location": target, "cache-control": "no-store"})
+        response.set_cookie(
+            COOKIE, session.token, httponly=True, samesite="strict", secure=secure(request), path="/"
+        )
+        return response
 
     # --- Interface -------------------------------------------------------------------------------------
 

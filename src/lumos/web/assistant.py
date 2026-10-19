@@ -17,7 +17,7 @@ import anyio
 from starlette.requests import HTTPConnection
 from starlette.responses import JSONResponse
 
-from lumos.service import Service
+from lumos.service import Service, ServiceError
 from lumos.web.auth import role_allows
 from lumos.web.sessions import COOKIE, WebSession, WebSessions
 
@@ -44,6 +44,9 @@ class McpGateway:
         Role of the requests without a session.
     enabled
         Whether the assistant is offered (``WebConfig.assistant``).
+    base_url
+        Scheme and host of a request as its client sees them (``https://lumos.example.org``), for the view
+        links of the tool ``get_view_link``.
     """
 
     def __init__(
@@ -54,12 +57,15 @@ class McpGateway:
         role_of: Callable[[WebSession], str | None],
         anonymous_role: str | None,
         enabled: bool,
+        base_url: Callable[[HTTPConnection], str] | None = None,
     ) -> None:
         self.service = service
         self.sessions = sessions
         self.role_of = role_of
         self.anonymous_role = anonymous_role
         self.enabled = enabled
+        self.base_url = base_url
+        self._bases: dict[str, str] = {}  # service session -> base URL of its last MCP request
         self._servers: dict[tuple[str, bool], Any] = {}
         self._tasks: anyio.abc.TaskGroup | None = None
         self._lock = anyio.Lock()
@@ -104,6 +110,8 @@ class McpGateway:
                 scope, receive, send, 401, "the MCP server needs a session of the instance", hint
             )
             return
+        if self.base_url is not None:
+            self._bases[session.service_session] = self.base_url(connection)
         server = await self._server(session.service_session, role == "operator")
         await server(scope, receive, send)
 
@@ -124,7 +132,20 @@ class McpGateway:
 
             from lumos.mcp import create_server
 
-            server = create_server(self.service, session=service_session, can_operate=can_operate)
+            def view_link(context: str) -> str:
+                session = self.sessions.by_service(service_session)
+                if session is None:
+                    raise ServiceError(
+                        "the session of this assistant has ended",
+                        hint="create a new connector link",
+                        code="not_found",
+                    )
+                base = self._bases.get(service_session, "")
+                return f"{base}/view/{self.sessions.view_link(session)}?context={context}"
+
+            server = create_server(
+                self.service, session=service_session, can_operate=can_operate, view_link=view_link
+            )
             # host names and origins are checked by the web application itself
             security = TransportSecuritySettings(enable_dns_rebinding_protection=False)
             app = server.streamable_http_app(streamable_http_path=PATH, transport_security=security)

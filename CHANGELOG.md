@@ -215,6 +215,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Editor (P14.16, review of 19/10/2026): the label of a port is its handle (drag it, or click two ports, to
   connect) and it grows sideways in place when pointed at; an *Inspect* button in the header of the blocks;
   the categories of the palette start collapsed; selecting a block shows a hidden inspector.
+- The interface follows the assistant (P14.18): every context has a `revision` and every session a focused
+  context (`Service.focus`, `get_focus`, `/api/focus`), pushed on the WebSocket; the tools work by default on
+  the context open in the interface and the interface opens the contexts the assistant creates; MCP tool
+  `get_view_link` and route `/view/<secret>` opening a context of the session in another browser.
 
 ### Changed
 

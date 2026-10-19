@@ -20,6 +20,7 @@ __all__ = [
     "ElementSummary",
     "ElementTypeInfo",
     "FeedbackInfo",
+    "FocusInfo",
     "GroupInfo",
     "Issue",
     "JobInfo",
@@ -154,6 +155,19 @@ class ContextSummary(BaseModel):
     ui: dict[str, Any] = {}
     can_undo: bool = False
     can_redo: bool = False
+    revision: int = Field(default=0, description="grows at every change of the context")
+
+
+class FocusInfo(BaseModel):
+    """The context in the foreground of a session, shared by the web interface and the assistant (P14.18).
+
+    ``origin`` tells who focused it last (``web``, ``mcp`` or ``python``); ``count`` grows at every change of
+    the focus, so that a client sees a change even when the same context comes back.
+    """
+
+    context: str | None = None
+    origin: str | None = None
+    count: int = 0
 
 
 class PresetInfo(BaseModel):

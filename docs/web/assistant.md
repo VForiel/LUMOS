@@ -43,6 +43,12 @@ works on the contexts of your tab, and you see its edits in the interface as the
      *Create*, paste the link, no authentication;
    - **Claude Code**: `claude mcp add --transport http lumos <link>`.
 
+The page follows the assistant: its edits appear in the open context, and a context it creates or loads is
+opened in the editor (the previous one stays in the session). If your page is closed, or you never opened
+it, ask the assistant for **the link to see its work**: the tool `get_view_link` gives a link opening the
+context in your browser, in the same session. Like the connector link, it gives access to your session:
+keep it to yourself. It lasts a day.
+
 Claude.ai and ChatGPT reach the connector from the Internet: use the link of a public instance (HTTPS). On
 your own machine (`lumos web`), only local clients can use it: Claude Code, Claude Desktop, or `lumos mcp`
 directly.

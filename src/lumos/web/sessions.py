@@ -15,10 +15,13 @@ from dataclasses import dataclass, field
 
 from lumos.service import Service, ServiceError
 
-__all__ = ["COOKIE", "WebSession", "WebSessions"]
+__all__ = ["COOKIE", "VIEW_SECONDS", "WebSession", "WebSessions"]
 
 #: Name of the session cookie.
 COOKIE = "lumos_session"
+
+#: Lifetime of a view link (``/view/<secret>``, P14.18).
+VIEW_SECONDS = 24 * 3600.0
 
 
 @dataclass
@@ -70,6 +73,7 @@ class WebSessions:
         self.lifetime_seconds = lifetime_seconds
         self._sessions: dict[str, WebSession] = {}
         self._links: dict[str, str] = {}  # secret of a connector link -> token of its session
+        self._views: dict[str, tuple[str, float]] = {}  # secret of a view link -> (token, expiry)
         self._lock = threading.Lock()
 
     def get(self, token: str | None) -> WebSession | None:
@@ -100,6 +104,36 @@ class WebSessions:
             session.link = secrets.token_urlsafe(32)
             self._links[session.link] = session.token
             return session.link
+
+    def view_link(self, session: WebSession) -> str:
+        """Return the secret of a link attaching a browser to ``session`` (``/view/<secret>``, P14.18).
+
+        An assistant gives it to the user so that they see its work in their browser, also when the page was
+        closed. It lasts :data:`VIEW_SECONDS`; a valid secret of the session is given again.
+        """
+        now = time.monotonic()
+        with self._lock:
+            for secret, (token, expiry) in list(self._views.items()):
+                if expiry < now:
+                    del self._views[secret]
+                elif token == session.token and expiry - now > VIEW_SECONDS / 2:
+                    return secret
+            secret = secrets.token_urlsafe(32)
+            self._views[secret] = (session.token, now + VIEW_SECONDS)
+            return secret
+
+    def by_view(self, secret: str | None) -> WebSession | None:
+        """Return the live session of a view link, or ``None`` (unknown or expired)."""
+        if not secret:
+            return None
+        with self._lock:
+            token, expiry = self._views.get(secret, ("", 0.0))
+        return self.get(token) if expiry >= time.monotonic() else None
+
+    def by_service(self, service_session: str) -> WebSession | None:
+        """Return the browser session owning a session of the service layer, or ``None``."""
+        with self._lock:
+            return next((s for s in self._sessions.values() if s.service_session == service_session), None)
 
     def revoke_link(self, session: WebSession) -> None:
         """Remove the connector link of ``session``."""
@@ -132,6 +166,9 @@ class WebSessions:
             self._sessions[renewed.token] = renewed
             if renewed.link is not None:
                 self._links[renewed.link] = renewed.token
+            for secret, (token, expiry) in list(self._views.items()):
+                if token == session.token:
+                    self._views[secret] = (renewed.token, expiry)
         return renewed
 
     def close(self, token: str) -> None:
@@ -140,6 +177,9 @@ class WebSessions:
             session = self._sessions.pop(token, None)
             if session is not None and session.link is not None:
                 self._links.pop(session.link, None)
+            for secret, (owner, _) in list(self._views.items()):
+                if owner == token:
+                    del self._views[secret]
         if session is not None:
             with contextlib.suppress(ServiceError):  # already closed by the service
                 self.service.close_session(session.service_session)

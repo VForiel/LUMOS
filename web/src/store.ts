@@ -8,6 +8,7 @@ import {
   download,
   fileName,
   type ContextSummary,
+  type Focus,
   type Fragment,
   type Info,
   type Issue,
@@ -102,7 +103,7 @@ type Actions = {
   restore: () => Promise<void>;
   show: (summary: ContextSummary) => Promise<void>;
   refresh: () => Promise<void>;
-  open: (summary: ContextSummary) => Promise<void>;
+  open: (summary: ContextSummary, keepPrevious?: boolean) => Promise<void>;
   newContext: () => Promise<void>;
   openFile: (file: File) => Promise<void>;
   save: () => Promise<void>;
@@ -151,6 +152,10 @@ type Actions = {
   inspect: (port: string) => Promise<void>;
   onJob: (job: JobInfo) => void;
   onJournal: (context: string, entry: JournalEntry) => void;
+  /** A context changed (``revision``): show it again when it is the one open and someone else changed it. */
+  onRevision: (context: string, revision: number) => void;
+  /** The focus of the session changed: open the context an assistant brought to the foreground. */
+  onFocus: (focus: Focus) => void;
 };
 
 const CONTEXT_KEY = "lumos.context";
@@ -167,6 +172,7 @@ export const FIGURE_KINDS = ["Wavefront", "Wavecube", "IncoherentBundle", "DataP
 let toastId = 0;
 const announced = new Set<string>();
 let copying: Promise<void> = Promise.resolve();
+let following: Promise<void> = Promise.resolve();
 
 export function storage(): Storage | null {
   try {
@@ -329,6 +335,18 @@ export const useStore = create<State & Actions>((set, get) => {
         window.history.replaceState(null, "", url);
       }
       const store = fresh ? null : storage();
+      // `?context=<id>` (view link given by an assistant): open that context of the session
+      const asked = url.searchParams.get("context");
+      if (asked) {
+        url.searchParams.delete("context");
+        window.history.replaceState(null, "", url);
+        try {
+          await get().open(await api.describe(asked));
+          return;
+        } catch {
+          get().toast({ kind: "error", title: "viewMissing" });
+        }
+      }
       const id = store?.getItem(CONTEXT_KEY);
       const dirty = store?.getItem(DIRTY_KEY) === "1";
       if (id) {
@@ -380,12 +398,13 @@ export const useStore = create<State & Actions>((set, get) => {
       }
     },
 
-    async open(summary) {
+    async open(summary, keepPrevious = false) {
       const previous = get().context;
       set({ selection: [], inspected: null, journal: [], lastJob: null, results: {} });
       clean();
       await get().show(summary);
-      if (previous && previous.id !== summary.id) void api.close(previous.id).catch(() => undefined);
+      void api.focus(summary.id).catch(() => undefined); // the assistant works on the context shown
+      if (previous && previous.id !== summary.id && !keepPrevious) void api.close(previous.id).catch(() => undefined);
     },
 
     async newContext() {
@@ -762,6 +781,33 @@ export const useStore = create<State & Actions>((set, get) => {
       } else if (job.status === "failed") {
         get().toast({ kind: "error", title: job.error ?? "failed", hint: job.hint ?? undefined });
       }
+    },
+
+    onRevision(context, revision) {
+      const current = get().context;
+      if (!current || current.id !== context || revision <= (current.revision ?? 0)) return;
+      following = following.then(async () => {
+        const shown = get().context;
+        if (!shown || shown.id !== context || revision <= (shown.revision ?? 0)) return; // already shown
+        await get().refresh();
+        if (get().context?.id === context) changed(); // changed by someone else: not saved either
+      });
+    },
+
+    onFocus(focus) {
+      const current = get().context;
+      if (!focus.context || focus.context === current?.id || focus.origin === "web") return;
+      const id = focus.context;
+      following = following.then(async () => {
+        try {
+          // the context of the assistant comes to the editor; the previous one stays in the session
+          await get().open(await api.describe(id), true);
+          set({ welcome: false });
+          get().toast({ kind: "info", title: "followed", values: { name: get().context?.name || id } });
+        } catch {
+          /* closed meanwhile */
+        }
+      });
     },
 
     onJournal(context, entry) {

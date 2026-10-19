@@ -73,6 +73,9 @@ export type Connection = { source: string; target: string };
 
 export type GroupInfo = { connections: Connection[]; exposed: Record<string, string> };
 
+/** The context in the foreground of the session, who focused it, and a count of the changes. */
+export type Focus = { context: string | null; origin: string | null; count: number };
+
 export type ContextSummary = {
   id: string;
   name: string;
@@ -90,6 +93,8 @@ export type ContextSummary = {
   ui: { positions?: Record<string, [number, number]>; expanded?: Record<string, boolean>; [key: string]: unknown };
   can_undo: boolean;
   can_redo: boolean;
+  /** Grows at every change of the context, whoever made it. */
+  revision?: number;
 };
 
 export type Issue = { severity: string; element: string | null; message: string; hint: string };
@@ -192,6 +197,8 @@ export const api = {
   createContext: (name = "", mode = "simulation") => request<ContextSummary>("POST", "/api/contexts", { name, mode }),
   describe: (id: string) => request<ContextSummary>("GET", ctx(id)),
   close: (id: string) => request<void>("DELETE", ctx(id)),
+  /** Bring a context to the foreground of the session: the assistant works on it by default. */
+  focus: (id: string | null) => request<Focus>("PUT", "/api/focus", { context: id }),
   setContext: (id: string, change: { name?: string; description?: string; seed?: number }) =>
     request<ContextSummary>("PATCH", ctx(id), change),
   setFree: (id: string, path: string, free: boolean, prior?: Record<string, unknown> | null) =>
