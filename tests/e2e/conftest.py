@@ -30,6 +30,8 @@ def start_server(tmp_path, *arguments):
     if not STATIC.is_file():
         pytest.skip("the web interface is not built (npm ci && npm run build in web/)")
     port = _free_port()
+    # the journal of the server goes to a file: an unread pipe fills up (4 kB on Windows) and blocks it
+    log = open(tmp_path / "server.log", "w", encoding="utf-8")  # noqa: SIM115 - closed by stop_server
     process = subprocess.Popen(
         [
             sys.executable,
@@ -43,14 +45,16 @@ def start_server(tmp_path, *arguments):
             *arguments,
         ],
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
+        stderr=log,
         text=True,
     )
+    process.log = log  # type: ignore[attr-defined]
     url = f"http://localhost:{port}"
     deadline = time.monotonic() + 60
     while True:
         if process.poll() is not None:
-            raise RuntimeError(f"lumos web stopped: {process.stderr.read() if process.stderr else ''}")
+            log.close()
+            raise RuntimeError(f"lumos web stopped: {(tmp_path / 'server.log').read_text(encoding='utf-8')}")
         try:
             httpx.get(f"{url}/api/info", timeout=2)
             return process, url
@@ -67,8 +71,7 @@ def stop_server(process):
     except subprocess.TimeoutExpired:
         process.kill()
         process.wait()
-    if process.stderr is not None:
-        process.stderr.close()
+    process.log.close()
 
 
 @pytest.fixture(scope="session")
