@@ -26,7 +26,7 @@ PNG = b"\x89PNG\r\n\x1a\n"
 
 def camera_bench(service, session, recorder_every=None):
     ctx = service.create_context(session, name="camera").id
-    laser = {"power": "1 mW", "n_pixels": 32, "pixel_scale": "0.1 mm"}
+    laser = {"power": "1 mW", "n_pixels": 32, "pixel_scale": "0.25 mm"}  # 8 mm: the 1 mm beam fits
     service.add_element(session, ctx, "lumos.sources.GaussianLaser", name="laser", params=laser)
     service.add_element(session, ctx, "lumos.detectors.Camera", name="camera")
     service.connect(session, ctx, "laser.out", "camera.in")
