@@ -1160,24 +1160,34 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         journal_seen: dict[str, int] = {}
         revisions: dict[str, int] = {}  # changes of the contexts, sent when they grow (P14.18)
         focus_count: int | None = None
+        closed = asyncio.Event()
+
+        async def watch() -> None:
+            # a page that goes away without a message is only seen by a receive: end the loop then
+            with contextlib.suppress(Exception):
+                while True:
+                    message = await websocket.receive()
+                    if message.get("type") == "websocket.disconnect":
+                        break
+            closed.set()
+
+        watcher = asyncio.create_task(watch())
         try:
-            for summary in service.list_contexts(session.service_session):
-                journal_seen[summary.id] = len(service.journal_since(session.service_session, summary.id))
-            while True:
+            for cid in service.revisions(session.service_session):
+                journal_seen[cid] = len(service.journal_since(session.service_session, cid))
+            while not closed.is_set():
                 try:
                     state = service.list_jobs(session.service_session)
-                    summaries = service.list_contexts(session.service_session)
+                    current = service.revisions(session.service_session)
                     focus = service.get_focus(session.service_session)
                 except ServiceError:
                     await websocket.close(code=1008, reason="session expired")
                     return
-                contexts_ = [c.id for c in summaries]
-                for summary in summaries:
-                    if revisions.get(summary.id) != summary.revision:
-                        revisions[summary.id] = summary.revision
-                        await websocket.send_json(
-                            {"type": "context", "context": summary.id, "revision": summary.revision}
-                        )
+                contexts_ = list(current)
+                for cid, revision in current.items():
+                    if revisions.get(cid) != revision:
+                        revisions[cid] = revision
+                        await websocket.send_json({"type": "context", "context": cid, "revision": revision})
                 if focus.count != focus_count:
                     focus_count = focus.count
                     await websocket.send_json({"type": "focus", **focus.model_dump(mode="json")})
@@ -1196,9 +1206,12 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
                         sent_jobs[job_info.id] = data
                         await websocket.send_json({"type": "job", "job": data})
                 session.last_seen = time.monotonic()  # an open interface keeps its session alive
-                await asyncio.sleep(0.2)
+                with contextlib.suppress(TimeoutError):
+                    await asyncio.wait_for(closed.wait(), 0.2)
         except (WebSocketDisconnect, RuntimeError):
             return
+        finally:
+            watcher.cancel()
 
     # --- View links (P14.18) ---------------------------------------------------------------------------
 

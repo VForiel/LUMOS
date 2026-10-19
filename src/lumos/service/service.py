@@ -279,6 +279,10 @@ class Service:
             self._context(session, context)  # it exists
         return self._set_focus(state, context)
 
+    def revisions(self, session: str) -> dict[str, int]:
+        """Return the revision of every context of the session (cheap: no summary is built)."""
+        return {cid: self._revisions.get(cid, 0) for cid in list(self._session(session).contexts)}
+
     def get_focus(self, session: str) -> FocusInfo:
         """Return the context in the foreground of the session, who focused it and the count of changes."""
         return self._session(session).focus

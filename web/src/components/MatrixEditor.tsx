@@ -15,6 +15,9 @@ const TOLERANCE = 1e-4;
 
 type Matrix = number[][];
 
+/** Edits of the matrices, one after the other: each starts from the values the previous one wrote. */
+let writing: Promise<unknown> = Promise.resolve();
+
 function matrixOf(text: unknown): Matrix | null {
   const array = parseArray(text);
   if (!array || array.shape.length !== 2) return null;
@@ -88,15 +91,25 @@ export function MatrixEditor({ element, editable }: { element: ElementSummary; e
   const columns = amplitudes[0].length;
   const same = phases.length === rows && phases.every((row) => row.length === columns);
   const status = same ? passivity(amplitudes, phases) : null;
-  const write = async (a: Matrix, p: Matrix) => {
-    if (JSON.stringify(a) !== JSON.stringify(amplitudes)) await setParam(`${element.id}.amplitudes`, JSON.stringify(a));
-    if (JSON.stringify(p) !== JSON.stringify(phases)) await setParam(`${element.id}.phases`, `${JSON.stringify(p)} rad`);
+  /** Change the matrices as the server last described them (not as this render saw them), in order. */
+  const update = (change: (a: Matrix, p: Matrix) => [Matrix, Matrix]) => {
+    writing = writing.then(async () => {
+      const latest = useStore.getState().context?.elements.find((e) => e.id === element.id);
+      const a0 = matrixOf(latest?.params.amplitudes);
+      const p0 = matrixOf(latest?.params.phases);
+      if (!a0 || !p0) return;
+      const [a, p] = change(a0, p0);
+      if (JSON.stringify(a) !== JSON.stringify(a0)) await setParam(`${element.id}.amplitudes`, JSON.stringify(a));
+      if (JSON.stringify(p) !== JSON.stringify(p0)) await setParam(`${element.id}.phases`, `${JSON.stringify(p)} rad`);
+    });
   };
-  const change = (which: "a" | "p", i: number, j: number, value: number) => {
-    const next = (which === "a" ? amplitudes : phases).map((row) => [...row]);
-    next[i][j] = value;
-    void (which === "a" ? write(next, phases) : write(amplitudes, next));
-  };
+  const change = (which: "a" | "p", i: number, j: number, value: number) =>
+    update((a, p) => {
+      const next = (which === "a" ? a : p).map((row) => [...row]);
+      if (next[i]?.[j] === undefined) return [a, p];
+      next[i][j] = value;
+      return which === "a" ? [next, p] : [a, next];
+    });
   const resize = (dRows: number, dColumns: number) => {
     const shape = (m: Matrix) => {
       let out = m.map((row) => (dColumns > 0 ? [...row, 0] : dColumns < 0 ? row.slice(0, -1) : [...row]));
@@ -104,7 +117,7 @@ export function MatrixEditor({ element, editable }: { element: ElementSummary; e
       if (dRows < 0) out = out.slice(0, -1);
       return out;
     };
-    void write(shape(amplitudes), shape(phases));
+    update((a, p) => [shape(a), shape(p)]);
   };
   const button = (testId: string, label: string, icon: typeof Plus, onClick: () => void, disabled = false) => {
     const Icon = icon;

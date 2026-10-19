@@ -12,7 +12,7 @@ import json
 import pathlib
 import sys
 
-from babel.messages.pofile import read_po, write_po
+from babel.messages.pofile import read_po, write_po  # pyright: ignore[reportMissingImports] (docs extra)
 
 ROOT = pathlib.Path(__file__).resolve().parents[1] / "docs" / "locales" / "fr" / "LC_MESSAGES"
 
