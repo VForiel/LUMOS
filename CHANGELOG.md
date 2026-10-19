@@ -212,6 +212,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Assistant providers (P14.15): Claude, OpenAI, Google Gemini, OpenRouter (key or login with OAuth PKCE) and any
   OpenAI-compatible endpoint (tool loop of the chat completions API); connector links (`/mcp/<secret>`,
   `/api/assistant/link`) to use a Claude or ChatGPT subscription by adding LUMOS as a connector.
+- Editor (P14.16, review of 19/10/2026): the label of a port is its handle (drag it, or click two ports, to
+  connect) and it grows sideways in place when pointed at; an *Inspect* button in the header of the blocks;
+  the categories of the palette start collapsed; selecting a block shows a hidden inspector.
 
 ### Changed
 
@@ -230,6 +233,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Fixed
 
+- Editor: adding or removing a block no longer moves the other blocks of a context laid out automatically
+  (they piled up in one column); the handles of the ports no longer slide off the edge of the block when
+  pointed at; the content of the result cards no longer spills out of them in a low bottom panel.
 - The JSON Schema of an element gives the default of a quantity setting (`Crop.x`...) as `{value, unit}`.
 - `search_docs` no longer fails on a page matched by its title only.
 - `explain_sampling` reports the propagation method forced by an element (it reported the planner's choice).

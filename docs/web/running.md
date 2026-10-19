@@ -15,7 +15,8 @@ metadata, figures, data and journal; the archive can then be downloaded as a `.z
 
 ## Inspecting any port
 
-Click the name of an output on a block (or **Inspect** in the inspector) to compute that port alone and see
+Click the **Inspect** button at the top right of a block (its first output), or **Inspect** next to any
+output in the inspector, to compute that port alone and see
 its summary and figure: the field after the telescope, the image before the coronagraph, the reading of a
 detector. Inspecting does not need a run.
 

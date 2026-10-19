@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ElementType } from "../api";
 import { category, CATEGORY_ORDER } from "../lib/categories";
-import { useStore } from "../store";
+import { storage, useStore } from "../store";
 import { Resizer } from "./Resizer";
 
 export const DRAG_TYPE = "application/x-lumos-type";
@@ -61,6 +61,16 @@ export function useCanvasCentre(): () => [number, number] {
   };
 }
 
+const OPENED_KEY = "lumos.palette.opened";
+
+function readOpened(): Record<string, boolean> {
+  try {
+    return JSON.parse(storage()?.getItem(OPENED_KEY) ?? "{}");
+  } catch {
+    return {};
+  }
+}
+
 export function Palette() {
   const { t } = useTranslation();
   const palette = useStore((s) => s.palette);
@@ -68,7 +78,8 @@ export function Palette() {
   const role = useStore((s) => s.info?.role);
   const centre = useCanvasCentre();
   const [query, setQuery] = useState("");
-  const [closed, setClosed] = useState<Record<string, boolean>>({});
+  // categories start collapsed; those opened are remembered by the browser
+  const [opened, setOpened] = useState<Record<string, boolean>>(readOpened);
 
   const groups = useMemo(() => {
     const words = query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -212,12 +223,21 @@ export function Palette() {
         {groups.length === 0 && <p className="p-3 text-sm text-slate-500">{t("palette.empty")}</p>}
         {groups.map(([name, items]) => {
           const { icon: Icon, color } = category(name);
-          const open = !closed[name] || query !== "";
+          const open = Boolean(opened[name]) || query !== "";
           return (
             <section key={name} data-testid="palette-category" className="mb-1">
               <button
                 type="button"
-                onClick={() => setClosed({ ...closed, [name]: open })}
+                aria-expanded={open}
+                onClick={() => {
+                  const next = { ...opened, [name]: !open };
+                  setOpened(next);
+                  try {
+                    storage()?.setItem(OPENED_KEY, JSON.stringify(next));
+                  } catch {
+                    /* private browsing */
+                  }
+                }}
                 className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 {open ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}

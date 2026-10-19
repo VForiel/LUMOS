@@ -90,7 +90,7 @@ function Figure({ src, alt }: { src: string | null; alt: string }) {
   if (!src || failed) return null;
   return (
     <a href={src} target="_blank" rel="noreferrer" className="block shrink-0">
-      <img src={src} alt={alt} onError={() => setFailed(true)} className="h-44 rounded-lg border border-slate-200 bg-white object-contain dark:border-slate-700" />
+      <img src={src} alt={alt} onError={() => setFailed(true)} className="h-44 max-h-full rounded-lg border border-slate-200 bg-white object-contain dark:border-slate-700" />
     </a>
   );
 }
@@ -107,7 +107,7 @@ function Results() {
   return (
     <div data-testid="results" className="flex h-full gap-4 overflow-x-auto p-3">
       {inspected && inspected.context === context?.id && (
-        <section data-testid="inspected" className="flex min-w-[26rem] shrink-0 gap-3 rounded-xl border border-accent-200 bg-accent-50/50 p-3 dark:border-accent-900 dark:bg-accent-950/20">
+        <section data-testid="inspected" className="scrollbar-thin flex min-h-0 min-w-[26rem] shrink-0 gap-3 overflow-y-auto rounded-xl border border-accent-200 bg-accent-50/50 p-3 dark:border-accent-900 dark:bg-accent-950/20">
           <div className="flex min-w-48 flex-1 flex-col gap-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold tracking-wider text-accent-700 uppercase dark:text-accent-300">{t("results.inspected")}</span>
@@ -132,8 +132,8 @@ function Results() {
         </section>
       )}
       {job ? (
-        <section className="flex shrink-0 gap-3">
-          <div className="flex w-44 shrink-0 flex-col gap-1 text-xs">
+        <section className="flex min-h-0 shrink-0 gap-3">
+          <div className="scrollbar-thin flex min-h-0 w-44 shrink-0 flex-col gap-1 overflow-y-auto text-xs">
             <span className="font-semibold tracking-wider text-slate-500 uppercase">{t("results.lastRun")}</span>
             <span className="flex items-center gap-1.5">
               {job.status === "done" ? (
@@ -158,7 +158,7 @@ function Results() {
               const summary = results[port];
               const figure = summary && FIGURE_KINDS.includes(summary.kind) && summary.shape.length <= 4;
               return (
-                <article key={port} data-testid="output-card" className="flex w-[25rem] shrink-0 gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
+                <article key={port} data-testid="output-card" className="scrollbar-thin flex min-h-0 w-[25rem] shrink-0 gap-3 overflow-y-auto rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
                   <div className="flex min-w-0 flex-1 flex-col gap-2">
                     <span className="font-mono text-sm font-semibold">{port}</span>
                     {summary ? <Statistics summary={summary} /> : <Loader2 className="size-4 animate-spin text-slate-400" />}

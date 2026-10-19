@@ -1,8 +1,8 @@
 // A block of the graph: an element with its ports (colour = signal), a few values and its problems.
 
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
-import { AlertTriangle, Dices, Layers } from "lucide-react";
-import { memo } from "react";
+import { AlertTriangle, Dices, Layers, ScanSearch } from "lucide-react";
+import { memo, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import type { ElementSummary, ElementType, Issue } from "../api";
 import { category, categoryOf } from "../lib/categories";
@@ -52,14 +52,14 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
 
   return (
     <div
-      className={`w-[210px] overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-shadow dark:bg-slate-900 ${
+      className={`w-[210px] rounded-xl border bg-white text-left shadow-sm transition-shadow dark:bg-slate-900 ${
         selected ? "shadow-lg" : "hover:shadow-md"
       } ${errors ? "border-red-300 dark:border-red-800" : "border-slate-200 dark:border-slate-700"} ${
         data.running ? "animate-pulse" : ""
       }`}
       title={type?.summary}
     >
-      <div className="h-1" style={{ background: color }} />
+      <div className="h-1 rounded-t-xl" style={{ background: color }} />
       <div className="flex items-center gap-2 px-3 pt-2 pb-1.5" style={{ minHeight: HEADER - 4 }}>
         <span className="grid size-7 shrink-0 place-items-center rounded-lg" style={{ background: `${color}22`, color }}>
           {group ? <Layers className="size-4" /> : <Icon className="size-4" />}
@@ -80,48 +80,50 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
             <AlertTriangle className="size-4" aria-label={t("node.problems", { count: errors })} />
           </span>
         )}
+        {outputs.length > 0 && data.onInspect && (
+          <button
+            type="button"
+            data-testid="node-inspect"
+            className="nodrag -mr-1 grid size-6 shrink-0 place-items-center rounded-md text-slate-400 hover:bg-accent-100 hover:text-accent-700 dark:hover:bg-accent-900/40 dark:hover:text-accent-300"
+            onClick={(event) => {
+              event.stopPropagation();
+              data.onInspect?.(`${element.id}.${outputs[0].name}`);
+            }}
+            title={t("node.inspect", { port: `${element.id}.${outputs[0].name}` })}
+            aria-label={t("node.inspect", { port: `${element.id}.${outputs[0].name}` })}
+          >
+            <ScanSearch className="size-3.5" />
+          </button>
+        )}
       </div>
       <div className="relative" style={{ height: rows * PORT_GAP + 6 }}>
+        {/* the whole label of a port is its handle: drag it, or click it then another port, to connect */}
         {inputs.map((port, index) => (
-          <div
-            key={`in-${port.name}`}
-            className="absolute left-0 flex items-center pl-3 text-[11px] text-slate-500 dark:text-slate-400"
-            style={{ top: index * PORT_GAP + 4, height: PORT_GAP - 6 }}
-            title={`${port.name}: ${port.signal}${port.doc ? ` — ${port.doc}` : ""}`}
-          >
+          <div key={`target-${port.name}`} className="pointer-events-none absolute inset-x-0" style={{ top: index * PORT_GAP + 4, height: PORT_GAP - 6 }}>
             <Handle
               id={port.name}
               type="target"
               position={Position.Left}
-              style={{ background: signalColor(port.signal), top: "50%" }}
-            />
-            {port.name}
+              className="lumos-port"
+              style={{ "--port-color": signalColor(port.signal) } as CSSProperties}
+              title={`${port.name}: ${port.signal}${port.doc ? ` — ${port.doc}` : ""}`}
+            >
+              {port.name}
+            </Handle>
           </div>
         ))}
         {outputs.map((port, index) => (
-          <div
-            key={`out-${port.name}`}
-            className="absolute right-0 flex items-center pr-3 text-[11px] text-slate-500 dark:text-slate-400"
-            style={{ top: index * PORT_GAP + 4, height: PORT_GAP - 6 }}
-            title={`${port.name}: ${port.signal}${port.doc ? ` — ${port.doc}` : ""}`}
-          >
-            <button
-              type="button"
-              className="nodrag rounded px-1 hover:bg-accent-100 hover:text-accent-700 dark:hover:bg-accent-900/40 dark:hover:text-accent-300"
-              onClick={(event) => {
-                event.stopPropagation();
-                data.onInspect?.(`${element.id}.${port.name}`);
-              }}
-              title={t("node.inspect", { port: `${element.id}.${port.name}` })}
-            >
-              {port.name}
-            </button>
+          <div key={`source-${port.name}`} className="pointer-events-none absolute inset-x-0" style={{ top: index * PORT_GAP + 4, height: PORT_GAP - 6 }}>
             <Handle
               id={port.name}
               type="source"
               position={Position.Right}
-              style={{ background: signalColor(port.signal), top: "50%" }}
-            />
+              className="lumos-port"
+              style={{ "--port-color": signalColor(port.signal) } as CSSProperties}
+              title={`${port.name}: ${port.signal}${port.doc ? ` — ${port.doc}` : ""}`}
+            >
+              {port.name}
+            </Handle>
           </div>
         ))}
       </div>

@@ -11,11 +11,13 @@ right: the inputs of a block are on its left, its outputs on its right.
   there, and connects the one you choose.
 
 The palette is generated from the library: every element type appears with its documentation, grouped by
-category (sources, scenes, telescopes, optics, detectors, processing...).
+category (sources, scenes, telescopes, optics, detectors, processing...). The categories start collapsed:
+click one to open it (the interface remembers it), or type in the search box to see every match.
 
 ## Connecting
 
-Drag from an output (right) to an input (left). The colour of a port tells the kind of signal it carries
+Drag from an output (right) to an input (left), or click a port then the other one: the whole label of a
+port is its handle. The colour of a port tells the kind of signal it carries
 (wavefront, wavecube, incoherent bundle, scene, data product...). Ports that cannot be connected refuse the wire
 while you drag; the server checks again and explains a refusal. To remove a wire alone, click it: the button
 at its middle removes it (or press **Delete**); its blocks stay.

@@ -208,20 +208,31 @@ async function remember(contextId: string): Promise<void> {
   }
 }
 
-/** Positions of the blocks: those saved in the context, an automatic layout for the others. */
-export function placed(summary: ContextSummary): Record<string, [number, number]> {
+/**
+ * Positions of the blocks: those saved in the context, then those already shown (``shown``: a block keeps its
+ * place when another one is added or removed), an automatic layout for the others.
+ */
+export function placed(summary: ContextSummary, shown: Record<string, [number, number]> = {}): Record<string, [number, number]> {
   const saved = summary.ui?.positions ?? {};
   const ids = summary.elements.filter((e) => !e.id.includes(".")).map((e) => e.id);
+  const known = (id: string) => saved[id] ?? shown[id];
   const edges = summary.connections.map((c) => [c.source.split(".")[0], c.target.split(".")[0]] as [string, string]);
   const layout = autoLayout(ids, edges);
-  const anyKnown = ids.some((id) => saved[id]);
-  const right = anyKnown ? Math.max(...ids.filter((id) => saved[id]).map((id) => saved[id][0])) + COLUMN : 0;
+  const anyKnown = ids.some((id) => known(id));
+  const right = anyKnown ? Math.max(...ids.filter((id) => known(id)).map((id) => known(id)[0])) + COLUMN : 0;
   const positions: Record<string, [number, number]> = { ...saved };
   for (const id of ids) {
-    if (saved[id]) continue;
-    positions[id] = anyKnown ? [right, layout[id][1]] : layout[id];
+    if (known(id)) positions[id] = known(id);
+    else positions[id] = anyKnown ? [right, layout[id][1]] : layout[id];
   }
   return positions;
+}
+
+/** Positions of the top-level blocks shown, to save with the context (``ui.positions`` is replaced whole). */
+function topLevel(positions: Record<string, [number, number]>, summary: ContextSummary | null): Record<string, [number, number]> {
+  const ids = new Set(summary?.elements.filter((e) => !e.id.includes(".")).map((e) => e.id) ?? []);
+  const inside = Object.fromEntries(Object.entries(summary?.ui.positions ?? {}).filter(([id]) => id.includes(".")));
+  return { ...inside, ...Object.fromEntries(Object.entries(positions).filter(([id]) => ids.has(id))) };
 }
 
 const isEditable = (info: Info | null) => info?.role !== "viewer" && info?.role !== null;
@@ -353,7 +364,9 @@ export const useStore = create<State & Actions>((set, get) => {
     async show(summary) {
       const issues = await api.validate(summary.id).catch(() => [] as Issue[]);
       const known = new Set(summary.elements.map((e) => e.id));
-      set({ context: summary, issues, positions: placed(summary), selection: get().selection.filter((id) => known.has(id)) });
+      // a block keeps its place across edits of the same context, even when it was laid out automatically
+      const shown = get().context?.id === summary.id ? get().positions : {};
+      set({ context: summary, issues, positions: placed(summary, shown), selection: get().selection.filter((id) => known.has(id)) });
       void remember(summary.id);
     },
 
@@ -471,7 +484,9 @@ export const useStore = create<State & Actions>((set, get) => {
     async addElement(typeId, position) {
       const element = await edit(async (id) => {
         const added = await api.addElement(id, typeId);
-        if (position) await api.updateUi(id, { positions: { [added.id]: position.map(Math.round) } }, false);
+        const positions = topLevel(get().positions, get().context);
+        if (position) positions[added.id] = position.map(Math.round) as [number, number];
+        await api.updateUi(id, { positions }, false);
         return added;
       });
       if (!element) return null;
@@ -482,6 +497,9 @@ export const useStore = create<State & Actions>((set, get) => {
     async removeElements(ids) {
       await edit(async (id) => {
         for (const element of ids) await api.removeElement(id, element);
+        // save the places of the others: an automatic layout of the remaining blocks would move them
+        const kept = Object.fromEntries(Object.entries(topLevel(get().positions, get().context)).filter(([path]) => !ids.some((r) => path === r || path.startsWith(`${r}.`))));
+        await api.updateUi(id, { positions: kept }, false);
       });
       set({ selection: [] });
     },
@@ -601,7 +619,9 @@ export const useStore = create<State & Actions>((set, get) => {
     async insertBlock(document, position) {
       const element = await edit(async (id) => {
         const added = await api.insertBlock(id, document);
-        if (position) await api.updateUi(id, { positions: { [added.id]: position.map(Math.round) } }, false);
+        const positions = topLevel(get().positions, get().context);
+        if (position) positions[added.id] = position.map(Math.round) as [number, number];
+        await api.updateUi(id, { positions }, false);
         return added;
       });
       if (element) set({ selection: [element.id] });

@@ -397,6 +397,10 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeDragStop={onNodeDragStop}
+        onNodeClick={() => {
+          // a block clicked shows the inspector when it was hidden
+          if (!useStore.getState().layout.inspectorOpen) useStore.getState().setLayout({ inspectorOpen: true });
+        }}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         isValidConnection={isValidConnection}
