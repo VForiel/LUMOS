@@ -101,7 +101,7 @@ def test_beyond_the_limit_the_oldest_data_of_the_session_are_deleted(make):
     session = service.create_session(origin="web").id
     cid, port = bench(service, session)
     paths = []
-    for _ in range(3):
+    for _ in range(2):  # two archives fit in 2.5 times the size of one
         info = finish(service, session, service.run(session, cid, [port], archive=True))
         paths.append(Path(info.archive))
         assert info.warnings == []
