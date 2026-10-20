@@ -34,20 +34,46 @@ oblige à raisonner en indices de canaux.
 | Format `.lumos` | 1.3 (`"to": "mmi.in[2]"`) | inchangé | inchangé |
 | Effort | 3 à 4 jours (cœur, service, éditeur, docs) | 1 jour | 1 jour |
 
-### Proposition
+### Proposition (retenue le 20/10) : B + C
 
-**A**, limité aux ports de signaux `ModalField` : c'est la seule option qui donne le schéma qu'on attend d'une
-puce, et elle reste compatible (une connexion sans indice continue de porter le bus entier). Le nombre de voies
-d'un port vient du composant : `MMI.n_ports`, la forme de `TransferMatrix`, le nombre de canaux d'un groupe. Les
-réglages `channels` restent pour le Python et les documents existants.
+Combiner B et C : le bus reste la règle, et on ne l'éclate que là où les voies doivent recevoir des composants
+différents. Une première proposition retenait A ; B + C donne presque le même résultat sans toucher au cœur ni au
+format.
+
+- **Le bus par défaut (B).** Un composant multi-canaux dessine ses N broches regroupées par une accolade. Une
+  connexion porte le bus entier, comme aujourd'hui en Python (`ctx.connect(guide.port("out"), mmi.port("in"))`). Un MMI câblé
+  en bus reste un seul fil.
+- **L'éclatement explicite (C).** `Demux(N)` éclate un bus en N ports à une voie, et `Mux(N)` regroupe N voies en
+  un bus. Ce sont deux éléments purs du cœur, utilisables aussi en Python et par le MCP, et utiles ailleurs (par
+  exemple envoyer une partie des canaux d'un bus vers une autre puce).
+- **Ce que fait `Mux`.** C'est là qu'est la seule logique nouvelle : assembler les voies dans l'ordre des ports,
+  vérifier qu'elles sont compatibles (grille, longueurs d'onde) et compléter une voie non connectée par un canal
+  vide (amplitude nulle), avec un avertissement à la validation.
+- **Pas de mélange.** Un port reçoit soit un bus, soit la sortie d'un `Mux` ; il n'y a rien à fusionner dans le
+  moteur.
+- **Le format ne change pas.** Les documents `.lumos` restent en 1.2 : `Demux` et `Mux` sont des éléments
+  ordinaires. Les réglages `channels` restent valables.
+
+Deux étapes :
+
+1. **B + C explicites.** On dessine les broches en accolade, on ajoute les éléments `Demux` / `Mux` (cœur,
+   palette, docs), et on teste `Mux` sur ses invariants (aller-retour `Mux ∘ Demux` = identité, conservation de
+   l'énergie). Effort : 1,5 à 2 jours.
+2. **Raccourci « Éclater le port » (optionnel).** L'éditeur insère un `Demux` (ou un `Mux` en sortie) **accolé** au
+   bloc : il se déplace et se supprime avec lui, et l'accolade devient visuellement le démultiplexeur. On obtient
+   le rendu de A (un fil par guide d'onde) ; le document contient toujours des `Demux` / `Mux` explicites, donc le
+   Python et le MCP voient exactement ce qui est dans le fichier. Effort : environ 1 jour.
+
+En Python, le bus reste la règle et le câblage reste compact. Ce n'est verbeux que si l'utilisateur câble voie par
+voie : il crée alors lui-même `Demux` et `Mux`, alors que l'option A aurait permis d'écrire `mmi.port("in")[2]`.
 
 ### Questions
 
-1. Un port à voies peut-il recevoir à la fois un bus et des voies isolées (mélange interdit, ou voies libres
-   complétées par le bus) ?
-2. Une voie non connectée : erreur, ou canal vide (amplitude nulle) ?
+1. ~~Mélange d'un bus et de voies isolées sur un même port~~ : sans objet avec B + C (un port reçoit soit un bus,
+   soit la sortie d'un `Mux`).
+2. ~~Voie non connectée~~ : canal vide (amplitude nulle) avec un avertissement à la validation.
 3. Faut-il étendre l'idée aux autres signaux à plusieurs composantes (faisceaux incohérents, cubes) ? Ma
-   recommandation : non, pas de cas d'usage aujourd'hui.
+   recommandation : non, pas de cas d'usage aujourd'hui ; `Demux` / `Mux` restent limités à `ModalField`.
 
 ---
 
