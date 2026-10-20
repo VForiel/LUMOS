@@ -585,9 +585,9 @@ class Service:
         ctx = self._context(session, context)
         return json.dumps(lumos.io.to_document(ctx), indent=2, ensure_ascii=False)
 
-    def export_python(self, session: str, context: str) -> str:
-        """Return the equivalent Python script of a context."""
-        return self._context(session, context).to_python()
+    def export_python(self, session: str, context: str, *, procedures: bool = True) -> str:
+        """Return the equivalent Python script of a context, its procedures as functions by default."""
+        return self._context(session, context).to_python(procedures=procedures)
 
     def describe_context(self, session: str, context: str) -> ContextSummary:
         """Elements, values, connections, mode and band of a context."""

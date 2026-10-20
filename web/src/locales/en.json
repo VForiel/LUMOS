@@ -156,7 +156,8 @@
       "hint": "This script builds the same context with the LUMOS library.",
       "copy": "Copy",
       "copied": "Copied",
-      "download": "Download .py"
+      "download": "Download .py",
+      "procedures": "Include the procedures (one function each)"
     },
     "discard": {
       "title": "Unsaved changes",
@@ -519,7 +520,8 @@
   },
   "view": {
     "graph": "Graph",
-    "procedures": "Procedures"
+    "procedures": "Procedures",
+    "mode": "Mode of the interface"
   },
   "procedures": {
     "none": "No procedure",

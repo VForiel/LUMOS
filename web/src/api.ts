@@ -253,7 +253,8 @@ export const api = {
   studyCsvUrl: (job: string) => `/api/jobs/${enc(job)}/study.csv`,
   importLumos: (text: string) => request<ContextSummary>("POST", "/api/contexts/import", text),
   exportLumos: (id: string) => request<string>("GET", `${ctx(id)}/export.lumos`, undefined, true),
-  exportPython: (id: string) => request<string>("GET", `${ctx(id)}/export.py`, undefined, true),
+  exportPython: (id: string, procedures = true) =>
+    request<string>("GET", `${ctx(id)}/export.py${procedures ? "" : "?procedures=false"}`, undefined, true),
   addElement: (id: string, type_id: string, name?: string, params?: Record<string, unknown>) =>
     request<ElementSummary>("POST", `${ctx(id)}/elements`, { type_id, name, params: params ?? {} }),
   removeElement: (id: string, path: string) => request<void>("DELETE", `${ctx(id)}/elements/${path}`),

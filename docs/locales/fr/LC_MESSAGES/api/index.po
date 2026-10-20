@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 20:59+0200\n"
+"POT-Creation-Date: 2026-10-20 21:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -87,13 +87,14 @@ msgstr ""
 #: lumos.core.context.Context.remove_feedback lumos.core.context.Context.replay
 #: lumos.core.context.Context.rng lumos.core.context.Context.run_procedure
 #: lumos.core.context.Context.simulate lumos.core.context.Context.spawn_key
-#: lumos.core.context.Context.twin_state lumos.core.context.Context.wait
-#: lumos.core.driver.Command.from_json lumos.core.driver.Driver.check
-#: lumos.core.driver.Driver.is_dangerous lumos.core.driver.Driver.query
-#: lumos.core.driver.Driver.send lumos.core.driver.Driver.wait
-#: lumos.core.driver.SimulatedDriver lumos.core.element.Element.apply
-#: lumos.core.element.Element.from_lumos lumos.core.element.Element.port
-#: lumos.core.element.Element.port_lanes lumos.core.element.Element.to_lumos
+#: lumos.core.context.Context.to_python lumos.core.context.Context.twin_state
+#: lumos.core.context.Context.wait lumos.core.driver.Command.from_json
+#: lumos.core.driver.Driver.check lumos.core.driver.Driver.is_dangerous
+#: lumos.core.driver.Driver.query lumos.core.driver.Driver.send
+#: lumos.core.driver.Driver.wait lumos.core.driver.SimulatedDriver
+#: lumos.core.element.Element.apply lumos.core.element.Element.from_lumos
+#: lumos.core.element.Element.port lumos.core.element.Element.port_lanes
+#: lumos.core.element.Element.to_lumos
 #: lumos.core.element.Element.transfer_symbolic lumos.core.element.Values
 #: lumos.core.element.generator lumos.core.graph.Connection
 #: lumos.core.graph.Graph.add lumos.core.graph.Graph.disconnect
@@ -120,6 +121,7 @@ msgstr ""
 #: lumos.core.priors.prior_to_json lumos.core.procedure.Procedure.devices
 #: lumos.core.procedure.Procedure.from_json
 #: lumos.core.procedure.Procedure.problems
+#: lumos.core.procedure.Procedure.to_function
 #: lumos.core.procedure.Procedure.to_python
 #: lumos.core.procedure.ProcedureResult
 #: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
@@ -590,6 +592,7 @@ msgstr ""
 #: lumos.core.procedure.Procedure.fed_ports
 #: lumos.core.procedure.Procedure.from_json
 #: lumos.core.procedure.Procedure.problems
+#: lumos.core.procedure.Procedure.to_function
 #: lumos.core.procedure.Procedure.to_json
 #: lumos.core.procedure.Procedure.to_python
 #: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
@@ -4652,8 +4655,12 @@ msgstr ""
 
 #: lumos.core.context.Context.to_python:1 of
 msgid ""
-"Return a Python script rebuilding this context (see "
-":func:`lumos.io.codegen.to_python`)."
+"Return a Python script rebuilding this context, its procedures as "
+"functions by default."
+msgstr ""
+
+#: lumos.core.context.Context.to_python:3 of
+msgid "See :func:`lumos.io.codegen.to_python`."
 msgstr ""
 
 #: lumos.core.context:1 of
@@ -5381,6 +5388,19 @@ msgstr ""
 msgid "The script leaves the named results in a dictionary ``results``."
 msgstr ""
 
+#: lumos.core.procedure.Procedure.to_function:1 of
+msgid ""
+"Return a Python function ``name(ctx)`` doing what the procedure does and "
+"returning its results."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.to_function:3 of
+msgid ""
+"The function uses ``u`` (astropy units), ``np`` (NumPy) and :func:`call`,"
+" imported by the script holding it (see "
+":func:`lumos.io.codegen.to_python`)."
+msgstr ""
+
 #: lumos.core.procedure.Procedure.problems:1 of
 msgid ""
 "Return what would stop the procedure in the context ``ctx`` (empty when "
@@ -5875,6 +5895,14 @@ msgstr ""
 msgid ""
 "Return a Python script that rebuilds ``ctx`` (assigned to the variable "
 "``ctx``)."
+msgstr ""
+
+#: lumos.io.codegen.to_python:3 of
+msgid ""
+"With ``procedures`` (the default), each procedure of the context follows "
+"as a function taking the context and returning its named results "
+"(:meth:`lumos.core.procedure.Procedure.to_function`), e.g. "
+"``dark_then_measure(ctx)``."
 msgstr ""
 
 #: lumos.errors:1 of
@@ -12454,7 +12482,9 @@ msgid "Return the ``.lumos`` document of a context (JSON text)."
 msgstr ""
 
 #: lumos.service.service.Service.export_python:1 of
-msgid "Return the equivalent Python script of a context."
+msgid ""
+"Return the equivalent Python script of a context, its procedures as "
+"functions by default."
 msgstr ""
 
 #: lumos.service.service.Service.describe_context:1 of
@@ -14144,5 +14174,13 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "The computed outputs."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Return a Python script rebuilding this"
+#~ " context (see :func:`lumos.io.codegen.to_python`)."
+#~ msgstr ""
+
+#~ msgid "Return the equivalent Python script of a context."
 #~ msgstr ""
 

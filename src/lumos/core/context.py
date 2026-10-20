@@ -1127,11 +1127,14 @@ class Context:
             raise ValueError("give the outputs to compute at each draw (or a procedure)")
         return self._points(targets, combinations, list(outputs), noise, progress)
 
-    def to_python(self) -> str:
-        """Return a Python script rebuilding this context (see :func:`lumos.io.codegen.to_python`)."""
+    def to_python(self, *, procedures: bool = True) -> str:
+        """Return a Python script rebuilding this context, its procedures as functions by default.
+
+        See :func:`lumos.io.codegen.to_python`.
+        """
         from lumos.io.codegen import to_python
 
-        return to_python(self)
+        return to_python(self, procedures=procedures)
 
     def __repr__(self) -> str:
         """Summarise the context."""

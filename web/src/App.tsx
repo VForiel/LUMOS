@@ -26,6 +26,7 @@ import { isNarrow, useStore } from "./store";
 const ProceduresView = lazy(() => import("./components/Procedures").then((module) => ({ default: module.ProceduresView })));
 
 /** Switch between the graph of the context and its procedures. */
+/** The mode of the interface: the graph (palette, canvas, inspector) or the procedures (their editor alone). */
 function ViewSwitch() {
   const { t } = useTranslation();
   const view = useStore((s) => s.view);
@@ -46,7 +47,7 @@ function ViewSwitch() {
     </button>
   );
   return (
-    <div role="tablist" className="flex items-center gap-0.5 self-start rounded-lg bg-slate-100 p-0.5 m-2 mb-0 dark:bg-slate-800">
+    <div role="tablist" aria-label={t("view.mode")} className="flex shrink-0 items-center gap-0.5 rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
       {tab("graph", t("view.graph"))}
       {tab("procedures", count ? `${t("view.procedures")} (${count})` : t("view.procedures"))}
     </div>
@@ -120,6 +121,7 @@ function Editor() {
           </>
         }
       >
+        <ViewSwitch />
         <Separator />
         <ToolButton icon={<LayoutGrid className="size-4" />} label={t("toolbar.presets")} onClick={() => store.setDialog({ kind: "presets" })} testId="open-presets">
           <span className="hidden xl:inline">{t("toolbar.presetsShort")}</span>
@@ -147,9 +149,8 @@ function Editor() {
         <ToolButton icon={<Redo2 className="size-4" />} label={t("toolbar.redo")} onClick={() => void store.redo()} testId="redo" disabled={!context?.can_redo || !editable} shortcut="Ctrl+Shift+Z" />
       </TopBar>
       <div className="flex min-h-0 flex-1">
-        <Palette />
+        {view === "graph" && <Palette />}
         <main className="relative flex min-w-0 flex-1 flex-col">
-          <ViewSwitch />
           <div className={view === "graph" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
             <Canvas onInspect={inspect} />
           </div>
@@ -170,7 +171,7 @@ function Editor() {
               ) : null)}
           />
         </main>
-        <Inspector onInspect={inspect} />
+        {view === "graph" && <Inspector onInspect={inspect} />}
       </div>
       <QuickAdd />
       <Dialogs

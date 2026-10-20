@@ -344,7 +344,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 - [x] **P15.17 Ergonomie** — fenêtre étroite : colonnes latérales fermées au chargement et une seule ouverte à la fois, onglets du bas repliés dans un menu ; onglet « Résultats » renommé « Sorties » ; bouton d'archivage ouvrant une fenêtre (activation de l'archivage, navigateur des archives de la session : téléchargement, aperçu des données, suppression).
 
-- [ ] **P15.18 Mode procédures et export** — le sélecteur Graphe/Procédures devient un mode global de l'interface (en mode Procédures, l'éditeur occupe toute la zone de travail, sans palette ni inspecteur) ; l'export Python inclut les procédures du contexte (une fonction par procédure, option activée par défaut).
+- [x] **P15.18 Mode procédures et export** — le sélecteur Graphe/Procédures devient un mode global de l'interface (en mode Procédures, l'éditeur occupe toute la zone de travail, sans palette ni inspecteur) ; l'export Python inclut les procédures du contexte (une fonction par procédure, option activée par défaut).
 
 **Stabilisation et publication** (après P15.6 à P15.16)
 
@@ -394,4 +394,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-**P15.18 Retours du 20/10 (2)**, puis P15.16, puis P15.3 à P15.5.
+**P15.16 Catalogue `community/`**, puis P15.3 à P15.5.

@@ -83,8 +83,10 @@ If the server restarts, the interface restores the context you were editing.
 
 ## Procedures
 
-The **Procedures** tab, next to **Graph** above the canvas, holds the procedures of the context: sequences of
-actions, measurements and processing such as "a dark, then measurements" (see the user guide). They are drawn
+The switch **Graph** / **Procedures** of the top bar changes the mode of the interface. In the **Procedures**
+mode, the editor of procedures takes the whole working area (the palette and the inspector come back with the
+graph); it holds the procedures of the context: sequences of actions, measurements and processing such as "a
+dark, then measurements" (see the user guide). They are drawn
 as blocks: drag steps from the toolbox (or add them with the buttons of the tab) and fit them into the
 procedure block; loops and conditions hold steps inside them. Every change is saved with the context, and the
 problems of the procedure (an unknown element, a result used before it is defined...) are listed above the
@@ -93,5 +95,8 @@ results; **Export to Python** gives an equivalent script.
 
 On a local or private instance, **New script** creates a procedure written in Python (`ctx`, `results`, `u`,
 `np` and `call` in its namespace). Scripts never run on the public instance.
+
+The procedures are saved in the `.lumos` file with the context. **Python** in the top bar includes them in the
+script of the context, one function each (untick *Include the procedures* to leave them out).
 
 Press **?** to see every keyboard shortcut.

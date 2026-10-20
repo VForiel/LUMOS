@@ -44,6 +44,7 @@ from __future__ import annotations
 
 import copy
 import json
+import keyword
 import logging
 import re
 import time as _time
@@ -321,6 +322,23 @@ class Procedure:
         _Exporter(context, lines).steps(self.steps, 0)
         return "\n".join(lines) + "\n"
 
+    def to_function(self, name: str | None = None) -> str:
+        """Return a Python function ``name(ctx)`` doing what the procedure does and returning its results.
+
+        The function uses ``u`` (astropy units), ``np`` (NumPy) and :func:`call`, imported by the script
+        holding it (see :func:`lumos.io.codegen.to_python`).
+        """
+        name = name or python_name(self.name)
+        doc = (self.description or f"Procedure {self.name!r}.").replace('"""', "'''").replace("\\", "\\\\")
+        lines = [f"def {name}(ctx):", f'    """{doc}"""', "    results = {}"]
+        if self.script is not None:
+            lines += ["    " + line if line.strip() else "" for line in self.script.rstrip().splitlines()]
+        else:
+            lines.append("    feeds = {}")
+            _Exporter("ctx", lines).steps(self.steps, 1)
+        lines.append("    return results")
+        return "\n".join(lines) + "\n"
+
     # --- Checks -------------------------------------------------------------------------------------
 
     def problems(self, ctx: Any) -> list[str]:
@@ -371,6 +389,14 @@ def _python(value: Any) -> str:
     if isinstance(literal, u.Quantity):
         return f"u.Quantity({str(value).strip()!r})"
     return repr(value)
+
+
+def python_name(name: str) -> str:
+    """Return a Python identifier for a procedure name (``"dark then measure"``: ``dark_then_measure``)."""
+    base = re.sub(r"\W+", "_", name.lower()).strip("_")
+    if not base or base[0].isdigit() or keyword.iskeyword(base) or base in {"ctx", "u", "np", "call"}:
+        base = f"procedure_{base}".rstrip("_")
+    return base
 
 
 class _Exporter:

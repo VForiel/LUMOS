@@ -156,7 +156,8 @@
       "hint": "Ce script construit le même contexte avec la bibliothèque LUMOS.",
       "copy": "Copier",
       "copied": "Copié",
-      "download": "Télécharger le .py"
+      "download": "Télécharger le .py",
+      "procedures": "Inclure les procédures (une fonction chacune)"
     },
     "discard": {
       "title": "Modifications non sauvegardées",
@@ -519,7 +520,8 @@
   },
   "view": {
     "graph": "Graphe",
-    "procedures": "Procédures"
+    "procedures": "Procédures",
+    "mode": "Mode de l'interface"
   },
   "procedures": {
     "none": "Aucune procédure",

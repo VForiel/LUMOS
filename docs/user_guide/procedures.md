@@ -86,7 +86,9 @@ parallel `for_each` and the studies on procedures run in simulation only.
 ## Python
 
 `procedure.to_python()` writes an equivalent Python script (the steps become calls on `ctx`, the processing
-`call("mean", frames=...)`). A procedure may also *be* a script, `{"name": ..., "script": "..."}`, run with
+`call("mean", frames=...)`). `ctx.to_python()` includes the procedures of the context after the code that
+builds it, each one a function returning its named results (`results = dark_then_measure(ctx)`;
+`procedure.to_function()` writes one); `ctx.to_python(procedures=False)` leaves them out. A procedure may also *be* a script, `{"name": ..., "script": "..."}`, run with
 `ctx`, `results`, `u`, `np` and `call` in its namespace: it is code, so the service runs it only where
 `scripts_enabled` is set (local and private instances, never the public one), and loading a file never runs it.
 

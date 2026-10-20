@@ -338,9 +338,13 @@ def create_server(
         return service.export_lumos(session, state.context(context))
 
     @tool
-    def export_python(context: str | None = None) -> str:
-        """Return a Python script building and running the same context with the LUMOS library."""
-        return service.export_python(session, state.context(context))
+    def export_python(context: str | None = None, procedures: bool = True) -> str:
+        """Return a Python script building the same context with the LUMOS library.
+
+        With ``procedures`` (the default) each procedure of the context follows as a function ``name(ctx)``
+        returning its named results.
+        """
+        return service.export_python(session, state.context(context), procedures=procedures)
 
     # --- Editing -------------------------------------------------------------------------------------------
 

@@ -285,6 +285,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `Service.check_component`, `save_component`, `list_components`, `get_component`, `add_component`,
   `define_code_component`, the routes `/api/components...` and the MCP tools `list_components`,
   `check_component`, `save_component`, `add_component`.
+- Review of 20/10, continued (P15.18): the switch Graph / Procedures is in the top bar and changes the mode of
+  the whole interface (the editor of procedures alone, without palette nor inspector); `ctx.to_python()`
+  includes the procedures of the context, each one a function returning its named results
+  (`Procedure.to_function`, `procedures=False` to leave them out), an option of the Python dialog, of
+  `GET .../export.py?procedures=` and of the MCP tool `export_python`.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
   files, preview of the data with its figure, deletion; `Service.archive_files`, `archive_data`,
   `archive_file`, `delete_archive` and their routes); the bottom tab "Results" is named "Outputs"; in a narrow

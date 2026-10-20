@@ -3,7 +3,7 @@
 import { AlertTriangle, Check, Copy, Download, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { download, fileName } from "../api";
+import { api, download, fileName } from "../api";
 import { useStore, type Dialog } from "../store";
 import { inputClass } from "./Fields";
 
@@ -90,15 +90,29 @@ function PromptDialog({ dialog }: { dialog: Extract<Dialog, { kind: "prompt" }> 
   );
 }
 
-function PythonDialog({ code, testId, fileName: name }: { code: string; testId?: string; fileName?: string }) {
+function PythonDialog({ code: initial, testId, fileName: name }: { code: string; testId?: string; fileName?: string }) {
   const { t } = useTranslation();
   const context = useStore((s) => s.context);
   const [copied, setCopied] = useState(false);
+  const [code, setCode] = useState(initial);
+  // the export of a context includes its procedures (one function each) unless unticked
+  const [procedures, setProcedures] = useState(true);
+  const withProcedures = !testId && Boolean(context?.procedures?.length);
   const close = () => useStore.getState().setDialog(null);
+  const choose = (included: boolean) => {
+    setProcedures(included);
+    if (context) void api.exportPython(context.id, included).then(setCode, (error) => useStore.getState().fail(error));
+  };
   return (
     <Modal title={t("dialog.python.title")} onClose={close} wide>
       <div className="space-y-3 p-5">
         <p className="text-sm text-slate-600 dark:text-slate-400">{t("dialog.python.hint")}</p>
+        {withProcedures && (
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" data-testid="python-procedures" checked={procedures} onChange={(event) => choose(event.target.checked)} />
+            {t("dialog.python.procedures")}
+          </label>
+        )}
         <pre data-testid={testId ?? "python-code"} className="max-h-[55vh] overflow-auto rounded-xl bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100">
           {code}
         </pre>

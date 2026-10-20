@@ -895,9 +895,9 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         return _attachment(text, _filename(name, ".lumos"), "application/json")
 
     @app.get("/api/contexts/{cid}/export.py", dependencies=[viewer])
-    def export_python(request: Request, cid: str) -> Response:
+    def export_python(request: Request, cid: str, procedures: bool = True) -> Response:
         name = service.describe_context(sid(request), cid).name
-        text = service.export_python(sid(request), cid)
+        text = service.export_python(sid(request), cid, procedures=procedures)
         return _attachment(text, _filename(name, ".py"), "text/x-python")
 
     # --- Editing ---------------------------------------------------------------------------------------
