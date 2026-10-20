@@ -94,11 +94,15 @@ def _envelope(kind: str) -> dict[str, Any]:
     }
 
 
-def to_document(obj: Element | Context, *, registry: Registry | None = None) -> dict[str, Any]:
-    """Return the ``.lumos`` document (a JSON-compatible dictionary) of an element, a group or a context."""
+def to_document(obj: Any, *, registry: Registry | None = None) -> dict[str, Any]:
+    """Return the ``.lumos`` document (JSON-compatible) of an element, a group, a context or a procedure."""
     reg = _registry(registry)
     if isinstance(obj, Context):
         return _context_document(obj, reg)
+    from lumos.core.procedure import Procedure
+
+    if isinstance(obj, Procedure):
+        return {**_envelope("procedure"), "procedure": obj.to_json()}
     kind = "group" if isinstance(obj, ElementGroup) else "element"
     return {**_envelope(kind), kind: entry_of(obj, reg)}
 
@@ -145,6 +149,7 @@ def _context_document(ctx: Context, reg: Registry) -> dict[str, Any]:
         ],
         "connections": _connections_of(ctx.graph),
         "feedbacks": [{"from": f.source, "to": f.target, "mode": f.mode} for f in ctx.feedbacks],
+        "procedures": {name: procedure.to_json() for name, procedure in ctx.procedures.items()},
         "ui": dict(ctx.ui),
     }
 
@@ -222,12 +227,19 @@ def from_document(document: Mapping[str, Any], *, registry: Registry | None = No
         raise LumosFormatError(f"missing key(s) in the document: {missing}")
     _check_format_version(document["lumos_format"])
     kind = document["kind"]
-    if kind not in ("element", "group", "context"):
+    if kind not in ("element", "group", "context", "procedure"):
         raise LumosFormatError(f"unsupported document kind {kind!r}")
     if kind not in document:
         raise LumosFormatError(f"missing key {kind!r} in the document")
     if kind == "context":
         return _context_from_document(document, reg)
+    if kind == "procedure":
+        from lumos.core.procedure import Procedure, ProcedureError
+
+        try:
+            return Procedure.from_json(document["procedure"])
+        except ProcedureError as error:
+            raise LumosFormatError(str(error)) from error
     return from_entry(document[kind], registry=reg)
 
 
@@ -276,6 +288,12 @@ def _context_from_document(document: Mapping[str, Any], reg: Registry) -> Contex
             ctx.simulate(ctx[identifier])
         for feedback in document.get("feedbacks", []):
             ctx.feedback(feedback["from"], feedback["to"], mode=feedback.get("mode", "set"))
+        if document.get("procedures"):
+            from lumos.core.procedure import Procedure
+
+            ctx.procedures = {
+                name: Procedure.from_json(data) for name, data in dict(document["procedures"]).items()
+            }
     except LumosFormatError:
         raise
     except (KeyError, TypeError, ValueError) as error:
@@ -476,8 +494,8 @@ def _resolve_arrays(node: Any, path: Path, cache: dict[str, Any]) -> Any:
     return node
 
 
-def save(obj: Element | Context, path: str | Path, *, registry: Registry | None = None) -> None:
-    """Write an element, group or context to a ``.lumos`` file (UTF-8, indented strict JSON).
+def save(obj: Any, path: str | Path, *, registry: Registry | None = None) -> None:
+    """Write an element, group, context or procedure to a ``.lumos`` file (UTF-8, indented strict JSON).
 
     Arrays larger than :data:`SIDECAR_THRESHOLD` are stored in a ``.npz`` file next to it (same name).
     """

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-20 18:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -324,6 +324,34 @@ msgid "free a parameter (`{\"path\", \"free\", \"prior\": {\"kind\": \"normal\",
 msgstr "libérer un paramètre (`{\"path\", \"free\", \"prior\": {\"kind\": \"normal\", \"mean\", \"std\"}}`)"
 
 #: ../../web/api.md
+#, fuzzy, python-brace-format
+msgid "`GET /api/contexts/{id}/procedures`"
+msgstr "`GET /api/contexts/{id}/journal`"
+
+#: ../../web/api.md
+msgid "procedures of the context, with their problems"
+msgstr "procédures du contexte, avec leurs problèmes"
+
+#: ../../web/api.md
+#, fuzzy, python-brace-format
+msgid "`GET, PUT, DELETE /api/contexts/{id}/procedures/{name}`"
+msgstr "`GET, DELETE /api/contexts/{id}`"
+
+#: ../../web/api.md
+msgid "a procedure (JSON of ADR-0024)"
+msgstr "une procédure (JSON de l'ADR-0024)"
+
+#: ../../web/api.md
+#, fuzzy, python-brace-format
+msgid "`POST /api/contexts/{id}/procedures/{name}/run`"
+msgstr "`POST /api/contexts/{id}/elements`"
+
+#: ../../web/api.md
+#, python-brace-format
+msgid "run it (`{\"confirmed\", \"archive\"}`): a job whose outputs are its named results"
+msgstr "l'exécuter (`{\"confirmed\", \"archive\"}`) : une tâche dont les sorties sont ses résultats nommés"
+
+#: ../../web/api.md
 #, python-brace-format
 msgid "`POST /api/contexts/{id}/studies`"
 msgstr "`POST /api/contexts/{id}/studies`"
@@ -414,25 +442,25 @@ msgstr "`GET /api/archives`, `GET /api/archives/metadata?path=`"
 msgid "archives of the runs"
 msgstr "archives des exécutions"
 
-#: ../../web/api.md:59
+#: ../../web/api.md:62
 msgid "Live updates"
 msgstr "Mises à jour en direct"
 
-#: ../../web/api.md:61
+#: ../../web/api.md:64
 msgid "The WebSocket `/api/ws` (same cookie) sends JSON messages:"
 msgstr "Le WebSocket `/api/ws` (même cookie) envoie des messages JSON :"
 
-#: ../../web/api.md:63
+#: ../../web/api.md:66
 #, python-brace-format
 msgid "`{\"type\": \"job\", \"job\": {...}}` when a run of the session changes (status, progress, error);"
 msgstr "`{\"type\": \"job\", \"job\": {...}}` quand une exécution de la session change (statut, progression, erreur) ;"
 
-#: ../../web/api.md:64
+#: ../../web/api.md:67
 #, python-brace-format
 msgid "`{\"type\": \"journal\", \"context\": \"...\", \"entry\": {...}}` for each new entry of the journal of a context."
 msgstr "`{\"type\": \"journal\", \"context\": \"...\", \"entry\": {...}}` pour chaque nouvelle entrée du journal d'un contexte."
 
-#: ../../web/api.md:66
+#: ../../web/api.md:69
 msgid "Example"
 msgstr "Exemple"
 

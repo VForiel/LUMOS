@@ -116,6 +116,9 @@
 .. automodule:: lumos.core.action
    :members: action, ActionSpec
 
+.. automodule:: lumos.core.procedure
+   :members: Procedure, ProcedureResult, ProcedureError, run_procedure, FUNCTIONS, MAX_ITERATIONS
+
 .. automodule:: lumos.core.driver
    :members: Driver, SimulatedDriver, Command, Reply, DriverError
 

@@ -83,6 +83,15 @@ also listed by any MCP client (`/mcp` in Claude Code).
 | `remove_feedback` | Open a loop again. |
 | `run_loop` | Run the context as a closed loop of `steps` iterations of `period`. |
 
+### Procedures
+
+| Tool | Purpose |
+|------|---------|
+| `list_procedures` | Procedures of a context, with their problems and the equipment they act on. |
+| `set_procedure` | Add or replace a procedure (steps: action, measure, repeat, for_each, process, set, use, wait, if, save, show). |
+| `remove_procedure` | Remove a procedure. |
+| `run_procedure` | Run a procedure; its named results are the outputs of the job (`get_result`). On equipment, only with `confirmed=true` after the user confirmed. |
+
 ### Catalogues and processing
 
 | Tool | Purpose |

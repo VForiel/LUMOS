@@ -61,6 +61,7 @@ from lumos.service.models import (
     PortFile,
     PortSummary,
     PresetInfo,
+    ProcedureInfo,
     ServiceConfig,
     SessionInfo,
     StorageInfo,
@@ -79,6 +80,21 @@ logger = logging.getLogger("lumos.service")
 FILE_FORMATS = ("png", "plt", "npz", "json")
 
 
+def _summarize_result(name: str, value: Any, *, figure: bool = False) -> PortSummary:
+    """Summary of a named result of a procedure: a signal, a quantity, a list or a mapping of them."""
+    if isinstance(value, list):
+        summary = PortSummary(port=name, kind="list", shape=[len(value)])
+        if value:
+            first = summarize(f"{name}[0]", value[0])
+            summary.details = {"items": first.kind, **{f"first {k}": v for k, v in first.details.items()}}
+        return summary
+    if isinstance(value, dict):
+        return PortSummary(port=name, kind="mapping", details={k: type(v).__name__ for k, v in value.items()})
+    if isinstance(value, u.Quantity) and value.isscalar:
+        return PortSummary(port=name, kind="Quantity", unit=str(value.unit), values=[float(value.value)])
+    return summarize(name, value, figure=figure)
+
+
 class _Cancelled(Exception):
     """A run stopped at the request of the user."""
 
@@ -92,6 +108,7 @@ class _Job:
     future: concurrent.futures.Future[Any] | None = None
     started: float = 0.0
     cancelled: bool = False
+    procedure: Any = None  # ProcedureResult of a job of kind "procedure"
 
 
 #: Origin of the actions of the current call when it differs from the origin of the session (see acting_as).
@@ -321,6 +338,9 @@ class Service:
         )
 
     def _type(self, type_id: str) -> type[Element]:
+        from lumos.io.lumos_format import _import_lazy_types
+
+        _import_lazy_types(type_id)  # processing and symbolic elements are imported when first needed
         try:
             return registry.get(type_id)
         except UnknownTypeError:
@@ -1021,6 +1041,17 @@ class Service:
         """Problems that would make a run fail, with suggested fixes."""
         ctx = self._context(session, context)
         issues = []
+        fed = {port for procedure in ctx.procedures.values() for port in procedure.fed_ports()}
+        for name, procedure in ctx.procedures.items():
+            for problem in procedure.problems(ctx):
+                issues.append(
+                    Issue(
+                        severity="warning",
+                        element=None,
+                        message=f"procedure {name}: {problem}",
+                        hint="edit the procedure (Procedures tab)",
+                    )
+                )
         for path, element in ctx.walk():
             if element.container is not ctx:
                 continue  # inside a group: checked by the group
@@ -1029,6 +1060,8 @@ class Service:
                 if port.direction != "in" or port.multiple:
                     continue
                 if not ctx._graph.incoming(element.port(name)):
+                    if f"{path}.{name}" in fed:
+                        continue  # fed by a procedure (use step)
                     if port.optional:
                         empty.append(f"{path}.{name}")
                         continue
@@ -1409,6 +1442,107 @@ class Service:
 
         return self._start(session, context, "loop", names, compute)
 
+    # --- Procedures (P15.11, ADR-0024) ---------------------------------------------------------------------
+
+    def _procedure_info(self, ctx: Context, procedure: Any) -> ProcedureInfo:
+        return ProcedureInfo(
+            name=procedure.name,
+            description=procedure.description,
+            steps=len(procedure.steps),
+            problems=procedure.problems(ctx),
+            devices=procedure.devices(ctx),
+        )
+
+    def set_procedure(self, session: str, context: str, procedure: Mapping[str, Any] | str) -> ProcedureInfo:
+        """Add a procedure to a context, or replace the one of the same name; return it with its problems."""
+        from lumos.core.procedure import Procedure, ProcedureError
+
+        try:
+            data = json.loads(procedure) if isinstance(procedure, str) else procedure
+            parsed = Procedure.from_json(data)
+        except (ProcedureError, ValueError) as error:
+            raise ServiceError(
+                str(error), hint='a procedure is {"name": ..., "steps": [{"do": "action", ...}, ...]}'
+            ) from error
+        with self._editing(session, context) as ctx:
+            ctx.procedures = {**ctx.procedures, parsed.name: parsed}
+        return self._procedure_info(ctx, parsed)
+
+    def list_procedures(self, session: str, context: str) -> list[ProcedureInfo]:
+        """Procedures of a context, with their problems."""
+        ctx = self._context(session, context)
+        return [self._procedure_info(ctx, p) for p in ctx.procedures.values()]
+
+    def _procedure(self, ctx: Context, name: str) -> Any:
+        if name not in ctx.procedures:
+            known = ", ".join(ctx.procedures) or "none"
+            raise ServiceError(f"no procedure {name!r}", hint=f"procedures: {known}", code="not_found")
+        return ctx.procedures[name]
+
+    def get_procedure(self, session: str, context: str, name: str) -> dict[str, Any]:
+        """JSON form of a procedure."""
+        return self._procedure(self._context(session, context), name).to_json()
+
+    def remove_procedure(self, session: str, context: str, name: str) -> None:
+        """Remove a procedure from its context."""
+        ctx = self._context(session, context)
+        self._procedure(ctx, name)
+        with self._editing(session, context):
+            ctx.procedures = {k: v for k, v in ctx.procedures.items() if k != name}
+
+    def run_procedure(
+        self, session: str, context: str, name: str, *, confirmed: bool = False, archive: bool = False
+    ) -> JobInfo:
+        """Run a procedure in the background; its named results are the outputs of the job (get_result).
+
+        A procedure acting on equipment needs ``confirmed=True``, given after a human confirmed the list of
+        devices (:attr:`ProcedureInfo.devices`).
+        """
+        from lumos.core.procedure import ProcedureError, run_procedure
+
+        ctx = self._context(session, context)
+        procedure = self._procedure(ctx, name)
+        problems = procedure.problems(ctx)
+        if problems:
+            raise ServiceError(f"the procedure {name!r} cannot run: {'; '.join(problems)}", hint=problems[0])
+        devices = procedure.devices(ctx)
+        if devices:
+            self._require_operation()
+            if not confirmed:
+                raise ServiceError(
+                    f"the procedure {name!r} acts on equipment ({', '.join(devices)}) and needs a human "
+                    "confirmation",
+                    hint="ask the user to confirm, then run it again with confirmed=true",
+                    code="forbidden",
+                )
+        root = self._archive_root_of(session) if archive else None
+
+        def compute(ctx: Context, job: _Job, progress: Callable[[int, int, str], None]) -> None:
+            def step(done: int, total: int) -> None:
+                progress(done, total, f"step {done}")
+                job.info.message = f"step {done}/{total}"
+
+            try:
+                with self._editing(session, context):  # a procedure changes states and the clock: undoable
+                    result = run_procedure(
+                        ctx,
+                        procedure,
+                        progress=step,
+                        cancelled=lambda: job.cancelled,
+                        confirm=lambda found: confirmed,
+                        archive_root=root,
+                    )
+            except ProcedureError:
+                if job.cancelled:
+                    raise _Cancelled("cancelled") from None
+                raise
+            job.procedure = result
+            job.info.outputs = list(result.results)
+            if result.archives:
+                job.info.archive = str(result.archives[-1].path)
+
+        return self._start(session, context, "procedure", [], compute)
+
     # --- Recordings (P14.20) -----------------------------------------------------------------------------
 
     @staticmethod
@@ -1618,10 +1752,16 @@ class Service:
         return record.info.model_copy()
 
     def get_result(self, session: str, job: str, port: str, *, figure: bool = False) -> PortSummary:
-        """Summary of an output computed by a run."""
+        """Summary of an output computed by a run (or a named result of a procedure)."""
         record = self._session(session).jobs.get(job)
         if record is None:
             raise ServiceError(f"unknown job {job!r}", hint="start one with run()", code="not_found")
+        if record.info.status == "done" and record.procedure is not None:
+            if port not in record.procedure.results:
+                raise ServiceError(
+                    f"the procedure has no result {port!r}", hint=f"results: {', '.join(record.info.outputs)}"
+                )
+            return _summarize_result(port, record.procedure.results[port], figure=figure)
         if record.info.status != "done" or record.result is None:
             raise ServiceError(
                 f"job {job} is {record.info.status}", hint=record.info.hint or "wait for it with wait_job()"

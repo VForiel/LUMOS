@@ -28,6 +28,7 @@ __all__ = [
     "PortFile",
     "PortSummary",
     "PresetInfo",
+    "ProcedureInfo",
     "ServiceConfig",
     "SessionInfo",
     "StorageInfo",
@@ -210,11 +211,23 @@ class Issue(BaseModel):
     hint: str
 
 
+class ProcedureInfo(BaseModel):
+    """A procedure of a context (ADR-0024): its name, steps, problems and the equipment it acts on."""
+
+    name: str
+    description: str = ""
+    steps: int = Field(description="number of top-level steps")
+    problems: list[str] = Field(default=[], description="what stops it from running in its context")
+    devices: list[str] = Field(
+        default=[], description="elements acting on equipment (a confirmation is needed)"
+    )
+
+
 class JobInfo(BaseModel):
     """A run or a study: its status (``queued``, ``running``, ``done``, ``failed``), progress and outputs."""
 
     id: str
-    kind: str = Field(default="run", description="run, sweep, sample (Monte-Carlo run) or loop")
+    kind: str = Field(default="run", description="run, sweep, sample (Monte-Carlo run), loop or procedure")
     context: str
     outputs: list[str]
     status: str

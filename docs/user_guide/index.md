@@ -14,7 +14,8 @@ This guide will explain the concepts of LUMOS:
 - **symbolic optics**: closed-form fields carried through the graph, and expressions recovered from grids;
 - **processing**: reduction, photometry, interferometric observables, detection statistics, calibration and
   script blocks;
-- **results**: figures, data files and archives of runs.
+- **results**: figures, data files and archives of runs;
+- **procedures**: sequences of actions, measurements and processing (a dark, then measurements).
 
 ```{toctree}
 :maxdepth: 1
@@ -27,5 +28,6 @@ catalogs
 symbolic
 processing
 results
+procedures
 stability
 ```

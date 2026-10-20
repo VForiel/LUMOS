@@ -227,6 +227,8 @@ class Context:
         self.name = name
         self.meta: dict[str, Any] = {}
         self.ui: dict[str, Any] = {}
+        #: Procedures of the context by name (:class:`lumos.core.procedure.Procedure`, ADR-0024).
+        self.procedures: dict[str, Any] = {}
         self.observation = Observation()
         self.observation._listeners.append(self._observation_changed)
 
@@ -345,6 +347,7 @@ class Context:
         archive: bool | str = False,
         archive_root: Any = None,
         progress: Callable[[int, int, str], None] | None = None,
+        feeds: Mapping[Any, Any] | None = None,
     ) -> Result:
         """Compute the requested outputs (ports, elements or ``"id.port"`` strings), see :meth:`Graph.run`.
 
@@ -363,8 +366,12 @@ class Context:
             Directory of the archive (default: next to the executed script or notebook).
         progress
             Called as ``progress(done, total, element_id)`` after each element.
+        feeds
+            Signals given to input ports (ports or ``"id.port"`` strings) instead of their connections, e.g. a
+            dark frame measured before (the ``use`` step of a procedure).
         """
         targets = [self.port(t) if isinstance(t, str) and "." in t else t for t in outputs]
+        fed = {self.port(k) if isinstance(k, str) else k: v for k, v in (feeds or {}).items()}
         self.apply_links()
         root = logging.getLogger("lumos")
         handler = _Capture(self.journal, self._entry)
@@ -375,10 +382,10 @@ class Context:
         started = time.perf_counter()
         try:
             if self._backend == "auto":
-                result = self._graph.run(targets, progress=progress)
+                result = self._graph.run(targets, progress=progress, feeds=fed)
             else:
                 with use(self._backend):
-                    result = self._graph.run(targets, progress=progress)
+                    result = self._graph.run(targets, progress=progress, feeds=fed)
             if self._mode == "operation":
                 self._measure(result)
         finally:
@@ -392,6 +399,17 @@ class Context:
         if archive:
             self._archive_run(result, archive, archive_root, time.perf_counter() - started)
         return result
+
+    def run_procedure(self, procedure: Any, **options: Any) -> Any:
+        """Run a procedure (its name in :attr:`procedures`, or a :class:`~lumos.core.procedure.Procedure`).
+
+        ``options`` are those of :func:`lumos.core.procedure.run_procedure` (progress, cancellation,
+        confirmation of the actions on equipment, root of the archives); returns its named results.
+        """
+        from lumos.core.procedure import run_procedure
+
+        chosen = self.procedures[procedure] if isinstance(procedure, str) else procedure
+        return run_procedure(self, chosen, **options)
 
     # --- Sequences -------------------------------------------------------------------------------
 

@@ -40,6 +40,7 @@ from lumos.service.models import (
     Page,
     PortSummary,
     PresetInfo,
+    ProcedureInfo,
     StudyResult,
 )
 from lumos.service.service import acting_as
@@ -504,6 +505,45 @@ def create_server(
         run_sweep takes the same paths.
         """
         return service.set_free(session, state.context(context), path, free, prior)
+
+    @tool
+    def list_procedures(context: str | None = None) -> list[ProcedureInfo]:
+        """Procedures of a context (ADR-0024), with their problems and the equipment they act on."""
+        return service.list_procedures(session, state.context(context))
+
+    @tool
+    def set_procedure(procedure: dict[str, Any], context: str | None = None) -> ProcedureInfo:
+        """Add or replace a procedure: ``{"name": ..., "steps": [...]}``, each step naming its kind in ``do``.
+
+        Steps: action (element, action, args, kwargs), measure (outputs, as, collect), repeat (times,
+        steps), for_each (values or {start, stop, num, log}, as, steps), process (function, args, as), set
+        (target, value), use (result, port), wait (duration), if (left, op, right, then, else), save
+        (results, archive), show (results). Values: "2 mm", numbers, or "$name" for a named result.
+        Functions: mean, median, stack, subtract, divide, scale, subtract_dark, flat_field, crop, rebin,
+        total, maximum, minimum, average, element, photometry. The answer lists the problems found.
+        """
+        return service.set_procedure(session, state.context(context), procedure)
+
+    @tool
+    def remove_procedure(name: str, context: str | None = None) -> str:
+        """Remove a procedure from a context."""
+        service.remove_procedure(session, state.context(context), name)
+        return f"procedure {name} removed"
+
+    @tool
+    async def run_procedure(
+        ctx: MCPContext,
+        name: str,
+        confirmed: bool = False,
+        wait_seconds: float = 300.0,
+        context: str | None = None,
+    ) -> Annotated[CallToolResult, JobInfo]:
+        """Run a procedure; its named results are the outputs of the job (read them with get_result).
+
+        A procedure acting on equipment needs ``confirmed=true``, only after the user confirmed it.
+        """
+        job = service.run_procedure(session, state.context(context), name, confirmed=confirmed)
+        return await follow(ctx, job, wait_seconds)
 
     @tool
     async def run_sweep(

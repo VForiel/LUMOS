@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 18:00+0200\n"
+"POT-Creation-Date: 2026-10-20 18:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -82,15 +82,15 @@ msgstr ""
 #: lumos.core.context.Context.mode_of lumos.core.context.Context.path_of
 #: lumos.core.context.Context.port lumos.core.context.Context.remove
 #: lumos.core.context.Context.remove_feedback lumos.core.context.Context.replay
-#: lumos.core.context.Context.rng lumos.core.context.Context.simulate
-#: lumos.core.context.Context.spawn_key lumos.core.context.Context.twin_state
-#: lumos.core.context.Context.wait lumos.core.driver.Command.from_json
-#: lumos.core.driver.Driver.check lumos.core.driver.Driver.is_dangerous
-#: lumos.core.driver.Driver.query lumos.core.driver.Driver.send
-#: lumos.core.driver.Driver.wait lumos.core.driver.SimulatedDriver
-#: lumos.core.element.Element.apply lumos.core.element.Element.from_lumos
-#: lumos.core.element.Element.port lumos.core.element.Element.port_lanes
-#: lumos.core.element.Element.to_lumos
+#: lumos.core.context.Context.rng lumos.core.context.Context.run_procedure
+#: lumos.core.context.Context.simulate lumos.core.context.Context.spawn_key
+#: lumos.core.context.Context.twin_state lumos.core.context.Context.wait
+#: lumos.core.driver.Command.from_json lumos.core.driver.Driver.check
+#: lumos.core.driver.Driver.is_dangerous lumos.core.driver.Driver.query
+#: lumos.core.driver.Driver.send lumos.core.driver.Driver.wait
+#: lumos.core.driver.SimulatedDriver lumos.core.element.Element.apply
+#: lumos.core.element.Element.from_lumos lumos.core.element.Element.port
+#: lumos.core.element.Element.port_lanes lumos.core.element.Element.to_lumos
 #: lumos.core.element.Element.transfer_symbolic lumos.core.element.Values
 #: lumos.core.element.generator lumos.core.graph.Connection
 #: lumos.core.graph.Graph.add lumos.core.graph.Graph.disconnect
@@ -114,8 +114,11 @@ msgstr ""
 #: lumos.core.port.compatible lumos.core.port.ports_of
 #: lumos.core.priors.LogUniform.sample lumos.core.priors.Normal.sample
 #: lumos.core.priors.Prior.sample lumos.core.priors.Uniform.sample
-#: lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration
-#: lumos.core.registry.Registry.get lumos.core.registry.Registry.load_plugins
+#: lumos.core.priors.prior_to_json lumos.core.procedure.Procedure.devices
+#: lumos.core.procedure.Procedure.from_json
+#: lumos.core.procedure.Procedure.problems lumos.core.procedure.ProcedureResult
+#: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
+#: lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
 #: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.unregister
 #: lumos.core.registry.Registry.version lumos.elements.apertures.Aperture.mask
@@ -360,6 +363,7 @@ msgstr ""
 #: lumos.service.service.Service.get_element_schema
 #: lumos.service.service.Service.get_focus
 #: lumos.service.service.Service.get_job
+#: lumos.service.service.Service.get_procedure
 #: lumos.service.service.Service.get_recording
 #: lumos.service.service.Service.get_result
 #: lumos.service.service.Service.get_study
@@ -374,6 +378,7 @@ msgstr ""
 #: lumos.service.service.Service.list_devices
 #: lumos.service.service.Service.list_element_types
 #: lumos.service.service.Service.list_jobs
+#: lumos.service.service.Service.list_procedures
 #: lumos.service.service.Service.load_preset
 #: lumos.service.service.Service.paste_elements
 #: lumos.service.service.Service.plan_propagation
@@ -383,16 +388,19 @@ msgstr ""
 #: lumos.service.service.Service.redo
 #: lumos.service.service.Service.remove_element
 #: lumos.service.service.Service.remove_feedback
+#: lumos.service.service.Service.remove_procedure
 #: lumos.service.service.Service.rename_element
 #: lumos.service.service.Service.resolve_object
 #: lumos.service.service.Service.result_file
 #: lumos.service.service.Service.revisions lumos.service.service.Service.run
 #: lumos.service.service.Service.run_loop
+#: lumos.service.service.Service.run_procedure
 #: lumos.service.service.Service.search_docs
 #: lumos.service.service.Service.set_context
 #: lumos.service.service.Service.set_free
 #: lumos.service.service.Service.set_observation
 #: lumos.service.service.Service.set_param
+#: lumos.service.service.Service.set_procedure
 #: lumos.service.service.Service.split_port
 #: lumos.service.service.Service.stop_all lumos.service.service.Service.storage
 #: lumos.service.service.Service.study_csv lumos.service.service.Service.undo
@@ -510,10 +518,11 @@ msgstr ""
 #: lumos.core.context.Context.port lumos.core.context.Context.record
 #: lumos.core.context.Context.remove lumos.core.context.Context.remove_feedback
 #: lumos.core.context.Context.replay lumos.core.context.Context.rng
-#: lumos.core.context.Context.simulate lumos.core.context.Context.spawn_key
-#: lumos.core.context.Context.stop_all lumos.core.context.Context.to_python
-#: lumos.core.context.Context.twin_state lumos.core.context.Context.wait
-#: lumos.core.context.Context.walk lumos.core.context.Observation.wavelengths
+#: lumos.core.context.Context.run_procedure lumos.core.context.Context.simulate
+#: lumos.core.context.Context.spawn_key lumos.core.context.Context.stop_all
+#: lumos.core.context.Context.to_python lumos.core.context.Context.twin_state
+#: lumos.core.context.Context.wait lumos.core.context.Context.walk
+#: lumos.core.context.Observation.wavelengths
 #: lumos.core.driver.Command.from_json lumos.core.driver.Command.to_json
 #: lumos.core.driver.Driver.check lumos.core.driver.Driver.connect
 #: lumos.core.driver.Driver.disconnect lumos.core.driver.Driver.is_dangerous
@@ -556,8 +565,14 @@ msgstr ""
 #: lumos.core.port.compatible lumos.core.port.ports_of
 #: lumos.core.priors.LogUniform.sample lumos.core.priors.Normal.sample
 #: lumos.core.priors.Prior.sample lumos.core.priors.Uniform.sample
-#: lumos.core.priors.prior_to_json lumos.core.registry.Registry.add_migration
-#: lumos.core.registry.Registry.get lumos.core.registry.Registry.load_plugins
+#: lumos.core.priors.prior_to_json lumos.core.procedure.Procedure.count_steps
+#: lumos.core.procedure.Procedure.devices
+#: lumos.core.procedure.Procedure.fed_ports
+#: lumos.core.procedure.Procedure.from_json
+#: lumos.core.procedure.Procedure.problems
+#: lumos.core.procedure.Procedure.to_json
+#: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
+#: lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
 #: lumos.core.registry.Registry.type_id lumos.core.registry.Registry.unregister
 #: lumos.core.registry.Registry.version lumos.elements.apertures.Aperture.mask
@@ -841,6 +856,7 @@ msgstr ""
 #: lumos.service.service.Service.get_element_schema
 #: lumos.service.service.Service.get_focus
 #: lumos.service.service.Service.get_job
+#: lumos.service.service.Service.get_procedure
 #: lumos.service.service.Service.get_recording
 #: lumos.service.service.Service.get_result
 #: lumos.service.service.Service.get_study
@@ -856,6 +872,7 @@ msgstr ""
 #: lumos.service.service.Service.list_element_types
 #: lumos.service.service.Service.list_jobs
 #: lumos.service.service.Service.list_presets
+#: lumos.service.service.Service.list_procedures
 #: lumos.service.service.Service.load_preset
 #: lumos.service.service.Service.paste_elements
 #: lumos.service.service.Service.plan_propagation
@@ -866,16 +883,19 @@ msgstr ""
 #: lumos.service.service.Service.redo
 #: lumos.service.service.Service.remove_element
 #: lumos.service.service.Service.remove_feedback
+#: lumos.service.service.Service.remove_procedure
 #: lumos.service.service.Service.rename_element
 #: lumos.service.service.Service.resolve_object
 #: lumos.service.service.Service.result_file
 #: lumos.service.service.Service.revisions lumos.service.service.Service.run
 #: lumos.service.service.Service.run_loop
+#: lumos.service.service.Service.run_procedure
 #: lumos.service.service.Service.search_docs
 #: lumos.service.service.Service.set_context
 #: lumos.service.service.Service.set_free
 #: lumos.service.service.Service.set_observation
 #: lumos.service.service.Service.set_param
+#: lumos.service.service.Service.set_procedure
 #: lumos.service.service.Service.shutdown
 #: lumos.service.service.Service.split_port
 #: lumos.service.service.Service.stop_all lumos.service.service.Service.storage
@@ -3728,7 +3748,7 @@ msgid ""
 "absolute value (JCGM 100:2008, *GUM*, §5.1)."
 msgstr ""
 
-#: ../../api/index.md:126 lumos.fields.dataproduct:16 of
+#: ../../api/index.md:129 lumos.fields.dataproduct:16 of
 msgid "Files"
 msgstr "Fichiers"
 
@@ -4156,6 +4176,12 @@ msgstr ""
 msgid "Optional name of the context."
 msgstr ""
 
+#: lumos.Context.procedures:1 of
+msgid ""
+"Procedures of the context by name "
+"(:class:`lumos.core.procedure.Procedure`, ADR-0024)."
+msgstr ""
+
 #: lumos.Context.mode:1 of
 msgid "``\"simulation\"`` or ``\"operation\"``."
 msgstr ""
@@ -4250,6 +4276,26 @@ msgstr ""
 
 #: lumos.core.context.Context.run:11 of
 msgid "Called as ``progress(done, total, element_id)`` after each element."
+msgstr ""
+
+#: lumos.core.context.Context.run:12 of
+msgid ""
+"Signals given to input ports (ports or ``\"id.port\"`` strings) instead "
+"of their connections, e.g. a dark frame measured before (the ``use`` step"
+" of a procedure)."
+msgstr ""
+
+#: lumos.core.context.Context.run_procedure:1 of
+msgid ""
+"Run a procedure (its name in :attr:`procedures`, or a "
+":class:`~lumos.core.procedure.Procedure`)."
+msgstr ""
+
+#: lumos.core.context.Context.run_procedure:3 of
+msgid ""
+"``options`` are those of :func:`lumos.core.procedure.run_procedure` "
+"(progress, cancellation, confirmation of the actions on equipment, root "
+"of the archives); returns its named results."
 msgstr ""
 
 #: lumos.core.context.Context.record:1 of
@@ -4589,7 +4635,7 @@ msgid ""
 "(:func:`lumos.fields.spectral_samples`)."
 msgstr ""
 
-#: lumos.core.context.Observation:6 of
+#: lumos.core.context.Observation:7 of
 msgid "Free-form JSON-compatible settings (site, platform, pointing...)."
 msgstr ""
 
@@ -4955,6 +5001,238 @@ msgstr ""
 msgid ""
 "A time quantity, a function ``(self, *args, **kwargs) -> quantity`` "
 "evaluated before the action, or ``None`` for an instantaneous action."
+msgstr ""
+
+#: lumos.core.procedure:1 of
+msgid ""
+"Procedures: declarative sequences of actions, measurements and processing"
+" (step P15.11, ADR-0024)."
+msgstr ""
+
+#: lumos.core.procedure:3 of
+msgid ""
+"A *procedure* is what an experimenter does with a bench: close the "
+"shutter, take twenty frames, average them into a dark, open the shutter, "
+"take ten frames and subtract the dark. It is ordered in time and keeps "
+"*named results* between its steps, unlike the graph (a computation) and "
+"the studies (sweeps, Monte-Carlo runs, loops)."
+msgstr ""
+
+#: lumos.core.procedure:8 of
+#, python-brace-format
+msgid ""
+"A procedure is **data**: a JSON object ``{\"name\", \"description\", "
+"\"steps\": [...]}`` whose steps name their kind in ``do``. It cannot run "
+"code: it only calls actions of elements, computes ports and applies the "
+"processing functions of :data:`FUNCTIONS`."
+msgstr ""
+
+#: lumos.core.procedure:13 of
+msgid "``do``"
+msgstr ""
+
+#: lumos.core.procedure:13 of
+msgid "effect"
+msgstr ""
+
+#: lumos.core.procedure:15 of
+msgid "``action``"
+msgstr ""
+
+#: lumos.core.procedure:15 of
+msgid ""
+"calls the action ``action`` of ``element`` with ``args`` and ``kwargs`` "
+"(timed, journaled)"
+msgstr ""
+
+#: lumos.core.procedure:16 of
+msgid "``measure``"
+msgstr ""
+
+#: lumos.core.procedure:16 of
+msgid ""
+"computes ``outputs`` and stores the value (one port) or a mapping "
+"(several) as ``as``; ``collect`` appends it to a list"
+msgstr ""
+
+#: lumos.core.procedure:18 of
+msgid "``repeat``"
+msgstr ""
+
+#: lumos.core.procedure:18 of
+msgid "runs ``steps`` ``times`` times"
+msgstr ""
+
+#: lumos.core.procedure:19 of
+msgid "``for_each``"
+msgstr ""
+
+#: lumos.core.procedure:19 of
+#, python-brace-format
+msgid ""
+"runs ``steps`` with ``as`` set to each of ``values`` (a list, or "
+"``{start, stop, num, log}``)"
+msgstr ""
+
+#: lumos.core.procedure:20 of
+msgid "``process``"
+msgstr ""
+
+#: lumos.core.procedure:20 of
+msgid ""
+"applies the function ``function`` to ``args`` and stores the value as "
+"``as``"
+msgstr ""
+
+#: lumos.core.procedure:21 of
+msgid "``set``"
+msgstr ""
+
+#: lumos.core.procedure:21 of
+msgid "sets ``target`` (``element.field`` or ``element.field[i]``) to ``value``"
+msgstr ""
+
+#: lumos.core.procedure:22 of
+msgid "``use``"
+msgstr ""
+
+#: lumos.core.procedure:22 of
+msgid ""
+"feeds the input ``port`` with the named result ``result`` in the "
+"following measurements"
+msgstr ""
+
+#: lumos.core.procedure:23 of
+msgid "``wait``"
+msgstr ""
+
+#: lumos.core.procedure:23 of
+msgid "lets ``duration`` pass (the clock in simulation)"
+msgstr ""
+
+#: lumos.core.procedure:24 of
+msgid "``if``"
+msgstr ""
+
+#: lumos.core.procedure:24 of
+msgid ""
+"runs ``then`` or ``else`` after comparing ``left`` and ``right`` with "
+"``op``"
+msgstr ""
+
+#: lumos.core.procedure:25 of
+msgid "``save``"
+msgstr ""
+
+#: lumos.core.procedure:25 of
+msgid "writes the named ``results`` to the archive ``archive``"
+msgstr ""
+
+#: lumos.core.procedure:26 of
+msgid "``show``"
+msgstr ""
+
+#: lumos.core.procedure:26 of
+msgid "marks the named ``results`` to display"
+msgstr ""
+
+#: lumos.core.procedure:29 of
+msgid ""
+"Values are numbers, booleans, text, quantities written as text (``\"2 "
+"mm\"``) or named results (``\"$dark\"``). :meth:`Procedure.problems` "
+"checks a procedure against its context before it runs (elements, ports, "
+"actions, functions, names defined before use, at most "
+":data:`MAX_ITERATIONS` loop iterations). The context stores its "
+"procedures in :attr:`lumos.Context.procedures` and runs them with "
+":meth:`lumos.Context.run_procedure`."
+msgstr ""
+
+#: lumos.core.procedure.FUNCTIONS:1 of
+msgid ""
+"The processing functions of the procedures, by name (the only "
+"computations a procedure can ask for)."
+msgstr ""
+
+#: lumos.core.procedure.MAX_ITERATIONS:1 of
+msgid ""
+"Most loop iterations of a procedure (all loops together, counted before "
+"it runs)."
+msgstr ""
+
+#: lumos.core.procedure.Procedure:1 of
+msgid "A named list of steps (see the module documentation)."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.from_json:1 of
+msgid ""
+"Read a procedure from its JSON form (checks its structure; "
+":meth:`problems` checks its content)."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.to_json:1 of
+msgid "Return the JSON form of the procedure."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.problems:1 of
+msgid ""
+"Return what would stop the procedure in the context ``ctx`` (empty when "
+"it can run)."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.count_steps:1 of
+msgid "Return the number of steps run (loops unrolled), used for the progress."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.devices:1 of
+msgid ""
+"Elements acting on equipment (operation mode) that the procedure calls "
+"actions of."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.fed_ports:1 of
+msgid "Return the inputs fed by ``use`` steps."
+msgstr ""
+
+#: lumos.core.procedure.ProcedureError:1 of
+msgid ""
+"A procedure that cannot run (invalid, refused, cancelled), or a step that"
+" failed."
+msgstr ""
+
+#: lumos.core.procedure.ProcedureResult:1 of
+msgid ""
+"Named results of a run, the results to display and the journal of the "
+"steps."
+msgstr ""
+
+#: lumos.core.procedure.run_procedure:1 of
+msgid "Run ``procedure`` in the context ``ctx`` and return its named results."
+msgstr ""
+
+#: lumos.core.procedure.run_procedure:3 of
+msgid "Called as ``progress(done, total)`` after each step (loops unrolled)."
+msgstr ""
+
+#: lumos.core.procedure.run_procedure:4 of
+msgid ""
+"Checked before each step; when it returns ``True`` the run stops with a "
+":class:`ProcedureError`."
+msgstr ""
+
+#: lumos.core.procedure.run_procedure:5 of
+msgid ""
+"Called with the elements acting on equipment, when there are some; the "
+"run starts only if it returns ``True`` (a human confirmation, ADR-0014)."
+msgstr ""
+
+#: lumos.core.procedure.run_procedure:7 of
+msgid "Directory of the archives written by ``save`` steps."
+msgstr ""
+
+#: lumos.core.procedure.run_procedure:9 of
+msgid ""
+"If the procedure has problems, is not confirmed, is cancelled, or a step "
+"fails."
 msgstr ""
 
 #: lumos.core.driver:1 of
@@ -5342,8 +5620,8 @@ msgstr ""
 
 #: lumos.io.lumos_format.save:1 of
 msgid ""
-"Write an element, group or context to a ``.lumos`` file (UTF-8, indented "
-"strict JSON)."
+"Write an element, group, context or procedure to a ``.lumos`` file "
+"(UTF-8, indented strict JSON)."
 msgstr ""
 
 #: lumos.io.lumos_format.save:3 of
@@ -5354,8 +5632,8 @@ msgstr ""
 
 #: lumos.io.lumos_format.to_document:1 of
 msgid ""
-"Return the ``.lumos`` document (a JSON-compatible dictionary) of an "
-"element, a group or a context."
+"Return the ``.lumos`` document (JSON-compatible) of an element, a group, "
+"a context or a procedure."
 msgstr ""
 
 #: lumos.io.codegen:1 of
@@ -5385,7 +5663,7 @@ msgstr ""
 msgid "Exceptions shared by several LUMOS modules."
 msgstr ""
 
-#: ../../api/index.md:139
+#: ../../api/index.md:142
 msgid "Propagation"
 msgstr ""
 
@@ -5860,7 +6138,7 @@ msgid ""
 "valid as long as the output plane stays inside the padded window."
 msgstr ""
 
-#: ../../api/index.md:154
+#: ../../api/index.md:157
 msgid "Physical models"
 msgstr ""
 
@@ -6549,7 +6827,7 @@ msgid ""
 "uniform grid ``x``."
 msgstr ""
 
-#: ../../api/index.md:185
+#: ../../api/index.md:188
 msgid "Elements"
 msgstr ""
 
@@ -7857,7 +8135,7 @@ msgid ""
 " by ``channel``)."
 msgstr ""
 
-#: ../../api/index.md:218
+#: ../../api/index.md:221
 msgid "Plotting"
 msgstr ""
 
@@ -8141,7 +8419,7 @@ msgid ""
 "``Axes`` (``ax=``) and returns the axes it drew on."
 msgstr ""
 
-#: ../../api/index.md:233
+#: ../../api/index.md:236
 msgid "Processing"
 msgstr ""
 
@@ -8199,7 +8477,7 @@ msgstr ""
 msgid "**profile** (*numpy.ndarray*) -- Mean value of ``image`` in each ring."
 msgstr ""
 
-#: ../../api/index.md:240
+#: ../../api/index.md:243
 msgid "Results and archives"
 msgstr ""
 
@@ -8462,7 +8740,7 @@ msgstr ""
 msgid "If a data file names an unknown signal type."
 msgstr ""
 
-#: ../../api/index.md:253
+#: ../../api/index.md:256
 msgid "Scenes"
 msgstr ""
 
@@ -9444,7 +9722,7 @@ msgid ""
 "is kept."
 msgstr ""
 
-#: ../../api/index.md:275
+#: ../../api/index.md:278
 msgid "Catalogues"
 msgstr ""
 
@@ -10532,7 +10810,7 @@ msgstr ""
 msgid "If the service reports an error."
 msgstr ""
 
-#: ../../api/index.md:330
+#: ../../api/index.md:333
 msgid "Symbolic optics"
 msgstr ""
 
@@ -11173,7 +11451,7 @@ msgid ""
 "wavelength, grid, closed form)."
 msgstr ""
 
-#: ../../api/index.md:346
+#: ../../api/index.md:349
 msgid "Operation of equipment"
 msgstr ""
 
@@ -11807,7 +12085,7 @@ msgid ""
 ":class:`Emulator`."
 msgstr ""
 
-#: ../../api/index.md:367
+#: ../../api/index.md:370
 msgid "Service layer"
 msgstr ""
 
@@ -12179,6 +12457,36 @@ msgid ""
 " :meth:`get_study` (parameter ``time``)."
 msgstr ""
 
+#: lumos.service.service.Service.set_procedure:1 of
+msgid ""
+"Add a procedure to a context, or replace the one of the same name; return"
+" it with its problems."
+msgstr ""
+
+#: lumos.service.service.Service.list_procedures:1 of
+msgid "Procedures of a context, with their problems."
+msgstr ""
+
+#: lumos.service.service.Service.get_procedure:1 of
+msgid "JSON form of a procedure."
+msgstr ""
+
+#: lumos.service.service.Service.remove_procedure:1 of
+msgid "Remove a procedure from its context."
+msgstr ""
+
+#: lumos.service.service.Service.run_procedure:1 of
+msgid ""
+"Run a procedure in the background; its named results are the outputs of "
+"the job (get_result)."
+msgstr ""
+
+#: lumos.service.service.Service.run_procedure:3 of
+msgid ""
+"A procedure acting on equipment needs ``confirmed=True``, given after a "
+"human confirmed the list of devices (:attr:`ProcedureInfo.devices`)."
+msgstr ""
+
 #: lumos.service.service.Service.get_recording:1 of
 msgid ""
 "Return the PNG figure of ``port`` recorded at the point ``point`` of a "
@@ -12224,7 +12532,7 @@ msgid "Wait for the end of a run (or ``timeout`` seconds)."
 msgstr ""
 
 #: lumos.service.service.Service.get_result:1 of
-msgid "Summary of an output computed by a run."
+msgid "Summary of an output computed by a run (or a named result of a procedure)."
 msgstr ""
 
 #: lumos.service.service.Service.inspect_port:1 of
@@ -12392,6 +12700,7 @@ msgstr ""
 #: lumos.service.models.PortFile.model_config:1
 #: lumos.service.models.PortSummary.model_config:1
 #: lumos.service.models.PresetInfo.model_config:1
+#: lumos.service.models.ProcedureInfo.model_config:1
 #: lumos.service.models.ServiceConfig.model_config:1
 #: lumos.service.models.SessionInfo.model_config:1
 #: lumos.service.models.StorageInfo.model_config:1
@@ -12486,6 +12795,12 @@ msgid ""
 " its elements."
 msgstr ""
 
+#: lumos.service.models.ProcedureInfo:1 of
+msgid ""
+"A procedure of a context (ADR-0024): its name, steps, problems and the "
+"equipment it acts on."
+msgstr ""
+
 #: lumos.service.models.ServiceConfig:1 of
 msgid "Configuration of a service (deployment profiles set it, step P14.3)."
 msgstr ""
@@ -12542,7 +12857,7 @@ msgstr ""
 msgid "JSON form of the error."
 msgstr ""
 
-#: ../../api/index.md:380
+#: ../../api/index.md:383
 msgid "MCP server"
 msgstr ""
 
@@ -12742,7 +13057,7 @@ msgid ""
 "API key). ``run`` replaces :func:`subprocess.run` in the tests."
 msgstr ""
 
-#: ../../api/index.md:393
+#: ../../api/index.md:396
 msgid "Web backend"
 msgstr ""
 
@@ -13504,5 +13819,20 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Remove an element and its connections."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Write an element, group or context "
+#~ "to a ``.lumos`` file (UTF-8, indented"
+#~ " strict JSON)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Return the ``.lumos`` document (a "
+#~ "JSON-compatible dictionary) of an element,"
+#~ " a group or a context."
+#~ msgstr ""
+
+#~ msgid "Summary of an output computed by a run."
 #~ msgstr ""
 

@@ -260,6 +260,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   a bus input or a `Demux` after a bus output, attached to the block (`ui.attached`, renamed and deleted with
   it); the inspector offers **Split** and the editor draws the split against its port; generic outputs
   (`Output(..., generic=True)`, those of `Demux` and `Mux`) may feed any optical input, checked at run time.
+- Procedures (P15.11, ADR-0024): `lumos.core.procedure` (declarative steps action, measure, repeat, for_each,
+  process, set, use, wait, if, save, show; a fixed table of processing functions; checks before running;
+  progress, cancellation, confirmation of the actions on equipment), `Context.procedures` and
+  `Context.run_procedure`, `Context.run(feeds=...)`; `.lumos` documents of kind `procedure` and the procedures
+  of a context in its document (format 1.3); service, web API and MCP tools (`set_procedure`,
+  `list_procedures`, `remove_procedure`, `run_procedure`), jobs of kind `procedure`.
 
 ### Changed
 

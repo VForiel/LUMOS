@@ -48,6 +48,7 @@ from lumos.service.models import (
     PortFile,
     PortSummary,
     PresetInfo,
+    ProcedureInfo,
     StorageInfo,
 )
 from lumos.web.assistant import PATH, McpGateway
@@ -233,6 +234,13 @@ class Rename(BaseModel):
     """Body of ``POST /api/contexts/{id}/elements/{path}/rename``."""
 
     name: str
+
+
+class ProcedureRun(BaseModel):
+    """Body of ``POST /api/contexts/{id}/procedures/{name}/run``."""
+
+    confirmed: bool = False
+    archive: bool = False
 
 
 class Split(BaseModel):
@@ -895,6 +903,26 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     @app.post("/api/contexts/{cid}/redo", dependencies=[simulator])
     def redo(request: Request, cid: str) -> ContextSummary:
         return service.redo(sid(request), cid)
+
+    @app.get("/api/contexts/{cid}/procedures", dependencies=[viewer])
+    def list_procedures(request: Request, cid: str) -> list[ProcedureInfo]:
+        return service.list_procedures(sid(request), cid)
+
+    @app.get("/api/contexts/{cid}/procedures/{name}", dependencies=[viewer])
+    def get_procedure(request: Request, cid: str, name: str) -> dict[str, Any]:
+        return service.get_procedure(sid(request), cid, name)
+
+    @app.put("/api/contexts/{cid}/procedures/{name}", dependencies=[simulator])
+    def put_procedure(request: Request, cid: str, name: str, body: dict[str, Any]) -> ProcedureInfo:
+        return service.set_procedure(sid(request), cid, {**body, "name": name})
+
+    @app.delete("/api/contexts/{cid}/procedures/{name}", status_code=204, dependencies=[simulator])
+    def delete_procedure(request: Request, cid: str, name: str) -> None:
+        service.remove_procedure(sid(request), cid, name)
+
+    @app.post("/api/contexts/{cid}/procedures/{name}/run", dependencies=[simulator])
+    def run_procedure(request: Request, cid: str, name: str, body: ProcedureRun) -> JobInfo:
+        return service.run_procedure(sid(request), cid, name, confirmed=body.confirmed, archive=body.archive)
 
     @app.post("/api/contexts/{cid}/split", dependencies=[simulator])
     def split(request: Request, cid: str, body: Split) -> ContextSummary:

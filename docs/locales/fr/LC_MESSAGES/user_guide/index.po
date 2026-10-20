@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-20 18:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -68,6 +68,10 @@ msgid "**processing**: reduction, photometry, interferometric observables, detec
 msgstr "le **traitement** : réduction, photométrie, observables interférométriques, statistiques de détection, calibration et blocs de script ;"
 
 #: ../../user_guide/index.md:17
-msgid "**results**: figures, data files and archives of runs."
-msgstr "les **résultats** : figures, fichiers de données et archives des exécutions."
+msgid "**results**: figures, data files and archives of runs;"
+msgstr "les **résultats** : figures, fichiers de données et archives des exécutions ;"
+
+#: ../../user_guide/index.md:18
+msgid "**procedures**: sequences of actions, measurements and processing (a dark, then measurements)."
+msgstr "les **procédures** : suites d'actions, de mesures et de traitements (un dark, puis des mesures)."
 

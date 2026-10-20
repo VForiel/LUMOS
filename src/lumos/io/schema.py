@@ -36,7 +36,7 @@ def document_schema() -> dict[str, Any]:
         "required": ["lumos_format", "kind"],
         "properties": {
             "lumos_format": {"type": "string", "pattern": r"^1\.[0-9]+$"},
-            "kind": {"enum": ["element", "group", "context"]},
+            "kind": {"enum": ["element", "group", "context", "procedure"]},
             "lumos_version": {"type": "string"},
             "created_at": {"type": "string"},
             "meta": {"type": "object"},
@@ -46,18 +46,56 @@ def document_schema() -> dict[str, Any]:
             "elements": {"type": "array", "items": {"$ref": "#/$defs/child"}},
             "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
             "feedbacks": {"type": "array", "items": {"$ref": "#/$defs/feedback"}},
+            "procedures": {"type": "object", "additionalProperties": {"$ref": "#/$defs/procedure"}},
+            "procedure": {"$ref": "#/$defs/procedure"},
             "ui": {"type": "object"},
         },
         "additionalProperties": False,
         "allOf": [
             {"if": {"properties": {"kind": {"const": "element"}}}, "then": {"required": ["element"]}},
             {"if": {"properties": {"kind": {"const": "group"}}}, "then": {"required": ["group"]}},
+            {"if": {"properties": {"kind": {"const": "procedure"}}}, "then": {"required": ["procedure"]}},
             {
                 "if": {"properties": {"kind": {"const": "context"}}},
                 "then": {"required": ["context", "elements", "connections"]},
             },
         ],
         "$defs": {
+            "procedure": {
+                "description": "A procedure: steps run in order (ADR-0024), each naming its kind in 'do'.",
+                "type": "object",
+                "required": ["name", "steps"],
+                "properties": {
+                    "name": {"type": "string"},
+                    "description": {"type": "string"},
+                    "steps": {"type": "array", "items": {"$ref": "#/$defs/step"}},
+                },
+                "additionalProperties": False,
+            },
+            "step": {
+                "type": "object",
+                "required": ["do"],
+                "properties": {
+                    "do": {
+                        "enum": [
+                            "action",
+                            "measure",
+                            "repeat",
+                            "for_each",
+                            "process",
+                            "set",
+                            "use",
+                            "wait",
+                            "if",
+                            "save",
+                            "show",
+                        ]
+                    },
+                    "steps": {"type": "array", "items": {"$ref": "#/$defs/step"}},
+                    "then": {"type": "array", "items": {"$ref": "#/$defs/step"}},
+                    "else": {"type": "array", "items": {"$ref": "#/$defs/step"}},
+                },
+            },
             "quantity": quantity,
             "element": {
                 "type": "object",
