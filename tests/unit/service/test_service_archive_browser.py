@@ -71,7 +71,8 @@ def test_the_web_api(tmp_path):
 
     from lumos.web import WebConfig, create_app
 
-    with TestClient(create_app(WebConfig(archive_root=str(tmp_path))), base_url="http://localhost") as client:
+    config = WebConfig(service=ServiceConfig(archive_root=str(tmp_path)))
+    with TestClient(create_app(config), base_url="http://localhost") as client:
         client.get("/api/info")
         cid = client.post("/api/presets/first_simulation/load").json()["id"]
         job = client.post(
