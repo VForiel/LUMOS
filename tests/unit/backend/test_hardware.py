@@ -73,6 +73,7 @@ def test_gpu_probes_survive_warnings(monkeypatch, caplog):
         return [GPUInfo("jax", "Fake GPU", "cuda", 1)]
 
     monkeypatch.setattr(hardware, "available", lambda: ("numpy", "jax"))
+    monkeypatch.setattr(hardware, "_jax_may_see_accelerators", lambda: True)  # a GPU plugin is installed
     monkeypatch.setitem(hardware._PROBES, "jax", probe)
     with warnings.catch_warnings():
         warnings.simplefilter("error")
