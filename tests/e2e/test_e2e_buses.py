@@ -13,7 +13,8 @@ pytestmark = pytest.mark.e2e
 
 def add(page, title):
     page.get_by_test_id("palette-search").fill(title)
-    page.get_by_test_id("palette-item").filter(has_text=title).first.click()
+    # by the exact title: "Mux" is also in "Demux"
+    page.get_by_test_id("palette-item").filter(has=page.get_by_text(title, exact=True)).first.click()
     page.get_by_test_id("palette-search").fill("")
 
 
@@ -62,8 +63,8 @@ def test_a_demux_and_a_mux_are_wired_lane_by_lane(editor):
     drag(editor, handle(editor, "demux1", "out0"), handle(editor, "mux1", "in1"))
     drag(editor, handle(editor, "demux1", "out1"), handle(editor, "mux1", "in0"))
     expect(editor.locator(".react-flow__edge")).to_have_count(2, timeout=10_000)
-    add(editor, "Waveguide")
-    drag(editor, handle(editor, "mux1", "out"), handle(editor, "waveguide1", "in"))
+    add(editor, "PowerMeter")
+    drag(editor, handle(editor, "mux1", "out"), handle(editor, "powermeter1", "in"))
     edges = editor.locator(".react-flow__edge-path")
     expect(edges).to_have_count(3, timeout=10_000)
     widths = edges.evaluate_all("(paths) => paths.map((p) => p.style.strokeWidth)")
