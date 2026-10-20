@@ -44,9 +44,10 @@ def test_a_split_port_is_drawn_against_its_block_and_follows_it(editor):
     editor.mouse.move(box["x"] + 125, box["y"] + 65, steps=10)
     editor.mouse.up()
     editor.wait_for_timeout(300)
-    moved = attached.bounding_box()
-    assert moved["x"] - mux["x"] == pytest.approx(120, abs=6)
-    assert moved["y"] - mux["y"] == pytest.approx(60, abs=6)
+    moved, after = attached.bounding_box(), node(editor, "mmi1").bounding_box()
+    assert after["x"] - block["x"] > 60  # the block moved (snapped to the grid of the canvas)
+    assert moved["x"] - mux["x"] == pytest.approx(after["x"] - block["x"], abs=1)
+    assert moved["y"] - mux["y"] == pytest.approx(after["y"] - block["y"], abs=1)
 
     node(editor, "mmi1").click()
     editor.keyboard.press("Delete")
