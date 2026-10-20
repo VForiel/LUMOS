@@ -254,6 +254,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `TelescopeArray` of type version 1 are read as such (`lumos.io.lumos_format.REPLACED_TYPES`); reading a
   document older than 1.3 warns about photonic components listing channels of the modes of a fibre; the
   Bracewell and kernel-nuller presets inject explicitly.
+- `FizeauCombiner` (P15.9): recombines a bus of pupil-plane beams in one homothetic output pupil (Traub 1986),
+  each lane at the projected position of its telescope (sub-pixel Fourier shift, power kept).
 
 ### Changed
 

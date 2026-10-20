@@ -50,7 +50,10 @@ telescope (the pupil of a `Telescope` with the geometric phase of its arm), carr
 each telescope. The injection into single-mode guides is explicit: a `Fiber` with an `injection_focal_length`
 acts on every lane, with the real coupling (81 % at best for a circular pupil) and the antenna lobe of the
 fibre; a `Demux` gives each arm its own optics first. `IdealInjectionArray` is the former analytic model,
-which delivers guided lanes directly with an ideal coupling, fast for scenes of many sources. In the `"ground"` frame the station positions are projected on
+which delivers guided lanes directly with an ideal coupling, fast for scenes of many sources. A `FizeauCombiner`
+recombines the bus in one pupil instead, each beam at the position of its telescope and at the scale of the
+input pupils (homothetic pupil, Traub 1986): a lens and a `FreeSpace` then form the image, the Airy pattern of
+one telescope modulated by the fringes of the baselines. In the `"ground"` frame the station positions are projected on
 the sky for the declination and hour angle of the target, and the hour angle follows the clock of the context;
 in the `"sky"` frame (space arrays such as LIFE) the array rotates about the line of sight.
 

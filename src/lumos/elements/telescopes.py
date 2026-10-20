@@ -36,6 +36,13 @@ thousands of points): every telescope delivers to a single-mode guide the amplit
 Angles are direction cosines on the sky, :math:`\theta_x` towards the East (u) and :math:`\theta_y` towards
 the North (v).
 
+A :class:`FizeauCombiner` recombines such a bus in **one** output pupil: each lane is placed at the projected
+position of its telescope, at the scale of the input pupils (a homothetic exit pupil, Traub 1986, J. Opt. Soc.
+Am. A 3, 1491), so that the field of a source is one plane wave across the output pupil and the image keeps a
+wide field. Sub-pixel positions are reached by a Fourier shift of each lane, which conserves its power. The
+propagation elements then bring the output pupil to a focal plane, where two apertures give the Airy pattern
+of one of them modulated by Young fringes (Born & Wolf, *Principles of Optics*, §8.6).
+
 Projected baselines
 -------------------
 In the ``"ground"`` frame, station positions are local (East, North, Up) coordinates at the latitude
@@ -66,6 +73,7 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 
+from lumos.backend._core import get
 from lumos.core.element import Element, Values
 from lumos.core.param import Param, Setting
 from lumos.core.port import Input, Output
@@ -76,9 +84,10 @@ from lumos.fields.incoherent import IncoherentBundle
 from lumos.fields.modal import ModalField
 from lumos.fields.sources import SourceList
 from lumos.fields.wavecube import Wavecube
+from lumos.fields.wavefront import Wavefront
 from lumos.physics import apertures as shapes
 
-__all__ = ["IdealInjectionArray", "Telescope", "TelescopeArray", "life", "vlti"]
+__all__ = ["FizeauCombiner", "IdealInjectionArray", "Telescope", "TelescopeArray", "life", "vlti"]
 
 #: Length of the sidereal day in seconds (IERS Conventions 2010).
 SIDEREAL_DAY = 86164.0905
@@ -300,6 +309,78 @@ class IdealInjectionArray(_Array):
             amplitudes, lam * u.m, positions=uv * u.m, power_unit=_PHOTON_RATE, sources=sources.identifier
         )
         return {"out": bus}
+
+
+def _shifted(field: np.ndarray, sx: float, sy: float) -> np.ndarray:
+    """Shift ``field`` (``(..., ny, nx)``) by a fraction of a pixel with the Fourier shift theorem."""
+    if sx == 0 and sy == 0:
+        return field
+    ny, nx = field.shape[-2:]
+    kx = np.fft.fftfreq(nx)[None, :]
+    ky = np.fft.fftfreq(ny)[:, None]
+    ramp = np.exp(-2j * math.pi * (kx * sx + ky * sy))
+    return np.fft.ifft2(np.fft.fft2(field, axes=(-2, -1)) * ramp, axes=(-2, -1))
+
+
+@register("lumos.telescopes.FizeauCombiner")
+class FizeauCombiner(Element):
+    """Recombine a bus of pupil-plane beams in one pupil, each beam at the position of its telescope."""
+
+    n_pixels = Setting(
+        int, default=0, doc="size of the output pupil grid (0: the smallest holding every lane)"
+    )
+    in_ = Input(
+        IncoherentBundle, bus=True, doc="pupil-plane beams with the projected positions of their telescopes"
+    )
+    out = Output(IncoherentBundle, doc="one pupil holding every beam at the position of its telescope")
+
+    @staticmethod
+    def transfer(values: Values, inputs: Any) -> dict[str, Any]:
+        """Place every lane at the position of its telescope and add the fields."""
+        signal = inputs["in"]
+        bus = signal if isinstance(signal, Bus) else Bus([signal])
+        positions = None if bus.positions is None else np.asarray(bus.positions.to_value(u.m))
+        if positions is None or not np.all(np.isfinite(positions)):
+            raise ValueError(
+                "a Fizeau combiner needs the position of the telescope of every lane: connect it to a "
+                "TelescopeArray (the lanes of a Mux of single beams have lost their positions)"
+            )
+        problem = Bus.packing_problem(bus.lanes)
+        if problem is not None:
+            raise ValueError(f"the lanes cannot interfere: {problem}")
+        first: IncoherentBundle = bus[0]
+        grid = first.grid
+        dx, dy = grid.dx_si, grid.dy_si
+        ny, nx = grid.shape
+        fields = [np.asarray(get(lane.backend).to_numpy(lane.field)) for lane in bus]
+        sx, sy = positions[:, 0] / dx, positions[:, 1] / dy
+        size = int(values.n_pixels)
+        out_nx = size or 2 * math.ceil(np.max(np.abs(sx))) + nx + 2
+        out_ny = size or 2 * math.ceil(np.max(np.abs(sy))) + ny + 2
+        out = np.zeros((*fields[0].shape[:-2], out_ny, out_nx), dtype=complex)
+        for field, x, y in zip(fields, sx, sy, strict=True):
+            ix, iy = round(x), round(y)
+            x0 = out_nx // 2 + ix - nx // 2
+            y0 = out_ny // 2 + iy - ny // 2
+            if x0 < 0 or y0 < 0 or x0 + nx > out_nx or y0 + ny > out_ny:
+                raise ValueError(
+                    f"the output pupil of {out_nx} × {out_ny} pixels cannot hold every telescope"
+                )
+            out[..., y0 : y0 + ny, x0 : x0 + nx] += _shifted(field, x - ix, y - iy)
+        out_grid = Grid(out_nx, out_ny, dx=dx * u.m, dy=dy * u.m)
+        member = first[0]
+        template: Wavefront | Wavecube
+        if isinstance(member, Wavecube):
+            template = Wavecube(
+                out[0], out_grid, member.wavelengths, weights=member.weights, power_unit=member.power_unit
+            )
+        else:
+            template = Wavefront(out[0], out_grid, member.wavelength, power_unit=member.power_unit)
+        backend = get(first.backend)
+        bundle = IncoherentBundle(
+            backend.asarray(out), template, mode_weights=first.mode_weights, sources=first.sources
+        )
+        return {"out": bundle}
 
 
 # --- Presets -----------------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 17:47+0200\n"
+"POT-Creation-Date: 2026-10-20 17:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -181,6 +181,7 @@ msgstr ""
 #: lumos.elements.sources.PointSource.transfer
 #: lumos.elements.sources.Star.from_catalog
 #: lumos.elements.sources.Star.transfer
+#: lumos.elements.telescopes.FizeauCombiner.transfer
 #: lumos.elements.telescopes.IdealInjectionArray.transfer
 #: lumos.elements.telescopes.Telescope.pupil_grid
 #: lumos.elements.telescopes.Telescope.transfer
@@ -624,6 +625,7 @@ msgstr ""
 #: lumos.elements.sources.PointSource.transfer
 #: lumos.elements.sources.Star.from_catalog
 #: lumos.elements.sources.Star.transfer
+#: lumos.elements.telescopes.FizeauCombiner.transfer
 #: lumos.elements.telescopes.IdealInjectionArray.transfer
 #: lumos.elements.telescopes.Telescope.pupil_grid
 #: lumos.elements.telescopes.Telescope.transfer
@@ -7065,11 +7067,24 @@ msgid ""
 "towards the North (v)."
 msgstr ""
 
-#: lumos.elements.telescopes:40 of
+#: lumos.elements.telescopes:39 of
+msgid ""
+"A :class:`FizeauCombiner` recombines such a bus in **one** output pupil: "
+"each lane is placed at the projected position of its telescope, at the "
+"scale of the input pupils (a homothetic exit pupil, Traub 1986, J. Opt. "
+"Soc. Am. A 3, 1491), so that the field of a source is one plane wave "
+"across the output pupil and the image keeps a wide field. Sub-pixel "
+"positions are reached by a Fourier shift of each lane, which conserves "
+"its power. The propagation elements then bring the output pupil to a "
+"focal plane, where two apertures give the Airy pattern of one of them "
+"modulated by Young fringes (Born & Wolf, *Principles of Optics*, §8.6)."
+msgstr ""
+
+#: lumos.elements.telescopes:47 of
 msgid "Projected baselines"
 msgstr ""
 
-#: lumos.elements.telescopes:41 of
+#: lumos.elements.telescopes:48 of
 msgid ""
 "In the ``\"ground\"`` frame, station positions are local (East, North, "
 "Up) coordinates at the latitude :math:`\\varphi`. They are expressed in "
@@ -7079,7 +7094,7 @@ msgid ""
 " 4.15 and 4.1):"
 msgstr ""
 
-#: lumos.elements.telescopes:46 of
+#: lumos.elements.telescopes:53 of
 msgid ""
 "X = -\\sin\\varphi\\,N + \\cos\\varphi\\,U, \\quad Y = E, \\quad Z = "
 "\\cos\\varphi\\,N + \\sin\\varphi\\,U,\n"
@@ -7088,7 +7103,7 @@ msgid ""
 "\\sin\\delta\\sin H\\,Y + \\cos\\delta\\,Z ."
 msgstr ""
 
-#: lumos.elements.telescopes:51 of
+#: lumos.elements.telescopes:58 of
 msgid ""
 "The hour angle grows with the context clock at the sidereal rate (one "
 "turn per 86164.0905 s, IERS Conventions 2010). In the ``\"sky\"`` frame "
@@ -7096,11 +7111,21 @@ msgid ""
 " rotates about the line of sight at ``rotation_rate``."
 msgstr ""
 
-#: lumos.elements.telescopes:55 of
+#: lumos.elements.telescopes:62 of
 msgid ""
 "Presets: :func:`vlti` (the four 8.2 m unit telescopes of Paranal), "
 ":func:`life` (the four 2 m collectors of the LIFE X-array, Quanz et al. "
 "2022, A&A 664, A21)."
+msgstr ""
+
+#: lumos.elements.telescopes.FizeauCombiner:1 of
+msgid ""
+"Recombine a bus of pupil-plane beams in one pupil, each beam at the "
+"position of its telescope."
+msgstr ""
+
+#: lumos.elements.telescopes.FizeauCombiner.transfer:1 of
+msgid "Place every lane at the position of its telescope and add the fields."
 msgstr ""
 
 #: lumos.elements.telescopes.IdealInjectionArray:1 of
