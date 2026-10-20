@@ -34,7 +34,7 @@ from lumos import Context
 from lumos.elements.optics import FreeSpace, ThinLens
 from lumos.elements.sources import PointSource
 from lumos.elements.telescopes import Telescope, TelescopeArray, life, vlti
-from lumos.fields import Grid, IncoherentBundle, ModalField
+from lumos.fields import Bus, Grid, IncoherentBundle, ModalField
 
 SIDEREAL_DAY = 86164.0905  # s
 
@@ -227,8 +227,15 @@ def test_array_output_amplitudes_and_phases():
     ctx.connect(off_axis.port("out"), array.port("in"))
     result = ctx.run(["array.out", "star.out", "planet.out"])
     out = result["array.out"]
-    assert isinstance(out, ModalField)
-    amplitudes = np.asarray(out.amplitudes)
+    assert isinstance(out, Bus)
+    assert out.packed
+    assert out.lane_type is ModalField
+    assert out.names == ("T1", "T2", "T3")
+    assert out.mode_counts == (1, 1, 1)
+    np.testing.assert_allclose(out.positions.to_value(u.m), [[0, 0], [20, 5], [-7, 30]], atol=1e-12)
+    assert out[0].sources is not None
+    assert out[0].sources == out[2].sources
+    amplitudes = np.asarray(out.modal.amplitudes)
     assert amplitudes.shape == (2, 4, 3)
 
     area = math.pi * 2.0**2 / 4

@@ -27,20 +27,22 @@ from hypothesis import strategies as st
 
 from lumos import Context
 from lumos.elements.photonics import DirectionalCoupler, TransferMatrix
-from lumos.fields import ModalField
+from lumos.fields import Bus
 
 LAM = 1.55e-6
 
 
 def modal(amplitudes, wavelengths=(LAM,)):
+    """A guided bus of single-mode lanes, one per column of ``amplitudes`` (ADR-0023)."""
     a = np.asarray(amplitudes, dtype=complex)
     if a.ndim == 1:
         a = np.tile(a, (len(wavelengths), 1))
-    return ModalField(a, np.asarray(wavelengths) * u.m)
+    return Bus.guided(a, np.asarray(wavelengths) * u.m)
 
 
 def run(element, field):
-    return np.asarray(element.apply(**{"in": field})["out"].amplitudes)
+    """Amplitudes of all the modes of all the output lanes, ``(nλ, Σ modes)``."""
+    return np.asarray(element.apply(**{"in": field})["out"].modal.amplitudes)
 
 
 def component(matrix, **options):

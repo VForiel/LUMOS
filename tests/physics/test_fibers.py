@@ -30,7 +30,7 @@ from scipy.optimize import brentq
 from scipy.special import j1, jn_zeros, jv, kv
 
 from lumos.elements.fibers import Fiber
-from lumos.fields import Grid, IncoherentBundle, ModalField, Wavecube, Wavefront
+from lumos.fields import Bus, Grid, IncoherentBundle, ModalField, Wavecube, Wavefront
 from lumos.physics.fibers import lp_modes, lp_radial
 
 LAM = 1.55e-6
@@ -225,3 +225,29 @@ def test_bundle_modes_stay_incoherent():
     )
     modes = fiber.apply(**{"in": bundle})["modes"]
     assert np.asarray(modes.amplitudes).shape == (2, 1, 1)
+
+
+def test_a_fiber_on_a_bus_injects_every_lane():
+    """One fibre per lane (step P15.6, ADR-0023): the same coupling as on each beam alone."""
+    fiber = Fiber(mode_model="gaussian", mode_field_diameter=10 * u.um, length=0 * u.m)
+    grid = Grid(128, dx=0.5 * u.um)
+    beams = [Wavefront.gaussian(grid, LAM * u.m, waist=w * u.m, power=1 * u.W) for w in (5e-6, 3e-6)]
+    out = fiber.apply(**{"in": Bus(beams, names=["a", "b"])})
+    modes, near = out["modes"], out["out"]
+    assert isinstance(modes, Bus)
+    assert isinstance(near, Bus)
+    assert modes.names == ("a", "b")
+    assert modes.packed
+    for beam, lane in zip(beams, modes, strict=True):
+        alone = fiber.apply(**{"in": beam})["modes"]
+        np.testing.assert_allclose(np.asarray(lane.amplitudes), np.asarray(alone.amplitudes), rtol=1e-12)
+
+
+def test_the_modes_keep_the_sources_of_the_bundle():
+    fiber = Fiber(mode_model="gaussian", mode_field_diameter=10 * u.um, length=0 * u.m)
+    grid = Grid(64, dx=0.5 * u.um)
+    bundle = IncoherentBundle.point_sources(
+        grid, LAM * u.m, theta_x=[0, 0.05] * u.rad, theta_y=[0, 0] * u.rad, power=[1, 1] * u.W
+    )
+    tagged = IncoherentBundle(bundle.field, bundle[0], sources="sky")
+    assert fiber.apply(**{"in": tagged})["modes"].sources == "sky"

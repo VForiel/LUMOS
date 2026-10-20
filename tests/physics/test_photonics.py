@@ -42,27 +42,30 @@ from lumos.elements.photonics import (
     Crossing,
     DirectionalCoupler,
     PhaseShifter,
+    TransferMatrix,
     Waveguide,
     YJunction,
     bracewell,
     kernel_nuller,
     kernels,
 )
-from lumos.fields import ModalField
+from lumos.fields import Bus, ModalField
 from lumos.physics.photonics import slab_modes
 
 LAM = 1.55e-6
 
 
 def modal(amplitudes, wavelengths=(LAM,)):
+    """A guided bus of single-mode lanes, one per column of ``amplitudes`` (ADR-0023)."""
     a = np.asarray(amplitudes, dtype=complex)
     if a.ndim == 1:
         a = np.tile(a, (len(wavelengths), 1))
-    return ModalField(a, np.asarray(wavelengths) * u.m)
+    return Bus.guided(a, np.asarray(wavelengths) * u.m)
 
 
 def run(element, field):
-    return np.asarray(element.apply(**{"in": field})["out"].amplitudes)
+    """Amplitudes of all the modes of all the output lanes, ``(nλ, Σ modes)``."""
+    return np.asarray(element.apply(**{"in": field})["out"].modal.amplitudes)
 
 
 # --- Components -----------------------------------------------------------------------------------------
@@ -229,3 +232,51 @@ def test_kernel_nuller_chip_survives_a_lumos_round_trip():
     loaded = Element.from_lumos(chip.to_lumos())
     a = modal(np.exp(1j * np.array([0.1, 0.2, -0.3, 0.05])))
     np.testing.assert_allclose(run(loaded, a), run(chip, a), atol=1e-14)
+
+
+# --- Lanes of a bus (step P15.6, ADR-0023) ----------------------------------------------------------------
+# A bus groups guides separated in space; ``channels`` lists lanes. A mixing component applies its matrix
+# to all the modes of its selected lanes, and only lanes describing the same sources can interfere
+# (docs/specs/pistes_evolution.md §1.2).
+
+
+def test_channels_designate_lanes_of_a_bus():
+    bus = Bus([ModalField(np.ones((1, 2)), [LAM] * u.m), ModalField(np.ones((1, 1)), [LAM] * u.m)])
+    out = Waveguide(length=1 * u.mm, effective_index=1.5, channels=[1]).apply(**{"in": bus})["out"]
+    assert out.mode_counts == (2, 1)
+    np.testing.assert_allclose(np.asarray(out[0].amplitudes), 1.0)
+    phase = np.exp(2j * math.pi * 1.5 * 1e-3 / LAM)
+    np.testing.assert_allclose(np.asarray(out[1].amplitudes), phase, rtol=1e-12)
+
+
+def test_a_mixing_component_acts_on_every_mode_of_its_lanes():
+    rng = np.random.default_rng(5)
+    q, _ = np.linalg.qr(rng.normal(size=(3, 3)) + 1j * rng.normal(size=(3, 3)))
+    element = TransferMatrix(amplitudes=np.abs(q), phases=np.angle(q) * u.rad)
+    a = rng.normal(size=3) + 1j * rng.normal(size=3)
+    bus = Bus([ModalField(a[None, :2], [LAM] * u.m), ModalField(a[None, 2:], [LAM] * u.m)])
+    out = element.apply(**{"in": bus})["out"]
+    assert out.mode_counts == (2, 1)
+    np.testing.assert_allclose(np.asarray(out.modal.amplitudes)[0], q @ a, atol=1e-12)
+
+
+def test_lanes_of_different_sources_do_not_interfere():
+    lanes = [ModalField(np.ones((1, 1)), [LAM] * u.m, sources=name) for name in ("star", "other star")]
+    with pytest.raises(ValueError, match="sources"):
+        DirectionalCoupler(ratio=0.5).apply(**{"in": Bus(lanes)})
+    # a diagonal component acts lane by lane and accepts them
+    out = PhaseShifter(phase=1 * u.rad, achromatic=True).apply(**{"in": Bus(lanes)})["out"]
+    np.testing.assert_allclose([complex(np.asarray(s.amplitudes)[0, 0]) for s in out], np.exp(1j))
+
+
+def test_a_splitter_inserts_a_named_lane():
+    bus = Bus.guided(np.array([[1.0, 2.0, 3.0]]), [LAM] * u.m, names=["a", "b", "c"])
+    out = YJunction(mode="split", channels=[1]).apply(**{"in": bus})["out"]
+    assert out.names == ("a", "b.0", "b.1", "c")
+    assert out.mode_counts == (1, 1, 1, 1)
+
+
+def test_a_single_lane_is_a_bus_of_one_lane():
+    out = Waveguide(length=0 * u.mm).apply(**{"in": ModalField(np.ones((1, 1)), [LAM] * u.m)})["out"]
+    assert isinstance(out, Bus)
+    assert len(out) == 1

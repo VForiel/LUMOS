@@ -207,7 +207,7 @@ def test_the_schema_is_shipped_with_the_package():
     from importlib import resources
 
     shipped = json.loads(
-        resources.files("lumos.io").joinpath("schemas/lumos-1.2.schema.json").read_text("utf-8")
+        resources.files("lumos.io").joinpath("schemas/lumos-1.3.schema.json").read_text("utf-8")
     )
     assert shipped == document_schema()
 

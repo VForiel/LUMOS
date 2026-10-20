@@ -52,7 +52,7 @@ def json_round_trip(document):
 
 def test_document_envelope(reg):
     document = to_document(Lens(name="L1"), registry=reg)
-    assert document["lumos_format"] == "1.2"  # ADR-0020 (feedbacks), ADR-0022 (free targets)
+    assert document["lumos_format"] == "1.3"  # ADR-0020 (feedbacks), 0022 (free targets), 0023 (buses)
     assert document["kind"] == "element"
     assert document["lumos_version"] == lumos.__version__
     created = datetime.fromisoformat(document["created_at"])
@@ -156,7 +156,7 @@ def test_missing_envelope_keys(reg, key):
         from_document(document, registry=reg)
 
 
-@pytest.mark.parametrize("version", ["2.0", "1.3", "one"])  # 1.2 is read since ADR-0022
+@pytest.mark.parametrize("version", ["2.0", "1.4", "one"])  # 1.3 is read since ADR-0023
 def test_unsupported_format_versions(reg, version):
     document = valid_document(reg)
     document["lumos_format"] = version
@@ -164,6 +164,13 @@ def test_unsupported_format_versions(reg, version):
         from_document(document, registry=reg)
     assert issubclass(FormatVersionError, LumosFormatError)
     assert issubclass(LumosFormatError, ValueError)
+
+
+@pytest.mark.parametrize("version", ["1.0", "1.1", "1.2"])
+def test_older_format_versions_are_read(reg, version):
+    document = valid_document(reg)
+    document["lumos_format"] = version
+    assert isinstance(from_document(document, registry=reg), Lens)
 
 
 def test_unknown_kind(reg):

@@ -52,15 +52,15 @@ def test_modal_field_is_an_optical_signal():
 def test_shapes_and_attributes():
     mf = ModalField(np.ones((2, 3)), [1.5, 1.6] * u.um)
     assert mf.n_wavelengths == 2
-    assert mf.n_channels == 3
-    assert mf.n_modes == 1
+    assert mf.n_modes == 3
+    assert mf.n_sources == 1
     assert mf.shape == (2, 3)
     assert mf.power_unit == u.W
 
 
 def test_incoherent_mode_axis():
     mf = ModalField(np.ones((4, 2, 3)), [1.5, 1.6] * u.um)
-    assert mf.n_modes == 4
+    assert mf.n_sources == 4
     assert mf.shape == (4, 2, 3)
 
 
@@ -69,7 +69,7 @@ def test_shape_must_match_wavelengths():
         ModalField(np.ones((3, 2)), [1.5, 1.6] * u.um)
 
 
-def test_channel_labels():
+def test_mode_labels():
     mf = single([1, 0, 0], labels=["a", "b", "c"])
     assert mf.labels == ("a", "b", "c")
     with pytest.raises(ValueError):
@@ -79,16 +79,16 @@ def test_channel_labels():
 # --- Powers --------------------------------------------------------------------------------------
 
 
-def test_channel_power_is_the_squared_modulus():
+def test_mode_power_is_the_squared_modulus():
     mf = single([1.0, 2j, 3 - 4j])
-    np.testing.assert_allclose(mf.channel_power.to_value(u.W), [[1.0, 4.0, 25.0]], rtol=1e-14)
+    np.testing.assert_allclose(mf.mode_power.to_value(u.W), [[1.0, 4.0, 25.0]], rtol=1e-14)
     np.testing.assert_allclose(mf.total_power.to_value(u.W), [30.0], rtol=1e-14)
 
 
 def test_incoherent_modes_add_in_power():
     # Two incoherent inputs with opposite phases: no cancellation.
     mf = ModalField(np.array([[[1.0, 0.0]], [[-1.0, 0.0]]]), LAM)
-    np.testing.assert_allclose(mf.channel_power.to_value(u.W), [[2.0, 0.0]], rtol=1e-14)
+    np.testing.assert_allclose(mf.mode_power.to_value(u.W), [[2.0, 0.0]], rtol=1e-14)
 
 
 def test_spectral_weights_enter_the_detected_power():
@@ -111,7 +111,7 @@ def test_couplers_are_unitary_and_split_as_requested(ratio):
     c = smatrix.coupler(ratio)
     assert smatrix.is_unitary(c)
     out = single([1, 0]).apply(c)
-    np.testing.assert_allclose(out.channel_power.to_value(u.W)[0], [1 - ratio, ratio], atol=1e-14)
+    np.testing.assert_allclose(out.mode_power.to_value(u.W)[0], [1 - ratio, ratio], atol=1e-14)
 
 
 def test_coupler_ratio_is_validated():
@@ -123,7 +123,7 @@ def test_coupler_ratio_is_validated():
 def test_mach_zehnder_output_powers(phi):
     c = smatrix.coupler(0.5)
     mzi = c @ smatrix.phase_shifter([phi * u.rad, 0 * u.rad]) @ c
-    out = single([1, 0]).apply(mzi).channel_power.to_value(u.W)[0]
+    out = single([1, 0]).apply(mzi).mode_power.to_value(u.W)[0]
     np.testing.assert_allclose(out, [math.sin(phi / 2) ** 2, math.cos(phi / 2) ** 2], atol=1e-14)
 
 
@@ -147,16 +147,16 @@ def test_unitary_matrices_conserve_the_power(real, imag, a):
 def test_wavelength_dependent_matrix():
     s = np.stack([smatrix.coupler(0.0), smatrix.coupler(1.0)])  # bar at λ0, cross at λ1
     mf = ModalField(np.array([[1.0, 0.0], [1.0, 0.0]]), [1.5, 1.6] * u.um)
-    out = mf.apply(s).channel_power.to_value(u.W)
+    out = mf.apply(s).mode_power.to_value(u.W)
     np.testing.assert_allclose(out, [[1.0, 0.0], [0.0, 1.0]], atol=1e-14)
 
 
-def test_non_square_matrix_changes_the_number_of_channels():
+def test_non_square_matrix_changes_the_number_of_modes():
     splitter = np.array([[1.0], [1.0]]) / math.sqrt(2)  # 1 -> 2 outputs (lossless in this direction)
     out = single([2.0]).apply(splitter, labels=["left", "right"])
-    assert out.n_channels == 2
+    assert out.n_modes == 2
     assert out.labels == ("left", "right")
-    np.testing.assert_allclose(out.channel_power.to_value(u.W), [[2.0, 2.0]], rtol=1e-14)
+    np.testing.assert_allclose(out.mode_power.to_value(u.W), [[2.0, 2.0]], rtol=1e-14)
 
 
 def test_matrix_shape_is_validated():
@@ -169,7 +169,7 @@ def test_matrix_shape_is_validated():
 def test_matrices_apply_to_every_incoherent_mode():
     mf = ModalField(np.array([[[1.0, 0.0]], [[0.0, 1.0]]]), LAM)
     out = mf.apply(smatrix.coupler(0.5))
-    np.testing.assert_allclose(out.channel_power.to_value(u.W), [[1.0, 1.0]], rtol=1e-14)
+    np.testing.assert_allclose(out.mode_power.to_value(u.W), [[1.0, 1.0]], rtol=1e-14)
 
 
 # --- Backends and serialisation ----------------------------------------------------------------
@@ -180,7 +180,7 @@ def test_apply_on_every_backend(name):
     mf = single([1, 0]).to_backend(name)
     out = mf.apply(smatrix.coupler(0.3))
     assert out.backend == name
-    np.testing.assert_allclose(out.channel_power.to_value(u.W)[0], [0.7, 0.3], atol=1e-14)
+    np.testing.assert_allclose(out.mode_power.to_value(u.W)[0], [0.7, 0.3], atol=1e-14)
 
 
 def test_json_round_trip():
@@ -206,3 +206,14 @@ def test_gradient_through_a_mach_zehnder():
     # d/dφ sin²(φ/2) = sin(φ)/2
     phi = 0.7
     assert float(jax.grad(bar_power)(phi)) == pytest.approx(math.sin(phi) / 2, rel=1e-10)
+
+
+def test_a_modal_field_names_the_source_list_it_describes():
+    """Lanes interfere only if they describe the same sources (step P15.6, ADR-0023)."""
+    mf = single([1, 0], sources="abc")
+    assert mf.sources == "abc"
+    assert mf.apply(smatrix.coupler(0.5)).sources == "abc"
+    assert (mf * 2).sources == "abc"
+    assert single([1, 0]).sources is None
+    back = ModalField.from_json(json.loads(json.dumps(mf.to_json())))
+    assert back.sources == "abc"
