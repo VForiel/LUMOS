@@ -158,8 +158,8 @@ def test_documents_keep_the_free_targets(tmp_path):
     stages.set_free("factor", True, Normal(2.0, 0.1))
     bank.set_free("powers[1]", True, Normal(2 * u.W, 0.1 * u.W))
     document = lumos.io.to_document(ctx)
-    assert FORMAT_VERSION == "1.2"
-    assert document["lumos_format"] == "1.2"
+    assert FORMAT_VERSION == "1.3"
+    assert document["lumos_format"] == "1.3"
     loaded = lumos.io.from_document(document)
     assert list(loaded.free_parameters()) == ["bank.powers[1]", "stages.factor"]
     assert loaded.free_parameters()["bank.powers[1]"] == Normal(2 * u.W, 0.1 * u.W)

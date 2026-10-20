@@ -257,5 +257,5 @@ def test_schema_documents_units_bounds_defaults_and_ports():
         {"value": 1.0, "unit": ""},
     ]
     inputs = schema["x-lumos-ports"]["inputs"]
-    assert inputs == [{"name": "in", "signal": "Field", "multiple": False, "doc": ""}]
+    assert inputs == [{"name": "in", "signal": "Field", "multiple": False, "bus": False, "doc": ""}]
     assert schema["x-lumos-ports"]["outputs"][0]["name"] == "out"
