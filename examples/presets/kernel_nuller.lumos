@@ -1,11 +1,11 @@
 {
-  "lumos_format": "1.0",
+  "lumos_format": "1.3",
   "kind": "context",
-  "lumos_version": "0.0.2.dev16",
-  "created_at": "2026-10-16T23:37:07Z",
+  "lumos_version": "0.0.2.dev279",
+  "created_at": "2026-10-20T15:41:04Z",
   "meta": {
     "name": "Kernel nuller",
-    "description": "Four 2 m telescopes recombined by a kernel-nuller chip (Martinache & Ireland 2018).",
+    "description": "Four 2 m telescopes injected into single-mode fibres and recombined by a kernel-nuller chip (Martinache & Ireland 2018).",
     "outputs": [
       "meter.out"
     ],
@@ -92,7 +92,7 @@
     {
       "id": "array",
       "type": "lumos.telescopes.TelescopeArray",
-      "type_version": 1,
+      "type_version": 2,
       "name": "array",
       "params": {
         "positions": {
@@ -113,10 +113,6 @@
         "obstruction": {
           "value": 0.0,
           "unit": "m"
-        },
-        "throughput": {
-          "value": 1.0,
-          "unit": ""
         },
         "latitude": {
           "value": 0.0,
@@ -140,7 +136,51 @@
         }
       },
       "settings": {
-        "frame": "sky"
+        "frame": "sky",
+        "n_pixels": 64,
+        "oversize": 1.05,
+        "supersample": 4
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "fibers",
+      "type": "lumos.fibers.Fiber",
+      "type_version": 1,
+      "name": "fibers",
+      "params": {
+        "core_radius": {
+          "value": 4.1,
+          "unit": "um"
+        },
+        "numerical_aperture": {
+          "value": 0.12,
+          "unit": ""
+        },
+        "cladding_index": {
+          "value": 1.444,
+          "unit": ""
+        },
+        "length": {
+          "value": 0.0,
+          "unit": "m"
+        },
+        "attenuation": {
+          "value": 0.0,
+          "unit": "dB / km"
+        },
+        "mode_field_diameter": {
+          "value": 16.055709814053497,
+          "unit": "um"
+        },
+        "injection_focal_length": {
+          "value": 6.0,
+          "unit": "m"
+        }
+      },
+      "settings": {
+        "mode_model": "gaussian"
       },
       "state": {},
       "free": {}
@@ -609,7 +649,9 @@
       "type_version": 1,
       "name": "meter",
       "params": {},
-      "settings": {},
+      "settings": {
+        "channel": -1
+      },
       "state": {},
       "free": {}
     }
@@ -625,6 +667,10 @@
     },
     {
       "from": "array.out",
+      "to": "fibers.in"
+    },
+    {
+      "from": "fibers.modes",
       "to": "chip.in"
     },
     {
@@ -632,5 +678,6 @@
       "to": "meter.in"
     }
   ],
+  "feedbacks": [],
   "ui": {}
 }

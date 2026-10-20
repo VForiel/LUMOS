@@ -248,6 +248,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   wires of removed ports dropped), optional inputs (`Input(..., optional=True)`; an unconnected `Mux` input is
   an empty lane, a validation warning); `Element.port_lanes` and `ElementSummary.lanes`; the editor draws the
   pins of bus ports gathered by a brace and bus wires thicker.
+- Free-space telescope arrays (P15.8): `TelescopeArray` (type version 2) returns a bus of pupil-plane beams,
+  one per telescope; `Fiber.injection_focal_length` injects a pupil-plane field through an ideal lens (real
+  coupling, antenna lobe); the former model is `IdealInjectionArray`, and documents holding a
+  `TelescopeArray` of type version 1 are read as such (`lumos.io.lumos_format.REPLACED_TYPES`); reading a
+  document older than 1.3 warns about photonic components listing channels of the modes of a fibre; the
+  Bracewell and kernel-nuller presets inject explicitly.
 
 ### Changed
 

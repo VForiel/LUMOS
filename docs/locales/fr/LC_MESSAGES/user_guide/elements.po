@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 17:07+0200\n"
+"POT-Creation-Date: 2026-10-20 17:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -135,7 +135,7 @@ msgstr "`lumos.elements.photonics`"
 msgid "`Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`, `TransferMatrix` (a simplified MMI given by its matrix); chips `bracewell()`, `kernel_nuller()`"
 msgstr "`Waveguide`, `PhaseShifter`, `DirectionalCoupler`, `YJunction`, `Crossing`, `MMI`, `TransferMatrix` (un MMI simplifié donné par sa matrice) ; puces `bracewell()`, `kernel_nuller()`"
 
-#: ../../user_guide/elements.md ../../user_guide/elements.md:115
+#: ../../user_guide/elements.md ../../user_guide/elements.md:126
 msgid "Detectors"
 msgstr "Détecteurs"
 
@@ -160,50 +160,50 @@ msgid "Sources at infinity produce a `SourceList` sampled at the spectral channe
 msgstr "Les sources à l'infini produisent une `SourceList` échantillonnée aux canaux spectraux du contexte, qui doit donc avoir une bande d'observation. Un `Telescope` transforme les sources en ondes planes échantillonnées sur sa pupille, un mode d'un `IncoherentBundle` par source, portant le flux de photons collecté par la pupille :"
 
 #: ../../user_guide/elements.md:48
-msgid "A `TelescopeArray` models an interferometer whose beams are injected into single-mode guides: its output is a `Bus` of single-mode guided lanes, one per telescope, carrying the projected position of each telescope. In the `\"ground\"` frame the station positions are projected on the sky for the declination and hour angle of the target, and the hour angle follows the clock of the context; in the `\"sky\"` frame (space arrays such as LIFE) the array rotates about the line of sight."
-msgstr "Un `TelescopeArray` modélise un interféromètre dont les faisceaux sont injectés dans des guides monomodes : sa sortie est un `Bus` de voies guidées monomodes, une par télescope, qui portent la position projetée de chaque télescope. Dans le repère `\"ground\"`, les positions des stations sont projetées sur le ciel pour la déclinaison et l'angle horaire de la cible, et l'angle horaire suit l'horloge du contexte ; dans le repère `\"sky\"` (réseaux spatiaux comme LIFE), le réseau tourne autour de la ligne de visée."
+msgid "A `TelescopeArray` models an interferometer: its output is a `Bus` of beams in the pupil planes, one per telescope (the pupil of a `Telescope` with the geometric phase of its arm), carrying the projected position of each telescope. The injection into single-mode guides is explicit: a `Fiber` with an `injection_focal_length` acts on every lane, with the real coupling (81 % at best for a circular pupil) and the antenna lobe of the fibre; a `Demux` gives each arm its own optics first. `IdealInjectionArray` is the former analytic model, which delivers guided lanes directly with an ideal coupling, fast for scenes of many sources. In the `\"ground\"` frame the station positions are projected on the sky for the declination and hour angle of the target, and the hour angle follows the clock of the context; in the `\"sky\"` frame (space arrays such as LIFE) the array rotates about the line of sight."
+msgstr "Un `TelescopeArray` modélise un interféromètre : sa sortie est un `Bus` de faisceaux en plan pupille, un par télescope (la pupille d'un `Telescope` avec la phase géométrique de son bras), qui portent la position projetée de chaque télescope. L'injection dans des guides monomodes est explicite : une `Fiber` avec une `injection_focal_length` agit sur chaque voie, avec le couplage réel (81 % au mieux pour une pupille circulaire) et le lobe d'antenne de la fibre ; un `Demux` donne d'abord à chaque bras sa propre optique. `IdealInjectionArray` est l'ancien modèle analytique, qui fournit directement des voies guidées avec un couplage idéal, rapide pour des scènes de nombreuses sources. Dans le repère `\"ground\"`, les positions des stations sont projetées sur le ciel pour la déclinaison et l'angle horaire de la cible, et l'angle horaire suit l'horloge du contexte ; dans le repère `\"sky\"` (réseaux spatiaux comme LIFE), le réseau tourne autour de la ligne de visée."
 
-#: ../../user_guide/elements.md:53
+#: ../../user_guide/elements.md:57
 msgid "Optics, atmosphere and coronagraphs"
 msgstr "Optique, atmosphère et coronographes"
 
-#: ../../user_guide/elements.md:55
+#: ../../user_guide/elements.md:59
 msgid "Bulk optics act on wavefronts, wavecubes and incoherent bundles alike, channel by channel and mode by mode. A `FreeSpace` element propagates with any method of `lumos.propagation` to an arbitrary output grid."
 msgstr "Les éléments d'optique de volume agissent de la même façon sur les fronts d'onde, les cubes de fronts d'onde et les ensembles incohérents, canal par canal et mode par mode. Un élément `FreeSpace` propage avec n'importe quelle méthode de `lumos.propagation` vers une grille de sortie quelconque."
 
-#: ../../user_guide/elements.md:58
+#: ../../user_guide/elements.md:62
 msgid "`Atmosphere` adds the optical path of von Kármán turbulence layers carried by the wind (frozen flow), drawn from the reproducible random stream of the element: the same seed gives the same screens. Its `corrected_modes` setting removes the first Zernike modes over the pupil, a simple model of adaptive optics. `DeformableMirror` is a grid of actuators whose commands can be fitted to an optical path map."
 msgstr "`Atmosphere` ajoute le chemin optique de couches de turbulence de von Kármán transportées par le vent (écoulement figé), tirées du flux aléatoire reproductible de l'élément : la même graine donne les mêmes écrans. Son réglage `corrected_modes` retire les premiers modes de Zernike sur la pupille, un modèle simple d'optique adaptative. `DeformableMirror` est une grille d'actionneurs dont les commandes peuvent être ajustées à une carte de chemin optique."
 
-#: ../../user_guide/elements.md:63
+#: ../../user_guide/elements.md:67
 msgid "A **closed adaptive optics loop** uses two more elements and a feedback of the context (see [Feedback loops](context.md#feedback-loops)). `WavefrontSensor` is an ideal Shack-Hartmann: it measures the mean gradient of the optical path in each sub-aperture (in radians, independent of the wavelength, even for wavefronts of many waves) and the RMS residual optical path over the pupil (valid below about λ/4). `AOController` turns the slopes into command increments of a mirror of the same geometry, `Δc = -g R s`, with the regularised pseudo-inverse of the interaction matrix of the mirror (computed from its influence functions)."
 msgstr "Une **boucle d'optique adaptative fermée** utilise deux éléments de plus et une rétroaction du contexte (voir [Boucles de rétroaction](context.md#feedback-loops)). `WavefrontSensor` est un Shack-Hartmann idéal : il mesure le gradient moyen du chemin optique dans chaque sous-pupille (en radians, indépendamment de la longueur d'onde, même pour des fronts d'onde de nombreuses ondes) et le chemin optique résiduel RMS sur la pupille (valable en dessous d'environ λ/4). `AOController` transforme les pentes en incréments de commande d'un miroir de même géométrie, `Δc = -g R s`, avec la pseudo-inverse régularisée de la matrice d'interaction du miroir (calculée à partir de ses fonctions d'influence)."
 
-#: ../../user_guide/elements.md:80
+#: ../../user_guide/elements.md:84
 msgid "The error of an aberration the mirror can reproduce decreases as `(1 - g)^k`; on turbulence the loop settles at the fitting error of the mirror, about `0.3 (d/r0)^(5/3)` rad² for a pitch `d`. The *Adaptive optics loop* preset is a complete example."
 msgstr "L'erreur d'une aberration que le miroir peut reproduire décroît comme `(1 - g)^k` ; sur la turbulence, la boucle se stabilise à l'erreur de fitting du miroir, environ `0.3 (d/r0)^(5/3)` rad² pour un pas `d`. Le préréglage *Adaptive optics loop* en est un exemple complet."
 
-#: ../../user_guide/elements.md:84
+#: ../../user_guide/elements.md:88
 msgid "Coronagraphs receive the pupil field, apply their focal-plane mask and return the field after the Lyot stop. Ideal masks (even-charge vortex, four-quadrant phase mask) reject an on-axis star down to the sampling error of the pupil."
 msgstr "Les coronographes reçoivent le champ pupillaire, appliquent leur masque focal et renvoient le champ après le diaphragme de Lyot. Les masques idéaux (vortex de charge paire, masque de phase à quatre quadrants) éteignent une étoile sur l'axe jusqu'à l'erreur d'échantillonnage de la pupille."
 
-#: ../../user_guide/elements.md:88
+#: ../../user_guide/elements.md:92
 msgid "Guided and integrated optics"
 msgstr "Optique guidée et intégrée"
 
-#: ../../user_guide/elements.md:90
+#: ../../user_guide/elements.md:94
 msgid "A `Fiber` projects the field on its face onto its LP modes, propagates them and outputs both the modal amplitudes (a `ModalField`, one lane) and the near field at its output; on a bus of beams it acts on every lane. Photonic components transform buses of guided lanes with their scattering matrices, on the lanes listed in their `channels` setting (all lanes when empty); a mixing component (coupler, MMI, transfer matrix) acts on all the modes of its lanes, which must describe the same sources. Chips are element groups:"
 msgstr "Une `Fiber` projette le champ reçu sur sa face d'entrée sur ses modes LP, les propage et fournit à la fois les amplitudes modales (un `ModalField`, une voie) et le champ proche à sa sortie ; sur un bus de faisceaux, elle agit sur chaque voie. Les composants photoniques transforment des bus de voies guidées par leurs matrices de diffusion, sur les voies listées dans leur réglage `channels` (toutes si la liste est vide) ; un composant qui mélange les voies (coupleur, MMI, matrice de transfert) agit sur tous les modes de ses voies, qui doivent décrire les mêmes sources. Les puces sont des groupes d'éléments :"
 
-#: ../../user_guide/elements.md:117
+#: ../../user_guide/elements.md:128
 msgid "A `Camera` reads the field sampled on its pixels: quantum efficiency (constant or a curve), photon and dark noise, full-well saturation, charge binning, read noise, gain, bias and analog-to-digital conversion. Its `expose()` action lasts the exposure time and draws a new frame; with `noise=False` it returns the expected image. A `Photodiode` gives a photocurrent with shot noise and a `PowerMeter` the power in watts; both read a beam or a guided lane (all its modes) as one value, and a bus as one value per lane."
 msgstr "Une `Camera` lit le champ échantillonné sur ses pixels : efficacité quantique (constante ou courbe), bruits de photons et d'obscurité, saturation du puits, regroupement de charges, bruit de lecture, gain, offset et conversion analogique-numérique. Son action `expose()` dure le temps de pose et tire une nouvelle image ; avec `noise=False`, elle renvoie l'image attendue. Une `Photodiode` donne un photocourant avec son bruit de grenaille et un `PowerMeter` la puissance en watts ; tous deux lisent un faisceau ou une voie guidée (tous ses modes) comme une seule valeur, et un bus comme une valeur par voie."
 
-#: ../../user_guide/elements.md:123
+#: ../../user_guide/elements.md:134
 msgid "Random streams"
 msgstr "Flux aléatoires"
 
-#: ../../user_guide/elements.md:125
+#: ../../user_guide/elements.md:136
 msgid "Elements that draw random numbers (atmosphere, camera, photodiode) are *stochastic*: they receive the key of their random stream in the context (`ctx.seed` and their identifier). Results are reproducible for a given seed, independent between elements, and recomputed when `ctx.seed` changes (ADR-0007)."
 msgstr "Les éléments qui tirent des nombres aléatoires (atmosphère, caméra, photodiode) sont *stochastiques* : ils reçoivent la clé de leur flux aléatoire dans le contexte (`ctx.seed` et leur identifiant). Les résultats sont reproductibles pour une graine donnée, indépendants entre éléments, et recalculés quand `ctx.seed` change (ADR-0007)."
 

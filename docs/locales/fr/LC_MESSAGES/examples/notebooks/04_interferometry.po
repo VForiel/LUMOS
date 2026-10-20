@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-18 13:34+0200\n"
+"POT-Creation-Date: 2026-10-20 17:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -45,8 +45,9 @@ msgid "Transmission of a Bracewell nuller"
 msgstr "Transmission d'un nuller de Bracewell"
 
 #: ../../examples/notebooks/04_interferometry.ipynb:50004
-msgid "The preset `bracewell.lumos` holds a source, two telescopes 20 m apart and the nuller. Moving the source across the field gives the transmission map."
-msgstr "Le préréglage `bracewell.lumos` contient une source, deux télescopes séparés de 20 m et le nuller. Déplacer la source dans le champ donne la carte de transmission."
+#, python-format
+msgid "The preset `bracewell.lumos` holds a source, two telescopes 20 m apart, single-mode fibres injecting their beams (`TelescopeArray → Fiber`, 81 % coupling at best, Shaklan & Roddier 1988) and the nuller. Moving the source across the field gives the transmission map; the ratio of the outputs removes the antenna lobe of the fibres, which dims both outputs off axis."
+msgstr "Le préréglage `bracewell.lumos` contient une source, deux télescopes séparés de 20 m, des fibres monomodes qui injectent leurs faisceaux (`TelescopeArray → Fiber`, 81 % de couplage au mieux, Shaklan & Roddier 1988) et le nulleur. Déplacer la source dans le champ donne la carte de transmission ; le rapport des sorties élimine le lobe d'antenne des fibres, qui atténue les deux sorties hors de l'axe."
 
 #: ../../examples/notebooks/04_interferometry.ipynb:80002
 msgid "Outputs of a kernel nuller"
@@ -55,4 +56,7 @@ msgstr "Sorties d'un kernel nuller"
 #: ../../examples/notebooks/04_interferometry.ipynb:80004
 msgid "The preset `kernel_nuller.lumos` observes a star and a planet 100 times fainter: output 0 collects the star, the six dark outputs the planet, and the kernels are differences of pairs of dark outputs."
 msgstr "Le préréglage `kernel_nuller.lumos` observe une étoile et une planète 100 fois moins lumineuse : la sortie 0 recueille l'étoile, les six sorties sombres la planète, et les kernels sont des différences de paires de sorties sombres."
+
+#~ msgid "The preset `bracewell.lumos` holds a source, two telescopes 20 m apart and the nuller. Moving the source across the field gives the transmission map."
+#~ msgstr "Le préréglage `bracewell.lumos` contient une source, deux télescopes séparés de 20 m et le nuller. Déplacer la source dans le champ donne la carte de transmission."
 

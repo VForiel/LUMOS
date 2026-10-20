@@ -45,8 +45,12 @@ chain >> FreeSpace(name="gap", distance=100 * u.m, method="fresnel_mft", output_
 image = ctx.run(["gap.out"])["gap.out"]
 ```
 
-A `TelescopeArray` models an interferometer whose beams are injected into single-mode guides: its output is a
-`Bus` of single-mode guided lanes, one per telescope, carrying the projected position of each telescope. In the `"ground"` frame the station positions are projected on
+A `TelescopeArray` models an interferometer: its output is a `Bus` of beams in the pupil planes, one per
+telescope (the pupil of a `Telescope` with the geometric phase of its arm), carrying the projected position of
+each telescope. The injection into single-mode guides is explicit: a `Fiber` with an `injection_focal_length`
+acts on every lane, with the real coupling (81 % at best for a circular pupil) and the antenna lobe of the
+fibre; a `Demux` gives each arm its own optics first. `IdealInjectionArray` is the former analytic model,
+which delivers guided lanes directly with an ideal coupling, fast for scenes of many sources. In the `"ground"` frame the station positions are projected on
 the sky for the declination and hour angle of the target, and the hour angle follows the clock of the context;
 in the `"sky"` frame (space arrays such as LIFE) the array rotates about the line of sight.
 
@@ -95,6 +99,7 @@ all the modes of its lanes, which must describe the same sources. Chips are elem
 
 ```python
 from lumos.elements.detectors import PowerMeter
+from lumos.elements.fibers import Fiber
 from lumos.elements.photonics import kernel_nuller, kernels
 from lumos.elements.sources import PointSource
 from lumos.elements.telescopes import TelescopeArray
@@ -107,7 +112,13 @@ array = ctx.add(
         name="array", frame="sky", diameter=2 * u.m, positions=[[0, 0], [30, 10], [55, -20], [80, 25]] * u.m
     )
 )
-star >> array >> kernel_nuller(name="chip") >> PowerMeter(name="meter")
+# single-mode fibres behind lenses of 6 m focal length, their mode matched to the 2 m pupils at 3.75 µm
+fibers = ctx.add(
+    Fiber(name="fibers", mode_model="gaussian", mode_field_diameter=16 * u.um, injection_focal_length=6 * u.m)
+)
+star >> array
+ctx.connect(array.port("out"), fibers.port("in"))
+fibers.port("modes") >> kernel_nuller(name="chip") >> PowerMeter(name="meter")
 power = ctx.run(["meter.out"])["meter.out"].data
 print(kernels(power.value))  # three kernel outputs, zero for an on-axis star
 ```

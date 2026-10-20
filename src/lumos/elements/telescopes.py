@@ -12,17 +12,29 @@ with :math:`P` the anti-aliased pupil transmission, so that the power of each ch
 the power :math:`P^2 < P`, the pupil is scaled so that :math:`\sum P^2 \Delta x \Delta y` equals the
 anti-aliased area :math:`\sum P \Delta x \Delta y`, which converges to the exact area.
 
-A :class:`TelescopeArray` models an interferometer whose beams are injected into single-mode guides with an
-ideal coupling: it returns a :class:`~lumos.fields.Bus` of single-mode guided lanes (``T1``... ``Tn``, with
-the projected positions of the telescopes, ADR-0023), in which telescope :math:`j` at the projected position
-:math:`(u_j, v_j)` delivers the amplitude
+A :class:`TelescopeArray` models an interferometer collecting the light in free space: it returns a
+:class:`~lumos.fields.Bus` of :class:`~lumos.fields.IncoherentBundle` in the pupil plane, one lane per
+telescope (``T1``... ``Tn``, with the projected positions of the telescopes, ADR-0023). Lane :math:`j` is the
+pupil of a :class:`Telescope` with the geometric phase of its arm,
+
+.. math:: U_{jmk}(x, y) = U_{mk}(x, y)\, \exp\!\left[\frac{2i\pi}{\lambda_k}
+          (u_j\,\theta_{x,m} + v_j\,\theta_{y,m})\right],
+
+the geometric delay of the phase centre being compensated by the delay lines. The injection into guides is an
+explicit element: a :class:`~lumos.elements.fibers.Fiber` with an ``injection_focal_length`` acts on every
+lane of the bus, with the real coupling efficiency (about 81 % at best for a circular pupil) and the antenna
+lobe of the fibre (Shaklan & Roddier 1988, Appl. Opt. 27, 2334); ``Demux`` lets each arm have its own optics
+first.
+
+:class:`IdealInjectionArray` is the fast analytic model, useful for many sources (an exozodiacal disc of
+thousands of points): every telescope delivers to a single-mode guide the amplitude
 
 .. math:: a_{mkj} = \sqrt{\eta A F_{mk} b_k}\; \exp\!\left[\frac{2i\pi}{\lambda_k}
           (u_j\,\theta_{x,m} + v_j\,\theta_{y,m})\right]
 
-(:math:`\eta` the throughput), the
-geometric delay of the phase centre being compensated by the delay lines. Angles are direction cosines on the
-sky, :math:`\theta_x` towards the East (u) and :math:`\theta_y` towards the North (v).
+(a bus of single-mode guided lanes, :math:`\eta` the throughput), without coupling loss nor antenna lobe.
+Angles are direction cosines on the sky, :math:`\theta_x` towards the East (u) and :math:`\theta_y` towards
+the North (v).
 
 Projected baselines
 -------------------
@@ -66,7 +78,7 @@ from lumos.fields.sources import SourceList
 from lumos.fields.wavecube import Wavecube
 from lumos.physics import apertures as shapes
 
-__all__ = ["Telescope", "TelescopeArray", "life", "vlti"]
+__all__ = ["IdealInjectionArray", "Telescope", "TelescopeArray", "life", "vlti"]
 
 #: Length of the sidereal day in seconds (IERS Conventions 2010).
 SIDEREAL_DAY = 86164.0905
@@ -90,6 +102,24 @@ def _arrays(sources: SourceList) -> tuple[np.ndarray, np.ndarray, np.ndarray, np
     lam, bw = si(sources.wavelengths, u.m), si(sources.bandwidths, u.m)
     flux = si(sources.flux, u.photon / u.s / u.m**3)
     return si(sources.theta_x, u.rad), si(sources.theta_y, u.rad), lam, bw, flux
+
+
+def _pupil_bundle(sources: SourceList, grid: Grid, mask: np.ndarray, phases: Any = None) -> IncoherentBundle:
+    """Sample the plane waves of ``sources`` on a pupil ``mask`` (one bundle mode per source).
+
+    ``phases`` (``(M, nλ)`` radians) adds a phase per source and wavelength, the delay of an arm of an array.
+    """
+    tx, ty, lam, bw, flux = _arrays(sources)
+    mask = mask * np.sqrt(mask.sum() / max(float((mask**2).sum()), 1e-300))  # power = anti-aliased area
+    x, y = (np.asarray(c) for c in grid.coords(backend="numpy"))
+    k = 2 * math.pi / lam[None, :, None, None]
+    phase = k * (tx[:, None, None, None] * x[None, None] + ty[:, None, None, None] * y[None, None])
+    if phases is not None:
+        phase = phase + np.asarray(phases)[:, :, None, None]
+    amplitude = np.sqrt(flux * bw[None, :])[:, :, None, None]
+    field = amplitude * mask[None, None] * np.exp(1j * phase)
+    template = Wavecube(field[0], grid, lam * u.m, power_unit=_PHOTON_RATE)
+    return IncoherentBundle(field, template, sources=sources.identifier)
 
 
 # --- Single telescope ------------------------------------------------------------------------------
@@ -127,18 +157,10 @@ class Telescope(Element):
         from lumos.elements.apertures import _with_spiders
 
         sources = combine(inputs["in"])
-        tx, ty, lam, bw, flux = _arrays(sources)
         grid = Telescope.pupil_grid(values)
         mask = shapes.annulus(grid, values.diameter, values.obstruction, supersample=values.supersample)
         mask = _with_spiders(values, grid, mask)
-        mask = mask * np.sqrt(mask.sum() / max(float((mask**2).sum()), 1e-300))  # power = anti-aliased area
-        x, y = (np.asarray(c) for c in grid.coords(backend="numpy"))
-        k = 2 * math.pi / lam[None, :, None, None]
-        phase = k * (tx[:, None, None, None] * x[None, None] + ty[:, None, None, None] * y[None, None])
-        amplitude = np.sqrt(flux * bw[None, :])[:, :, None, None]
-        field = amplitude * mask[None, None] * np.exp(1j * phase)
-        template = Wavecube(field[0], grid, lam * u.m, power_unit=_PHOTON_RATE)
-        return {"out": IncoherentBundle(field, template, sources=sources.identifier)}
+        return {"out": _pupil_bundle(sources, grid, mask)}
 
 
 # --- Arrays -----------------------------------------------------------------------------------------
@@ -171,9 +193,8 @@ def _projected(values: Values) -> np.ndarray:
     return np.stack([uu, vv], axis=1)
 
 
-@register("lumos.telescopes.TelescopeArray")
-class TelescopeArray(Element):
-    """Array of identical telescopes injecting each beam in a single-mode guide (ideal coupling)."""
+class _Array(Element):
+    """Geometry shared by the telescope arrays: stations, projection on the sky, clock."""
 
     time_dependent = True
     positions = Param(
@@ -190,7 +211,6 @@ class TelescopeArray(Element):
         doc="diameter of each telescope",
     )
     obstruction = Param(unit=u.m, default=0 * u.m, bounds=(0 * u.m, None), doc="central obstruction diameter")
-    throughput = Param(default=1.0, bounds=(0, 1), doc="power transmission up to the guides")
     latitude = Param(unit=u.deg, default=0 * u.deg, bounds=(-90 * u.deg, 90 * u.deg), doc="site latitude")
     declination = Param(
         unit=u.deg,
@@ -203,7 +223,6 @@ class TelescopeArray(Element):
     rotation_rate = Param(unit=u.deg / u.hour, default=0 * u.deg / u.hour, doc="sky frame: rotation rate")
     frame = Setting(str, default="ground", choices=("ground", "sky"), doc="frame of the positions")
     in_ = Input(SourceList, multiple=True)
-    out = Output(ModalField, bus=True, doc="one single-mode guided lane per telescope")
 
     @property
     def n_telescopes(self) -> int:
@@ -233,6 +252,38 @@ class TelescopeArray(Element):
         uv = _projected(self.values())
         pairs = list(itertools.combinations(range(len(uv)), 2))
         return np.array([uv[j] - uv[i] for i, j in pairs]).reshape(-1, 2) * u.m
+
+
+@register("lumos.telescopes.TelescopeArray", version=2)
+class TelescopeArray(_Array):
+    """Array of identical telescopes: a bus of the beams in their pupil planes, one per telescope."""
+
+    n_pixels = Setting(int, default=64, doc="pupil grid size of each telescope")
+    oversize = Setting(float, default=1.05, doc="width of the pupil grid in diameters (> 1: margin)")
+    supersample = Setting(int, default=4, doc="sub-pixels per pixel side for anti-aliasing")
+    out = Output(IncoherentBundle, bus=True, doc="one beam in the pupil plane per telescope")
+
+    @staticmethod
+    def transfer(values: Values, inputs: Any) -> dict[str, Any]:
+        """Sample the plane waves of the sources on every pupil, with the delay of its arm."""
+        sources = combine(inputs["in"])
+        tx, ty, lam, _, _ = _arrays(sources)
+        uv = _projected(values)
+        grid = Telescope.pupil_grid(values)
+        mask = shapes.annulus(grid, values.diameter, values.obstruction, supersample=values.supersample)
+        lanes = []
+        for u_j, v_j in uv:
+            phases = 2 * math.pi * (tx[:, None] * u_j + ty[:, None] * v_j) / lam[None, :]
+            lanes.append(_pupil_bundle(sources, grid, mask, phases))
+        return {"out": Bus(lanes, positions=uv * u.m)}
+
+
+@register("lumos.telescopes.IdealInjectionArray")
+class IdealInjectionArray(_Array):
+    """Array of identical telescopes injecting each beam in a single-mode guide with an ideal coupling."""
+
+    throughput = Param(default=1.0, bounds=(0, 1), doc="power transmission up to the guides")
+    out = Output(ModalField, bus=True, doc="one single-mode guided lane per telescope")
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:

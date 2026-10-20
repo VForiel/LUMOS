@@ -22,7 +22,9 @@ an ``id``), its internal ``connections`` (``{"from": "id.port", "to": "id.port"}
 
 Physical values keep the user's unit (see :func:`lumos.units.quantity_to_json`). The element class is found
 in the :class:`~lumos.core.registry.Registry` from its ``type`` identifier; nothing is ever imported while
-reading a document. Older type versions are upgraded with the registered migrations.
+reading a document. Older type versions are upgraded with the registered migrations; a type whose model was
+replaced keeps its old meaning under a new identifier (:data:`REPLACED_TYPES`: since format 1.3,
+``TelescopeArray`` of type version 1, the ideal injection, is read as ``IdealInjectionArray``, ADR-0023).
 """
 
 from __future__ import annotations
@@ -30,6 +32,7 @@ from __future__ import annotations
 import base64
 import importlib
 import json
+import logging
 import re
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -64,6 +67,13 @@ __all__ = [
     "save",
     "to_document",
 ]
+
+logger = logging.getLogger("lumos.io")
+
+#: (type, type version) of documents written before a model was replaced -> type keeping that model.
+REPLACED_TYPES: dict[tuple[str, int], str] = {
+    ("lumos.telescopes.TelescopeArray", 1): "lumos.telescopes.IdealInjectionArray",
+}
 
 FORMAT_VERSION = "1.3"
 _SUPPORTED = (1, 3)
@@ -260,6 +270,8 @@ def _context_from_document(document: Mapping[str, Any], reg: Registry) -> Contex
             element._lumos_container = ctx
         for connection in document.get("connections", []):
             ctx.connect(ctx.port(connection["from"]), ctx.port(connection["to"]))
+        if _minor(document["lumos_format"]) < 3:
+            _warn_channels_of_modes(ctx)
         for identifier in settings.get("simulate", []):
             ctx.simulate(ctx[identifier])
         for feedback in document.get("feedbacks", []):
@@ -270,6 +282,34 @@ def _context_from_document(document: Mapping[str, Any], reg: Registry) -> Contex
         raise LumosFormatError(f"invalid context document: {error}") from error
     ctx.ui = dict(document.get("ui") or {})
     return ctx
+
+
+def _minor(version: str) -> int:
+    match = _VERSION_RE.match(version)
+    return int(match[2]) if match else 0
+
+
+def _warn_channels_of_modes(ctx: Context) -> None:
+    """Warn about photonic components fed by the modes of a fibre and listing ``channels`` (format < 1.3).
+
+    Before 1.3 the channels of a modal field mixed guides and modes; they now designate the lanes of a bus,
+    and the modes of a fibre are one lane (ADR-0023 §8): such a document cannot be converted automatically.
+    """
+    from lumos.elements.fibers import Fiber
+    from lumos.elements.photonics import PhotonicComponent
+
+    for connection in ctx.graph.connections:
+        source, target = connection.source, connection.target
+        if not (isinstance(source.owner, Fiber) and source.name == "modes"):
+            continue
+        component = target.owner
+        if isinstance(component, PhotonicComponent) and component.channels:
+            logger.warning(
+                "%s lists channels %s of the modes of a fibre: since format 1.3 channels designate the lanes "
+                "of a bus and the modes of a fibre are one lane; check this component",
+                ctx.graph.id_of(component),
+                list(component.channels),
+            )
 
 
 #: Built-in element modules imported only when a document uses them (SymPy is slow to import).
@@ -292,11 +332,15 @@ def from_entry(entry: Any, *, registry: Registry | None = None) -> Element:
     if not isinstance(entry, Mapping) or "type" not in entry or "type_version" not in entry:
         raise LumosFormatError("the element entry needs 'type' and 'type_version'")
     type_id = entry["type"]
-    _import_lazy_types(type_id)
-    cls = reg.get(type_id)
     version = entry["type_version"]
     if isinstance(version, bool) or not isinstance(version, int) or version < 1:
         raise LumosFormatError(f"{type_id}: invalid type_version {version!r}")
+    replaced = REPLACED_TYPES.get((type_id, version)) if isinstance(type_id, str) else None
+    if replaced is not None:
+        logger.info("%s version %d is read as %s (same model)", type_id, version, replaced)
+        type_id, version = replaced, 1
+    _import_lazy_types(type_id)
+    cls = reg.get(type_id)
     body = {key: entry[key] for key in _BODY_KEYS if key in entry}
     if version != reg.version(type_id):
         body = reg.migrate(type_id, body, version)

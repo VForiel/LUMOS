@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 17:27+0200\n"
+"POT-Creation-Date: 2026-10-20 17:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -181,9 +181,9 @@ msgstr ""
 #: lumos.elements.sources.PointSource.transfer
 #: lumos.elements.sources.Star.from_catalog
 #: lumos.elements.sources.Star.transfer
+#: lumos.elements.telescopes.IdealInjectionArray.transfer
 #: lumos.elements.telescopes.Telescope.pupil_grid
 #: lumos.elements.telescopes.Telescope.transfer
-#: lumos.elements.telescopes.TelescopeArray.port_lanes
 #: lumos.elements.telescopes.TelescopeArray.transfer
 #: lumos.elements.telescopes.life lumos.elements.telescopes.vlti
 #: lumos.fields.bus.Bus.concatenate lumos.fields.bus.Bus.from_json
@@ -624,12 +624,9 @@ msgstr ""
 #: lumos.elements.sources.PointSource.transfer
 #: lumos.elements.sources.Star.from_catalog
 #: lumos.elements.sources.Star.transfer
+#: lumos.elements.telescopes.IdealInjectionArray.transfer
 #: lumos.elements.telescopes.Telescope.pupil_grid
 #: lumos.elements.telescopes.Telescope.transfer
-#: lumos.elements.telescopes.TelescopeArray.baselines
-#: lumos.elements.telescopes.TelescopeArray.ground_positions
-#: lumos.elements.telescopes.TelescopeArray.port_lanes
-#: lumos.elements.telescopes.TelescopeArray.projected_positions
 #: lumos.elements.telescopes.TelescopeArray.transfer
 #: lumos.elements.telescopes.life lumos.elements.telescopes.vlti
 #: lumos.fields.bus.Bus.concatenate lumos.fields.bus.Bus.from_json
@@ -2019,8 +2016,7 @@ msgid ""
 msgstr ""
 
 #: lumos.core.element.Element.time_dependent:1
-#: lumos.elements.atmosphere.Atmosphere.time_dependent:1
-#: lumos.elements.telescopes.TelescopeArray.time_dependent:1 of
+#: lumos.elements.atmosphere.Atmosphere.time_dependent:1 of
 msgid ""
 "Whether the transfer function reads the elapsed time ``values.time`` "
 "(seconds since the start of the context). Time-dependent elements are "
@@ -7018,15 +7014,42 @@ msgstr ""
 
 #: lumos.elements.telescopes:15 of
 msgid ""
-"A :class:`TelescopeArray` models an interferometer whose beams are "
-"injected into single-mode guides with an ideal coupling: it returns a "
-":class:`~lumos.fields.Bus` of single-mode guided lanes (``T1``... ``Tn``,"
-" with the projected positions of the telescopes, ADR-0023), in which "
-"telescope :math:`j` at the projected position :math:`(u_j, v_j)` delivers"
-" the amplitude"
+"A :class:`TelescopeArray` models an interferometer collecting the light "
+"in free space: it returns a :class:`~lumos.fields.Bus` of "
+":class:`~lumos.fields.IncoherentBundle` in the pupil plane, one lane per "
+"telescope (``T1``... ``Tn``, with the projected positions of the "
+"telescopes, ADR-0023). Lane :math:`j` is the pupil of a "
+":class:`Telescope` with the geometric phase of its arm,"
 msgstr ""
 
 #: lumos.elements.telescopes:20 of
+#, python-brace-format
+msgid ""
+"U_{jmk}(x, y) = U_{mk}(x, y)\\, \\exp\\!\\left[\\frac{2i\\pi}{\\lambda_k}"
+"\n"
+"(u_j\\,\\theta_{x,m} + v_j\\,\\theta_{y,m})\\right],\n"
+"\n"
+msgstr ""
+
+#: lumos.elements.telescopes:23 of
+msgid ""
+"the geometric delay of the phase centre being compensated by the delay "
+"lines. The injection into guides is an explicit element: a "
+":class:`~lumos.elements.fibers.Fiber` with an ``injection_focal_length`` "
+"acts on every lane of the bus, with the real coupling efficiency (about "
+"81 % at best for a circular pupil) and the antenna lobe of the fibre "
+"(Shaklan & Roddier 1988, Appl. Opt. 27, 2334); ``Demux`` lets each arm "
+"have its own optics first."
+msgstr ""
+
+#: lumos.elements.telescopes:29 of
+msgid ""
+":class:`IdealInjectionArray` is the fast analytic model, useful for many "
+"sources (an exozodiacal disc of thousands of points): every telescope "
+"delivers to a single-mode guide the amplitude"
+msgstr ""
+
+#: lumos.elements.telescopes:32 of
 msgid ""
 "a_{mkj} = \\sqrt{\\eta A F_{mk} b_k}\\; "
 "\\exp\\!\\left[\\frac{2i\\pi}{\\lambda_k}\n"
@@ -7034,19 +7057,19 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lumos.elements.telescopes:23 of
+#: lumos.elements.telescopes:35 of
 msgid ""
-"(:math:`\\eta` the throughput), the geometric delay of the phase centre "
-"being compensated by the delay lines. Angles are direction cosines on the"
-" sky, :math:`\\theta_x` towards the East (u) and :math:`\\theta_y` "
+"(a bus of single-mode guided lanes, :math:`\\eta` the throughput), "
+"without coupling loss nor antenna lobe. Angles are direction cosines on "
+"the sky, :math:`\\theta_x` towards the East (u) and :math:`\\theta_y` "
 "towards the North (v)."
 msgstr ""
 
-#: lumos.elements.telescopes:28 of
+#: lumos.elements.telescopes:40 of
 msgid "Projected baselines"
 msgstr ""
 
-#: lumos.elements.telescopes:29 of
+#: lumos.elements.telescopes:41 of
 msgid ""
 "In the ``\"ground\"`` frame, station positions are local (East, North, "
 "Up) coordinates at the latitude :math:`\\varphi`. They are expressed in "
@@ -7056,7 +7079,7 @@ msgid ""
 " 4.15 and 4.1):"
 msgstr ""
 
-#: lumos.elements.telescopes:34 of
+#: lumos.elements.telescopes:46 of
 msgid ""
 "X = -\\sin\\varphi\\,N + \\cos\\varphi\\,U, \\quad Y = E, \\quad Z = "
 "\\cos\\varphi\\,N + \\sin\\varphi\\,U,\n"
@@ -7065,7 +7088,7 @@ msgid ""
 "\\sin\\delta\\sin H\\,Y + \\cos\\delta\\,Z ."
 msgstr ""
 
-#: lumos.elements.telescopes:39 of
+#: lumos.elements.telescopes:51 of
 msgid ""
 "The hour angle grows with the context clock at the sidereal rate (one "
 "turn per 86164.0905 s, IERS Conventions 2010). In the ``\"sky\"`` frame "
@@ -7073,11 +7096,23 @@ msgid ""
 " rotates about the line of sight at ``rotation_rate``."
 msgstr ""
 
-#: lumos.elements.telescopes:43 of
+#: lumos.elements.telescopes:55 of
 msgid ""
 "Presets: :func:`vlti` (the four 8.2 m unit telescopes of Paranal), "
 ":func:`life` (the four 2 m collectors of the LIFE X-array, Quanz et al. "
 "2022, A&A 664, A21)."
+msgstr ""
+
+#: lumos.elements.telescopes.IdealInjectionArray:1 of
+msgid ""
+"Array of identical telescopes injecting each beam in a single-mode guide "
+"with an ideal coupling."
+msgstr ""
+
+#: lumos.elements.telescopes.IdealInjectionArray.transfer:1 of
+msgid ""
+"Return the bus of the amplitudes injected by every telescope for every "
+"source and channel."
 msgstr ""
 
 #: lumos.elements.telescopes.Telescope:1 of
@@ -7096,42 +7131,14 @@ msgstr ""
 
 #: lumos.elements.telescopes.TelescopeArray:1 of
 msgid ""
-"Array of identical telescopes injecting each beam in a single-mode guide "
-"(ideal coupling)."
-msgstr ""
-
-#: lumos.elements.telescopes.TelescopeArray.n_telescopes:1 of
-msgid "Number of telescopes."
-msgstr ""
-
-#: lumos.elements.telescopes.TelescopeArray.port_lanes:1 of
-msgid "Return one lane per telescope on the output."
-msgstr ""
-
-#: lumos.elements.telescopes.TelescopeArray.area:1 of
-msgid "Collecting area of one telescope."
-msgstr ""
-
-#: lumos.elements.telescopes.TelescopeArray.ground_positions:1 of
-msgid "Station positions as given, shape ``(n, 2)`` or ``(n, 3)``."
-msgstr ""
-
-#: lumos.elements.telescopes.TelescopeArray.projected_positions:1 of
-msgid ""
-"Positions ``(u, v)`` projected on the plane of the sky at the current "
-"time, shape ``(n, 2)``."
-msgstr ""
-
-#: lumos.elements.telescopes.TelescopeArray.baselines:1 of
-msgid ""
-"Projected baselines ``p_j - p_i`` for every pair ``i < j``, shape ``(n (n"
-" - 1) / 2, 2)``."
+"Array of identical telescopes: a bus of the beams in their pupil planes, "
+"one per telescope."
 msgstr ""
 
 #: lumos.elements.telescopes.TelescopeArray.transfer:1 of
 msgid ""
-"Return the bus of the amplitudes injected by every telescope for every "
-"source and channel."
+"Sample the plane waves of the sources on every pupil, with the delay of "
+"its arm."
 msgstr ""
 
 #: lumos.elements.telescopes.life:1 of
@@ -7417,7 +7424,44 @@ msgid ""
 "identical fibre per lane, ADR-0023) and both outputs are buses."
 msgstr ""
 
-#: lumos.elements.fibers:19 of
+#: lumos.elements.fibers:20 of
+msgid "Injection from a pupil plane"
+msgstr ""
+
+#: lumos.elements.fibers:21 of
+msgid ""
+"With ``injection_focal_length`` :math:`f > 0`, the input is a field in a "
+"pupil plane (the output of a "
+":class:`~lumos.elements.telescopes.TelescopeArray` or a "
+":class:`~lumos.elements.telescopes.Telescope`) focused on the fibre face "
+"by an ideal lens. The lens maps the face to the pupil by a Fourier "
+"transform, which is unitary, so the overlap is computed in the pupil with"
+" the modes imaged there,"
+msgstr ""
+
+#: lumos.elements.fibers:26 of
+#, python-brace-format
+msgid ""
+"\\tilde\\psi_n(x, y) = \\frac{1}{\\lambda f} \\iint \\psi_n(\\xi, "
+"\\eta)\\,\n"
+"e^{-2i\\pi (x\\xi + y\\eta)/(\\lambda f)}\\, d\\xi\\, d\\eta ,\n"
+"\n"
+msgstr ""
+
+#: lumos.elements.fibers:29 of
+#, python-format
+msgid ""
+"a Gaussian of waist :math:`w_p = \\lambda f / (\\pi w_0)` for the "
+"Gaussian model (computed by a matrix Fourier transform of the sampled "
+"mode otherwise). This gives the coupling efficiency of a telescope pupil "
+"(at most about 81 % for a circular pupil) and the antenna lobe of the "
+"fibre for off-axis sources (Shaklan & Roddier 1988; Ruilier 1998, Proc. "
+"SPIE 3350, 319). The ``out`` port is then the guided light collimated "
+"back by the same lens, :math:`\\sum_n a_n \\tilde\\psi_n`, on the input "
+"grid."
+msgstr ""
+
+#: lumos.elements.fibers:35 of
 msgid ""
 "Modes come from :mod:`lumos.physics.fibers`: exact LP modes "
 "(``mode_model=\"lp\"``; modes with :math:`\\ell \\ge 1` have a cosine "
@@ -13343,5 +13387,58 @@ msgstr ""
 #~ "atmosphere, coronagraphs, guided and "
 #~ "integrated optics, detectors and laboratory"
 #~ " equipment."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A :class:`TelescopeArray` models an "
+#~ "interferometer whose beams are injected "
+#~ "into single-mode guides with an "
+#~ "ideal coupling: it returns a "
+#~ ":class:`~lumos.fields.Bus` of single-mode "
+#~ "guided lanes (``T1``... ``Tn``, with the"
+#~ " projected positions of the telescopes, "
+#~ "ADR-0023), in which telescope :math:`j` "
+#~ "at the projected position :math:`(u_j, "
+#~ "v_j)` delivers the amplitude"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "(:math:`\\eta` the throughput), the geometric"
+#~ " delay of the phase centre being "
+#~ "compensated by the delay lines. Angles"
+#~ " are direction cosines on the sky,"
+#~ " :math:`\\theta_x` towards the East (u) "
+#~ "and :math:`\\theta_y` towards the North "
+#~ "(v)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Array of identical telescopes injecting "
+#~ "each beam in a single-mode guide"
+#~ " (ideal coupling)."
+#~ msgstr ""
+
+#~ msgid "Number of telescopes."
+#~ msgstr ""
+
+#~ msgid "Return one lane per telescope on the output."
+#~ msgstr ""
+
+#~ msgid "Collecting area of one telescope."
+#~ msgstr ""
+
+#~ msgid "Station positions as given, shape ``(n, 2)`` or ``(n, 3)``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Positions ``(u, v)`` projected on the"
+#~ " plane of the sky at the "
+#~ "current time, shape ``(n, 2)``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Projected baselines ``p_j - p_i`` for"
+#~ " every pair ``i < j``, shape "
+#~ "``(n (n - 1) / 2, 2)``."
 #~ msgstr ""
 

@@ -16,6 +16,22 @@ attenuation :math:`\alpha`. Outputs: ``modes``, the amplitudes at the output end
 :class:`~lumos.fields.Bus` of beams, the fibre acts on every lane (one identical fibre per lane, ADR-0023)
 and both outputs are buses.
 
+Injection from a pupil plane
+----------------------------
+With ``injection_focal_length`` :math:`f > 0`, the input is a field in a pupil plane (the output of a
+:class:`~lumos.elements.telescopes.TelescopeArray` or a :class:`~lumos.elements.telescopes.Telescope`) focused
+on the fibre face by an ideal lens. The lens maps the face to the pupil by a Fourier transform, which is
+unitary, so the overlap is computed in the pupil with the modes imaged there,
+
+.. math:: \tilde\psi_n(x, y) = \frac{1}{\lambda f} \iint \psi_n(\xi, \eta)\,
+          e^{-2i\pi (x\xi + y\eta)/(\lambda f)}\, d\xi\, d\eta ,
+
+a Gaussian of waist :math:`w_p = \lambda f / (\pi w_0)` for the Gaussian model (computed by a matrix Fourier
+transform of the sampled mode otherwise). This gives the coupling efficiency of a telescope pupil (at most
+about 81 % for a circular pupil) and the antenna lobe of the fibre for off-axis sources (Shaklan & Roddier
+1988; Ruilier 1998, Proc. SPIE 3350, 319). The ``out`` port is then the guided light collimated back by the
+same lens, :math:`\sum_n a_n \tilde\psi_n`, on the input grid.
+
 Modes come from :mod:`lumos.physics.fibers`: exact LP modes (``mode_model="lp"``; modes with
 :math:`\ell \ge 1` have a cosine ``a`` and a sine ``b`` orientation), or the Gaussian approximation of LP01
 (``"gaussian"``) with the given mode field diameter or Marcuse's waist. The modes are those guided at
@@ -82,10 +98,7 @@ def _fields(values: Values, grid: Grid, wavelength: float, keys: list[Key]) -> n
     area = grid.dx_si * grid.dy_si
     fields = np.zeros((len(keys), *grid.shape))
     if values.mode_model == "gaussian":
-        waist = values.mode_field_diameter / 2
-        if not waist > 0:
-            waist = marcuse_waist(_v(values, wavelength)) * values.core_radius
-        fields[0] = np.exp(-(r**2) / waist**2)
+        fields[0] = np.exp(-(r**2) / _waist(values, wavelength) ** 2)
     else:
         guided = _guided(values, wavelength)
         for index, (_label, ell, m, orientation) in enumerate(keys):
@@ -96,6 +109,41 @@ def _fields(values: Values, grid: Grid, wavelength: float, keys: list[Key]) -> n
             fields[index] = lp_radial(mode, r / values.core_radius) * angular
     norms = np.sqrt(np.sum(fields**2, axis=(1, 2)) * area)
     return np.divide(fields, norms[:, None, None], out=np.zeros_like(fields), where=norms[:, None, None] > 0)
+
+
+def _waist(values: Values, wavelength: float) -> float:
+    """Waist of the Gaussian model (given mode field diameter, or Marcuse's waist)."""
+    waist = values.mode_field_diameter / 2
+    return waist if waist > 0 else marcuse_waist(_v(values, wavelength)) * values.core_radius
+
+
+def _pupil_fields(values: Values, grid: Grid, wavelength: float, keys: list[Key]) -> np.ndarray:
+    """Modes imaged in the pupil of a lens of focal ``injection_focal_length``, ``(n, ny, nx)`` complex.
+
+    They are normalised on the whole plane (the transform is unitary), not on ``grid``: the part of a mode
+    falling outside the grid is not coupled, as with a pupil field that is zero there.
+    """
+    f = values.injection_focal_length
+    xx, yy = (np.asarray(c, dtype=float) for c in grid.coords(backend="numpy"))
+    if values.mode_model == "gaussian":
+        w_p = wavelength * f / (math.pi * _waist(values, wavelength))
+        gaussian = math.sqrt(2 / (math.pi * w_p**2)) * np.exp(-(xx**2 + yy**2) / w_p**2)
+        return gaussian[None].astype(complex)
+    # sample the modes finely on the fibre face, then a matrix Fourier transform to the pupil grid
+    extent = 8 * max(values.core_radius, _waist(values, wavelength))
+    n = _FACE_SAMPLES
+    face = Grid(n, dx=extent / n * u.m)
+    modes = _fields(values, face, wavelength, keys)  # normalised on the fine face grid
+    xi = np.asarray(face.axes(backend="numpy")[0], dtype=float)
+    x_axis, y_axis = (np.asarray(a, dtype=float) for a in grid.axes(backend="numpy"))
+    ex = np.exp(-2j * math.pi * np.outer(x_axis, xi) / (wavelength * f))
+    ey = np.exp(-2j * math.pi * np.outer(y_axis, xi) / (wavelength * f))
+    scale = face.dx_si * face.dy_si / (wavelength * f)
+    return np.einsum("yj,njk,xk->nyx", ey, modes, ex) * scale
+
+
+#: Samples per side of the fibre face for the modes imaged in a pupil (LP model).
+_FACE_SAMPLES = 128
 
 
 def _effective_indices(values: Values, wavelength: float, keys: list[Key]) -> np.ndarray:
@@ -131,11 +179,18 @@ def _transfer(values: Values, signal: Any) -> tuple[ModalField, Any]:
     loss = 10 ** (-decibels / 20)  # amplitude
     amplitudes = np.zeros((*field.shape[:3], len(keys)), dtype=complex)
     exit_field = np.zeros_like(field, dtype=complex)
+    pupil = values.injection_focal_length > 0
     for k, lam in enumerate(lams):
-        modes = _fields(values, grid, float(lam), keys)
-        beta = 2 * math.pi / lam * np.nan_to_num(_effective_indices(values, float(lam), keys))
-        propagation = loss * np.exp(1j * beta * values.length) * (np.sum(modes**2, axis=(1, 2)) > 0)
-        coupled = np.einsum("mpyx,nyx->mpn", field[:, k], modes) * area * propagation
+        modes = (
+            _pupil_fields(values, grid, float(lam), keys)
+            if pupil
+            else _fields(values, grid, float(lam), keys)
+        )
+        guided = np.nan_to_num(_effective_indices(values, float(lam), keys))
+        beta = 2 * math.pi / lam * guided
+        propagation = loss * np.exp(1j * beta * values.length)
+        propagation = propagation * (np.sum(np.abs(modes) ** 2, axis=(1, 2)) > 0)
+        coupled = np.einsum("mpyx,nyx->mpn", field[:, k], np.conj(modes)) * area * propagation
         amplitudes[:, k] = coupled
         exit_field[:, k] = np.einsum("mpn,nyx->mpyx", coupled, modes)
 
@@ -178,6 +233,12 @@ class Fiber(Element):
     )
     mode_field_diameter = Param(
         unit=u.um, default=0 * u.um, bounds=(0 * u.m, None), doc="Gaussian model; 0: Marcuse"
+    )
+    injection_focal_length = Param(
+        unit=u.mm,
+        default=0 * u.mm,
+        bounds=(0 * u.m, None),
+        doc="focal length of a lens focusing a pupil-plane input on the face (0: the input is on the face)",
     )
     mode_model = Setting(str, default="lp", choices=("lp", "gaussian"), doc="exact LP modes or Gaussian LP01")
     in_ = Input(OpticalSignal)

@@ -9,6 +9,7 @@ compute. Run after changing a preset::
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable
 from pathlib import Path
 
@@ -19,6 +20,7 @@ import lumos.io
 from lumos import Context
 from lumos.elements.coronagraphs import VortexCoronagraph
 from lumos.elements.detectors import Camera, PowerMeter
+from lumos.elements.fibers import Fiber
 from lumos.elements.optics import FreeSpace, ThinLens
 from lumos.elements.photonics import bracewell, kernel_nuller
 from lumos.elements.sources import GaussianLaser, PointSource
@@ -133,10 +135,28 @@ def coronagraph() -> Context:
     return ctx
 
 
+def _injection(name: str, wavelength: u.Quantity, diameter: u.Quantity, focal_length: u.Quantity) -> Fiber:
+    """Single-mode fibres (Gaussian mode) behind lenses of focal ``focal_length``, matched to the pupils.
+
+    The mode imaged in the pupil has the waist R / 1.1209, the best coupling of a circular pupil (81 %,
+    Shaklan & Roddier 1988), at ``wavelength``.
+    """
+    w_pupil = diameter / 2 / 1.1209
+    waist = (wavelength * focal_length / (math.pi * w_pupil)).to(u.um)
+    return Fiber(
+        name=name,
+        mode_model="gaussian",
+        mode_field_diameter=2 * waist,
+        length=0 * u.m,
+        injection_focal_length=focal_length,
+    )
+
+
 def kernel_nuller_preset() -> Context:
     ctx = _context(
         "Kernel nuller",
-        "Four 2 m telescopes recombined by a kernel-nuller chip (Martinache & Ireland 2018).",
+        "Four 2 m telescopes injected into single-mode fibres and recombined by a kernel-nuller chip "
+        "(Martinache & Ireland 2018).",
         ["meter.out"],
     )
     _band(ctx, 3.5 * u.um, 4.0 * u.um, 4)
@@ -152,16 +172,19 @@ def kernel_nuller_preset() -> Context:
             diameter=2 * u.m,
         )
     )
+    fibers = ctx.add(_injection("fibers", 3.75 * u.um, 2 * u.m, 6 * u.m))
     ctx.connect(star.port("out"), array.port("in"))
     ctx.connect(planet.port("out"), array.port("in"))
-    array >> kernel_nuller(name="chip") >> PowerMeter(name="meter")
+    ctx.connect(array.port("out"), fibers.port("in"))
+    fibers.port("modes") >> kernel_nuller(name="chip") >> PowerMeter(name="meter")
     return ctx
 
 
 def bracewell_preset() -> Context:
     ctx = _context(
         "Bracewell nuller",
-        "Two 2 m telescopes 20 m apart recombined by a Bracewell nuller at 10 µm.",
+        "Two 2 m telescopes 20 m apart, injected into single-mode fibres and recombined by a Bracewell "
+        "nuller at 10 µm.",
         ["meter.out"],
     )
     _band(ctx, 9.99 * u.um, 10.01 * u.um, 1)
@@ -171,7 +194,10 @@ def bracewell_preset() -> Context:
             name="array", frame="sky", positions=[[-10.0, 0.0], [10.0, 0.0]] * u.m, diameter=2 * u.m
         )
     )
-    source >> array >> bracewell(name="chip") >> PowerMeter(name="meter")
+    fibers = ctx.add(_injection("fibers", 10 * u.um, 2 * u.m, 6 * u.m))
+    source >> array
+    ctx.connect(array.port("out"), fibers.port("in"))
+    fibers.port("modes") >> bracewell(name="chip") >> PowerMeter(name="meter")
     return ctx
 
 
