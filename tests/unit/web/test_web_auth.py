@@ -209,10 +209,10 @@ def test_wrong_credentials_are_refused_without_saying_which_part_is_wrong(
 
 
 def test_sessions_expire_after_their_idle_time(users_file, tmp_path):
-    with client_for(public_config(users_file, tmp_path, session_idle_minutes=0.005)) as client:  # 0.3 s
+    with client_for(public_config(users_file, tmp_path, session_idle_minutes=0.03)) as client:  # 1.8 s
         login(client, "simon")
         assert client.get("/api/auth/me").json()["user"] == "simon"
-        time.sleep(0.6)
+        time.sleep(2.5)
         assert client.get("/api/auth/me").json()["user"] is None
 
 
