@@ -35,7 +35,9 @@ works on the contexts of your tab, and you see its edits in the interface as the
 
 1. In the assistant tab, press **Create a connector link**. The link is the address of the MCP server of your
    session, with a secret: anyone with it works in your session, so keep it private and revoke it when you are
-   done. It ends with your session (idle time of the instance).
+   done. It stays valid for 90 days (`connector_link_days`), even after your browser session ended or the
+   server restarted: the assistant then works in a new session, and asking it for the link to see its work
+   (below) opens that session in your browser. Creating a new link or revoking it ends the old one.
 2. Add it to your assistant:
    - **Claude** (Pro, Max, Team or Enterprise): *Settings › Connectors › Add custom connector*, paste the
      link, then enable LUMOS in a conversation;

@@ -103,6 +103,15 @@ class WebConfig(BaseModel):
         default=12.0, gt=0, description="authenticated sessions expire after this time, even when used"
     )
     challenge_seconds: float = Field(default=120.0, gt=0, description="validity of an SSH challenge")
+    connector_link_days: float = Field(
+        default=90.0,
+        ge=0,
+        description="validity of a connector link (MCP connector of Claude.ai, ChatGPT...)",
+    )
+    connector_links_file: str | None = Field(
+        default=None,
+        description="file keeping the connector links across restarts (digests only; None: in memory)",
+    )
     requests_per_minute: int | None = Field(default=None, ge=1, description="requests per client address")
     login_attempts_per_minute: int = Field(default=20, ge=1, description="per client address and per user")
     max_sessions: int | None = Field(default=None, ge=1, description="sessions open at the same time")

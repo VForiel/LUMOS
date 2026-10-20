@@ -7,6 +7,7 @@ allowed_hosts = []                     # Caddy only forwards the host name of th
 trust_proxy = true                     # Caddy terminates TLS and sets X-Forwarded-For/Proto
 # users_file = "/data/users.toml"      # to give accounts: lumos users add ... --file /data/users.toml
 audit_log = "/data/audit.log"
+connector_links_file = "/data/connector_links.json"  # connector links survive the updates
 anonymous_role = "simulator"
 session_idle_minutes = 120
 requests_per_minute = 600

@@ -271,6 +271,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Fixed
 
+- Connector links (P14.15) outlive their browser session and the restarts of the server (90 days,
+  `connector_link_days`; `connector_links_file` keeps their digests): a connector added to Claude.ai no
+  longer breaks when the session expires.
 
 - Security: the archives of a public instance were listed and downloadable by every visitor; they are now
   those of the session only (`session_storage`).

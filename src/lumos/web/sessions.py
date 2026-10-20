@@ -3,15 +3,26 @@
 The token travels in an HttpOnly cookie (browsers) or an ``Authorization: Bearer`` header (scripts,
 ``lumos login``). It is never the identifier of the service session, and it changes when the user logs in
 (no session fixation).
+
+A *connector link* (``/mcp/<secret>``) is added to Claude.ai or ChatGPT for months, so it outlives the browser
+session that created it: used after that session expired, it opens a new session for the same user and role.
+Its record (digest of the secret, user, role, expiry) may be kept in a file so that it survives a restart; the
+secret itself is never stored.
 """
 
 from __future__ import annotations
 
 import contextlib
+import hashlib
+import json
+import logging
+import os
 import secrets
 import threading
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
 
 from lumos.service import Service, ServiceError
 
@@ -22,6 +33,12 @@ COOKIE = "lumos_session"
 
 #: Lifetime of a view link (``/view/<secret>``, P14.18).
 VIEW_SECONDS = 24 * 3600.0
+
+logger = logging.getLogger("lumos.web")
+
+
+def _digest(secret: str) -> str:
+    return hashlib.sha256(secret.encode("utf-8")).hexdigest()
 
 
 @dataclass
@@ -63,18 +80,57 @@ class WebSessions:
         A session unused for this long is closed with its contexts.
     lifetime_seconds
         An authenticated session is closed this long after the login, even when used.
+    link_seconds
+        Validity of a connector link.
+    links_file
+        JSON file keeping the records of the connector links across restarts (``None``: in memory).
     """
 
     def __init__(
-        self, service: Service, *, idle_seconds: float, lifetime_seconds: float = float("inf")
+        self,
+        service: Service,
+        *,
+        idle_seconds: float,
+        lifetime_seconds: float = float("inf"),
+        link_seconds: float = 90 * 24 * 3600.0,
+        links_file: str | Path | None = None,
     ) -> None:
         self.service = service
         self.idle_seconds = idle_seconds
         self.lifetime_seconds = lifetime_seconds
+        self.link_seconds = link_seconds
+        self._links_file = None if links_file is None else Path(links_file)
         self._sessions: dict[str, WebSession] = {}
-        self._links: dict[str, str] = {}  # secret of a connector link -> token of its session
+        self._links: dict[str, str] = {}  # secret of a connector link -> token of its live session
+        # digest of the secret of a connector link -> {"user", "role", "expires" (Unix time)}
+        self._records: dict[str, dict[str, Any]] = self._load_records()
         self._views: dict[str, tuple[str, float]] = {}  # secret of a view link -> (token, expiry)
         self._lock = threading.Lock()
+
+    # --- Records of the connector links ---------------------------------------------------------------
+
+    def _load_records(self) -> dict[str, dict[str, Any]]:
+        if self._links_file is None or not self._links_file.is_file():
+            return {}
+        try:
+            records = json.loads(self._links_file.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            logger.warning("cannot read the connector links %s: %s", self._links_file, error)
+            return {}
+        return {str(k): dict(v) for k, v in records.items()} if isinstance(records, dict) else {}
+
+    def _save_records(self) -> None:
+        """Write the records (called with the lock held)."""
+        if self._links_file is None:
+            return
+        now = time.time()
+        live = {k: v for k, v in self._records.items() if v.get("expires", 0) > now}
+        self._links_file.parent.mkdir(parents=True, exist_ok=True)
+        temporary = self._links_file.with_suffix(".tmp")
+        temporary.write_text(json.dumps(live, indent=1), encoding="utf-8")
+        with contextlib.suppress(OSError):
+            os.chmod(temporary, 0o600)
+        os.replace(temporary, self._links_file)
 
     def get(self, token: str | None) -> WebSession | None:
         """Return the live session of ``token`` (and mark it as used), or ``None``."""
@@ -88,21 +144,50 @@ class WebSessions:
             return session
 
     def by_link(self, link: str | None) -> WebSession | None:
-        """Return the live session of a connector link (and mark it as used), or ``None``."""
+        """Return the session of a connector link (marked as used), or ``None`` (unknown, revoked, expired).
+
+        When the session of a valid link has expired (or the server restarted), a new session is opened for
+        the same user and role.
+        """
         self.expire()
         if not link:
             return None
         with self._lock:
             token = self._links.get(link)
-        return self.get(token)
+            record = self._records.get(_digest(link))
+        if record is None or record.get("expires", 0) <= time.time():
+            return None
+        session = self.get(token)
+        if session is not None:
+            return session
+        session = WebSession(
+            token=secrets.token_urlsafe(32),
+            service_session=self.service.create_session(origin="web", user=record.get("user")).id,
+            user=record.get("user"),
+            role=record.get("role"),
+            authenticated=time.monotonic() if record.get("user") else None,
+            link=link,
+        )
+        with self._lock:
+            self._sessions[session.token] = session
+            self._links[link] = session.token
+        logger.info("connector link reopened a session (user %s)", record.get("user") or "anonymous")
+        return session
 
     def create_link(self, session: WebSession) -> str:
         """Give ``session`` a new connector link (the previous one stops working); return its secret."""
         with self._lock:
             if session.link is not None:
                 self._links.pop(session.link, None)
+                self._records.pop(_digest(session.link), None)
             session.link = secrets.token_urlsafe(32)
             self._links[session.link] = session.token
+            self._records[_digest(session.link)] = {
+                "user": session.user,
+                "role": session.role,
+                "expires": time.time() + self.link_seconds,
+            }
+            self._save_records()
             return session.link
 
     def view_link(self, session: WebSession) -> str:
@@ -140,6 +225,8 @@ class WebSessions:
         with self._lock:
             if session.link is not None:
                 self._links.pop(session.link, None)
+                self._records.pop(_digest(session.link), None)
+                self._save_records()
             session.link = None
 
     def open(self) -> WebSession:
@@ -166,6 +253,10 @@ class WebSessions:
             self._sessions[renewed.token] = renewed
             if renewed.link is not None:
                 self._links[renewed.link] = renewed.token
+                record = self._records.get(_digest(renewed.link))
+                if record is not None:
+                    record.update(user=user, role=role)
+                    self._save_records()
             for secret, (token, expiry) in list(self._views.items()):
                 if token == session.token:
                     self._views[secret] = (renewed.token, expiry)

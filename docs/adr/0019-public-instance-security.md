@@ -60,3 +60,14 @@ from other web sites open in the same browser.
 - Sessions live in the memory of one process: restarting the server logs everybody out, and running several
   processes needs sticky sessions (not needed for the expected load).
 - The MCP server over HTTP mounted in the web instance (P14.9) reuses these sessions and roles.
+
+## Amendment (2026-10-20): durable connector links
+
+A connector link (`/mcp/<secret>`, P14.15) is pasted once into Claude.ai or ChatGPT and used for months, but it
+died with the browser session that created it (idle timeout, restart of the server at every update): the
+connector then failed with "unknown or revoked connector link". A link now has a record — SHA-256 digest of
+the secret, user, role, expiry (`connector_link_days`, 90 by default) — kept in memory and, with
+`connector_links_file`, in a file (mode 600, digests only) that survives restarts. Used while its session is
+gone, a valid link opens a new session for the same user and role. Creating a new link or revoking it deletes
+the record. The secret remains the only credential, as before; its exposure lasts longer, which the
+revocation in the assistant panel bounds.

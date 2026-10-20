@@ -463,6 +463,8 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
         service,
         idle_seconds=config.session_idle_minutes * 60,
         lifetime_seconds=config.session_max_hours * 3600,
+        link_seconds=config.connector_link_days * 86400,
+        links_file=config.connector_links_file,
     )
     users = _Users(config.users_file)
     challenges = _Challenges(config.challenge_seconds)
