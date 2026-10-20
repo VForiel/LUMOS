@@ -2,6 +2,7 @@
 // The schema below follows the one LUMOS publishes for a circular aperture (subset of /api/palette).
 import { describe, expect, it } from "vitest";
 import { checkBounds, fieldsOf, portsOf } from "../../web/src/lib/schema";
+import { portNamed } from "../../web/src/lib/schema";
 
 const quantity = (unit: string, extra: object) => ({
   type: "object",
@@ -103,5 +104,22 @@ describe("checkBounds", () => {
     expect(checkBounds(diameter, 0)).toBe("below");
     expect(checkBounds(diameter, -1)).toBe("below");
     expect(checkBounds(diameter, 8)).toBeNull();
+  });
+});
+
+// Repeated ports of Demux and Mux (step P15.7): the schema gives a pattern and the setting counting them.
+describe("repeated ports", () => {
+  const MUX = {
+    "x-lumos-ports": {
+      inputs: [{ name: "in{i}", count: "n_lanes", signal: "OpticalSignal", multiple: false, bus: false, optional: true, doc: "lane" }],
+      outputs: [{ name: "out", signal: "OpticalSignal", multiple: false, bus: true, doc: "" }],
+    },
+  };
+
+  it("finds the declaration of a numbered port", () => {
+    expect(portNamed(portsOf(MUX).inputs, "in3")?.signal).toBe("OpticalSignal");
+    expect(portNamed(portsOf(MUX).inputs, "in3")?.name).toBe("in3");
+    expect(portNamed(portsOf(MUX).inputs, "inx")).toBeUndefined();
+    expect(portNamed(portsOf(MUX).outputs, "out")?.bus).toBe(true);
   });
 });
