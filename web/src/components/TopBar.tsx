@@ -1,7 +1,8 @@
-// Top bar: brand, open context, language and theme.
+// Top bar: brand, open context, language and theme. Controls without room in a narrow window go into the
+// "More" menu (P15.19): each is shown in the bar from a breakpoint, and in the menu below it.
 
-import { Monitor, Moon, Sun } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { Languages, Monitor, Moon, MoreHorizontal, Sun } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { LANGUAGES, setLanguage, type Language } from "../i18n";
 import { useStore } from "../store";
@@ -71,31 +72,105 @@ export function ToolButton({
   );
 }
 
+/** Breakpoint from which a control is in the bar (below it, in the More menu). */
+export type Below = "sm" | "md" | "lg" | "xl";
+// literal class names, seen by Tailwind
+const IN_BAR: Record<Below, string> = { sm: "hidden sm:flex", md: "hidden md:flex", lg: "hidden lg:flex", xl: "hidden xl:flex" };
+const IN_MENU: Record<Below, string> = { sm: "sm:hidden", md: "md:hidden", lg: "lg:hidden", xl: "xl:hidden" };
+
+/** Controls shown in the bar from the breakpoint ``below`` (and in the More menu under it). */
+export function Collapse({ below, children }: { below: Below; children: ReactNode }) {
+  return <div className={`${IN_BAR[below]} shrink-0 items-center gap-0.5`}>{children}</div>;
+}
+
+export type MoreItem = { id: string; icon: ReactNode; label: string; onClick: () => void; disabled?: boolean; below: Below };
+
+function MoreMenu({ items }: { items: MoreItem[] }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const away = (event: MouseEvent) => {
+      if (!box.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("mousedown", away);
+    window.addEventListener("keydown", escape);
+    return () => {
+      window.removeEventListener("mousedown", away);
+      window.removeEventListener("keydown", escape);
+    };
+  }, [open]);
+  return (
+    <div ref={box} className="relative shrink-0 xl:hidden">
+      <ToolButton icon={<MoreHorizontal className="size-4" />} label={t("toolbar.more")} testId="more" active={open} onClick={() => setOpen(!open)} />
+      {open && (
+        <div
+          role="menu"
+          data-testid="more-menu"
+          className="absolute right-0 z-40 mt-1 max-h-[80vh] w-60 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-900"
+        >
+          {items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="menuitem"
+              data-testid={`more-${item.id}`}
+              disabled={item.disabled}
+              onClick={() => {
+                setOpen(false);
+                item.onClick();
+              }}
+              className={`${IN_MENU[item.below]} flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-200 dark:hover:bg-slate-800`}
+            >
+              <span className="text-slate-500">{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const THEMES: { theme: Theme; icon: ReactNode }[] = [
   { theme: "light", icon: <Sun className="size-4" /> },
   { theme: "dark", icon: <Moon className="size-4" /> },
   { theme: "system", icon: <Monitor className="size-4" /> },
 ];
 
-export function TopBar({ children, right }: { children?: ReactNode; right?: ReactNode }) {
+export function TopBar({ children, right, more = [] }: { children?: ReactNode; right?: ReactNode; more?: MoreItem[] }) {
   const { t, i18n } = useTranslation();
   const context = useStore((s) => s.context);
   const info = useStore((s) => s.info);
   const dirty = useStore((s) => s.dirty);
   const [theme, chooseTheme] = useState<Theme>(savedTheme());
   const next = THEMES[(THEMES.findIndex((item) => item.theme === theme) + 1) % THEMES.length];
+  const switchTheme = () => {
+    chooseTheme(next.theme);
+    setTheme(next.theme);
+  };
+  const other = LANGUAGES.find((language) => language !== i18n.language) ?? LANGUAGES[0];
+  const items: MoreItem[] = [
+    ...more,
+    { id: "theme", icon: next.icon, label: t("theme.switch", { theme: t(`theme.${next.theme}`) }), onClick: switchTheme, below: "xl" },
+    { id: "language", icon: <Languages className="size-4" />, label: other === "en" ? "English" : "Français", onClick: () => setLanguage(other as Language), below: "xl" },
+  ];
 
   return (
-    <header className="flex h-12 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3 dark:border-slate-800 dark:bg-slate-900">
-      <div className="flex items-center gap-2 pr-2">
+    <header className="flex h-12 shrink-0 items-center gap-1 border-b border-slate-200 bg-white px-2 sm:gap-2 sm:px-3 dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex shrink-0 items-center gap-2 sm:pr-2">
         <Logo />
-        <div className="leading-none">
+        <div className="hidden leading-none sm:block">
           <span className="block text-sm font-bold tracking-wide text-slate-900 dark:text-white">LUMOS</span>
           <span className="block text-[10px] text-slate-400">{info ? `v${info.version.split("+")[0]}` : ""}</span>
         </div>
       </div>
-      <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" />
-      <div className="flex min-w-0 items-center gap-1.5 px-1">
+      <div className="hidden h-6 w-px bg-slate-200 md:block dark:bg-slate-700" />
+      <div className="hidden min-w-0 items-center gap-1.5 px-1 md:flex">
         <span className="truncate text-sm font-medium text-slate-700 dark:text-slate-200" data-testid="context-name">
           {context?.name || t("context.untitled")}
         </span>
@@ -111,16 +186,14 @@ export function TopBar({ children, right }: { children?: ReactNode; right?: Reac
           </span>
         )}
       </div>
-      <div className="flex flex-1 items-center gap-0.5">{children}</div>
+      <div className="flex min-w-0 flex-1 items-center gap-0.5">{children}</div>
       {right}
+      <Collapse below="xl">
       <ToolButton
         icon={THEMES.find((item) => item.theme === theme)!.icon}
         label={t("theme.switch", { theme: t(`theme.${next.theme}`) })}
         testId="theme"
-        onClick={() => {
-          chooseTheme(next.theme);
-          setTheme(next.theme);
-        }}
+        onClick={switchTheme}
       />
       <select
         data-testid="language"
@@ -135,6 +208,8 @@ export function TopBar({ children, right }: { children?: ReactNode; right?: Reac
           </option>
         ))}
       </select>
+      </Collapse>
+      <MoreMenu items={items} />
     </header>
   );
 }

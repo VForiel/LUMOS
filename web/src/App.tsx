@@ -1,6 +1,6 @@
 import { ResultsBrowser } from "./components/Browser";
 import { ReactFlowProvider } from "@xyflow/react";
-import { Bot, Code2, Cpu, FilePlus2, FlaskConical, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
+import { Archive, Bot, Code2, Cpu, FilePlus2, FlaskConical, FolderOpen, GraduationCap, Keyboard, LayoutGrid, Redo2, Save, Undo2 } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AccountMenu, LoginDialog } from "./components/Account";
@@ -17,7 +17,7 @@ import { QuickAdd } from "./components/QuickAdd";
 import { RunButton } from "./components/RunButton";
 import { StudyDialog } from "./components/Study";
 import { Toasts } from "./components/Toasts";
-import { ToolButton, TopBar } from "./components/TopBar";
+import { Collapse, ToolButton, TopBar, type MoreItem } from "./components/TopBar";
 import { connectEvents, disconnectEvents } from "./events";
 import { useShortcuts } from "./shortcuts";
 import { startTour } from "./tour";
@@ -86,6 +86,22 @@ function Editor() {
   const inspect = useCallback((port: string) => void useStore.getState().inspect(port), []);
   const actions = useMemo(() => ({ open: () => fileInput.current?.click(), run: () => void useStore.getState().run() }), []);
   useShortcuts(actions);
+  const allowed = role === "simulator" || role === "operator";
+  const icon = (Icon: typeof Save) => <Icon className="size-4" />;
+  // the controls without room in a narrow window, in the More menu (from widest to narrowest breakpoint)
+  const more: MoreItem[] = [
+    { id: "presets", icon: icon(LayoutGrid), label: t("toolbar.presets"), onClick: () => store.setDialog({ kind: "presets" }), below: "lg" },
+    { id: "new", icon: icon(FilePlus2), label: t("toolbar.new"), onClick: () => void store.newContext(), disabled: !editable, below: "lg" },
+    { id: "open", icon: icon(FolderOpen), label: t("toolbar.open"), onClick: () => fileInput.current?.click(), below: "lg" },
+    { id: "save", icon: icon(Save), label: t("toolbar.save"), onClick: () => void store.save(), below: "lg" },
+    { id: "python", icon: icon(Code2), label: t("toolbar.python"), onClick: () => void store.python(), below: "lg" },
+    { id: "undo", icon: icon(Undo2), label: t("toolbar.undo"), onClick: () => void store.undo(), disabled: !context?.can_undo || !editable, below: "lg" },
+    { id: "redo", icon: icon(Redo2), label: t("toolbar.redo"), onClick: () => void store.redo(), disabled: !context?.can_redo || !editable, below: "lg" },
+    { id: "study", icon: icon(FlaskConical), label: t("toolbar.study"), onClick: () => store.setDialog({ kind: "study" }), disabled: !context || !allowed, below: "lg" },
+    { id: "archives", icon: icon(Archive), label: t("run.archive"), onClick: () => store.setDialog({ kind: "archives" }), below: "md" },
+    { id: "tour", icon: icon(GraduationCap), label: t("toolbar.tour"), onClick: () => void startTour(), below: "xl" },
+    { id: "shortcuts", icon: icon(Keyboard), label: t("toolbar.shortcuts"), onClick: () => store.setDialog({ kind: "shortcuts" }), below: "xl" },
+  ];
 
   return (
     <div className="flex h-full flex-col" data-ready={ready}>
@@ -98,37 +114,45 @@ function Editor() {
         </div>
       )}
       <TopBar
+        more={more}
         right={
           <>
             {(info?.operation || context?.mode === "operation") && <EmergencyStop />}
+            <Collapse below="lg">
             <ToolButton
               icon={<FlaskConical className="size-4" />}
               label={t("toolbar.study")}
               onClick={() => store.setDialog({ kind: "study" })}
               testId="open-study"
-              disabled={!context || !(role === "simulator" || role === "operator")}
+              disabled={!context || !allowed}
               tour="study"
             >
               <span className="hidden xl:inline">{t("toolbar.studyShort")}</span>
             </ToolButton>
+            </Collapse>
             <RunButton />
+            <Collapse below="xl">
             <Separator />
             <div className="flex items-center" data-tour="help">
               <ToolButton icon={<GraduationCap className="size-4" />} label={t("toolbar.tour")} onClick={() => void startTour()} testId="tour" />
               <ToolButton icon={<Keyboard className="size-4" />} label={t("toolbar.shortcuts")} onClick={() => store.setDialog({ kind: "shortcuts" })} shortcut="?" />
             </div>
+            </Collapse>
             <AccountMenu />
           </>
         }
       >
         <ViewSwitch />
+        <Collapse below="lg">
         <Separator />
         <ToolButton icon={<LayoutGrid className="size-4" />} label={t("toolbar.presets")} onClick={() => store.setDialog({ kind: "presets" })} testId="open-presets">
           <span className="hidden xl:inline">{t("toolbar.presetsShort")}</span>
         </ToolButton>
-        <div className="flex items-center" data-tour="files">
+        </Collapse>
+        <div className="hidden items-center lg:flex" data-tour="files">
         <ToolButton icon={<FilePlus2 className="size-4" />} label={t("toolbar.new")} onClick={() => void store.newContext()} testId="new" disabled={!editable} />
         <ToolButton icon={<FolderOpen className="size-4" />} label={t("toolbar.open")} onClick={() => fileInput.current?.click()} testId="open" shortcut="Ctrl+O" />
+        </div>
         <input
           ref={fileInput}
           type="file"
@@ -141,12 +165,13 @@ function Editor() {
             event.target.value = "";
           }}
         />
+        <Collapse below="lg">
         <ToolButton icon={<Save className="size-4" />} label={t("toolbar.save")} onClick={() => void store.save()} testId="save" shortcut="Ctrl+S" />
         <ToolButton icon={<Code2 className="size-4" />} label={t("toolbar.python")} onClick={() => void store.python()} testId="python" />
-        </div>
         <Separator />
         <ToolButton icon={<Undo2 className="size-4" />} label={t("toolbar.undo")} onClick={() => void store.undo()} testId="undo" disabled={!context?.can_undo || !editable} shortcut="Ctrl+Z" />
         <ToolButton icon={<Redo2 className="size-4" />} label={t("toolbar.redo")} onClick={() => void store.redo()} testId="redo" disabled={!context?.can_redo || !editable} shortcut="Ctrl+Shift+Z" />
+        </Collapse>
       </TopBar>
       <div className="flex min-h-0 flex-1">
         {view === "graph" && <Palette />}

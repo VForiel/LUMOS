@@ -17,6 +17,8 @@ data file shows its statistics and its figure, a figure is displayed, and every 
 
 In a narrow window, only one side column (elements or inspector) is open at a time, both closed when the page
 loads, and the tabs of the bottom panel are gathered in a menu (three lines) next to the name of the open tab.
+The top bar keeps the mode switch and **Run**; the commands without room (files, presets, study, help, theme,
+language...) are in its **More** menu (three dots).
 
 ## Inspecting any port
 

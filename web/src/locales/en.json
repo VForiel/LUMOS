@@ -20,7 +20,8 @@
     "presets": "Presets: ready-made contexts",
     "presetsShort": "Presets",
     "study": "Study: sweep or Monte-Carlo run",
-    "studyShort": "Study"
+    "studyShort": "Study",
+    "more": "More"
   },
   "theme": {
     "switch": "Switch to the {{theme}} theme",

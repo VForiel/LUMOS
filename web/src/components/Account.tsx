@@ -28,7 +28,7 @@ export function AccountMenu() {
         className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
       >
         <LogIn className="size-4" />
-        {t("account.login")}
+        <span className="hidden md:inline">{t("account.login")}</span>
       </button>
     );
   }
@@ -41,8 +41,8 @@ export function AccountMenu() {
         className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
       >
         <UserRound className="size-4" />
-        <span className="font-medium">{info.user}</span>
-        <span className="rounded bg-slate-100 px-1.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">{t(`account.roles.${info.role}`)}</span>
+        <span className="hidden font-medium md:inline">{info.user}</span>
+        <span className="hidden rounded bg-slate-100 lg:inline px-1.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">{t(`account.roles.${info.role}`)}</span>
       </button>
       {open && (
         <div className="absolute right-0 z-30 mt-1 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-900">

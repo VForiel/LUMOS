@@ -16,14 +16,14 @@ export function RunButton() {
   const allowed = role === "simulator" || role === "operator";
 
   return (
-    <div className="flex items-center gap-1.5" data-tour="run">
+    <div className="flex shrink-0 items-center gap-1.5" data-tour="run">
       <button
         type="button"
         onClick={() => useStore.getState().setDialog({ kind: "archives" })}
         title={t("run.archive")}
         aria-pressed={archive}
         data-testid="archive-toggle"
-        className={`grid size-8 place-items-center rounded-lg ${archive ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
+        className={`hidden size-8 place-items-center rounded-lg md:grid ${archive ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}`}
       >
         <Archive className="size-4" />
       </button>

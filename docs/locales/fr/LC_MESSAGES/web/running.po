@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 19:57+0200\n"
+"POT-Creation-Date: 2026-10-20 21:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -40,22 +40,22 @@ msgid "The **archive** button (next to Run) opens the archives of the session: a
 msgstr "Le bouton **archive** (à côté de Lancer) ouvre les archives de la session : un interrupteur garde chaque calcul sur le serveur, avec son contexte, ses métadonnées, ses figures, ses données et son journal (le bouton est surligné tant qu'il est actif), et la liste des archives déjà écrites. Choisissez-en une pour la télécharger en `.zip`, la supprimer ou ouvrir ses fichiers : un fichier de données montre ses statistiques et sa figure, une figure s'affiche, et chaque fichier se télécharge seul."
 
 #: ../../web/running.md:18
-msgid "In a narrow window, only one side column (elements or inspector) is open at a time, both closed when the page loads, and the tabs of the bottom panel are gathered in a menu (three lines) next to the name of the open tab."
-msgstr "Dans une fenêtre étroite, une seule colonne latérale (éléments ou inspecteur) est ouverte à la fois, les deux fermées au chargement de la page, et les onglets du panneau du bas sont regroupés dans un menu (trois traits) à côté du nom de l'onglet ouvert."
+msgid "In a narrow window, only one side column (elements or inspector) is open at a time, both closed when the page loads, and the tabs of the bottom panel are gathered in a menu (three lines) next to the name of the open tab. The top bar keeps the mode switch and **Run**; the commands without room (files, presets, study, help, theme, language...) are in its **More** menu (three dots)."
+msgstr "Dans une fenêtre étroite, une seule colonne latérale (éléments ou inspecteur) est ouverte à la fois, les deux fermées au chargement de la page, et les onglets du panneau du bas sont regroupés dans un menu (trois traits) à côté du nom de l'onglet ouvert. La barre du haut garde le sélecteur de mode et **Exécuter** ; les commandes sans place (fichiers, préréglages, étude, aide, thème, langue...) sont dans son menu **Plus** (trois points)."
 
-#: ../../web/running.md:21
+#: ../../web/running.md:23
 msgid "Inspecting any port"
 msgstr "Inspecter n'importe quel port"
 
-#: ../../web/running.md:23
+#: ../../web/running.md:25
 msgid "Click the **Inspect** button at the top right of a block (its first output), or **Inspect** next to any output in the inspector, to compute that port alone and see its summary and figure: the field after the telescope, the image before the coronagraph, the reading of a detector. Inspecting does not need a run."
 msgstr "Cliquez sur le bouton **Inspecter** en haut à droite d'un bloc (sa première sortie), ou sur **Inspecter** à côté de n'importe quelle sortie dans l'inspecteur, pour calculer ce port seul et voir son résumé et sa figure : le champ après le télescope, l'image avant le coronographe, la lecture d'un détecteur. Inspecter ne demande pas d'exécution."
 
-#: ../../web/running.md:28
+#: ../../web/running.md:30
 msgid "Downloads"
 msgstr "Téléchargements"
 
-#: ../../web/running.md:30
+#: ../../web/running.md:32
 msgid "Every output and inspected port can be downloaded as:"
 msgstr "Chaque sortie et chaque port inspecté peuvent être téléchargés en :"
 
@@ -99,23 +99,23 @@ msgstr "JSON"
 msgid "the complete signal, as stored in archives (readable by `lumos.load_archive`)"
 msgstr "le signal complet, tel qu'enregistré dans les archives (lisible par `lumos.load_archive`)"
 
-#: ../../web/running.md:39
+#: ../../web/running.md:41
 msgid "Browsing the results"
 msgstr "Parcourir les résultats"
 
-#: ../../web/running.md:41
+#: ../../web/running.md:43
 msgid "**Browse results** (right of the tabs of the bottom panel) opens a window listing the runs and studies of the session, newest first. A run shows the figures and values of its outputs. A study is browsed point by point: choose a port, drag the slider (or press play) over the steps of a loop, the points of a sweep or the draws of a Monte-Carlo run; the figure, the values and the place on the curve of the port follow the slider."
 msgstr "**Parcourir les résultats** (à droite des onglets du panneau du bas) ouvre une fenêtre qui liste les exécutions et les études de la session, les plus récentes d'abord. Une exécution montre les figures et les valeurs de ses sorties. Une étude se parcourt point par point : choisissez un port, faites glisser le curseur (ou appuyez sur lecture) sur les pas d'une boucle, les points d'un balayage ou les tirages d'un Monte-Carlo ; la figure, les valeurs et la position sur la courbe du port suivent le curseur."
 
-#: ../../web/running.md:46
+#: ../../web/running.md:48
 msgid "Figures are kept for the ports of a study started with *Record the figures of each point* (ticked when the archive switch is on), and for the ports tapped by a **Recorder** block (category *Processing*): connect an output to it, also an output feeding another block; it records its signal at every point, or one point out of `every`, without changing it. Recordings count in the data of the session and go with it."
 msgstr "Les figures sont gardées pour les ports d'une étude lancée avec *Enregistrer les figures de chaque point* (coché quand l'archivage est actif), et pour les ports branchés sur un bloc **Recorder** (catégorie *Traitement*) : connectez-lui une sortie, même une sortie qui alimente déjà un autre bloc ; il enregistre son signal à chaque point, ou un point sur `every`, sans le modifier. Les enregistrements comptent dans les données de la session et partent avec elle."
 
-#: ../../web/running.md:51
+#: ../../web/running.md:53
 msgid "Journal and problems"
 msgstr "Journal et problèmes"
 
-#: ../../web/running.md:53
+#: ../../web/running.md:55
 msgid "The **Journal** tab lists, as they happen, the runs (outputs and duration), the actions on elements and the messages of the library. The **Problems** tab lists what would make a run fail (an input not connected, a missing observation band...), with a fix; click the element to select it. Blocks with a problem are outlined in red."
 msgstr "L'onglet **Journal** liste, au fur et à mesure, les exécutions (sorties et durée), les actions sur les éléments et les messages de la bibliothèque. L'onglet **Problèmes** liste ce qui ferait échouer une exécution (une entrée non connectée, une bande d'observation manquante…), avec une correction ; cliquez sur l'élément pour le sélectionner. Les blocs qui ont un problème sont entourés de rouge."
 

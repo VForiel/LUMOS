@@ -290,6 +290,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   includes the procedures of the context, each one a function returning its named results
   (`Procedure.to_function`, `procedures=False` to leave them out), an option of the Python dialog, of
   `GET .../export.py?procedures=` and of the MCP tool `export_python`.
+- Top bar for every window (P15.19): no control cut off whatever the width; the commands without room go into a
+  **More** menu.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
   files, preview of the data with its figure, deletion; `Service.archive_files`, `archive_data`,
   `archive_file`, `delete_archive` and their routes); the bottom tab "Results" is named "Outputs"; in a narrow

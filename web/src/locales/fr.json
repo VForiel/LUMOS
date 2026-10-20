@@ -20,7 +20,8 @@
     "presets": "Préréglages : contextes prêts à l'emploi",
     "presetsShort": "Préréglages",
     "study": "Étude : balayage ou Monte-Carlo",
-    "studyShort": "Étude"
+    "studyShort": "Étude",
+    "more": "Plus"
   },
   "theme": {
     "switch": "Passer au thème {{theme}}",
