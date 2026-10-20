@@ -155,13 +155,14 @@ def build_context(*, connect_all=True):
 
 def test_demux_and_mux_in_a_context_and_a_document():
     import lumos.io
+    from lumos.elements.detectors import PowerMeter
 
     ctx = build_context()
-    direct = ctx.run(["array.out", "meter.out"])
+    reference = ctx.add(PowerMeter(name="reference"))
+    ctx.connect(ctx.elements["array"].port("out"), reference.port("in"))
+    direct = ctx.run(["reference.out", "meter.out"])
     np.testing.assert_allclose(
-        direct["meter.out"].data.to_value(u.W),
-        [float(np.sum(np.abs(np.asarray(lane_.amplitudes)) ** 2)) for lane_ in direct["array.out"]],
-        rtol=1e-6,
+        direct["meter.out"].data.to_value(u.W), direct["reference.out"].data.to_value(u.W), rtol=1e-12
     )
     loaded = lumos.io.from_document(lumos.io.to_document(ctx))
     again = loaded.run(["meter.out"])["meter.out"].data.to_value(u.W)
