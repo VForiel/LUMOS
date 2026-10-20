@@ -44,6 +44,7 @@ class Port:
 
     direction: ClassVar[Literal["in", "out"]]
     multiple: bool = False  # whether several connections may be attached to this port
+    optional: bool = False  # whether an input may stay unconnected
 
     def __init__(
         self,
@@ -97,6 +98,8 @@ class Input(Port):
         Description of the port.
     bus
         Whether the input receives a bus of lanes as it is (otherwise the element is applied to each lane).
+    optional
+        Whether the input may stay unconnected (the transfer then receives ``None``).
     """
 
     direction: ClassVar[Literal["in", "out"]] = "in"
@@ -109,9 +112,11 @@ class Input(Port):
         multiple: bool = False,
         doc: str = "",
         bus: bool = False,
+        optional: bool = False,
     ) -> None:
         super().__init__(signal_type, name=name, doc=doc, bus=bus)
         self.multiple = multiple
+        self.optional = bool(optional)
 
 
 class Output(Port):

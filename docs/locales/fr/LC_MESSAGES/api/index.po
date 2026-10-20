@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 17:07+0200\n"
+"POT-Creation-Date: 2026-10-20 17:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -89,7 +89,8 @@ msgstr ""
 #: lumos.core.driver.Driver.query lumos.core.driver.Driver.send
 #: lumos.core.driver.Driver.wait lumos.core.driver.SimulatedDriver
 #: lumos.core.element.Element.apply lumos.core.element.Element.from_lumos
-#: lumos.core.element.Element.port lumos.core.element.Element.to_lumos
+#: lumos.core.element.Element.port lumos.core.element.Element.port_lanes
+#: lumos.core.element.Element.to_lumos
 #: lumos.core.element.Element.transfer_symbolic lumos.core.element.Values
 #: lumos.core.element.generator lumos.core.graph.Connection
 #: lumos.core.graph.Graph.add lumos.core.graph.Graph.disconnect
@@ -161,10 +162,14 @@ msgstr ""
 #: lumos.elements.optics._symbolic_lens
 #: lumos.elements.photonics.Crossing.transfer
 #: lumos.elements.photonics.DirectionalCoupler.transfer
+#: lumos.elements.photonics.MMI.port_lanes
 #: lumos.elements.photonics.MMI.transfer
 #: lumos.elements.photonics.PhaseShifter.transfer
+#: lumos.elements.photonics.PhotonicComponent.port_lanes
+#: lumos.elements.photonics.TransferMatrix.port_lanes
 #: lumos.elements.photonics.TransferMatrix.transfer
 #: lumos.elements.photonics.Waveguide.transfer
+#: lumos.elements.photonics.YJunction.port_lanes
 #: lumos.elements.photonics.YJunction.transfer
 #: lumos.elements.photonics.bracewell lumos.elements.photonics.kernel_nuller
 #: lumos.elements.photonics.kernels
@@ -178,6 +183,7 @@ msgstr ""
 #: lumos.elements.sources.Star.transfer
 #: lumos.elements.telescopes.Telescope.pupil_grid
 #: lumos.elements.telescopes.Telescope.transfer
+#: lumos.elements.telescopes.TelescopeArray.port_lanes
 #: lumos.elements.telescopes.TelescopeArray.transfer
 #: lumos.elements.telescopes.life lumos.elements.telescopes.vlti
 #: lumos.fields.bus.Bus.concatenate lumos.fields.bus.Bus.from_json
@@ -517,8 +523,9 @@ msgstr ""
 #: lumos.core.element.Element.from_lumos
 #: lumos.core.element.Element.has_symbolic_transfer
 #: lumos.core.element.Element.instance_ports lumos.core.element.Element.port
-#: lumos.core.element.Element.ports lumos.core.element.Element.problems
-#: lumos.core.element.Element.schema lumos.core.element.Element.to_lumos
+#: lumos.core.element.Element.port_lanes lumos.core.element.Element.ports
+#: lumos.core.element.Element.problems lumos.core.element.Element.schema
+#: lumos.core.element.Element.to_lumos
 #: lumos.core.element.Element.transfer_symbolic
 #: lumos.core.element.Element.values lumos.core.element.generator
 #: lumos.core.graph.Graph.add lumos.core.graph.Graph.disconnect
@@ -597,11 +604,15 @@ msgstr ""
 #: lumos.elements.optics._symbolic_lens
 #: lumos.elements.photonics.Crossing.transfer
 #: lumos.elements.photonics.DirectionalCoupler.transfer
+#: lumos.elements.photonics.MMI.port_lanes
 #: lumos.elements.photonics.MMI.transfer
 #: lumos.elements.photonics.PhaseShifter.transfer
+#: lumos.elements.photonics.PhotonicComponent.port_lanes
+#: lumos.elements.photonics.TransferMatrix.port_lanes
 #: lumos.elements.photonics.TransferMatrix.problems
 #: lumos.elements.photonics.TransferMatrix.transfer
 #: lumos.elements.photonics.Waveguide.transfer
+#: lumos.elements.photonics.YJunction.port_lanes
 #: lumos.elements.photonics.YJunction.transfer
 #: lumos.elements.photonics.bracewell lumos.elements.photonics.kernel_nuller
 #: lumos.elements.photonics.kernels
@@ -617,6 +628,7 @@ msgstr ""
 #: lumos.elements.telescopes.Telescope.transfer
 #: lumos.elements.telescopes.TelescopeArray.baselines
 #: lumos.elements.telescopes.TelescopeArray.ground_positions
+#: lumos.elements.telescopes.TelescopeArray.port_lanes
 #: lumos.elements.telescopes.TelescopeArray.projected_positions
 #: lumos.elements.telescopes.TelescopeArray.transfer
 #: lumos.elements.telescopes.life lumos.elements.telescopes.vlti
@@ -1915,6 +1927,12 @@ msgid ""
 " is applied to each lane)."
 msgstr ""
 
+#: lumos.core.port.Input:9 of
+msgid ""
+"Whether the input may stay unconnected (the transfer then receives "
+"``None``)."
+msgstr ""
+
 #: lumos.core.port.Output:1 of
 msgid ""
 "An output port. An output can feed any number of inputs (fan-out); "
@@ -2134,6 +2152,19 @@ msgstr ""
 msgid ""
 "If the element has no symbolic transfer, or no closed form for these "
 "inputs."
+msgstr ""
+
+#: lumos.core.element.Element.port_lanes:1 of
+msgid ""
+"Return the number of lanes of the bus port ``name`` to draw, or ``None`` "
+"(any number, or no bus)."
+msgstr ""
+
+#: lumos.core.element.Element.port_lanes:3 of
+msgid ""
+"Elements whose bus ports have a known width (a 4 × 4 MMI, a Demux of 3 "
+"lanes...) override it; the editor draws one pin per lane, grouped by a "
+"brace."
 msgstr ""
 
 #: lumos.core.element.Element.apply:1 of
@@ -6527,7 +6558,8 @@ msgstr ""
 #: lumos.elements:3 of
 msgid ""
 "Sources, apertures, optics, telescopes, atmosphere, coronagraphs, guided "
-"and integrated optics, detectors and laboratory equipment."
+"and integrated optics, buses (Demux, Mux), detectors and laboratory "
+"equipment."
 msgstr ""
 
 #: lumos.elements:6 of
@@ -7072,6 +7104,10 @@ msgstr ""
 msgid "Number of telescopes."
 msgstr ""
 
+#: lumos.elements.telescopes.TelescopeArray.port_lanes:1 of
+msgid "Return one lane per telescope on the output."
+msgstr ""
+
 #: lumos.elements.telescopes.TelescopeArray.area:1 of
 msgid "Collecting area of one telescope."
 msgstr ""
@@ -7516,6 +7552,10 @@ msgstr ""
 msgid "N × N multimode interference coupler computed with a slab mode solver."
 msgstr ""
 
+#: lumos.elements.photonics.MMI.port_lanes:1 of
+msgid "Return the number of ports of the coupler."
+msgstr ""
+
 #: lumos.elements.photonics.MMI.transfer:1 of
 msgid "Mix the selected channels."
 msgstr ""
@@ -7562,6 +7602,12 @@ msgstr ""
 msgid "Base class: a scattering matrix applied to some lanes of a bus of guides."
 msgstr ""
 
+#: lumos.elements.photonics.PhotonicComponent.port_lanes:1 of
+msgid ""
+"Return the number of lanes the component mixes (``None`` for a diagonal "
+"component)."
+msgstr ""
+
 #: lumos.elements.photonics.TransferMatrix:1 of
 msgid ""
 "Simplified MMI: a component given by its complex transfer matrix "
@@ -7574,6 +7620,10 @@ msgid ""
 "``j``: the output amplitudes are ``a_out = S a_in`` with ``S_ij = "
 "amplitudes[i][j] exp(i phases[i][j])``. The default is the ideal 3-dB "
 "coupler ``(1/√2) [[1, i], [i, 1]]``."
+msgstr ""
+
+#: lumos.elements.photonics.TransferMatrix.port_lanes:1 of
+msgid "Return the number of columns (inputs) or rows (outputs) of the matrix."
 msgstr ""
 
 #: lumos.elements.photonics.TransferMatrix.problems:1 of
@@ -7598,6 +7648,10 @@ msgstr ""
 msgid ""
 "Symmetric Y-junction: splits one channel in two, or combines two channels"
 " into one."
+msgstr ""
+
+#: lumos.elements.photonics.YJunction.port_lanes:1 of
+msgid "Return 1 lane on the single side, 2 on the other."
 msgstr ""
 
 #: lumos.elements.photonics.YJunction.transfer:1 of
@@ -13282,5 +13336,12 @@ msgstr ""
 #~ "Return the power in W (one value"
 #~ " per guided channel for modal fields,"
 #~ " or the selected channel)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Sources, apertures, optics, telescopes, "
+#~ "atmosphere, coronagraphs, guided and "
+#~ "integrated optics, detectors and laboratory"
+#~ " equipment."
 #~ msgstr ""
 

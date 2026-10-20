@@ -498,9 +498,25 @@ class Service:
             state=groups["state"],
             inputs=[n for n, p in ports.items() if p.direction == "in"],
             outputs=[n for n, p in ports.items() if p.direction == "out"],
+            lanes=self._lanes_of(element, ports),
             actions=sorted(actions_of(cls)),
             free=self._free_of(element),
         )
+
+    @staticmethod
+    def _lanes_of(element: Any, ports: Mapping[str, Any]) -> dict[str, int]:
+        found: dict[str, int] = {}
+        port_lanes = getattr(element, "port_lanes", None)
+        for name, port in ports.items():
+            if not port.bus or port_lanes is None:
+                continue
+            try:
+                n = port_lanes(name)
+            except (TypeError, ValueError):  # values that do not give a width (an invalid matrix...)
+                n = None
+            if n is not None:
+                found[name] = int(n)
+        return found
 
     @staticmethod
     def _free_of(element: Any) -> dict[str, dict[str, str] | None]:
@@ -947,10 +963,14 @@ class Service:
         for path, element in ctx.walk():
             if element.container is not ctx:
                 continue  # inside a group: checked by the group
+            empty = []
             for name, port in element.instance_ports().items():
                 if port.direction != "in" or port.multiple:
                     continue
                 if not ctx._graph.incoming(element.port(name)):
+                    if port.optional:
+                        empty.append(f"{path}.{name}")
+                        continue
                     issues.append(
                         Issue(
                             severity="error",
@@ -959,6 +979,16 @@ class Service:
                             hint=_hint_for(GraphError("not connected")),
                         )
                     )
+            if empty:
+                listed = ", ".join(empty)
+                issues.append(
+                    Issue(
+                        severity="warning",
+                        element=path,
+                        message=f"input(s) {listed} not connected: empty lane(s)",
+                        hint="connect them, or lower the number of lanes of the element",
+                    )
+                )
             problems = getattr(element, "problems", None)
             for problem in problems() if problems is not None else []:
                 issues.append(

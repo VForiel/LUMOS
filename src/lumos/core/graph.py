@@ -12,12 +12,15 @@ or a connection, invalidates the cache of that element and of everything downstr
 
 from __future__ import annotations
 
+import logging
 import re
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from typing import Any
 
 from lumos.core.port import PortRef, check_compatible
+
+logger = logging.getLogger("lumos.context")
 
 __all__ = ["Connection", "CycleError", "Graph", "GraphError", "Result"]
 
@@ -242,6 +245,24 @@ class Graph:
 
     def _on_element_changed(self, element: Any, name: str) -> None:
         self.invalidate(element)
+        self._prune(element)
+
+    def _prune(self, element: Any) -> None:
+        """Remove the connections of ports that ``element`` no longer has (ports that follow a setting)."""
+        ports = element.instance_ports()
+        for connection in list(self._connections):
+            for ref in (connection.source, connection.target):
+                if ref.owner is element and ports.get(ref.name) is not ref.port:
+                    logger.warning(
+                        "%s.%s no longer exists: its connection %s -> %s is removed",
+                        self.id_of(element),
+                        ref.name,
+                        connection.source,
+                        connection.target,
+                    )
+                    self._connections.remove(connection)
+                    self.invalidate(connection.target.owner)
+                    break
 
     def invalidate(self, element: Any = None) -> None:
         """Drop the cached outputs of ``element`` and everything downstream (everything if ``None``)."""
@@ -284,6 +305,9 @@ class Graph:
                 if connections:
                     raise GraphError(f"input {self.id_of(element)}.{name} is both fed and connected")
                 inputs[name] = feeds[ref]
+                continue
+            if not connections and port.optional and not port.multiple:
+                inputs[name] = None
                 continue
             if not connections and not port.multiple:
                 raise GraphError(f"input {self.id_of(element)}.{name} is not connected")

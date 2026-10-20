@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 17:07+0200\n"
+"POT-Creation-Date: 2026-10-20 17:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -224,18 +224,23 @@ msgid "An element whose input does not declare a bus acts on every lane of a bus
 msgstr "Un élément dont l'entrée ne déclare pas de bus agit sur chaque voie d'un bus qu'il reçoit, comme N copies identiques (un élément stochastique tire un flux aléatoire indépendant par voie) : une `Fiber` sur un bus de faisceaux renvoie un bus de voies guidées. Les éléments qui produisent des données (caméras, blocs de traitement) ont besoin d'un seul faisceau : recombinez d'abord les voies."
 
 #: ../../user_guide/fields.md:148
+#, python-brace-format
+msgid "To put different components on the lanes, split a bus with `Demux(n_lanes=N)` (ports `out0`... `out{N-1}`, one lane each, keeping its name and position) and gather lanes with `Mux(n_lanes=N)` (ports `in0`...), which stacks them in the order of its ports without mixing them; an unconnected input of a `Mux` is an empty lane."
+msgstr "Pour placer des composants différents sur les voies, éclatez un bus avec `Demux(n_lanes=N)` (ports `out0`… `out{N-1}`, une voie chacun, qui garde son nom et sa position) et regroupez des voies avec `Mux(n_lanes=N)` (ports `in0`…), qui les range dans l'ordre de ses ports sans les mélanger ; une entrée non connectée d'un `Mux` est une voie vide."
+
+#: ../../user_guide/fields.md:162
 msgid "Data products"
 msgstr "Produits de données"
 
-#: ../../user_guide/fields.md:150
+#: ../../user_guide/fields.md:164
 msgid "A `DataProduct` is detected data with physical axes, a mask, uncertainties and acquisition metadata. It is written to FITS (with a WCS for regular axes), NPZ or HDF5 files:"
 msgstr "Un `DataProduct` est une donnée détectée avec des axes physiques, un masque, des incertitudes et des métadonnées d'acquisition. Il s'écrit en FITS (avec un WCS pour les axes réguliers), NPZ ou HDF5 :"
 
-#: ../../user_guide/fields.md:160
+#: ../../user_guide/fields.md:174
 msgid "Plots"
 msgstr "Tracés"
 
-#: ../../user_guide/fields.md:162
+#: ../../user_guide/fields.md:176
 msgid "`lumos.plotting` draws intensities, phases (with a cyclic colour map), radiance maps and data products with physical axes and the origin at the bottom left."
 msgstr "`lumos.plotting` trace les intensités, les phases (avec une carte de couleurs cyclique), les cartes de radiance et les produits de données, avec des axes physiques et l'origine en bas à gauche."
 

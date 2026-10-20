@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next";
 import type { ContextSummary } from "../api";
 import { category, categoryOf } from "../lib/categories";
 import { autoLayout } from "../lib/layout";
-import { signalOfPort, splitPort } from "../lib/ports";
+import { portOf, signalOfPort, splitPort } from "../lib/ports";
 import { compatible, signalColor } from "../lib/signals";
 import { useStore } from "../store";
 import { ElementNode, type ElementFlowNode } from "./ElementNode";
@@ -196,7 +196,11 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         target: targetNode,
         targetHandle,
         className: running ? "running" : undefined,
-        style: { stroke: signalColor(signalOf(sourceNode, sourceHandle, "outputs")) },
+        style: {
+          stroke: signalColor(signalOf(sourceNode, sourceHandle, "outputs")),
+          // a bus (several lanes on one link) is drawn thicker
+          ...(portOf(context, types, sourceNode, sourceHandle, "outputs")?.bus ? { strokeWidth: 3.5 } : {}),
+        },
         // the button removing a link shows on a link selected alone, not on those of a box selection
         data: { source, target, removable: selectedEdges.size === 1 && selection.length === 0 },
       };

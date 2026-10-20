@@ -145,6 +145,20 @@ An element whose input does not declare a bus acts on every lane of a bus it rec
 (a stochastic element draws an independent stream per lane): a `Fiber` on a bus of beams returns a bus of
 guided lanes. Elements producing data (cameras, processing blocks) need one beam: recombine the lanes first.
 
+To put different components on the lanes, split a bus with `Demux(n_lanes=N)` (ports `out0`... `out{N-1}`, one
+lane each, keeping its name and position) and gather lanes with `Mux(n_lanes=N)` (ports `in0`...), which
+stacks them in the order of its ports without mixing them; an unconnected input of a `Mux` is an empty lane.
+
+```python
+from lumos.elements.buses import Demux, Mux
+
+demux = ctx.add(Demux(name="arms", n_lanes=4))
+mux = ctx.add(Mux(name="chip_in", n_lanes=4))
+ctx.connect(array.port("out"), demux.port("in"))
+ctx.connect(demux.port("out0"), mux.port("in1"))  # swap the first two arms
+ctx.connect(demux.port("out1"), mux.port("in0"))
+```
+
 ## Data products
 
 A `DataProduct` is detected data with physical axes, a mask, uncertainties and acquisition metadata. It is

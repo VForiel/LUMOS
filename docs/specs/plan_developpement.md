@@ -323,7 +323,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 **Bus et injection des télescopes** ([pistes d'évolution §1](pistes_evolution.md#1-bus-ports-multi-canaux-et-injection-des-télescopes))
 
 - [x] **P15.6 Modèle des bus** — ADR ; voie guidée `ModalField` de forme `(sources, λ, modes)` ; bus de N voies (guidées ou en espace libre) avec compactage implicite quand les voies partagent sources, longueurs d'onde, grille… ; recombineurs vérifiant que leurs voies décrivent les mêmes sources ; composant à une voie appliqué à chaque voie d'un bus ; migration des éléments photoniques, de `Fiber` et des détecteurs ; format `.lumos` 1.3 et convertisseur (`channels` désigne des voies).
-- [ ] **P15.7 Rendu des bus et `Demux` / `Mux`** — broches dessinées et regroupées par une accolade ; éléments `Demux(N)` / `Mux(N)` (empilement sans mélange, voie vide pour une entrée non connectée) dans le cœur, le service, le MCP et la palette.
+- [x] **P15.7 Rendu des bus et `Demux` / `Mux`** — broches dessinées et regroupées par une accolade ; éléments `Demux(N)` / `Mux(N)` (empilement sans mélange, voie vide pour une entrée non connectée) dans le cœur, le service, le MCP et la palette.
 - [ ] **P15.8 `TelescopeArray` en espace libre** — bus d'`IncoherentBundle` en plan pupille (position projetée portée par chaque voie) ; injection explicite par `Fiber` ; modèle analytique conservé sous le nom `IdealInjectionArray` ; migration des préréglages (`bracewell`, `kernel_nuller`) et des notebooks.
 - [ ] **P15.9 `FizeauCombiner`** — pupille de sortie homothétique (Traub 1986) construite depuis un bus de faisceaux ; tests : franges d'Young sous la figure d'Airy, conservation de l'énergie.
 - [ ] **P15.10 Raccourci « Éclater le port »** — `Demux` / `Mux` accolé au bloc dans l'éditeur (se déplace et se supprime avec lui).
@@ -388,4 +388,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-**P15.7 Rendu des bus et `Demux` / `Mux`**, puis P15.8 à P15.16, puis P15.3 à P15.5.
+**P15.8 `TelescopeArray` en espace libre**, puis P15.9 à P15.16, puis P15.3 à P15.5.

@@ -361,9 +361,17 @@ class Element(ParamHost):
             raise NotImplementedError(f"{type(self).__name__} has no symbolic transfer function")
         return type(self).transfer_symbolic(self.values(), dict(inputs))
 
+    def port_lanes(self, name: str) -> int | None:
+        """Return the number of lanes of the bus port ``name`` to draw, or ``None`` (any number, or no bus).
+
+        Elements whose bus ports have a known width (a 4 × 4 MMI, a Demux of 3 lanes...) override it; the
+        editor draws one pin per lane, grouped by a brace.
+        """
+        return None
+
     def apply(self, **inputs: Any) -> Mapping[str, Any]:
         """Run the transfer function on ``inputs``, checking port names and signal types."""
-        ports = type(self)._lumos_ports
+        ports = self.instance_ports()
         input_ports = {name: port for name, port in ports.items() if port.direction == "in"}
         output_ports = {name: port for name, port in ports.items() if port.direction == "out"}
 
@@ -378,6 +386,8 @@ class Element(ParamHost):
             if port.multiple and not isinstance(signals, Sequence):
                 raise TypeError(f"{self!r}: input {name!r} accepts several signals and expects a sequence")
             for signal in signals:
+                if signal is None and port.optional:
+                    continue
                 if not _carries(signal, port.signal_type) and not _is_symbolic(signal):  # converted below
                     raise TypeError(
                         f"{self!r}: input {name!r} expects {port.signal_type.__name__}, "

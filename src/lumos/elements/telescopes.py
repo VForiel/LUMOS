@@ -210,6 +210,10 @@ class TelescopeArray(Element):
         """Number of telescopes."""
         return len(_positions(self.values()))
 
+    def port_lanes(self, name: str) -> int | None:
+        """Return one lane per telescope on the output."""
+        return self.n_telescopes if name == "out" else None
+
     @property
     def area(self) -> u.Quantity:
         """Collecting area of one telescope."""

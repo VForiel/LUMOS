@@ -22,6 +22,13 @@ port is its handle. The colour of a port tells the kind of signal it carries
 while you drag; the server checks again and explains a refusal. To remove a wire alone, click it: the button
 at its middle removes it (or press **Delete**); its blocks stay.
 
+A port carrying a **bus** — several guides or telescope arms on one wire — draws one pin per lane, gathered by
+a brace (a double stroke when the number of lanes is free, as on a waveguide), and its wire is thicker: one
+wire carries all the lanes. To give the lanes different components, split the bus with a **Demux** (category
+*Buses*), wire each lane, and gather them again with a **Mux**. Their ports follow their `n_lanes` setting;
+lowering it removes the wires of the ports that disappear. A Mux input left unconnected is an empty lane,
+reported as a warning in the problems.
+
 ## Moving around
 
 - The **pointer mode** (top left of the canvas) chooses what a drag on the empty canvas does: the hand (**H**)

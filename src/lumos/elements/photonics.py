@@ -150,6 +150,10 @@ class PhotonicComponent(Element):
     def _block(cls, values: Values, wavelengths: np.ndarray, n_in: int) -> np.ndarray:
         raise NotImplementedError
 
+    def port_lanes(self, name: str) -> int | None:
+        """Return the number of lanes the component mixes (``None`` for a diagonal component)."""
+        return type(self).n_inputs
+
     @classmethod
     def _transfer(cls, values: Values, inputs: Any) -> dict[str, Any]:
         bus = _as_bus(inputs["in"])
@@ -262,6 +266,11 @@ class YJunction(PhotonicComponent):
         block = _constant(matrix / math.sqrt(2), modes.n_wavelengths)
         return {"out": _replace(bus, selected, modes.apply(block))}
 
+    def port_lanes(self, name: str) -> int | None:
+        """Return 1 lane on the single side, 2 on the other."""
+        single = "in" if self.mode == "split" else "out"
+        return 1 if name == single else 2
+
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
         """Split or combine the selected channels."""
@@ -366,6 +375,10 @@ class MMI(PhotonicComponent):
         )
         return {"out": _replace(bus, selected, modes.apply(block))}
 
+    def port_lanes(self, name: str) -> int | None:
+        """Return the number of ports of the coupler."""
+        return int(self.n_ports)
+
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
         """Mix the selected channels."""
@@ -432,6 +445,13 @@ class TransferMatrix(PhotonicComponent):
                 "has a largest singular value at most 1"
             ]
         return []
+
+    def port_lanes(self, name: str) -> int | None:
+        """Return the number of columns (inputs) or rows (outputs) of the matrix."""
+        shape = np.shape(np.asarray(self.si("amplitudes")))
+        if len(shape) != 2:
+            return None
+        return int(shape[1] if name == "in" else shape[0])
 
     def problems(self) -> list[str]:
         """Return why the matrix cannot be used: not a matrix, phases of another shape, or amplification."""

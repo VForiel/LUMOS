@@ -1,7 +1,7 @@
 """Library of elements (§5.9).
 
-Sources, apertures, optics, telescopes, atmosphere, coronagraphs, guided and integrated optics,
-detectors and laboratory equipment.
+Sources, apertures, optics, telescopes, atmosphere, coronagraphs, guided and integrated optics, buses
+(Demux, Mux), detectors and laboratory equipment.
 
 Importing this package registers every built-in element type in :data:`lumos.core.registry.registry`, so
 that ``.lumos`` files can refer to them by their stable identifiers (``lumos.<family>.<Name>``).
@@ -10,6 +10,7 @@ that ``.lumos`` files can refer to them by their stable identifiers (``lumos.<fa
 from lumos.elements import (
     apertures,
     atmosphere,
+    buses,
     coronagraphs,
     detectors,
     fibers,
@@ -23,6 +24,7 @@ from lumos.elements import (
 __all__ = [
     "apertures",
     "atmosphere",
+    "buses",
     "coronagraphs",
     "detectors",
     "fibers",

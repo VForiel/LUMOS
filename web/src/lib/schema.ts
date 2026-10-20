@@ -17,7 +17,18 @@ export type Field = {
   free?: boolean;
 };
 
-export type Port = { name: string; signal: string; multiple: boolean; doc: string };
+/** A port of an element type; ``count`` names the setting repeating it (``name`` is then a pattern "in{i}"). */
+export type Port = {
+  name: string;
+  signal: string;
+  multiple: boolean;
+  doc: string;
+  /** Whether the port carries a bus of lanes (drawn as pins grouped by a brace). */
+  bus?: boolean;
+  /** Whether an input may stay unconnected (an empty lane for a Mux). */
+  optional?: boolean;
+  count?: string;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Json = any;
@@ -84,6 +95,21 @@ export function fieldsOf(schema: Json): Field[] {
 export function portsOf(schema: Json): { inputs: Port[]; outputs: Port[] } {
   const ports = schema?.["x-lumos-ports"] ?? {};
   return { inputs: ports.inputs ?? [], outputs: ports.outputs ?? [] };
+}
+
+/** The declaration of the port ``name`` in ``ports``: by name, or a numbered port of a pattern "in{i}". */
+export function portNamed(ports: Port[], name: string): Port | undefined {
+  const exact = ports.find((port) => port.name === name);
+  if (exact) return exact;
+  for (const port of ports) {
+    const at = port.name.indexOf("{i}");
+    if (at < 0) continue;
+    const prefix = port.name.slice(0, at);
+    const suffix = port.name.slice(at + 3);
+    const middle = name.slice(prefix.length, name.length - suffix.length);
+    if (name.startsWith(prefix) && name.endsWith(suffix) && /^\d+$/.test(middle)) return { ...port, name };
+  }
+  return undefined;
 }
 
 /** "below" or "above" when ``value`` (in the unit of the field) leaves its bounds, else null. */

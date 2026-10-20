@@ -126,6 +126,9 @@ class ElementSummary(BaseModel):
     state: dict[str, Any]
     inputs: list[str]
     outputs: list[str]
+    lanes: dict[str, int] = Field(
+        default_factory=dict, description="number of lanes drawn for each bus port of known width"
+    )
     actions: list[str]
     free: dict[str, dict[str, str] | None] = Field(
         default={}, description="free parameters and their priors, values in the unit of the parameter"

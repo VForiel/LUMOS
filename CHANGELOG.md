@@ -243,6 +243,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   (`Input(..., bus=True)`, `x-lumos-ports[].bus` in the schemas); an element whose input does not declare a bus
   acts on every lane of a bus (one random stream per lane); `SourceList.identifier` and the `sources` of
   `ModalField` and `IncoherentBundle`, checked before lanes interfere; `.lumos` format 1.3.
+- `Demux` and `Mux` (P15.7, category *Buses*): split a bus into one-lane ports and gather lanes into a bus
+  without mixing them, ports following `n_lanes` (published as `in{i}` / `out{i}` patterns in the schema;
+  wires of removed ports dropped), optional inputs (`Input(..., optional=True)`; an unconnected `Mux` input is
+  an empty lane, a validation warning); `Element.port_lanes` and `ElementSummary.lanes`; the editor draws the
+  pins of bus ports gathered by a brace and bus wires thicker.
 
 ### Changed
 
@@ -265,6 +270,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   propagation.
 
 ### Fixed
+
 
 - Security: the archives of a public instance were listed and downloadable by every visitor; they are now
   those of the session only (`session_storage`).

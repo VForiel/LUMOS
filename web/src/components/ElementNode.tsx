@@ -6,7 +6,7 @@ import { memo, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import type { ElementSummary, ElementType, Issue } from "../api";
 import { category, categoryOf } from "../lib/categories";
-import { portsOf, type Port } from "../lib/schema";
+import { portNamed, portsOf, type Port } from "../lib/schema";
 import { signalColor } from "../lib/signals";
 
 export type ElementData = {
@@ -24,12 +24,74 @@ export type ElementFlowNode = Node<ElementData, "element">;
 
 const PORT_GAP = 26;
 const HEADER = 54;
+/** Spacing of the pins of a bus port, and the most pins drawn (a wider bus shows its count). */
+const PIN_GAP = 7;
+const MAX_PINS = 8;
 
 function ports(element: ElementSummary, type?: ElementType): { inputs: Port[]; outputs: Port[] } {
   const declared = type ? portsOf(type.schema) : { inputs: [], outputs: [] };
   const byName = (list: Port[], names: string[]) =>
-    names.map((name) => list.find((p) => p.name === name) ?? { name, signal: "Signal", multiple: false, doc: "" });
+    names.map((name) => portNamed(list, name) ?? { name, signal: "Signal", multiple: false, doc: "" });
   return { inputs: byName(declared.inputs, element.inputs), outputs: byName(declared.outputs, element.outputs) };
+}
+
+/** Height of the row of a port: a bus of known width needs room for its pins. */
+function rowHeight(port: Port, lanes?: number): number {
+  if (!port.bus || port.count || !lanes || lanes < 2) return PORT_GAP; // a repeated port is one lane
+  return Math.max(PORT_GAP, Math.min(lanes, MAX_PINS) * PIN_GAP + 12);
+}
+
+function offsets(list: Port[], lanes: Record<string, number>): number[] {
+  const tops: number[] = [];
+  let top = 4;
+  for (const port of list) {
+    tops.push(top);
+    top += rowHeight(port, lanes[port.name]);
+  }
+  return tops;
+}
+
+/** Pins of a bus port on the edge of the block, gathered by a brace into the handle (one link carries them all). */
+function BusPins({ side, lanes, height, color }: { side: "left" | "right"; lanes?: number; height: number; color: string }) {
+  const n = lanes && lanes > 1 ? Math.min(lanes, MAX_PINS) : 0;
+  const middle = height / 2;
+  const span = (n - 1) * PIN_GAP;
+  const top = middle - span / 2;
+  const mirror = side === "right" ? "scale(-1 1) translate(-18 0)" : undefined;
+  return (
+    <svg
+      data-testid="bus-pins"
+      data-lanes={lanes ?? ""}
+      aria-hidden
+      className="pointer-events-none absolute overflow-visible"
+      style={{ [side]: -18, top: 0, width: 18, height }}
+    >
+      <g transform={mirror} stroke={color} fill="none" strokeWidth={1.5} strokeLinecap="round">
+        {n > 0 ? (
+          <>
+            {Array.from({ length: n }, (_, k) => (
+              <line key={k} x1={0} x2={6} y1={top + k * PIN_GAP} y2={top + k * PIN_GAP} />
+            ))}
+            {/* brace from the first to the last pin, its tip on the handle */}
+            <path
+              d={`M6 ${top} Q10 ${top} 10 ${top + 4} L10 ${middle - 3} Q10 ${middle} 14 ${middle} Q10 ${middle} 10 ${middle + 3} L10 ${top + span - 4} Q10 ${top + span} 6 ${top + span}`}
+            />
+          </>
+        ) : (
+          // a bus of any number of lanes: a double stroke
+          <>
+            <line x1={2} x2={14} y1={middle - 2} y2={middle - 2} />
+            <line x1={2} x2={14} y1={middle + 2} y2={middle + 2} />
+          </>
+        )}
+      </g>
+      {lanes && lanes > MAX_PINS && (
+        <text x={side === "left" ? 0 : 18} y={top + span + 11} fontSize={8} fill={color} textAnchor={side === "left" ? "start" : "end"}>
+          {lanes}
+        </text>
+      )}
+    </svg>
+  );
 }
 
 function preview(element: ElementSummary): [string, string][] {
@@ -45,7 +107,12 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
   const name = group ? "group" : categoryOf(element.type_id);
   const { icon: Icon, color } = category(name);
   const { inputs, outputs } = ports(element, type);
-  const rows = Math.max(inputs.length, outputs.length, 1);
+  const lanes = element.lanes ?? {};
+  const inputTops = offsets(inputs, lanes);
+  const outputTops = offsets(outputs, lanes);
+  const bottom = (list: Port[], tops: number[]) =>
+    list.length ? tops[list.length - 1] + rowHeight(list[list.length - 1], lanes[list[list.length - 1].name]) : PORT_GAP + 4;
+  const height = Math.max(bottom(inputs, inputTops), bottom(outputs, outputTops)) + 2;
   const values = preview(element);
   const errors = issues.filter((issue) => issue.severity === "error").length;
   const title = type?.title ?? element.type_id.split(".").pop();
@@ -96,31 +163,45 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
           </button>
         )}
       </div>
-      <div className="relative" style={{ height: rows * PORT_GAP + 6 }}>
+      <div className="relative" style={{ height }}>
         {/* the whole label of a port is its handle: drag it, or click it then another port, to connect */}
         {inputs.map((port, index) => (
-          <div key={`target-${port.name}`} className="pointer-events-none absolute inset-x-0" style={{ top: index * PORT_GAP + 4, height: PORT_GAP - 6 }}>
+          <div
+            key={`target-${port.name}`}
+            className="pointer-events-none absolute inset-x-0"
+            style={{ top: inputTops[index], height: rowHeight(port, lanes[port.name]) - 6 }}
+          >
+            {port.bus && !port.count && (
+              <BusPins side="left" lanes={lanes[port.name]} height={rowHeight(port, lanes[port.name]) - 6} color={signalColor(port.signal)} />
+            )}
             <Handle
               id={port.name}
               type="target"
               position={Position.Left}
               className="lumos-port"
               style={{ "--port-color": signalColor(port.signal) } as CSSProperties}
-              title={`${port.name}: ${port.signal}${port.doc ? ` — ${port.doc}` : ""}`}
+              title={`${port.name}: ${port.bus ? `bus of ${lanes[port.name] ?? "N"} × ` : ""}${port.signal}${port.doc ? ` — ${port.doc}` : ""}`}
             >
               {port.name}
             </Handle>
           </div>
         ))}
         {outputs.map((port, index) => (
-          <div key={`source-${port.name}`} className="pointer-events-none absolute inset-x-0" style={{ top: index * PORT_GAP + 4, height: PORT_GAP - 6 }}>
+          <div
+            key={`source-${port.name}`}
+            className="pointer-events-none absolute inset-x-0"
+            style={{ top: outputTops[index], height: rowHeight(port, lanes[port.name]) - 6 }}
+          >
+            {port.bus && !port.count && (
+              <BusPins side="right" lanes={lanes[port.name]} height={rowHeight(port, lanes[port.name]) - 6} color={signalColor(port.signal)} />
+            )}
             <Handle
               id={port.name}
               type="source"
               position={Position.Right}
               className="lumos-port"
               style={{ "--port-color": signalColor(port.signal) } as CSSProperties}
-              title={`${port.name}: ${port.signal}${port.doc ? ` — ${port.doc}` : ""}`}
+              title={`${port.name}: ${port.bus ? `bus of ${lanes[port.name] ?? "N"} × ` : ""}${port.signal}${port.doc ? ` — ${port.doc}` : ""}`}
             >
               {port.name}
             </Handle>

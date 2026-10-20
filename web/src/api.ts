@@ -38,6 +38,8 @@ export type ElementSummary = {
   state: Record<string, unknown>;
   inputs: string[];
   outputs: string[];
+  /** Number of lanes drawn for each bus port of known width. */
+  lanes?: Record<string, number>;
   actions: string[];
   /** Free parameters and their priors (values in the unit of the parameter), e.g. {kind: "normal", mean: "200 mm", std: "2 mm"}. */
   free?: Record<string, Prior | null>;
