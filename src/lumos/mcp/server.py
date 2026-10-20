@@ -552,6 +552,7 @@ def create_server(
         outputs: list[str] | None = None,
         mode: str = "grid",
         noise: str = "fixed",
+        procedure: str | None = None,
         wait_seconds: float = 300.0,
         context: str | None = None,
     ) -> Annotated[CallToolResult, JobInfo]:
@@ -560,7 +561,8 @@ def create_server(
         ``parameters`` maps paths to a list (``{"lens.focal_length": ["190 mm", "200 mm"]}``) or a range
         (``{"start": "190 mm", "stop": "210 mm", "num": 5, "log": false}``). ``mode``: ``grid`` (every
         combination) or ``zip`` (i-th values together). ``noise``: ``fixed`` (same noise at every point) or
-        ``independent``. Read the points with get_study.
+        ``independent``. ``procedure``: run this procedure at each point, its named results being the
+        outputs. Read the points with get_study.
         """
         job = service.run_study(
             session,
@@ -570,6 +572,7 @@ def create_server(
             outputs=outputs,
             mode=mode,
             noise=noise,
+            procedure=procedure,
         )
         return await follow(ctx, job, wait_seconds)
 
@@ -579,16 +582,24 @@ def create_server(
         n: int,
         outputs: list[str] | None = None,
         noise: str = "independent",
+        procedure: str | None = None,
         wait_seconds: float = 300.0,
         context: str | None = None,
     ) -> Annotated[CallToolResult, JobInfo]:
         """Monte-Carlo run: ``n`` draws of the free parameters from their priors (see set_free_parameter).
 
         With ``noise="independent"`` (default) each draw also has its own noise; without free parameters the
-        run is repeated with independent noise. Read the points with get_study.
+        run is repeated with independent noise. ``procedure``: run this procedure at each draw, its named
+        results being the outputs. Read the points with get_study.
         """
         job = service.run_study(
-            session, state.context(context), kind="sample", n=n, outputs=outputs, noise=noise
+            session,
+            state.context(context),
+            kind="sample",
+            n=n,
+            outputs=outputs,
+            noise=noise,
+            procedure=procedure,
         )
         return await follow(ctx, job, wait_seconds)
 

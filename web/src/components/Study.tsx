@@ -129,8 +129,11 @@ export function StudyDialog() {
           ? Math.min(...rows.map((r) => r.num))
           : rows.reduce((product, r) => product * Math.max(r.num, 0), 1);
   const unitOf = (path: string) => candidates.find((c) => c.path === path)?.unit ?? "";
+  // the body of a sweep or Monte-Carlo run: the outputs of the graph, or a procedure (P15.13)
+  const procedures = context.procedures ?? [];
+  const [procedure, setProcedure] = useState("");
   const valid =
-    outputs.length > 0 &&
+    (outputs.length > 0 || (procedure !== "" && kind !== "loop")) &&
     count > 0 &&
     (kind === "sample" || (kind === "loop" ? loops > 0 && periodOk : rows.every((r) => r.path && r.start !== "" && r.stop !== "" && r.num >= 1)));
 
@@ -140,7 +143,9 @@ export function StudyDialog() {
       if (await useStore.getState().runStudy(loop)) close();
       return;
     }
-    const request: StudyRequest = { kind, outputs, noise: noise ? "independent" : "fixed", record };
+    const request: StudyRequest = procedure
+      ? { kind, outputs: [], noise: noise ? "independent" : "fixed", record, procedure }
+      : { kind, outputs, noise: noise ? "independent" : "fixed", record };
     if (kind === "sample") request.n = n;
     else {
       request.mode = mode;
@@ -301,6 +306,22 @@ export function StudyDialog() {
         <div className="grid gap-3 sm:grid-cols-2">
           <fieldset className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
             <legend className="px-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-400">{t("study.outputs")}</legend>
+            {kind !== "loop" && procedures.length > 0 && (
+              <label className="mb-2 flex items-center gap-2 text-xs">
+                {t("study.body")}
+                <select data-testid="study-procedure" className={`${inputClass} w-auto`} value={procedure} onChange={(e) => setProcedure(e.target.value)}>
+                  <option value="">{t("study.bodyGraph")}</option>
+                  {procedures.map((name) => (
+                    <option key={name} value={name}>
+                      {t("study.bodyProcedure", { name })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            {procedure && kind !== "loop" && <p className="text-xs text-slate-500">{t("study.procedureOutputs")}</p>}
+            {(!procedure || kind === "loop") && (
+              <>
             {available.length === 0 && intermediate.length === 0 && <p className="text-xs text-slate-500">{t("study.noOutputs")}</p>}
             {[...available, ...(showIntermediate ? intermediate : [])].map((port) => (
               <label key={port} className="flex items-center gap-2 py-0.5 font-mono text-xs">
@@ -325,6 +346,8 @@ export function StudyDialog() {
               >
                 {showIntermediate ? t("study.hideIntermediate") : t("study.showIntermediate", { count: intermediate.length })}
               </button>
+            )}
+              </>
             )}
           </fieldset>
           <div className="space-y-3">

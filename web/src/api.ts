@@ -69,6 +69,8 @@ export type StudyRequest = {
   noise?: "fixed" | "independent";
   /** Keep the figures of every point for the results browser. */
   record?: boolean;
+  /** Run this procedure at each point: its named results are the outputs (P15.13). */
+  procedure?: string;
 };
 export type StudyPoint = { params: Record<string, string>; realization: number; outputs: Record<string, PortSummary> };
 export type StudyResult = {

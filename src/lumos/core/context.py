@@ -91,13 +91,13 @@ class SweepPoint:
     params
         Values of the swept or drawn fields, by path ``"element.field"``.
     outputs
-        The computed outputs.
+        The computed outputs (the named results of the procedure for a study on a procedure).
     realization
         Noise realization of the run (:attr:`Context.realization`; 0 for the noise of the context).
     """
 
     params: dict[str, Any]
-    outputs: Result
+    outputs: Result | dict[str, Any]
     realization: int = 0
 
 
@@ -800,10 +800,12 @@ class Context:
         self,
         parameters: Mapping[str, Sequence[Any]],
         *,
-        outputs: Iterable[Any],
+        outputs: Iterable[Any] | None = None,
         mode: Literal["grid", "zip"] = "grid",
         noise: Noise = "fixed",
         progress: Callable[[int, int], None] | None = None,
+        procedure: Any = None,
+        workers: int = 1,
     ) -> list[SweepPoint]:
         """Run the context for several values of some fields and collect the outputs.
 
@@ -822,6 +824,13 @@ class Context:
             noise realization ``k`` (:attr:`realization`).
         progress
             Called as ``progress(done, total)`` after each point; it may raise to stop the sweep.
+        procedure
+            A procedure (its name in :attr:`procedures`, or a :class:`~lumos.core.procedure.Procedure`) run at
+            each point instead of computing ``outputs``: the outputs of a point are its named results (those
+            listed in ``outputs``, or all). Each point starts from a copy of the context as it is, which stays
+            unchanged (ADR-0024 §7).
+        workers
+            Points of a study on a procedure computed at the same time (the results do not depend on it).
 
         Returns
         -------
@@ -842,7 +851,63 @@ class Context:
             combinations: Iterable[tuple[Any, ...]] = zip(*values, strict=True)
         else:
             combinations = itertools.product(*values)
+        if procedure is not None:
+            return self._procedure_points(targets, combinations, outputs, noise, progress, procedure, workers)
+        if outputs is None:
+            raise ValueError("give the outputs to compute at each point (or a procedure)")
         return self._points(targets, combinations, list(outputs), noise, progress)
+
+    def _procedure_points(
+        self,
+        targets: list[tuple[str, Any, str]],
+        combinations: Iterable[tuple[Any, ...]],
+        outputs: Iterable[Any] | None,
+        noise: Noise,
+        progress: Callable[[int, int], None] | None,
+        procedure: Any,
+        workers: int,
+    ) -> list[SweepPoint]:
+        """Run a procedure at every point, each on a copy of the context (in parallel with ``workers``)."""
+        import threading
+        from concurrent.futures import ThreadPoolExecutor
+
+        from lumos.core.procedure import ProcedureError, run_procedure
+        from lumos.io import from_document, to_document
+
+        chosen = self.procedures[procedure] if isinstance(procedure, str) else procedure
+        if self._mode == "operation":
+            raise ValueError("studies on procedures run on copies of the context, in simulation only")
+        problems = chosen.problems(self)
+        if problems:
+            raise ProcedureError(f"the procedure {chosen.name!r} cannot run: " + "; ".join(problems))
+        wanted = None if outputs is None else [str(o) for o in outputs]
+        combinations = list(combinations)
+        document = to_document(self)
+        lock = threading.Lock()
+        done = [0]
+
+        def point(item: tuple[int, tuple[Any, ...]]) -> SweepPoint:
+            index, combination = item
+            copy = from_document(document)
+            located = [(path, *copy._parameter(path)) for path, _, _ in targets]
+            for (_, element, field), value in zip(located, combination, strict=True):
+                _set(element, field, value)
+            if noise == "independent":
+                copy.realization = index
+            result = run_procedure(copy, chosen)
+            named = {k: v for k, v in result.results.items() if wanted is None or k in wanted}
+            params = {path: _get(element, field) for path, element, field in located}
+            with lock:
+                done[0] += 1
+                if progress is not None:
+                    progress(done[0], len(combinations))
+            return SweepPoint(params, named, copy.realization)
+
+        items = list(enumerate(combinations, start=1))
+        if max(int(workers), 1) == 1:
+            return [point(item) for item in items]
+        with ThreadPoolExecutor(max_workers=int(workers)) as pool:
+            return list(pool.map(point, items))
 
     def _points(
         self,
@@ -1018,9 +1083,11 @@ class Context:
         self,
         n: int,
         *,
-        outputs: Iterable[Any],
+        outputs: Iterable[Any] | None = None,
         noise: Noise = "independent",
         progress: Callable[[int, int], None] | None = None,
+        procedure: Any = None,
+        workers: int = 1,
     ) -> list[SweepPoint]:
         """Monte-Carlo run: draw ``n`` values of every free parameter from its prior and run the context.
 
@@ -1039,6 +1106,9 @@ class Context:
             the run is repeated with independent noise. ``"fixed"``: every draw has the noise of the context.
         progress
             Called as ``progress(done, n)`` after each draw; it may raise to stop the run.
+        procedure, workers
+            A procedure run at each draw instead of computing ``outputs``, and the draws computed at the same
+            time (see :meth:`sweep`).
         """
         _check_noise(noise)
         priors = self.free_parameters()
@@ -1051,6 +1121,10 @@ class Context:
         draws = {path: prior.sample(rng, int(n)) for path, prior in priors.items()}
         targets = [(path, *self._parameter(path)) for path in draws]
         combinations = zip(*draws.values(), strict=True) if draws else (() for _ in range(int(n)))
+        if procedure is not None:
+            return self._procedure_points(targets, combinations, outputs, noise, progress, procedure, workers)
+        if outputs is None:
+            raise ValueError("give the outputs to compute at each draw (or a procedure)")
         return self._points(targets, combinations, list(outputs), noise, progress)
 
     def to_python(self) -> str:

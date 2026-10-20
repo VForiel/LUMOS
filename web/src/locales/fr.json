@@ -435,7 +435,11 @@
     "hideIntermediate": "Masquer les sorties intermédiaires",
     "intermediateTag": "intermédiaire",
     "record": "Enregistrer les figures de chaque point",
-    "recordHint": "Parcourez-les point par point dans le navigateur de résultats (elles comptent dans les données de la session). Les blocs Recorder sont enregistrés de toute façon."
+    "recordHint": "Parcourez-les point par point dans le navigateur de résultats (elles comptent dans les données de la session). Les blocs Recorder sont enregistrés de toute façon.",
+    "body": "Calculer",
+    "bodyGraph": "les sorties ci-dessous",
+    "bodyProcedure": "la procédure « {{name}} »",
+    "procedureOutputs": "Les sorties de chaque point sont les résultats nommés de la procédure ; les points s'exécutent en parallèle."
   },
   "feedback": {
     "section": "Boucles de rétroaction",
@@ -556,7 +560,8 @@
       "if": "si",
       "else": "sinon",
       "save": "enregistrer",
-      "show": "afficher"
+      "show": "afficher",
+      "parallel": "en parallèle"
     },
     "help": {
       "procedure": "Une procédure : ses étapes s'exécutent de haut en bas",

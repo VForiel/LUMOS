@@ -435,7 +435,11 @@
     "hideIntermediate": "Hide the intermediate outputs",
     "intermediateTag": "intermediate",
     "record": "Record the figures of each point",
-    "recordHint": "Browse them point by point in the results browser (they count in the data of the session). Recorder blocks are recorded anyway."
+    "recordHint": "Browse them point by point in the results browser (they count in the data of the session). Recorder blocks are recorded anyway.",
+    "body": "Run",
+    "bodyGraph": "the outputs below",
+    "bodyProcedure": "the procedure “{{name}}”",
+    "procedureOutputs": "The outputs of each point are the named results of the procedure; the points run in parallel."
   },
   "feedback": {
     "section": "Feedback loops",
@@ -556,7 +560,8 @@
       "if": "if",
       "else": "else",
       "save": "save",
-      "show": "show"
+      "show": "show",
+      "parallel": "in parallel"
     },
     "help": {
       "procedure": "A procedure: its steps run from top to bottom",

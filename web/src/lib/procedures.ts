@@ -148,7 +148,7 @@ export function stepBlock(step: Step): BlockJson {
             AS: String(s.as ?? ""),
           }
         : { MODE: "list", VALUES: listText((values as unknown[]) ?? []), START: "", STOP: "", NUM: 2, LOG: false, AS: String(s.as ?? "") };
-      return withSteps({ type, fields }, "STEPS", s.steps);
+      return withSteps({ type, fields: { ...fields, PARALLEL: Boolean(s.parallel) } }, "STEPS", s.steps);
     }
     case "process":
       return {
@@ -222,7 +222,8 @@ export function blockStep(block: BlockJson): Step | null {
               log: block.fields.LOG === true || block.fields.LOG === "TRUE",
             }
           : textList(field(block, "VALUES"));
-      return { do: "for_each", values, as: field(block, "AS"), steps: inner("STEPS") };
+      const parallel = block.fields.PARALLEL === true || block.fields.PARALLEL === "TRUE";
+      return { do: "for_each", values, as: field(block, "AS"), steps: inner("STEPS"), ...(parallel ? { parallel: true } : {}) };
     }
     case "lumos_process":
       return { do: "process", function: field(block, "FUNCTION"), args: textPairs(field(block, "ARGS")), as: field(block, "AS") };

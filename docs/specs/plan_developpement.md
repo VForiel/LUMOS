@@ -332,7 +332,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 - [x] **P15.11 Format et moteur des procédures** — ADR ; document `procedure` déclaratif (actions, mesures nommées, répétitions, traitements, utilisation de résultats nommés, attente, conditions, enregistrement, affichage) ; exécution en tâche dans le service (progression, annulation, journal, quotas), identique en simulation et en opération (confirmation des actions matérielles) ; API web et MCP.
 - [x] **P15.12 Éditeur Blockly** — onglet « Procédures » ; export en Python ; mode script réservé aux instances locales et privées ; préréglage « dark puis mesure » et notebook.
-- [ ] **P15.13 Procédures et études** — une procédure comme corps d'un balayage ou d'un Monte-Carlo, ses résultats nommés comme sorties ; itérations indépendantes exécutées en parallèle sur les *workers*.
+- [x] **P15.13 Procédures et études** — une procédure comme corps d'un balayage ou d'un Monte-Carlo, ses résultats nommés comme sorties ; itérations indépendantes exécutées en parallèle sur les *workers*.
 
 **Composants utilisateur et catalogue** ([pistes d'évolution §2](pistes_evolution.md#2-composants-créés-par-lutilisateur-éditeur-intégré-et-catalogue--marketplace-))
 
@@ -392,4 +392,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-**P15.13 Procédures et études**, puis P15.14 à P15.16, puis P15.3 à P15.5.
+**P15.14 Composants déclaratifs** (ADR d'abord), puis P15.15 et P15.16, puis P15.3 à P15.5.

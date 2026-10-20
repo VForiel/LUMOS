@@ -1262,6 +1262,7 @@ class Service:
         n: int | None = None,
         noise: str | None = None,
         record: bool = False,
+        procedure: str | None = None,
     ) -> JobInfo:
         """Start a study in the background: a sweep or a Monte-Carlo run (REQ-CTX-10).
 
@@ -1287,17 +1288,35 @@ class Service:
         record
             Keep the figure of every drawable output at every point (:meth:`get_recording`); the outputs of
             ``Recorder`` blocks are recorded anyway.
+        procedure
+            Run this procedure of the context at each point instead of computing ports: the outputs are its
+            named results (those listed in ``outputs``, or all); the points run in parallel on the workers.
         """
         ctx = self._context(session, context)
+        chosen = None
+        if procedure is not None:
+            chosen = self._procedure(ctx, procedure)
+            problems = self._procedure_problems(ctx, chosen)
+            if chosen.is_script:
+                problems.append("a study runs procedures made of steps, not scripts")
+            if ctx.mode == "operation":
+                problems.append("studies on procedures run on copies of the context, in simulation only")
+            if problems:
+                raise ServiceError(
+                    f"the procedure {procedure!r} cannot be studied: {'; '.join(problems)}", hint=problems[0]
+                )
         if kind not in ("sweep", "sample"):
             raise ServiceError(
                 f"unknown kind of study {kind!r}",
                 hint="kind='sweep' (values of some parameters) or kind='sample' (Monte-Carlo run of n draws)",
             )
-        names = list(outputs or self.default_outputs(session, context))
-        if not names:
-            raise ServiceError("no outputs to compute", hint="give outputs, e.g. outputs=['camera.out']")
-        recorders = self._recorders(ctx, names)
+        if chosen is None:
+            names = list(outputs or self.default_outputs(session, context))
+            if not names:
+                raise ServiceError("no outputs to compute", hint="give outputs, e.g. outputs=['camera.out']")
+            recorders = self._recorders(ctx, names)
+        else:
+            names, recorders = list(outputs or []), {}
         noise = noise or ("fixed" if kind == "sweep" else "independent")
         if noise not in ("fixed", "independent"):
             raise ServiceError(f"unknown noise {noise!r}", hint="noise='fixed' or 'independent'")
@@ -1363,10 +1382,18 @@ class Service:
                 progress(done, total, f"point {done}")  # cancellation and time limit, between points
                 job.info.message = f"computed point {done}/{total}"
 
-            if kind == "sweep":
-                points = ctx.sweep(values, outputs=names, mode=mode, noise=noise, progress=point)  # type: ignore[arg-type]
+            body: dict[str, Any] = {}
+            if chosen is not None:
+                body = {"procedure": chosen, "workers": self.config.max_workers, "outputs": names or None}
             else:
-                points = ctx.sample(count, outputs=names, noise=noise, progress=point)  # type: ignore[arg-type]
+                body = {"outputs": names}
+            if kind == "sweep":
+                points = ctx.sweep(values, mode=mode, noise=noise, progress=point, **body)  # type: ignore[arg-type]
+            else:
+                points = ctx.sample(count, noise=noise, progress=point, **body)  # type: ignore[arg-type]
+            if chosen is not None:
+                names[:] = [str(name) for name in points[0].outputs] if points else []
+                job.info.outputs = list(names)
             job.study = StudyResult(
                 job=job.info.id,
                 context=context,
@@ -1649,7 +1676,7 @@ class Service:
             element, field = ctx._parameter(path)
             unit = getattr(type(element).declared()[parse_target(field)[0]], "unit", None)
             params[path] = str(format_value(value, unit))
-        outputs = {name: summarize(name, point.outputs[name]) for name in names}
+        outputs = {name: _summarize_result(name, point.outputs[name]) for name in names}
         return StudyPoint(params=params, realization=point.realization, outputs=outputs)
 
     def get_study(self, session: str, job: str) -> StudyResult:

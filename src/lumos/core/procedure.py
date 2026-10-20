@@ -16,7 +16,9 @@ functions of :data:`FUNCTIONS`.
 ``measure``    computes ``outputs`` and stores the value (one port) or a mapping (several) as ``as``;
                ``collect`` appends it to a list
 ``repeat``     runs ``steps`` ``times`` times
-``for_each``   runs ``steps`` with ``as`` set to each of ``values`` (a list, or ``{start, stop, num, log}``)
+``for_each``   runs ``steps`` with ``as`` set to each of ``values`` (a list, or ``{start, stop, num, log}``);
+               with ``parallel``, the iterations are independent: each runs on a copy of the context (in
+               simulation), several at once, and the collected results are gathered in order
 ``process``    applies the function ``function`` to ``args`` and stores the value as ``as``
 ``set``        sets ``target`` (``element.field`` or ``element.field[i]``) to ``value``
 ``use``        feeds the input ``port`` with the named result ``result`` in the following measurements
@@ -591,6 +593,11 @@ class _Checker:
                     self.problems.append(f"{where}: times is a whole number, got {times!r}")
             else:
                 values = step.get("values")
+                if step.get("parallel") and self.ctx is not None and self.ctx.mode == "operation":
+                    self.problems.append(
+                        f"{where}: a parallel for_each runs its iterations on copies of the context, in "
+                        "simulation only"
+                    )
                 if isinstance(values, Mapping):
                     if not {"start", "stop", "num"} <= set(values):
                         self.problems.append(f"{where}: a range needs start, stop and num")
@@ -733,6 +740,7 @@ class _Runner:
         progress: Callable[[int, int], None] | None,
         cancelled: Callable[[], bool] | None,
         archive_root: Any,
+        workers: int = 1,
     ) -> None:
         self.ctx = ctx
         self.result = ProcedureResult(procedure.name)
@@ -740,8 +748,48 @@ class _Runner:
         self.progress = progress
         self.cancelled = cancelled
         self.archive_root = archive_root
+        self.workers = max(int(workers), 1)
         self.total = max(procedure.count_steps(), 1)
         self.done = 0
+
+    def _parallel(self, step: Mapping[str, Any], values: list[Any]) -> None:
+        """Run the iterations of a parallel for_each on copies of the context, then gather their results."""
+        from concurrent.futures import ThreadPoolExecutor
+
+        from lumos.io import from_document, to_document
+
+        document = to_document(self.ctx)
+        results = self.result.results
+        name = step["as"]
+        # every iteration starts from the results as they are before the loop (merged results arrive later)
+        base = {k: list(v) if isinstance(v, list) else v for k, v in results.items()}
+
+        def iteration(value: Any) -> _Runner:
+            copy = from_document(document)
+            inner = _Runner(copy, Procedure(self.result.name), None, self.cancelled, self.archive_root)
+            inner.result.results = {k: list(v) if isinstance(v, list) else v for k, v in base.items()}
+            inner.result.results[name] = value
+            inner.feeds = dict(self.feeds)
+            inner.run(step.get("steps", []))
+            return inner
+
+        before = {k: len(v) for k, v in base.items() if isinstance(v, list)}
+        with ThreadPoolExecutor(max_workers=self.workers) as pool:
+            for inner in pool.map(iteration, values):
+                for key, value in inner.result.results.items():
+                    if key == name:
+                        continue
+                    if isinstance(value, list):
+                        results.setdefault(key, []).extend(value[before.get(key, 0) :])
+                    else:
+                        results[key] = value
+                self.result.journal += inner.result.journal
+                self.done += inner.done
+                if self.progress is not None:
+                    try:
+                        self.progress(self.done, self.total)
+                    except Exception as error:
+                        raise _Callback(error) from error
 
     def value(self, value: Any) -> Any:
         name = _reference(value)
@@ -803,6 +851,9 @@ class _Runner:
             spec = step["values"]
             values = _range(spec) if isinstance(spec, Mapping) else [self.value(v) for v in spec]
             name, previous = step["as"], results.get(step["as"], _ABSENT)
+            if step.get("parallel"):
+                self._parallel(step, list(values))
+                values = []
             for value in values:
                 results[name] = value
                 self.run(step.get("steps", []))
@@ -866,6 +917,7 @@ def run_procedure(
     cancelled: Callable[[], bool] | None = None,
     confirm: Callable[[list[str]], bool] | None = None,
     archive_root: Any = None,
+    workers: int = 1,
 ) -> ProcedureResult:
     """Run ``procedure`` in the context ``ctx`` and return its named results.
 
@@ -880,6 +932,8 @@ def run_procedure(
         ``True`` (a human confirmation, ADR-0014).
     archive_root
         Directory of the archives written by ``save`` steps.
+    workers
+        Iterations of a parallel ``for_each`` run at the same time (on copies of the context).
 
     Raises
     ------
@@ -900,7 +954,7 @@ def run_procedure(
     drivers = [ctx[path].driver for path in devices if ctx[path].driver is not None]
     for driver in drivers:
         driver.confirm = lambda command: True  # confirmed by the user for this run
-    runner = _Runner(ctx, procedure, progress, cancelled, archive_root)
+    runner = _Runner(ctx, procedure, progress, cancelled, archive_root, workers)
     entry = ctx._entry("procedure")
     entry.args = procedure.name
     started = _time.perf_counter()

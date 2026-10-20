@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 19:57+0200\n"
+"POT-Creation-Date: 2026-10-20 20:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -4499,7 +4499,22 @@ msgid ""
 "stop the sweep."
 msgstr ""
 
-#: lumos.core.context.Context.sweep:12 of
+#: lumos.core.context.Context.sweep:11 of
+msgid ""
+"A procedure (its name in :attr:`procedures`, or a "
+":class:`~lumos.core.procedure.Procedure`) run at each point instead of "
+"computing ``outputs``: the outputs of a point are its named results "
+"(those listed in ``outputs``, or all). Each point starts from a copy of "
+"the context as it is, which stays unchanged (ADR-0024 §7)."
+msgstr ""
+
+#: lumos.core.context.Context.sweep:15 of
+msgid ""
+"Points of a study on a procedure computed at the same time (the results "
+"do not depend on it)."
+msgstr ""
+
+#: lumos.core.context.Context.sweep:17 of
 msgid ""
 "One point per combination. The fields and the realization get their "
 "values back afterwards."
@@ -4608,6 +4623,12 @@ msgstr ""
 msgid ""
 "Called as ``progress(done, n)`` after each draw; it may raise to stop the"
 " run."
+msgstr ""
+
+#: lumos.core.context.Context.sample:12 lumos.core.context.Context.sample:14 of
+msgid ""
+"A procedure run at each draw instead of computing ``outputs``, and the "
+"draws computed at the same time (see :meth:`sweep`)."
 msgstr ""
 
 #: lumos.core.context.Context.to_python:1 of
@@ -5084,72 +5105,74 @@ msgstr ""
 #, python-brace-format
 msgid ""
 "runs ``steps`` with ``as`` set to each of ``values`` (a list, or "
-"``{start, stop, num, log}``)"
+"``{start, stop, num, log}``); with ``parallel``, the iterations are "
+"independent: each runs on a copy of the context (in simulation), several "
+"at once, and the collected results are gathered in order"
 msgstr ""
 
-#: lumos.core.procedure:20 of
+#: lumos.core.procedure:22 of
 msgid "``process``"
 msgstr ""
 
-#: lumos.core.procedure:20 of
+#: lumos.core.procedure:22 of
 msgid ""
 "applies the function ``function`` to ``args`` and stores the value as "
 "``as``"
 msgstr ""
 
-#: lumos.core.procedure:21 of
+#: lumos.core.procedure:23 of
 msgid "``set``"
 msgstr ""
 
-#: lumos.core.procedure:21 of
+#: lumos.core.procedure:23 of
 msgid "sets ``target`` (``element.field`` or ``element.field[i]``) to ``value``"
 msgstr ""
 
-#: lumos.core.procedure:22 of
+#: lumos.core.procedure:24 of
 msgid "``use``"
 msgstr ""
 
-#: lumos.core.procedure:22 of
+#: lumos.core.procedure:24 of
 msgid ""
 "feeds the input ``port`` with the named result ``result`` in the "
 "following measurements"
 msgstr ""
 
-#: lumos.core.procedure:23 of
+#: lumos.core.procedure:25 of
 msgid "``wait``"
 msgstr ""
 
-#: lumos.core.procedure:23 of
+#: lumos.core.procedure:25 of
 msgid "lets ``duration`` pass (the clock in simulation)"
 msgstr ""
 
-#: lumos.core.procedure:24 of
+#: lumos.core.procedure:26 of
 msgid "``if``"
 msgstr ""
 
-#: lumos.core.procedure:24 of
+#: lumos.core.procedure:26 of
 msgid ""
 "runs ``then`` or ``else`` after comparing ``left`` and ``right`` with "
 "``op``"
 msgstr ""
 
-#: lumos.core.procedure:25 of
+#: lumos.core.procedure:27 of
 msgid "``save``"
 msgstr ""
 
-#: lumos.core.procedure:25 of
+#: lumos.core.procedure:27 of
 msgid "writes the named ``results`` to the archive ``archive``"
 msgstr ""
 
-#: lumos.core.procedure:26 of
+#: lumos.core.procedure:28 of
 msgid "``show``"
 msgstr ""
 
-#: lumos.core.procedure:26 of
+#: lumos.core.procedure:28 of
 msgid "marks the named ``results`` to display"
 msgstr ""
 
-#: lumos.core.procedure:29 of
+#: lumos.core.procedure:31 of
 #, python-brace-format
 msgid ""
 "A procedure may instead be a Python **script** (``{\"name\", "
@@ -5162,7 +5185,7 @@ msgid ""
 "equivalent script (not the reverse)."
 msgstr ""
 
-#: lumos.core.procedure:35 of
+#: lumos.core.procedure:37 of
 msgid ""
 "Values are numbers, booleans, text, quantities written as text (``\"2 "
 "mm\"``) or named results (``\"$dark\"``). :meth:`Procedure.problems` "
@@ -5273,7 +5296,13 @@ msgstr ""
 msgid "Directory of the archives written by ``save`` steps."
 msgstr ""
 
-#: lumos.core.procedure.run_procedure:9 of
+#: lumos.core.procedure.run_procedure:8 of
+msgid ""
+"Iterations of a parallel ``for_each`` run at the same time (on copies of "
+"the context)."
+msgstr ""
+
+#: lumos.core.procedure.run_procedure:10 of
 msgid ""
 "If the procedure has problems, is not confirmed, is cancelled, or a step "
 "fails."
@@ -12487,6 +12516,13 @@ msgid ""
 "anyway."
 msgstr ""
 
+#: lumos.service.service.Service.run_study:16 of
+msgid ""
+"Run this procedure of the context at each point instead of computing "
+"ports: the outputs are its named results (those listed in ``outputs``, or"
+" all); the points run in parallel on the workers."
+msgstr ""
+
 #: lumos.service.service.Service.run_loop:1 of
 msgid ""
 "Run the context as a closed loop of ``steps`` iterations of ``period`` "
@@ -13907,5 +13943,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Summary of an output computed by a run."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "runs ``steps`` with ``as`` set to "
+#~ "each of ``values`` (a list, or "
+#~ "``{start, stop, num, log}``)"
 #~ msgstr ""
 

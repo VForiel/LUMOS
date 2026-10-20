@@ -230,6 +230,7 @@ class StudyRequest(BaseModel):
     n: int | None = None
     noise: str | None = None
     record: bool = False
+    procedure: str | None = None
 
 
 class Rename(BaseModel):
@@ -1000,6 +1001,7 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
             n=body.n,
             noise=body.noise,
             record=body.record,
+            procedure=body.procedure,
         )
 
     @app.post("/api/contexts/{cid}/feedbacks", status_code=201, dependencies=[simulator])

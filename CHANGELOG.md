@@ -270,6 +270,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   results, export to Python (`Procedure.to_python`, `GET .../procedures/{name}/export.py`); script mode
   (`{"name", "script"}`) run only with `ServiceConfig.scripts_enabled` (local profile; refused on a public
   instance open to anonymous visitors); preset `dark_then_measure` and notebook 15.
+- Studies on procedures (P15.13): `ctx.sweep(..., procedure=...)` and `ctx.sample(..., procedure=...)` run a
+  procedure at every point on a copy of the context, the named results being the outputs, with `workers` points
+  at a time; `for_each` steps with `"parallel": true`; `Service.run_study(procedure=...)`, the Study dialog and
+  the MCP tools `run_sweep` / `run_monte_carlo` take a procedure.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
   files, preview of the data with its figure, deletion; `Service.archive_files`, `archive_data`,
   `archive_file`, `delete_archive` and their routes); the bottom tab "Results" is named "Outputs"; in a narrow

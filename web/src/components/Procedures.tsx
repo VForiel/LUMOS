@@ -79,7 +79,7 @@ function definitions(t: (key: string) => string) {
       args1: [{ type: "input_statement", name: "STEPS" }],
     },
     {
-      ...step("for_each", `${t("procedures.block.for_each")} %1 ${t("procedures.block.in")} %2 %3 → %4 … %5 (%6, log %7)`, [
+      ...step("for_each", `${t("procedures.block.for_each")} %1 ${t("procedures.block.in")} %2 %3 → %4 … %5 (%6, log %7) ${t("procedures.block.parallel")} %8`, [
         text("AS", "value"),
         {
           type: "field_dropdown",
@@ -94,6 +94,7 @@ function definitions(t: (key: string) => string) {
         text("STOP"),
         { type: "field_number", name: "NUM", value: 2, min: 1, precision: 1 },
         { type: "field_checkbox", name: "LOG", checked: false },
+        { type: "field_checkbox", name: "PARALLEL", checked: false },
       ]),
       message1: "%1",
       args1: [{ type: "input_statement", name: "STEPS" }],

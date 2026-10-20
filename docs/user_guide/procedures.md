@@ -70,6 +70,19 @@ The processing functions are `mean`, `median`, `stack` (`method`: mean, median o
 `divide`, `scale`, `subtract_dark`, `flat_field`, `crop`, `rebin`, `total`, `maximum`, `minimum`, `average`,
 `element` and `photometry`; a procedure cannot run anything else.
 
+## Studies and parallel iterations
+
+A procedure can be the body of a study: `ctx.sweep(parameters, procedure="dark then measure")` or
+`ctx.sample(n, procedure=...)` run it at every point, each point on a copy of the context as it is (the
+context itself does not change), and the outputs of a point are the named results (`outputs=` keeps some of
+them). With `workers=4` the points are computed four at a time; the results do not depend on it. In the web
+interface, the *Study* dialog offers to run a procedure instead of the outputs of the graph.
+
+A `for_each` step marked `"parallel": true` (the *in parallel* box of its block) runs its iterations as
+independent ones: each on a copy of the context, several at once (`ctx.run_procedure(name, workers=4)`), the
+collected results being gathered in the order of the values. Iterations on copies cannot act on equipment: a
+parallel `for_each` and the studies on procedures run in simulation only.
+
 ## Python
 
 `procedure.to_python()` writes an equivalent Python script (the steps become calls on `ctx`, the processing
