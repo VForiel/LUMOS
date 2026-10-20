@@ -11,13 +11,16 @@ from playwright.sync_api import expect
 
 pytestmark = pytest.mark.e2e
 
+#: Blocks of the workspace (the toolbox flyout holds blocks too, in another SVG).
+BLOCKS = "svg.blocklySvg .blocklyBlockCanvas .blocklyDraggable"
+
 
 @pytest.fixture
 def procedures(page):
     page.goto("/")
     expect(page.get_by_test_id("palette")).to_be_visible()
-    page.get_by_test_id("open-presets").click()
-    page.get_by_test_id("presets").get_by_test_id("preset-dark_then_measure").click()
+    # the gallery of presets is shown on a first visit
+    page.get_by_test_id("presets").first.get_by_test_id("preset-dark_then_measure").click()
     page.get_by_test_id("view-procedures").click()
     expect(page.get_by_test_id("procedures")).to_be_visible()
     return page
@@ -26,8 +29,8 @@ def procedures(page):
 def test_the_preset_procedure_is_drawn_as_blocks_and_runs(procedures):
     tab = procedures.get_by_test_id("procedures")
     expect(tab.get_by_test_id("procedure-select")).to_have_value("dark then measure")
-    expect(tab.locator(".blocklyDraggable").first).to_be_visible(timeout=10_000)
-    assert tab.locator(".blocklyDraggable").count() >= 8
+    expect(tab.locator(BLOCKS).first).to_be_visible(timeout=10_000)
+    assert tab.locator(BLOCKS).count() >= 8
     expect(tab.get_by_test_id("procedure-problems")).to_have_count(0)
     tab.get_by_test_id("procedure-run").click()
     results = tab.get_by_test_id("procedure-results")
@@ -55,6 +58,4 @@ def test_a_new_procedure_is_saved_with_the_context(procedures):
     procedures.reload()
     procedures.get_by_test_id("view-procedures").click()
     procedures.get_by_test_id("procedures").get_by_test_id("procedure-select").select_option("check")
-    expect(procedures.get_by_test_id("procedures").locator(".blocklyDraggable")).to_have_count(
-        2, timeout=10_000
-    )
+    expect(procedures.get_by_test_id("procedures").locator(BLOCKS)).to_have_count(2, timeout=10_000)
