@@ -4,6 +4,15 @@ Trois demandes de la revue du 19/10 demandent d'abord une décision. Pour chacun
 faisable, une proposition, l'effort estimé et les questions à trancher. Une fois tranchées, elles deviendront des
 étapes du plan (avec une ADR chacune).
 
+> **Décision du 20/10 — où s'exécute le code.** Le calcul et le code utilisateur s'exécutent **toujours côté
+> serveur** (le serveur de l'instance, ou la machine de l'utilisateur en profil `local`) ; aucun calcul dans le
+> navigateur (Pyodide/WebAssembly écarté). L'**instance publique reste limitée** : pas de code utilisateur
+> (scripts, composants à code, mode script des procédures), pas d'opération, stockage et calcul sous quotas. Les
+> fonctions complètes passent par une instance locale ou privée. Raison : un seul environnement d'exécution à
+> maintenir et à tester ; l'exécution dans le navigateur aurait demandé une couche de transport en double, une
+> exécution sans threads, un cœur restreint aux paquets disponibles dans Pyodide, sans JAX ni GPU, et n'aurait de
+> toute façon pas permis l'opération (pas de TCP ni de VISA dans un navigateur).
+
 ---
 
 ## 1. Ports visuels des composants multi-canaux (MMI, puces photoniques)
@@ -68,12 +77,13 @@ Oui, en deux vues qui ne sont pas réversibles l'une dans l'autre (comme tu le p
 Exécuter le code d'un utilisateur sur l'**instance publique**, c'est lui donner la machine (accès disque, réseau,
 autres sessions). Les possibilités :
 
-1. **Code seulement en local** (profil `local`, la machine de l'utilisateur) ; sur l'instance publique, seuls les
-   composants **déclaratifs** et ceux installés par l'administrateur. Simple, sûr. **Recommandé.**
-2. Code exécuté **dans le navigateur** (Pyodide/WebAssembly) : pas de risque serveur, mais NumPy seulement (pas
-   JAX/GPU), lent, et il faudrait faire tourner tout le calcul côté client.
-3. Bac à sable serveur (processus isolé : nsjail/gVisor, sans réseau, quotas) : faisable mais lourd à maintenir et
-   à auditer (P15.4).
+1. **Code seulement sur une instance locale ou privée** (profil `local`, ou instance privée dont l'administrateur
+   l'autorise explicitement, comme `operation_enabled`) ; sur l'instance publique, seuls les composants
+   **déclaratifs** et ceux installés par l'administrateur. Simple, sûr. **Retenu (décision du 20/10).**
+2. ~~Code exécuté **dans le navigateur** (Pyodide/WebAssembly)~~ : **écarté** le 20/10 (voir la décision en tête
+   du document).
+3. ~~Bac à sable serveur~~ (processus isolé : nsjail/gVisor, sans réseau, quotas) : **écarté**, lourd à maintenir
+   et à auditer (P15.4).
 
 ### Règles de validité vérifiées (commande `lumos component check` et éditeur)
 
@@ -97,7 +107,7 @@ Vue simple + format `component` + validation : ~1 semaine. Catalogue (index, CI,
 
 ### Questions
 
-1. D'accord pour **pas de code utilisateur sur l'instance publique** (option 1) ?
+1. ~~D'accord pour **pas de code utilisateur sur l'instance publique** (option 1) ?~~ **Tranché le 20/10 : oui.**
 2. Le catalogue : dépôt GitHub dédié (contributions par pull request) — ou autre hébergement ?
 3. Quels gabarits de comportement en priorité ?
 
@@ -135,8 +145,8 @@ L'exemple devient : `fermer(obturateur)` → `répéter 20 : mesurer camera.out 
 Une procédure est un document JSON (format `procedure`, sans code), exécuté par le service comme une tâche
 (progression, annulation, journal, quotas), en simulation comme en opération (confirmation humaine des actions
 matérielles, comme aujourd'hui). Le **mode avancé** est un script Python qui utilise l'API (`ctx.run`,
-actions, traitements) : comme pour les composants, il ne revient pas vers les blocs, et il ne s'exécute qu'en
-local. L'éditeur peut proposer « Exporter en Python » (blocs → script), pas l'inverse.
+actions, traitements) : comme pour les composants, il ne revient pas vers les blocs, et il ne s'exécute que sur
+une instance locale ou privée (jamais sur l'instance publique). L'éditeur peut proposer « Exporter en Python » (blocs → script), pas l'inverse.
 
 ### Effort
 
@@ -148,7 +158,9 @@ Blockly, licence Apache-2.0, ou éditeur maison en liste) ; doc, préréglage «
 1. Blocs empilés (Blockly) ou liste d'étapes éditable (plus simple, moins ludique) ?
 2. Les résultats nommés doivent-ils pouvoir alimenter les **études** (ex. un Monte-Carlo sur une procédure
    entière) ?
-3. Le mode script sur l'instance publique : même réponse que pour les composants (non) ?
+3. ~~Le mode script sur l'instance publique : même réponse que pour les composants (non) ?~~ **Tranché le 20/10 :
+   non**, il s'exécute côté serveur sur une instance locale ou privée seulement ; l'instance publique n'a que les
+   blocs.
 
 ---
 

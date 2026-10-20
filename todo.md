@@ -83,6 +83,8 @@ recommandation, effort et questions pour chacun. En bref : ports « à voies » 
 **pas de code utilisateur sur l'instance publique** (seulement des composants déclaratifs) ; un onglet
 « Procédures » en blocs d'instructions (fermer l'obturateur, mesurer ×20, moyenner → dark, mesurer, soustraire),
 avec un mode script local seulement ; le tout en phase 18 « Extensibilité », après la v1.0.
+**Tranché le 20/10** : le code s'exécute toujours côté serveur (pas de Pyodide) ; l'instance publique reste
+limitée (ni code utilisateur, ni opération, quotas) ; fonctions complètes sur instance locale ou privée.
 ->
 
 ## Décisions du 19/10 (à valider)
