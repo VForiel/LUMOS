@@ -4,8 +4,9 @@ Requirements (review of 18/10/2026: "use my Claude, GPT or Gemini account withou
 subscription of Claude.ai or ChatGPT cannot be used by another application, but these applications accept
 remote MCP servers as connectors. A user of the interface (simulator or operator) creates a *connector link*:
 a secret URL ``/mcp/<token>`` of the MCP server of their session, needing no cookie or header, so that an
-assistant added as a connector works on the contexts shown in their browser. The link is revocable, dies with
-the session, uses HTTPS behind a TLS proxy, and is refused to viewers and when the assistant is turned off.
+assistant added as a connector works on the contexts shown in their browser. The link is revocable, outlives
+its session (test_web_connector_links), uses HTTPS behind a TLS proxy, and is refused to viewers and when the
+assistant is turned off.
 
 The client speaks raw JSON-RPC 2.0 over the streamable HTTP transport (MCP specification 2025-06-18).
 """
