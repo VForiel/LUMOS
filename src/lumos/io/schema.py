@@ -36,7 +36,7 @@ def document_schema() -> dict[str, Any]:
         "required": ["lumos_format", "kind"],
         "properties": {
             "lumos_format": {"type": "string", "pattern": r"^1\.[0-9]+$"},
-            "kind": {"enum": ["element", "group", "context", "procedure"]},
+            "kind": {"enum": ["element", "group", "context", "procedure", "component"]},
             "lumos_version": {"type": "string"},
             "created_at": {"type": "string"},
             "meta": {"type": "object"},
@@ -48,6 +48,8 @@ def document_schema() -> dict[str, Any]:
             "feedbacks": {"type": "array", "items": {"$ref": "#/$defs/feedback"}},
             "procedures": {"type": "object", "additionalProperties": {"$ref": "#/$defs/procedure"}},
             "procedure": {"$ref": "#/$defs/procedure"},
+            "component": {"$ref": "#/$defs/component"},
+            "components": {"type": "object", "additionalProperties": {"$ref": "#/$defs/component"}},
             "ui": {"type": "object"},
         },
         "additionalProperties": False,
@@ -55,12 +57,33 @@ def document_schema() -> dict[str, Any]:
             {"if": {"properties": {"kind": {"const": "element"}}}, "then": {"required": ["element"]}},
             {"if": {"properties": {"kind": {"const": "group"}}}, "then": {"required": ["group"]}},
             {"if": {"properties": {"kind": {"const": "procedure"}}}, "then": {"required": ["procedure"]}},
+            {"if": {"properties": {"kind": {"const": "component"}}}, "then": {"required": ["component"]}},
             {
                 "if": {"properties": {"kind": {"const": "context"}}},
                 "then": {"required": ["context", "elements", "connections"]},
             },
         ],
         "$defs": {
+            "component": {
+                "description": "A declarative component (ADR-0025): a template filled with data, no code.",
+                "type": "object",
+                "required": ["id", "version", "template", "body"],
+                "properties": {
+                    "id": {"type": "string", "pattern": r"^[a-z][a-z0-9_]*\.[A-Z][A-Za-z0-9_]*$"},
+                    "version": {"type": "integer", "minimum": 1},
+                    "title": {"type": "string"},
+                    "description": {"type": "string"},
+                    "license": {"type": "string"},
+                    "authors": {"type": "array", "items": {"type": "string"}},
+                    "template": {
+                        "enum": ["transfer_matrix", "gain_phase", "spectral_transmission", "composite"]
+                    },
+                    "params": {"type": "object"},
+                    "body": {"type": "object"},
+                    "checks": {"type": "array", "items": {"type": "object"}},
+                },
+                "additionalProperties": False,
+            },
             "procedure": {
                 "description": "A procedure: steps run in order (ADR-0024), each naming its kind in 'do'.",
                 "type": "object",

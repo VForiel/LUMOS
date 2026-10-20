@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-20 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../user_guide/components.md:1
+msgid "Your own components"
+msgstr "Vos propres composants"
+
+#: ../../user_guide/components.md:3
+msgid "A **component** is an element you define without code: a template filled with your data. It is a `.lumos` document of kind `component`, valid on every instance (including the public one, where code never runs), and it travels inside the contexts that use it."
+msgstr "Un **composant** est un élément que vous définissez sans code : un gabarit rempli avec vos données. C'est un document `.lumos` de type `component`, valable sur toutes les instances (y compris l'instance publique, où aucun code ne s'exécute), et il voyage dans les contextes qui l'utilisent."
+
+#: ../../user_guide/components.md:28
+msgid "The identifier is `author.Name`; the element type is `components.acme.Attenuator`. The parameters have a unit (empty for a number), bounds, a default value and a description, like those of the built-in elements: they are edited in the inspector and can be swept. In the body, `\"$transmission\"` is the value of the parameter."
+msgstr "L'identifiant est `auteur.Nom` ; le type d'élément est `components.acme.Attenuator`. Les paramètres ont une unité (vide pour un nombre), des bornes, une valeur par défaut et une description, comme ceux des éléments de la bibliothèque : ils se modifient dans l'inspecteur et peuvent être balayés. Dans le corps, `\"$transmission\"` est la valeur du paramètre."
+
+#: ../../user_guide/components.md:32
+msgid "Templates"
+msgstr "Gabarits"
+
+#: ../../user_guide/components.md
+msgid "Template"
+msgstr "Gabarit"
+
+#: ../../user_guide/components.md
+msgid "Body"
+msgstr "Corps"
+
+#: ../../user_guide/components.md
+msgid "Behaviour"
+msgstr "Comportement"
+
+#: ../../user_guide/components.md
+msgid "`gain_phase`"
+msgstr ""
+
+#: ../../user_guide/components.md
+msgid "`gain`, `phase`, `amplifier`"
+msgstr ""
+
+#: ../../user_guide/components.md
+#, python-brace-format
+msgid "multiplies the field by √gain e^{iphase}, on any light (each lane of a bus); a gain above 1 needs `\"amplifier\": true`"
+msgstr "multiplie le champ par √gain e^{iphase}, sur toute lumière (chaque voie d'un bus) ; un gain supérieur à 1 demande `\"amplifier\": true`"
+
+#: ../../user_guide/components.md
+msgid "`spectral_transmission`"
+msgstr ""
+
+#: ../../user_guide/components.md
+msgid "`wavelengths`, `transmission`"
+msgstr ""
+
+#: ../../user_guide/components.md
+msgid "a power transmission tabulated against the wavelength, interpolated linearly, 0 outside the table"
+msgstr "une transmission en puissance tabulée en fonction de la longueur d'onde, interpolée linéairement, nulle hors de la table"
+
+#: ../../user_guide/components.md
+msgid "`transfer_matrix`"
+msgstr ""
+
+#: ../../user_guide/components.md
+msgid "`amplitudes`, `phases`, `wavelength`, `dispersion`"
+msgstr ""
+
+#: ../../user_guide/components.md
+msgid "a matrix on a bus of guided lanes, as a `TransferMatrix` (refused if it amplifies)"
+msgstr "une matrice sur un bus de voies guidées, comme un `TransferMatrix` (refusée si elle amplifie)"
+
+#: ../../user_guide/components.md
+msgid "`composite`"
+msgstr ""
+
+#: ../../user_guide/components.md
+msgid "`group`"
+msgstr ""
+
+#: ../../user_guide/components.md
+msgid "a group of elements (the entry of a `.lumos` group), placed as a group"
+msgstr "un groupe d'éléments (l'entrée d'un groupe `.lumos`), placé comme un groupe"
+
+#: ../../user_guide/components.md:41
+msgid "Using and checking a component"
+msgstr "Utiliser et vérifier un composant"
+
+#: ../../user_guide/components.md:53
+msgid "`lumos component check attenuator.lumos` lists what makes a component invalid: a missing title, description or license, a parameter without description or with a default outside its bounds, a body that does not fit its template or amplifies light, and — required for every templated component — at least one **check** with an independent reference value. A check of kind `power` sends a beam of `power` at `wavelength` (one guided lane of that power per input of a matrix) and compares the total output power with `expect`: an energy balance, or an analytic value you know."
+msgstr "`lumos component check attenuator.lumos` liste ce qui rend un composant invalide : un titre, une description ou une licence manquants, un paramètre sans description ou dont la valeur par défaut sort de ses bornes, un corps qui ne correspond pas à son gabarit ou qui amplifie la lumière, et — obligatoire pour tout composant à gabarit — au moins une **vérification** avec une valeur de référence indépendante. Une vérification de type `power` envoie un faisceau de puissance `power` à la longueur d'onde `wavelength` (une voie guidée de cette puissance par entrée d'une matrice) et compare la puissance totale en sortie à `expect` : un bilan d'énergie, ou une valeur analytique que vous connaissez."
+
+#: ../../user_guide/components.md:60
+msgid "A context saved with components holds their definitions under `\"components\"`, so it opens on any instance."
+msgstr "Un contexte enregistré avec des composants contient leurs définitions sous `\"components\"`, il s'ouvre donc sur n'importe quelle instance."
+

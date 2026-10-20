@@ -336,7 +336,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 **Composants utilisateur et catalogue** ([pistes d'évolution §2](pistes_evolution.md#2-composants-créés-par-lutilisateur-éditeur-intégré-et-catalogue--marketplace-))
 
-- [ ] **P15.14 Composants déclaratifs** — ADR (format, sécurité) ; document `component` ; gabarits : matrice de transfert, gain ou atténuation et déphasage, transmission spectrale tabulée, composite ; commande `lumos component check`.
+- [x] **P15.14 Composants déclaratifs** — ADR (format, sécurité) ; document `component` ; gabarits : matrice de transfert, gain ou atténuation et déphasage, transmission spectrale tabulée, composite ; commande `lumos component check`.
 - [ ] **P15.15 Éditeur de composants** — vue formulaire (toutes instances) ; vue code (instances locales et privées seulement).
 - [ ] **P15.16 Catalogue `community/`** — dossier du dépôt pour les composants, préréglages et ressources partagés ; index ; CI filtrée par chemin qui lance `lumos component check` ; onglet « Catalogue » de la palette ; page « Créer et partager un composant ».
 
@@ -392,4 +392,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-**P15.14 Composants déclaratifs** (ADR d'abord), puis P15.15 et P15.16, puis P15.3 à P15.5.
+**P15.15 Éditeur de composants**, puis P15.16, puis P15.3 à P15.5.

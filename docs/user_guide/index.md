@@ -15,7 +15,8 @@ This guide will explain the concepts of LUMOS:
 - **processing**: reduction, photometry, interferometric observables, detection statistics, calibration and
   script blocks;
 - **results**: figures, data files and archives of runs;
-- **procedures**: sequences of actions, measurements and processing (a dark, then measurements).
+- **procedures**: sequences of actions, measurements and processing (a dark, then measurements);
+- **your own components**: elements defined without code, from templates.
 
 ```{toctree}
 :maxdepth: 1
@@ -29,5 +30,6 @@ symbolic
 processing
 results
 procedures
+components
 stability
 ```

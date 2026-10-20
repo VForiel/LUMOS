@@ -274,6 +274,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   procedure at every point on a copy of the context, the named results being the outputs, with `workers` points
   at a time; `for_each` steps with `"parallel": true`; `Service.run_study(procedure=...)`, the Study dialog and
   the MCP tools `run_sweep` / `run_monte_carlo` take a procedure.
+- Declarative components (P15.14, ADR-0025): `lumos.components` (documents of kind `component`, templates
+  `transfer_matrix`, `gain_phase`, `spectral_transmission` and `composite`, `register_component`, `create`,
+  `check_component` running the checks of the component), `lumos component check FILE`, definitions embedded
+  in the documents that use them (format 1.3), category *Components* of the palette.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
   files, preview of the data with its figure, deletion; `Service.archive_files`, `archive_data`,
   `archive_file`, `delete_archive` and their routes); the bottom tab "Results" is named "Outputs"; in a narrow

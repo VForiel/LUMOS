@@ -227,6 +227,32 @@ def _users(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def _component(arguments: argparse.Namespace) -> int:
+    """Check component documents; exit status 1 if one is invalid."""
+    import json
+    from pathlib import Path
+
+    from lumos.components import check_component
+
+    failed = False
+    for name in arguments.files:
+        try:
+            document = json.loads(Path(name).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            sys.stderr.write(f"{name}: cannot read it: {error}\n")
+            failed = True
+            continue
+        problems = check_component(document)
+        if problems:
+            failed = True
+            _write(f"{name}: {len(problems)} problem(s)")
+            for problem in problems:
+                _write(f"  - {problem}")
+        else:
+            _write(f"{name}: OK")
+    return 1 if failed else 0
+
+
 def _login(arguments: argparse.Namespace) -> int:
     from lumos.web.login import LoginError, login
 
@@ -301,6 +327,9 @@ def _parser() -> argparse.ArgumentParser:
         "--password-stdin", action="store_true", help="read the password from the standard input"
     )
     users.add_argument("--ssh-key", action="append", help="public key file (id_ed25519.pub); repeatable")
+    component = commands.add_parser("component", help="declarative components (ADR-0025)")
+    component.add_argument("action", choices=("check",), help="check: list what makes a component invalid")
+    component.add_argument("files", nargs="+", help="component documents (.lumos of kind 'component')")
     login = commands.add_parser("login", help="log in to a web instance with an SSH key")
     login.add_argument("url", help="address of the instance, e.g. https://lumos.example.org")
     login.add_argument("--user", required=True, help="user name")
@@ -321,6 +350,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _users(arguments)
     if arguments.command == "login":
         return _login(arguments)
+    if arguments.command == "component":
+        return _component(arguments)
     return 1  # pragma: no cover - argparse requires a command
 
 

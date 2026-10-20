@@ -116,6 +116,9 @@
 .. automodule:: lumos.core.action
    :members: action, ActionSpec
 
+.. automodule:: lumos.components
+   :members: ComponentSpec, ComponentError, register_component, create, check_component, component_from_document, component_of, TEMPLATES
+
 .. automodule:: lumos.core.procedure
    :members: Procedure, ProcedureResult, ProcedureError, run_procedure, FUNCTIONS, MAX_ITERATIONS
 

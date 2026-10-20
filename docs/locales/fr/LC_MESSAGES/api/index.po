@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 20:19+0200\n"
+"POT-Creation-Date: 2026-10-20 20:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -74,6 +74,9 @@ msgstr ""
 #: lumos.catalogs.surveys.Hips2Fits.image lumos.catalogs.surveys.SkyView.image
 #: lumos.catalogs.svo.SvoFilterService.filter lumos.catalogs.tap.adql_string
 #: lumos.catalogs.tap.masked lumos.catalogs.vizier.VizierPhotometry.sed
+#: lumos.components.ComponentSpec.from_json lumos.components.check_component
+#: lumos.components.component_from_document lumos.components.component_of
+#: lumos.components.create lumos.components.register_component
 #: lumos.core.action.ActionSpec.duration_si lumos.core.clock.Clock.advance
 #: lumos.core.clock.Clock.reset lumos.core.context.Context.add
 #: lumos.core.context.Context.as_origin lumos.core.context.Context.connect
@@ -513,6 +516,10 @@ msgstr ""
 #: lumos.catalogs.surveys.Hips2Fits.image lumos.catalogs.surveys.SkyView.image
 #: lumos.catalogs.svo.SvoFilterService.filter lumos.catalogs.tap.adql_string
 #: lumos.catalogs.tap.masked lumos.catalogs.vizier.VizierPhotometry.sed
+#: lumos.components.ComponentSpec.from_json
+#: lumos.components.ComponentSpec.to_json lumos.components.check_component
+#: lumos.components.component_from_document lumos.components.component_of
+#: lumos.components.create lumos.components.register_component
 #: lumos.core.action.ActionSpec.duration_si lumos.core.clock.Clock.advance
 #: lumos.core.clock.Clock.reset lumos.core.context.Context.add
 #: lumos.core.context.Context.apply_links lumos.core.context.Context.as_origin
@@ -3761,7 +3768,7 @@ msgid ""
 "absolute value (JCGM 100:2008, *GUM*, §5.1)."
 msgstr ""
 
-#: ../../api/index.md:129 lumos.fields.dataproduct:16 of
+#: ../../api/index.md:132 lumos.fields.dataproduct:16 of
 msgid "Files"
 msgstr "Fichiers"
 
@@ -4690,7 +4697,9 @@ msgid "Values of the swept or drawn fields, by path ``\"element.field\"``."
 msgstr ""
 
 #: lumos.core.context.SweepPoint:5 of
-msgid "The computed outputs."
+msgid ""
+"The computed outputs (the named results of the procedure for a study on a"
+" procedure)."
 msgstr ""
 
 #: lumos.core.context.SweepPoint:7 of
@@ -5035,6 +5044,130 @@ msgstr ""
 msgid ""
 "A time quantity, a function ``(self, *args, **kwargs) -> quantity`` "
 "evaluated before the action, or ``None`` for an instantaneous action."
+msgstr ""
+
+#: lumos.components:1 of
+msgid ""
+"Declarative components: elements made by users without code (step P15.14,"
+" ADR-0025)."
+msgstr ""
+
+#: lumos.components:3 of
+msgid ""
+"A *component* is a document of kind ``component``: data only, never code."
+" It names a **template** and fills it::"
+msgstr ""
+
+#: lumos.components:12 of
+msgid "Templates:"
+msgstr ""
+
+#: lumos.components:14 of
+msgid ""
+"``transfer_matrix``: a matrix :math:`S_{ij} = A_{ij} e^{i\\phi_{ij}}` at "
+"a wavelength (``amplitudes``, ``phases``, ``wavelength``, "
+"``dispersion``), on a bus of guided lanes, as "
+":class:`~lumos.elements.photonics.TransferMatrix`;"
+msgstr ""
+
+#: lumos.components:17 of
+#, python-brace-format
+msgid ""
+"``gain_phase``: the field multiplied by :math:`\\sqrt{g}\\,e^{i\\varphi}`"
+" (``gain``, ``phase``; a gain above 1 needs ``\"amplifier\": true``), on "
+"any optical signal;"
+msgstr ""
+
+#: lumos.components:19 of
+msgid ""
+"``spectral_transmission``: a tabulated power transmission "
+":math:`T(\\lambda)` (``wavelengths``, ``transmission``), interpolated "
+"linearly and 0 outside the table, on any optical signal;"
+msgstr ""
+
+#: lumos.components:21 of
+msgid ""
+"``composite``: a group (``group``, the entry of a ``.lumos`` group), "
+"copied when the component is created."
+msgstr ""
+
+#: lumos.components:23 of
+msgid ""
+"A value of the body is a quantity (``\"3 dB\"``, ``\"[1, 2] um\"``), a "
+"number, a list or ``\"$name\"``, the value of a parameter. "
+":func:`register_component` builds and registers the element type "
+"``components.<author>.<Name>``; :func:`check_component` lists what makes "
+"a component invalid (structure, descriptions, license, units and bounds, "
+"passivity, and at least one check with an independent reference value, "
+"which it runs). The command ``lumos component check FILE`` does the same."
+msgstr ""
+
+#: lumos.components.TEMPLATES:1 of
+msgid "Templates of the components and the keys of their body."
+msgstr ""
+
+#: lumos.components.ComponentError:1 of
+msgid "A component that cannot be read or registered."
+msgstr ""
+
+#: lumos.components.ComponentSpec:1 of
+msgid ""
+"The definition of a component (the content of a document of kind "
+"``component``)."
+msgstr ""
+
+#: lumos.components.ComponentSpec.id:1 of
+msgid "Identifier ``author.Name``."
+msgstr ""
+
+#: lumos.components.ComponentSpec.type_id:1 of
+msgid "Element type ``components.<author>.<Name>``."
+msgstr ""
+
+#: lumos.components.ComponentSpec.template:1 of
+msgid "Name of the template."
+msgstr ""
+
+#: lumos.components.ComponentSpec.from_json:1 of
+msgid ""
+"Read a definition, checking its structure (:func:`check_component` checks"
+" the rest)."
+msgstr ""
+
+#: lumos.components.ComponentSpec.to_json:1 of
+msgid "Return the definition (a copy)."
+msgstr ""
+
+#: lumos.components.check_component:1 of
+msgid ""
+"Return what makes a component document invalid (empty when it is valid); "
+"its checks are run."
+msgstr ""
+
+#: lumos.components.component_from_document:1 of
+msgid "Read the component of a ``.lumos`` document of kind ``component``."
+msgstr ""
+
+#: lumos.components.component_of:1 of
+msgid "Definition of the component an element was made from, or ``None``."
+msgstr ""
+
+#: lumos.components.create:1 of
+msgid ""
+"Create an element (or the group of a composite) from the registered "
+"component ``component``."
+msgstr ""
+
+#: lumos.components.register_component:1 of
+msgid ""
+"Register a component and return its element class (``None`` for a "
+"composite component)."
+msgstr ""
+
+#: lumos.components.register_component:3 of
+msgid ""
+"Registering the same definition again does nothing; another definition "
+"under the same identifier is refused."
 msgstr ""
 
 #: lumos.core.procedure:1 of
@@ -5736,7 +5869,7 @@ msgstr ""
 msgid "Exceptions shared by several LUMOS modules."
 msgstr ""
 
-#: ../../api/index.md:142
+#: ../../api/index.md:145
 msgid "Propagation"
 msgstr ""
 
@@ -6211,7 +6344,7 @@ msgid ""
 "valid as long as the output plane stays inside the padded window."
 msgstr ""
 
-#: ../../api/index.md:157
+#: ../../api/index.md:160
 msgid "Physical models"
 msgstr ""
 
@@ -6900,7 +7033,7 @@ msgid ""
 "uniform grid ``x``."
 msgstr ""
 
-#: ../../api/index.md:188
+#: ../../api/index.md:191
 msgid "Elements"
 msgstr ""
 
@@ -8208,7 +8341,7 @@ msgid ""
 " by ``channel``)."
 msgstr ""
 
-#: ../../api/index.md:221
+#: ../../api/index.md:224
 msgid "Plotting"
 msgstr ""
 
@@ -8492,7 +8625,7 @@ msgid ""
 "``Axes`` (``ax=``) and returns the axes it drew on."
 msgstr ""
 
-#: ../../api/index.md:236
+#: ../../api/index.md:239
 msgid "Processing"
 msgstr ""
 
@@ -8550,7 +8683,7 @@ msgstr ""
 msgid "**profile** (*numpy.ndarray*) -- Mean value of ``image`` in each ring."
 msgstr ""
 
-#: ../../api/index.md:243
+#: ../../api/index.md:246
 msgid "Results and archives"
 msgstr ""
 
@@ -8813,7 +8946,7 @@ msgstr ""
 msgid "If a data file names an unknown signal type."
 msgstr ""
 
-#: ../../api/index.md:256
+#: ../../api/index.md:259
 msgid "Scenes"
 msgstr ""
 
@@ -9795,7 +9928,7 @@ msgid ""
 "is kept."
 msgstr ""
 
-#: ../../api/index.md:278
+#: ../../api/index.md:281
 msgid "Catalogues"
 msgstr ""
 
@@ -10883,7 +11016,7 @@ msgstr ""
 msgid "If the service reports an error."
 msgstr ""
 
-#: ../../api/index.md:333
+#: ../../api/index.md:336
 msgid "Symbolic optics"
 msgstr ""
 
@@ -11524,7 +11657,7 @@ msgid ""
 "wavelength, grid, closed form)."
 msgstr ""
 
-#: ../../api/index.md:349
+#: ../../api/index.md:352
 msgid "Operation of equipment"
 msgstr ""
 
@@ -12158,7 +12291,7 @@ msgid ""
 ":class:`Emulator`."
 msgstr ""
 
-#: ../../api/index.md:370
+#: ../../api/index.md:373
 msgid "Service layer"
 msgstr ""
 
@@ -12966,7 +13099,7 @@ msgstr ""
 msgid "JSON form of the error."
 msgstr ""
 
-#: ../../api/index.md:383
+#: ../../api/index.md:386
 msgid "MCP server"
 msgstr ""
 
@@ -13166,7 +13299,7 @@ msgid ""
 "API key). ``run`` replaces :func:`subprocess.run` in the tests."
 msgstr ""
 
-#: ../../api/index.md:396
+#: ../../api/index.md:399
 msgid "Web backend"
 msgstr ""
 
@@ -13949,5 +14082,8 @@ msgstr ""
 #~ "runs ``steps`` with ``as`` set to "
 #~ "each of ``values`` (a list, or "
 #~ "``{start, stop, num, log}``)"
+#~ msgstr ""
+
+#~ msgid "The computed outputs."
 #~ msgstr ""
 

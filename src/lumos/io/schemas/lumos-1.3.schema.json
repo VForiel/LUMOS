@@ -18,7 +18,8 @@
         "element",
         "group",
         "context",
-        "procedure"
+        "procedure",
+        "component"
       ]
     },
     "lumos_version": {
@@ -65,6 +66,15 @@
     },
     "procedure": {
       "$ref": "#/$defs/procedure"
+    },
+    "component": {
+      "$ref": "#/$defs/component"
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/component"
+      }
     },
     "ui": {
       "type": "object"
@@ -118,6 +128,20 @@
       "if": {
         "properties": {
           "kind": {
+            "const": "component"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "component"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
             "const": "context"
           }
         }
@@ -132,6 +156,62 @@
     }
   ],
   "$defs": {
+    "component": {
+      "description": "A declarative component (ADR-0025): a template filled with data, no code.",
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "template",
+        "body"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*\\.[A-Z][A-Za-z0-9_]*$"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "template": {
+          "enum": [
+            "transfer_matrix",
+            "gain_phase",
+            "spectral_transmission",
+            "composite"
+          ]
+        },
+        "params": {
+          "type": "object"
+        },
+        "body": {
+          "type": "object"
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "procedure": {
       "description": "A procedure: steps run in order (ADR-0024), each naming its kind in 'do'.",
       "type": "object",

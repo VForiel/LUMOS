@@ -1,0 +1,198 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-20 20:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0025-declarative-components.md:1
+msgid "ADR-0025: Declarative components, made by users without code"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:4
+msgid "**Date**: 2026-10-20"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:5
+msgid "**Plan step**: P15.14 (also P15.15, P15.16)"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:9
+msgid ""
+"Users want to make their own components (a fibre coupler with its "
+"measured matrix, an attenuator, a filter with its measured transmission) "
+"and share them, from the web interface too (review of 19/10/2026). Python"
+" code can already define elements (plugins, script blocks, ADR-0013), but"
+" code cannot run on the public instance: running the code of a visitor "
+"gives them the machine. The decisions of 20/10 "
+"(`docs/specs/pistes_evolution.md`, §2) keep code to local and private "
+"instances, and ask for **declarative** components, made with a form from "
+"templates, valid everywhere, and a catalogue in a `community/` folder of "
+"the repository."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:16
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:18
+#, python-brace-format
+msgid ""
+"**A component is data**: a `.lumos` document of kind `component` holding "
+"`{\"id\", \"version\", \"title\", \"description\", \"license\", "
+"\"authors\", \"template\", \"params\", \"body\", \"checks\"}`. Unknown "
+"keys are refused; nothing in it is executed, imported or unpickled."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:21
+msgid ""
+"`id`: `author.Name` (a lowercase author, a capitalised name); the element"
+" type is `components.<author>.<Name>`, its type version is `version`."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:23
+#, python-brace-format
+msgid ""
+"`params`: the parameters of the component, `{name: {\"unit\", "
+"\"default\", \"bounds\", \"doc\"}}`, as those of the built-in elements "
+"(units, bounds, description), editable in the inspector and free for "
+"studies."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:25
+msgid ""
+"`body`: the behaviour, given by the `template`; a value of the body is a "
+"quantity (`\"3 dB\"`), a number, an array, or `\"$name\"`, the value of a"
+" parameter."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:27
+msgid "**Templates** (decided on 20/10):"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:28
+msgid ""
+"`transfer_matrix`: a matrix of moduli and phases at a wavelength, "
+"achromatic or with optical paths, on a bus of guided lanes (the behaviour"
+" of `TransferMatrix`), refused if it amplifies;"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:30
+msgid ""
+"`gain_phase`: a power gain (at most 1 unless `amplifier` is true) and a "
+"phase on any optical signal, lane by lane on a bus;"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:32
+msgid ""
+"`spectral_transmission`: a tabulated power transmission `T(λ)` (linear "
+"interpolation, 0 outside the table) on any optical signal with "
+"wavelengths;"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:34
+msgid ""
+"`composite`: a group (the entry of a `.lumos` group), placed as a group "
+"when the component is added (it has no element type: it is copied, like "
+"\"My blocks\"). The impulse response comes later."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:37
+#, python-brace-format
+msgid ""
+"**Checks** (`lumos.components.check_component`, `lumos component check "
+"FILE`, the editor and the CI of the catalogue): the structure and the "
+"identifier; a title, a description and a license; every parameter with a "
+"unit (empty for dimensionless ones), a description and a default inside "
+"its bounds; a body valid for the template, whose `\"$name\"` refer to "
+"parameters of the right dimension; a passive behaviour unless declared "
+"otherwise; the round trip through a `.lumos` document; **at least one "
+"check with an independent reference value**, run each time: `{\"kind\": "
+"\"power\", \"wavelength\", \"power\", \"expect\", \"rtol\"}` sends a beam"
+" (or one guided lane per input of a matrix) of `power` and compares the "
+"total output power with `expect`."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:44
+msgid ""
+"**Registration**: `register_component(spec)` builds the element class "
+"from the template (a pure transfer function closed over the body) and "
+"registers it; registering the same definition again does nothing, another"
+" definition under the same identifier and version is refused. A context "
+"document using components embeds their definitions under `\"components\"`"
+" (format 1.3), so that it opens anywhere."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:48
+msgid ""
+"**Code stays local**: components written in Python are plugins or script "
+"blocks (ADR-0013), installed on local and private instances only (P15.15 "
+"offers their code view there, never on the public instance)."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:51
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:53
+msgid ""
+"**A safe expression language in the documents** (a formula for the "
+"transfer): an interpreter to maintain and to secure, for a need the "
+"templates cover."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:55
+msgid ""
+"**Components as Python only**: impossible on the public instance, where "
+"the form editor is most useful."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:56
+msgid ""
+"**Composite components as element types**: a group already saves and "
+"reloads itself; a type would add a dependency of the document on the "
+"definition without benefit."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:59
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:61
+msgid ""
+"A user builds a component in a form, checks it, shares its file, and "
+"anyone opens it on any instance."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:62
+msgid ""
+"The behaviours are those of the templates; new templates are changes of "
+"LUMOS, with their tests."
+msgstr ""
+
+#: ../../adr/0025-declarative-components.md:63
+msgid "The catalogue (P15.16) runs `lumos component check` on every contribution."
+msgstr ""
+

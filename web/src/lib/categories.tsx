@@ -10,6 +10,7 @@ import {
   Cpu,
   FlaskConical,
   Image,
+  Puzzle,
   Sigma,
   Split,
   Sun,
@@ -32,6 +33,7 @@ const CATEGORIES: Record<string, Category> = {
   fibers: { icon: Cable, color: "#14b8a6" },
   photonics: { icon: Cpu, color: "#10b981" },
   buses: { icon: Split, color: "#0ea5e9" },
+  components: { icon: Puzzle, color: "#db2777" },
   detectors: { icon: Camera, color: "#ef4444" },
   processing: { icon: Workflow, color: "#22c55e" },
   lab: { icon: FlaskConical, color: "#ec4899" },
@@ -46,6 +48,7 @@ export function category(name: string): Category {
 }
 
 export function categoryOf(typeId: string): string {
+  if (typeId.startsWith("components.")) return "components"; // declarative components of users (ADR-0025)
   const parts = typeId.split(".");
   return parts.length >= 3 ? parts[1] : "other";
 }

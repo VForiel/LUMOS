@@ -104,7 +104,42 @@ def to_document(obj: Any, *, registry: Registry | None = None) -> dict[str, Any]
     if isinstance(obj, Procedure):
         return {**_envelope("procedure"), "procedure": obj.to_json()}
     kind = "group" if isinstance(obj, ElementGroup) else "element"
-    return {**_envelope(kind), kind: entry_of(obj, reg)}
+    document = {**_envelope(kind), kind: entry_of(obj, reg)}
+    used = _components_of(_members(obj))
+    if used:
+        document["components"] = used
+    return document
+
+
+def _members(element: Element) -> list[Element]:
+    """Return an element and, for a group, every element inside it."""
+    if isinstance(element, ElementGroup):
+        return [element, *[m for child in element._graph for m in _members(child)]]
+    return [element]
+
+
+def _components_of(elements: Any) -> dict[str, Any]:
+    """Definitions of the declarative components used by ``elements`` (embedded in documents, ADR-0025)."""
+    from lumos.components import component_of
+
+    found: dict[str, Any] = {}
+    for element in elements:
+        definition = component_of(element)
+        if definition is not None:
+            found[definition["id"]] = definition
+    return found
+
+
+def _register_components(document: Mapping[str, Any], reg: Registry) -> None:
+    if not document.get("components"):
+        return  # nothing to import for documents without components
+    from lumos.components import ComponentError, register_component
+
+    for definition in dict(document["components"]).values():
+        try:
+            register_component(definition, registry=reg)
+        except ComponentError as error:
+            raise LumosFormatError(f"component {definition.get('id')!r}: {error}") from error
 
 
 def _connections_of(graph: Any) -> list[dict[str, str]]:
@@ -150,6 +185,7 @@ def _context_document(ctx: Context, reg: Registry) -> dict[str, Any]:
         "connections": _connections_of(ctx.graph),
         "feedbacks": [{"from": f.source, "to": f.target, "mode": f.mode} for f in ctx.feedbacks],
         "procedures": {name: procedure.to_json() for name, procedure in ctx.procedures.items()},
+        "components": _components_of(element for _, element in ctx.walk()),
         "ui": dict(ctx.ui),
     }
 
@@ -227,10 +263,18 @@ def from_document(document: Mapping[str, Any], *, registry: Registry | None = No
         raise LumosFormatError(f"missing key(s) in the document: {missing}")
     _check_format_version(document["lumos_format"])
     kind = document["kind"]
+    if kind == "component":
+        from lumos.components import ComponentError, component_from_document
+
+        try:
+            return component_from_document(document)
+        except ComponentError as error:
+            raise LumosFormatError(str(error)) from error
     if kind not in ("element", "group", "context", "procedure"):
         raise LumosFormatError(f"unsupported document kind {kind!r}")
     if kind not in document:
         raise LumosFormatError(f"missing key {kind!r} in the document")
+    _register_components(document, reg)
     if kind == "context":
         return _context_from_document(document, reg)
     if kind == "procedure":
