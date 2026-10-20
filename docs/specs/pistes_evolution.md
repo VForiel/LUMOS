@@ -15,79 +15,150 @@ faisable, une proposition, l'effort estimé et les questions à trancher. Une fo
 
 ---
 
-## 1. Ports visuels des composants multi-canaux (MMI, puces photoniques)
+## 1. Bus, ports multi-canaux et injection des télescopes
 
 ### Constat
 
-Un `ModalField` porte N canaux sur **un seul port** (`in`, `out`) : c'est un bus. Le réglage `channels` choisit
-les canaux sur lesquels agit un composant (coupleur sur 0 et 2…). C'est compact et exact pour le calcul, mais un
-MMI 4×4 dessiné avec une seule entrée et une seule sortie ne ressemble pas au composant, et câbler une puce
-oblige à raisonner en indices de canaux.
+- **Rendu.** Un `ModalField` porte N canaux sur **un seul port** (`in`, `out`) : c'est un bus. Le réglage
+  `channels` choisit les canaux sur lesquels agit un composant (coupleur sur 0 et 2…). C'est compact et exact pour
+  le calcul, mais un MMI 4×4 dessiné avec une seule entrée et une seule sortie ne ressemble pas au composant, et
+  câbler une puce oblige à raisonner en indices de canaux.
+- **Modèle.** L'axe des canaux d'un `ModalField` mélange deux notions : des guides séparés dans l'espace (sortie
+  d'un `TelescopeArray`, guides d'une puce) et les modes d'un même guide (port `modes` d'une `Fiber`).
+- **`TelescopeArray`.** Il renvoie directement un `ModalField` : l'élément mélange la collecte en espace libre et
+  l'injection dans des guides monomodes, supposée parfaite. Conséquences physiques :
+  - le couplage n'est réduit que par `throughput`, alors qu'une pupille d'Airy couplée dans une fibre monomode
+    plafonne vers 80 % (Shaklan & Roddier 1988, Appl. Opt. 27, 2334) ;
+  - l'amplitude injectée ne dépend pas de l'angle de la source : il n'y a pas de lobe d'antenne de la fibre
+    (environ λ/D), donc une source hors axe est couplée comme une source sur l'axe, ce qui fausse les cartes de
+    transmission des nulleurs (Bracewell, kernel nuller, LIFE) ;
+  - on ne peut rien insérer par bras avant l'injection (aberration, optique adaptative, pointage).
 
-### Options
+  Pour un seul télescope, la chaîne explicite existe déjà : `Telescope` (un `IncoherentBundle` en plan pupille)
+  puis `Fiber` (intégrale de recouvrement, port `modes`).
+
+### Options pour le rendu
 
 | | A. Ports indexés dans le cœur | B. Ports dessinés, bus conservé | C. Blocs Démux / Mux explicites |
 |---|---|---|---|
 | Principe | un port peut avoir N voies : `mmi.in[2]` se connecte à `guide.out` ; le moteur assemble le bus | le bloc dessine N broches regroupées par une accolade ; une connexion porte toujours le bus entier | `Demux(N)` éclate un bus en N ports, `Mux(N)` les regroupe |
 | Rendu | un fil par guide d'onde, comme un schéma de puce | lisible, mais les fils restent des bus | correct, mais chargé (2 blocs de plus par composant) |
-| Cœur | connexions vers une voie, fusion des voies (ordre, longueurs d'onde), validation | aucun changement | deux éléments de plus |
+| Cœur | connexions vers une voie, assemblage des voies (ordre, longueurs d'onde), validation | aucun changement | deux éléments de plus |
 | Format `.lumos` | 1.3 (`"to": "mmi.in[2]"`) | inchangé | inchangé |
 | Effort | 3 à 4 jours (cœur, service, éditeur, docs) | 1 jour | 1 jour |
 
-### Proposition (retenue le 20/10) : B + C
+### Décisions du 20/10
 
-Combiner B et C : le bus reste la règle, et on ne l'éclate que là où les voies doivent recevoir des composants
-différents. Une première proposition retenait A ; B + C donne presque le même résultat sans toucher au cœur ni au
-format.
+#### 1.1 Rendu : B + C
+
+Le bus reste la règle, et on ne l'éclate que là où les voies doivent recevoir des composants différents. Une
+première proposition retenait A ; B + C donne presque le même résultat sans ajouter de connexions vers une voie
+dans le moteur.
 
 - **Le bus par défaut (B).** Un composant multi-canaux dessine ses N broches regroupées par une accolade. Une
-  connexion porte le bus entier, comme aujourd'hui en Python (`ctx.connect(guide.port("out"), mmi.port("in"))`). Un MMI câblé
-  en bus reste un seul fil.
+  connexion porte le bus entier, comme aujourd'hui en Python
+  (`ctx.connect(guide.port("out"), mmi.port("in"))`). Un MMI câblé en bus reste un seul fil.
 - **L'éclatement explicite (C).** `Demux(N)` éclate un bus en N ports à une voie, et `Mux(N)` regroupe N voies en
   un bus. Ce sont deux éléments purs du cœur, utilisables aussi en Python et par le MCP, et utiles ailleurs (par
-  exemple traiter séparément les bras d'un `TelescopeArray`, ou envoyer une partie des canaux d'un bus vers une
-  autre puce). Ils ne découpent que l'axe des voies spatiales (voir la question 3).
-- **Ce que fait `Mux`.** C'est là qu'est la seule logique nouvelle : assembler les voies dans l'ordre des ports,
-  vérifier qu'elles sont compatibles (grille, longueurs d'onde) et compléter une voie non connectée par un canal
-  vide (amplitude nulle), avec un avertissement à la validation.
-- **Pas de mélange.** Un port reçoit soit un bus, soit la sortie d'un `Mux` ; il n'y a rien à fusionner dans le
-  moteur.
-- **Le format ne change pas.** Les documents `.lumos` restent en 1.2 : `Demux` et `Mux` sont des éléments
-  ordinaires. Les réglages `channels` restent valables.
-
-Deux étapes :
-
-1. **B + C explicites.** On dessine les broches en accolade, on ajoute les éléments `Demux` / `Mux` (cœur,
-   palette, docs), et on teste `Mux` sur ses invariants (aller-retour `Mux ∘ Demux` = identité, conservation de
-   l'énergie). Effort : 1,5 à 2 jours.
-2. **Raccourci « Éclater le port » (optionnel).** L'éditeur insère un `Demux` (ou un `Mux` en sortie) **accolé** au
-   bloc : il se déplace et se supprime avec lui, et l'accolade devient visuellement le démultiplexeur. On obtient
-   le rendu de A (un fil par guide d'onde) ; le document contient toujours des `Demux` / `Mux` explicites, donc le
-   Python et le MCP voient exactement ce qui est dans le fichier. Effort : environ 1 jour.
+  exemple traiter séparément les bras d'un `TelescopeArray`, ou envoyer une partie des voies d'un bus vers une
+  autre puce).
+- **`Mux` ne mélange rien.** Il range les voies côte à côte dans l'ordre de ses ports, sans somme ni
+  interférence ; seul un composant physique (MMI, coupleur, lame séparatrice, recombineur) mélange des voies. Une
+  voie non connectée devient une voie vide (amplitude nulle), avec un avertissement à la validation.
+- **Pas de mélange de connexions.** Un port reçoit soit un bus, soit la sortie d'un `Mux`.
 
 En Python, le bus reste la règle et le câblage reste compact. Ce n'est verbeux que si l'utilisateur câble voie par
 voie : il crée alors lui-même `Demux` et `Mux`, alors que l'option A aurait permis d'écrire `mmi.port("in")[2]`.
+
+#### 1.2 Modèle des signaux : une voie = un signal, un bus = N voies
+
+- **Une voie guidée** est un `ModalField` d'un seul guide, de forme `(sources, λ, modes)` ; `modes = 1` pour un
+  guide monomode. L'axe des modes ne désigne plus jamais des guides différents. Une lanterne photonique, par
+  exemple, transforme une voie à K modes en un bus de K voies monomodes.
+- **Une voie en espace libre** est un `Wavefront`, un `Wavecube` ou un `IncoherentBundle`.
+- **Un bus** regroupe N voies du même type de signal, séparées dans l'espace. Il se comporte comme une séquence :
+  `len(bus)`, `bus[i]`, des noms de voies (`T1`…`Tn`).
+- **Un composant à une voie appliqué à un bus agit sur chaque voie**, comme N copies identiques : une `Fiber`
+  branchée sur un bus de faisceaux renvoie un bus de voies guidées. Pour traiter les voies différemment, on passe
+  par `Demux`.
+- **Un recombineur** (MMI, coupleur, kernel nuller) applique sa matrice S au vecteur de tous les modes de toutes
+  ses voies d'entrée. Pour interférer, les voies doivent décrire **les mêmes sources dans le même ordre** ; le
+  recombineur le vérifie (identifiant de la liste de sources porté par chaque voie) au lieu de le supposer.
+
+**Compactage implicite, pour tous les bus (guidés et en espace libre).** Quand les voies partagent certaines
+propriétés, le bus les stocke dans **un seul tableau** ; sinon, il garde une liste de signaux. Le choix est fait
+par le bus, à la construction et après chaque `Mux`, et l'interface est la même dans les deux cas : les éléments
+ne voient qu'un bus de N voies.
+
+| Bus | Conditions du compactage | Tableau |
+|---|---|---|
+| guidé | mêmes sources, mêmes longueurs d'onde et poids spectraux, même unité de puissance (le nombre de modes peut varier d'une voie à l'autre) | `(sources, λ, Σ modes)` et la position de chaque voie |
+| espace libre | même type de signal, même grille, mêmes sources, mêmes longueurs d'onde et poids spectraux, même polarisation, même unité de puissance | `(voies, sources, λ, ny, nx)` (et l'axe de polarisation s'il existe) |
+
+Avantages : un recombineur applique sa matrice sans copier les voies ; `Demux` / `Mux` deviennent des découpages
+et des concaténations ; un composant appliqué à un bus compacté est vectorisé sur l'axe des voies (par exemple les
+N intégrales de recouvrement d'une `Fiber` en un seul calcul). Pour un réseau de télescopes identiques, le bus
+de sortie est toujours compacté.
+
+**Ce qui est un bus et ce qui n'en est pas un.** Un bus regroupe des signaux **séparés dans l'espace**, sur
+lesquels on peut placer des composants différents : guides d'onde d'une puce, bras d'un interféromètre.
+`Demux` / `Mux` découpent donc **uniquement l'axe des voies** ; chaque voie garde toutes ses sources et toutes ses
+longueurs d'onde.
+
+- **Composantes spectrales** : pas de bus. Séparer les longueurs d'onde est le rôle d'un composant physique
+  (prisme, réseau, filtre dichroïque), pas d'un démultiplexeur logique.
+- **Composantes incohérentes** (sources d'un `IncoherentBundle`, axe des sources d'un `ModalField`) : pas de bus
+  non plus. Elles se superposent dans le même faisceau, et aucun composant ne peut agir sur l'une sans agir sur
+  les autres.
+- **Modes d'un guide** : pas de bus. Ils partagent le même guide ; c'est un composant physique (lanterne
+  photonique) qui les sépare en voies.
+
+#### 1.3 `TelescopeArray` : collecte en espace libre, injection explicite
+
+- **`TelescopeArray` renvoie un bus de faisceaux en plan pupille**, un `IncoherentBundle` par télescope : la
+  pupille de chaque télescope (comme `Telescope`) avec la phase géométrique de son bras. Les télescopes étant
+  identiques, le bus est compacté.
+- **L'injection devient un élément du schéma** : `TelescopeArray → Fiber → puce` pour le cas courant (une fibre
+  identique par bras), ou `TelescopeArray → Demux → (optique par bras, Fiber) → Mux → puce` pour traiter les bras
+  séparément. Le couplage réel et le lobe d'antenne de la fibre sont alors pris en compte.
+- **Le modèle analytique actuel est conservé sous un nom explicite** (proposition : `IdealInjectionArray`), comme
+  modèle rapide documenté et non comme comportement par défaut. Il reste utile quand le nombre de sources est
+  grand (disque exozodiacal de milliers de points), où échantillonner N pupilles × M sources × nλ coûte cher.
+- **Préréglages** : `bracewell.lumos` et `kernel_nuller.lumos` branchent `TelescopeArray` directement sur la puce.
+  Le convertisseur vers le format 1.3 remplace cet élément par `IdealInjectionArray`, ce qui garde les résultats
+  à l'identique ; les préréglages livrés passent à la chaîne explicite.
+
+### Étapes
+
+Une ADR pour le modèle des signaux et des bus (1.2 et 1.3), écrite avant l'étape 2.
+
+1. **Rendu B + C.** Broches en accolade, éléments `Demux` / `Mux` (cœur, palette, docs). Tests des invariants :
+   aller-retour `Mux ∘ Demux` = identité, conservation de l'énergie, voie vide pour une entrée non connectée.
+   Effort : 1,5 à 2 jours.
+2. **Modèle des bus.** Voie guidée `(sources, λ, modes)`, bus guidé et bus en espace libre avec compactage
+   implicite, recombineurs sur bus avec vérification des sources, composants à une voie appliqués à un bus,
+   migration des éléments photoniques, de `Fiber` et des détecteurs. Format `.lumos` 1.3 avec convertisseur
+   (les réglages `channels` désignent désormais des voies). Tests : un bus compacté et le même bus en liste donnent
+   les mêmes résultats ; le compactage est refusé dès qu'une propriété partagée diffère. Effort : 3 à 4 jours.
+3. **`TelescopeArray` en espace libre.** Bus d'`IncoherentBundle`, `IdealInjectionArray`, migration des
+   préréglages et des notebooks. Tests de référence : couplage d'une pupille d'Airy dans une fibre monomode
+   (Shaklan & Roddier 1988) et lobe d'antenne en fonction de l'angle de la source ; `IdealInjectionArray`
+   identique à l'ancien `TelescopeArray`. Effort : 1,5 à 2 jours.
+4. **Raccourci « Éclater le port » (optionnel).** L'éditeur insère un `Demux` (ou un `Mux` en sortie) **accolé** au
+   bloc : il se déplace et se supprime avec lui, et l'accolade devient visuellement le démultiplexeur. On obtient
+   le rendu de A (un fil par guide d'onde) ; le document contient toujours des `Demux` / `Mux` explicites, donc le
+   Python et le MCP voient exactement ce qui est dans le fichier. Effort : environ 1 jour.
 
 ### Questions
 
 1. ~~Mélange d'un bus et de voies isolées sur un même port~~ : sans objet avec B + C (un port reçoit soit un bus,
    soit la sortie d'un `Mux`).
-2. ~~Voie non connectée~~ : canal vide (amplitude nulle) avec un avertissement à la validation.
-3. ~~Extension aux autres signaux à plusieurs composantes~~ (tranché le 20/10). Un bus regroupe des signaux
-   **séparés dans l'espace**, sur lesquels on peut placer des composants différents : guides d'onde d'une puce,
-   bras d'un interféromètre. `Demux` / `Mux` découpent donc **uniquement l'axe des voies spatiales** ; chaque voie
-   garde toutes ses sources et toutes ses longueurs d'onde.
-   - **Composantes spectrales** : pas de bus. Séparer les longueurs d'onde est le rôle d'un composant physique
-     (prisme, réseau, filtre dichroïque), pas d'un démultiplexeur logique.
-   - **Composantes incohérentes** (sources d'un `IncoherentBundle`, axe des sources d'un `ModalField`) : pas de
-     bus non plus. Elles se superposent dans le même faisceau, et aucun composant ne peut agir sur l'une sans
-     agir sur les autres.
-   - **Sortie d'un `TelescopeArray`** : c'est un bus. Elle est déjà un `ModalField` dont les voies sont les
-     télescopes (`T1`…`Tn`). Le bloc dessine une broche par télescope, et un `Demux` permet de traiter chaque bras
-     séparément (ligne à retard, fibre, atténuateur) avant de tout regrouper avec un `Mux` vers le recombineur.
-   - **Plus tard** : un bus de `Wavefront` (un front d'onde par ouverture, en plan pupille) servirait aux
-     recombinaisons de type Fizeau ou à une optique adaptative par bras. Aucun élément ne produit encore ce
-     signal ; à reprendre quand un cas d'usage apparaîtra.
+2. ~~Voie non connectée~~ : voie vide (amplitude nulle) avec un avertissement à la validation.
+3. ~~Extension aux autres signaux à plusieurs composantes~~ : un bus regroupe uniquement des voies séparées dans
+   l'espace, guidées ou en espace libre (voir 1.2).
+4. Nom du modèle rapide : `IdealInjectionArray` convient-il ?
+5. Un bus en espace libre en plan pupille ouvre la recombinaison de type Fizeau (les N pupilles recombinées sur
+   un même détecteur). Faut-il un élément dédié, ou attendre un cas d'usage ?
 
 ---
 
