@@ -1,0 +1,152 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-20 21:41+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../adr/0026-community-catalogue.md:1
+msgid "ADR-0026: Community catalogue"
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:3
+msgid "**Status**: accepted"
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:4
+msgid "**Date**: 2026-10-20"
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:5
+msgid "**Plan step**: P15.16"
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:7
+msgid "Context"
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:9
+msgid ""
+"Declarative components (ADR-0025) and presets are worth sharing. The "
+"review of 20/10/2026 (docs/specs/pistes_evolution.md §2) settled that the"
+" catalogue lives in the LUMOS repository, in a `community/` folder for "
+"the contributions of the community, with a CI filtered by path, an index "
+"with one entry per contribution (author, version, license, minimum "
+"format), and a \"Catalogue\" tab of the palette that imports a "
+"declarative component in one click. Components with code are Python "
+"packages installed locally (`lumos-component-…`), never run on the public"
+" instance."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:16
+msgid "Decision"
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:18
+msgid ""
+"**Layout.** `community/components/<author>/<Name>.lumos` (documents of "
+"kind `component`, identifier `<author>.<Name>`), "
+"`community/presets/<author>/<name>.lumos` (contexts whose `meta` gives "
+"`name`, `description`, `authors` and `license`; the components they use "
+"are embedded), `community/README.md` (how to contribute) and "
+"`community/index.json`."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:22
+msgid ""
+"**Index.** `lumos.catalogue.build_index(root)` makes the index from the "
+"files: per entry `kind` (`component` or `preset`), `id` (`author.Name` or"
+" `author/name`), `title`, `description`, `authors`, `version` "
+"(components), `license`, `lumos_format` (the format of the file, the "
+"minimum to read it) and `path`. The committed index must equal the built "
+"one; `tools/build_catalogue.py` writes it."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:26
+msgid ""
+"**Checks.** `lumos.catalogue.check_catalogue(root)` lists what refuses a "
+"contribution: a component failing `check_component` (its checks carry "
+"independent reference values), a file not at the place of its identifier,"
+" a preset without license, authors or description, or not loading, a "
+"format newer than the library. The workflow `community.yml` runs it, "
+"`lumos component check` on every component and the index check, on "
+"changes to `community/` only; the main CI ignores changes under "
+"`community/`."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:31
+msgid ""
+"**Shipping.** The wheel includes `community/` as `lumos/community` (like "
+"the presets); the service finds it there, else in the repository, or in "
+"`ServiceConfig.catalogue_dir`."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:33
+msgid ""
+"**Service.** `list_catalogue(query)`, `use_catalogue_component(session, "
+"id)` (registers the component in the session, as the editor does) and "
+"`open_catalogue_preset(session, id)` (a new context). Identifiers are "
+"looked up in the index only, so nothing outside it can be read; the "
+"routes `/api/catalogue...` and the MCP tools `list_catalogue` and "
+"`use_catalogue` are thin adapters."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:38
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:40
+msgid ""
+"A separate repository for the catalogue: two CIs and two reviews, and "
+"contributions lagging behind the format; refused on 20/10."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:42
+msgid ""
+"Fetching the index from GitHub at run time: needs the network, and an "
+"instance would show contributions that its version cannot read."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:44
+msgid ""
+"Executable contributions in `community/`: code never runs on the public "
+"instance (ADR-0025 §5); code components are packages installed by whoever"
+" runs the instance."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:47
+msgid "Consequences"
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:49
+msgid ""
+"A contribution is a pull request adding one file (and the rebuilt index);"
+" reviewers see its checks."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:50
+msgid ""
+"The catalogue of an instance is the one of its version; a new "
+"contribution reaches the public instance when it is redeployed."
+msgstr ""
+
+#: ../../adr/0026-community-catalogue.md:52
+msgid ""
+"Shared resources of the public instance (P15.5) will join `community/` "
+"with their own kind of entry."
+msgstr ""
+

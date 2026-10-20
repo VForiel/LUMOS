@@ -68,6 +68,9 @@ With nothing selected, the inspector shows the context: its name, description an
   saves it as a `.lumos` file, which also loads in Python with `lumos.io.load`.
 - **New component** (the button of *My blocks*) defines an element without code: see
   [Your own components](../user_guide/components.md).
+- The **Catalogue** tab of the palette lists the components and presets shared by the community: **Import** a
+  component to add it to the palette, **Open** a preset as a new context (see
+  [Create and share a component](../user_guide/sharing.md)).
 
 ## Files
 

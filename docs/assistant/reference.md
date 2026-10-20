@@ -100,6 +100,8 @@ also listed by any MCP client (`/mcp` in Claude Code).
 | `check_component` | Problems of a component document (templates, parameters, checks), its checks run. |
 | `save_component` | Check and register a component: a new element type of the session. |
 | `add_component` | Add a component of the session to a context (a group for a composite one). |
+| `list_catalogue` | The community catalogue: shared declarative components and presets. |
+| `use_catalogue` | Import a component of the catalogue, or open one of its presets as a new context. |
 
 ### Catalogues and processing
 

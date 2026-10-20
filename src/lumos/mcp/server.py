@@ -14,7 +14,7 @@ import inspect
 import logging
 import time
 from collections.abc import Callable
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 import anyio
 from mcp.server.mcpserver import Context as MCPContext
@@ -30,6 +30,7 @@ from lumos.mcp.resources import register_resources
 from lumos.service import Service, ServiceConfig, ServiceError
 from lumos.service.models import (
     ArchiveInfo,
+    CatalogueEntry,
     ComponentInfo,
     ConnectionInfo,
     ContextSummary,
@@ -554,6 +555,21 @@ def create_server(
     def add_component(component: str, name: str | None = None, context: str | None = None) -> ContextSummary:
         """Add a component of the session (``author.Name``) to a context (a group for a composite one)."""
         return service.add_component(session, state.context(context), component, name=name)
+
+    @tool
+    def list_catalogue(query: str = "") -> list[CatalogueEntry]:
+        """List the community catalogue (ADR-0026): shared declarative components and presets, by words."""
+        return service.list_catalogue(query=query)
+
+    @tool
+    def use_catalogue(kind: Literal["component", "preset"], id: str) -> ComponentInfo | ContextSummary:
+        """Use an entry of the catalogue: import a component (add it with add_component), or open a preset.
+
+        A preset opens as a new context, which becomes the current context.
+        """
+        if kind == "component":
+            return service.use_catalogue_component(session, id)
+        return state.opened(service.open_catalogue_preset(session, id))
 
     @tool
     def remove_procedure(name: str, context: str | None = None) -> str:

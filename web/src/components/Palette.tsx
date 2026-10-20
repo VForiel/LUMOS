@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { api, type ElementType } from "../api";
 import { category, CATEGORY_ORDER } from "../lib/categories";
 import { storage, useStore } from "../store";
+import { CatalogueList } from "./Catalogue";
 import { Resizer } from "./Resizer";
 
 export const DRAG_TYPE = "application/x-lumos-type";
@@ -78,6 +79,8 @@ export function Palette() {
   const role = useStore((s) => s.info?.role);
   const centre = useCanvasCentre();
   const [query, setQuery] = useState("");
+  // the elements of the library, or the catalogue of the community (P15.16)
+  const [tab, setTab] = useState<"elements" | "catalogue">("elements");
   // categories start collapsed; those opened are remembered by the browser
   const [opened, setOpened] = useState<Record<string, boolean>>(readOpened);
 
@@ -141,10 +144,24 @@ export function Palette() {
       <Resizer side="right" size={layout.palette} onResize={(palette) => setLayout({ palette })} testId="resize-palette" />
       <div className="border-b border-slate-200 p-3 dark:border-slate-800">
         <div className="mb-2 flex items-center justify-between gap-2">
-          <h2 className="text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
-            {t("palette.title")}
-          </h2>
-          <span className="ml-auto text-xs text-slate-400">{palette?.types.length ?? 0}</span>
+          <div role="tablist" className="flex items-center gap-0.5 rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
+            {(["elements", "catalogue"] as const).map((name) => (
+              <button
+                key={name}
+                type="button"
+                role="tab"
+                aria-selected={tab === name}
+                data-testid={`palette-tab-${name}`}
+                onClick={() => setTab(name)}
+                className={`rounded-md px-2 py-0.5 text-xs font-semibold ${
+                  tab === name ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                }`}
+              >
+                {t(name === "elements" ? "palette.title" : "palette.catalogue")}
+              </button>
+            ))}
+          </div>
+          {tab === "elements" && <span className="ml-auto text-xs text-slate-400">{palette?.types.length ?? 0}</span>}
           <button
             type="button"
             data-testid="hide-palette"
@@ -163,7 +180,7 @@ export function Palette() {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={t("palette.search")}
+            placeholder={t(tab === "elements" ? "palette.search" : "palette.searchCatalogue")}
             className="w-full rounded-lg border border-slate-200 bg-slate-50 py-1.5 pr-7 pl-8 text-sm outline-none placeholder:text-slate-400 focus:border-accent-400 focus:ring-2 focus:ring-accent-200 dark:border-slate-700 dark:bg-slate-800 dark:focus:ring-accent-900"
           />
           {query && (
@@ -179,7 +196,8 @@ export function Palette() {
         </label>
       </div>
       <div className="scrollbar-thin flex-1 overflow-y-auto p-2">
-        {editable && (
+        {tab === "catalogue" && <CatalogueList query={query} />}
+        {tab === "elements" && editable && (
           <section className="mb-2 rounded-lg border border-dashed border-slate-200 p-1 dark:border-slate-700" data-testid="blocks">
             <div className="flex items-center gap-2 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
               <Package className="size-4 text-indigo-500" />
@@ -277,8 +295,9 @@ export function Palette() {
             )}
           </section>
         )}
-        {groups.length === 0 && <p className="p-3 text-sm text-slate-500">{t("palette.empty")}</p>}
-        {groups.map(([name, items]) => {
+        {tab === "elements" && groups.length === 0 && <p className="p-3 text-sm text-slate-500">{t("palette.empty")}</p>}
+        {tab === "elements" &&
+          groups.map(([name, items]) => {
           const { icon: Icon, color } = category(name);
           const open = Boolean(opened[name]) || query !== "";
           return (

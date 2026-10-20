@@ -338,7 +338,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 - [x] **P15.14 Composants déclaratifs** — ADR (format, sécurité) ; document `component` ; gabarits : matrice de transfert, gain ou atténuation et déphasage, transmission spectrale tabulée, composite ; commande `lumos component check`.
 - [x] **P15.15 Éditeur de composants** — vue formulaire (toutes instances) ; vue code (instances locales et privées seulement).
-- [ ] **P15.16 Catalogue `community/`** — dossier du dépôt pour les composants, préréglages et ressources partagés ; index ; CI filtrée par chemin qui lance `lumos component check` ; onglet « Catalogue » de la palette ; page « Créer et partager un composant ».
+- [x] **P15.16 Catalogue `community/`** — dossier du dépôt pour les composants, préréglages et ressources partagés ; index ; CI filtrée par chemin qui lance `lumos component check` ; onglet « Catalogue » de la palette ; page « Créer et partager un composant ».
 
 **Retours du 20/10**
 
@@ -395,4 +395,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-**P15.16 Catalogue `community/`**, puis P15.3 à P15.5.
+**P15.3 Performance**, puis P15.4 et P15.5.

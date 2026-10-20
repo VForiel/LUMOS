@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:13+0200\n"
+"POT-Creation-Date: 2026-10-20 21:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -390,6 +390,7 @@ msgstr ""
 #: lumos.service.service.Service.journal
 #: lumos.service.service.Service.journal_since
 #: lumos.service.service.Service.list_archives
+#: lumos.service.service.Service.list_catalogue
 #: lumos.service.service.Service.list_components
 #: lumos.service.service.Service.list_contexts
 #: lumos.service.service.Service.list_devices
@@ -397,6 +398,7 @@ msgstr ""
 #: lumos.service.service.Service.list_jobs
 #: lumos.service.service.Service.list_procedures
 #: lumos.service.service.Service.load_preset
+#: lumos.service.service.Service.open_catalogue_preset
 #: lumos.service.service.Service.paste_elements
 #: lumos.service.service.Service.plan_propagation
 #: lumos.service.service.Service.port_file
@@ -424,6 +426,7 @@ msgstr ""
 #: lumos.service.service.Service.study_csv lumos.service.service.Service.undo
 #: lumos.service.service.Service.ungroup
 #: lumos.service.service.Service.update_ui
+#: lumos.service.service.Service.use_catalogue_component
 #: lumos.service.service.Service.validate_context
 #: lumos.service.service.Service.wait_job
 #: lumos.symbolic.closed_forms.GaussianBeamForm.abcd
@@ -861,6 +864,7 @@ msgstr ""
 #: lumos.service.service.Service.associate_devices
 #: lumos.service.service.Service.build_pipeline
 #: lumos.service.service.Service.cancel_job
+#: lumos.service.service.Service.catalogue_dir
 #: lumos.service.service.Service.check_component
 #: lumos.service.service.Service.close_context
 #: lumos.service.service.Service.close_session
@@ -900,6 +904,7 @@ msgstr ""
 #: lumos.service.service.Service.journal
 #: lumos.service.service.Service.journal_since
 #: lumos.service.service.Service.list_archives
+#: lumos.service.service.Service.list_catalogue
 #: lumos.service.service.Service.list_components
 #: lumos.service.service.Service.list_contexts
 #: lumos.service.service.Service.list_devices
@@ -908,6 +913,7 @@ msgstr ""
 #: lumos.service.service.Service.list_presets
 #: lumos.service.service.Service.list_procedures
 #: lumos.service.service.Service.load_preset
+#: lumos.service.service.Service.open_catalogue_preset
 #: lumos.service.service.Service.paste_elements
 #: lumos.service.service.Service.plan_propagation
 #: lumos.service.service.Service.port_file
@@ -937,6 +943,7 @@ msgstr ""
 #: lumos.service.service.Service.study_csv lumos.service.service.Service.undo
 #: lumos.service.service.Service.ungroup
 #: lumos.service.service.Service.update_ui
+#: lumos.service.service.Service.use_catalogue_component
 #: lumos.service.service.Service.validate_context
 #: lumos.service.service.Service.wait_job
 #: lumos.symbolic.closed_forms.GaussianBeamForm.abcd
@@ -12431,6 +12438,26 @@ msgid ""
 "component."
 msgstr ""
 
+#: lumos.service.service.Service.catalogue_dir:1 of
+msgid "Directory of the community catalogue."
+msgstr ""
+
+#: lumos.service.service.Service.list_catalogue:1 of
+msgid ""
+"Contributions of the community catalogue, filtered by the words of "
+"``query``."
+msgstr ""
+
+#: lumos.service.service.Service.use_catalogue_component:1 of
+msgid ""
+"Import a component of the catalogue: it becomes a type of the palette of "
+"the session."
+msgstr ""
+
+#: lumos.service.service.Service.open_catalogue_preset:1 of
+msgid "Open a preset of the catalogue as a new context."
+msgstr ""
+
 #: lumos.service.service.Service.define_code_component:1 of
 msgid ""
 "Run a Python source defining element types (script mode, ADR-0025 §5); "
@@ -13007,6 +13034,7 @@ msgstr ""
 #: lumos.service.models.ActionResult.model_config:1
 #: lumos.service.models.ArchiveFile.model_config:1
 #: lumos.service.models.ArchiveInfo.model_config:1
+#: lumos.service.models.CatalogueEntry.model_config:1
 #: lumos.service.models.ComponentInfo.model_config:1
 #: lumos.service.models.ConnectionInfo.model_config:1
 #: lumos.service.models.ContextSummary.model_config:1
@@ -13041,6 +13069,12 @@ msgstr ""
 
 #: lumos.service.models.ArchiveInfo:1 of
 msgid "An archive of a run."
+msgstr ""
+
+#: lumos.service.models.CatalogueEntry:1 of
+msgid ""
+"A contribution of the community catalogue (ADR-0026): a declarative "
+"component or a shared preset."
 msgstr ""
 
 #: lumos.service.models.ComponentInfo:1 of

@@ -1,0 +1,41 @@
+{
+  "lumos_format": "1.3",
+  "kind": "component",
+  "component": {
+    "id": "lumos.ShortPass1um",
+    "version": 1,
+    "title": "Short-pass filter at 1 µm",
+    "description": "An idealised short-pass filter: 95 % transmission from 400 to 950 nm, falling linearly to 0 at 1050 nm, 0 above.",
+    "license": "MIT",
+    "authors": [
+      "LUMOS"
+    ],
+    "template": "spectral_transmission",
+    "params": {},
+    "body": {
+      "wavelengths": "[0.4, 0.95, 1.05, 2.0] um",
+      "transmission": [
+        0.95,
+        0.95,
+        0.0,
+        0.0
+      ]
+    },
+    "checks": [
+      {
+        "kind": "power",
+        "wavelength": "600 nm",
+        "power": "2 mW",
+        "expect": "1.9 mW",
+        "rtol": 1e-09
+      },
+      {
+        "kind": "power",
+        "wavelength": "1 um",
+        "power": "2 mW",
+        "expect": "0.95 mW",
+        "rtol": 1e-09
+      }
+    ]
+  }
+}

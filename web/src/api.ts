@@ -27,6 +27,19 @@ export type ArchiveFile = { name: string; kind: "data" | "figure" | "context" | 
 /** A procedure of a context (ADR-0024) with its problems and the equipment it acts on. */
 export type ProcedureInfo = { name: string; description: string; steps: number; script: boolean; problems: string[]; devices: string[] };
 
+/** A contribution of the community catalogue (ADR-0026, P15.16). */
+export type CatalogueEntry = {
+  kind: "component" | "preset";
+  id: string;
+  title: string;
+  description: string;
+  authors: string[];
+  version: number | null;
+  license: string;
+  template: string;
+  lumos_format: string;
+};
+
 /** A declarative component of the session (ADR-0025, P15.15). */
 export type ComponentInfo = { id: string; type_id: string; title: string; template: string; version: number };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -275,6 +288,9 @@ export const api = {
   archiveData: (path: string, name: string) =>
     request<PortSummary>("GET", `/api/archives/data?path=${enc(path)}&name=${enc(name)}`),
   deleteArchive: (path: string) => request<void>("DELETE", `/api/archives?path=${enc(path)}`),
+  catalogue: () => request<CatalogueEntry[]>("GET", "/api/catalogue"),
+  useCatalogueComponent: (id: string) => request<ComponentInfo>("POST", `/api/catalogue/component/${enc(id)}`),
+  openCataloguePreset: (id: string) => request<ContextSummary>("POST", `/api/catalogue/preset/${id.split("/").map(enc).join("/")}`),
   components: () => request<ComponentInfo[]>("GET", "/api/components"),
   checkComponent: (document: ComponentDocument) => request<string[]>("POST", "/api/components/check", document),
   saveComponent: (document: ComponentDocument) => request<ComponentInfo>("PUT", "/api/components", document),

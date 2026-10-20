@@ -16,7 +16,7 @@ This guide will explain the concepts of LUMOS:
   script blocks;
 - **results**: figures, data files and archives of runs;
 - **procedures**: sequences of actions, measurements and processing (a dark, then measurements);
-- **your own components**: elements defined without code, from templates.
+- **your own components**: elements defined without code, from templates, and the community catalogue.
 
 ```{toctree}
 :maxdepth: 1
@@ -31,5 +31,6 @@ processing
 results
 procedures
 components
+sharing
 stability
 ```

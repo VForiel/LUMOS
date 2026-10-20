@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:13+0200\n"
+"POT-Creation-Date: 2026-10-20 21:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -131,47 +131,51 @@ msgstr "**Enregistrer comme bloc** garde un groupe dans *Mes blocs* (dans votre 
 msgid "**New component** (the button of *My blocks*) defines an element without code: see [Your own components](../user_guide/components.md)."
 msgstr "**Nouveau composant** (le bouton de *Mes blocs*) définit un élément sans code : voir [Vos propres composants](../user_guide/components.md)."
 
-#: ../../web/editing.md:72
+#: ../../web/editing.md:71
+msgid "The **Catalogue** tab of the palette lists the components and presets shared by the community: **Import** a component to add it to the palette, **Open** a preset as a new context (see [Create and share a component](../user_guide/sharing.md))."
+msgstr "L'onglet **Catalogue** de la palette liste les composants et préréglages partagés par la communauté : **Importer** un composant l'ajoute à la palette, **Ouvrir** un préréglage l'ouvre dans un nouveau contexte (voir [Créer et partager un composant](../user_guide/sharing.md))."
+
+#: ../../web/editing.md:75
 msgid "Files"
 msgstr "Fichiers"
 
-#: ../../web/editing.md:74
+#: ../../web/editing.md:77
 msgid "**Save** (Ctrl+S) downloads the context as a `.lumos` file, positions of the blocks included."
 msgstr "**Enregistrer** (Ctrl+S) télécharge le contexte en fichier `.lumos`, positions des blocs comprises."
 
-#: ../../web/editing.md:75
+#: ../../web/editing.md:78
 msgid "**Open** (Ctrl+O) loads a `.lumos` file, made in the interface, by the Python library or by an assistant."
 msgstr "**Ouvrir** (Ctrl+O) charge un fichier `.lumos`, créé dans l'interface, par la bibliothèque Python ou par un assistant."
 
-#: ../../web/editing.md:76
+#: ../../web/editing.md:79
 msgid "**Python** shows the script that builds the same context with the library."
 msgstr "**Python** montre le script qui construit le même contexte avec la bibliothèque."
 
-#: ../../web/editing.md:78
+#: ../../web/editing.md:81
 msgid "A context with changes that are not saved shows **Not saved** next to its name (and a dot in the title of the tab). Opening another context, a file or a preset then asks first: save, discard the changes or cancel; closing or reloading the page asks too."
 msgstr "Un contexte qui a des modifications non sauvegardées affiche **Non sauvegardé** à côté de son nom (et un point dans le titre de l'onglet). Ouvrir un autre contexte, un fichier ou un préréglage demande alors d'abord : sauvegarder, abandonner les modifications ou annuler ; fermer ou recharger la page le demande aussi."
 
-#: ../../web/editing.md:82
+#: ../../web/editing.md:85
 msgid "If the server restarts, the interface restores the context you were editing."
 msgstr "Si le serveur redémarre, l'interface restaure le contexte que vous modifiiez."
 
-#: ../../web/editing.md:84
+#: ../../web/editing.md:87
 msgid "Procedures"
 msgstr "Procédures"
 
-#: ../../web/editing.md:86
+#: ../../web/editing.md:89
 msgid "The switch **Graph** / **Procedures** of the top bar changes the mode of the interface. In the **Procedures** mode, the editor of procedures takes the whole working area (the palette and the inspector come back with the graph); it holds the procedures of the context: sequences of actions, measurements and processing such as \"a dark, then measurements\" (see the user guide). They are drawn as blocks: drag steps from the toolbox (or add them with the buttons of the tab) and fit them into the procedure block; loops and conditions hold steps inside them. Every change is saved with the context, and the problems of the procedure (an unknown element, a result used before it is defined...) are listed above the blocks. **Run** starts the procedure (after a confirmation when it acts on equipment) and lists its named results; **Export to Python** gives an equivalent script."
 msgstr "Le sélecteur **Graphe** / **Procédures** de la barre du haut change le mode de l'interface. En mode **Procédures**, l'éditeur de procédures occupe toute la zone de travail (la palette et l'inspecteur reviennent avec le graphe) ; il contient les procédures du contexte : des suites d'actions, de mesures et de traitements comme « un dark, puis des mesures » (voir le guide utilisateur). Elles sont dessinées sous forme de blocs : faites glisser des étapes depuis la boîte à outils (ou ajoutez-les avec les boutons de l'éditeur) et emboîtez-les dans le bloc de la procédure ; les boucles et les conditions contiennent des étapes. Chaque modification est enregistrée avec le contexte, et les problèmes de la procédure (un élément inconnu, un résultat utilisé avant d'être défini...) sont listés au-dessus des blocs. **Exécuter** lance la procédure (après une confirmation lorsqu'elle agit sur du matériel) et liste ses résultats nommés ; **Exporter en Python** donne un script équivalent."
 
-#: ../../web/editing.md:96
+#: ../../web/editing.md:99
 msgid "On a local or private instance, **New script** creates a procedure written in Python (`ctx`, `results`, `u`, `np` and `call` in its namespace). Scripts never run on the public instance."
 msgstr "Sur une instance locale ou privée, **Nouveau script** crée une procédure écrite en Python (`ctx`, `results`, `u`, `np` et `call` dans son espace de noms). Les scripts ne s'exécutent jamais sur l'instance publique."
 
-#: ../../web/editing.md:99
+#: ../../web/editing.md:102
 msgid "The procedures are saved in the `.lumos` file with the context. **Python** in the top bar includes them in the script of the context, one function each (untick *Include the procedures* to leave them out)."
 msgstr "Les procédures sont enregistrées dans le fichier `.lumos` avec le contexte. **Python** dans la barre du haut les inclut dans le script du contexte, une fonction chacune (décochez *Inclure les procédures* pour les laisser de côté)."
 
-#: ../../web/editing.md:102
+#: ../../web/editing.md:105
 msgid "Press **?** to see every keyboard shortcut."
 msgstr "Appuyez sur **?** pour voir tous les raccourcis clavier."
 

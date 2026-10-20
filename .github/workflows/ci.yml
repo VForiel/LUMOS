@@ -3,7 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
+    # a contribution to the catalogue alone runs its own checks only (community.yml, ADR-0026)
+    paths-ignore: ["community/**"]
   pull_request:
+    paths-ignore: ["community/**"]
 
 concurrency:
   group: ci-${{ github.ref }}

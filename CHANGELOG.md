@@ -290,6 +290,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   includes the procedures of the context, each one a function returning its named results
   (`Procedure.to_function`, `procedures=False` to leave them out), an option of the Python dialog, of
   `GET .../export.py?procedures=` and of the MCP tool `export_python`.
+- Community catalogue (P15.16, ADR-0026): the `community/` folder (components, shared presets, `index.json`
+  built by `tools/build_catalogue.py`), shipped in the wheel as `lumos/community`; `lumos.catalogue`
+  (`build_index`, `check_catalogue`, `read_index`); the workflow *Community catalogue*, run on changes of
+  `community/` only (the main CI ignores them); `Service.list_catalogue`, `use_catalogue_component`,
+  `open_catalogue_preset`, the routes `/api/catalogue...`, the MCP tools `list_catalogue` and `use_catalogue`
+  and the *Catalogue* tab of the palette; the service loads the element packages of the entry point
+  `lumos.elements` when it starts; the guide page "Create and share a component". A component appears in the
+  palette under its title.
 - Top bar for every window (P15.19): no control cut off whatever the width; the commands without room go into a
   **More** menu.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,

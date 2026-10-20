@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 20:37+0200\n"
+"POT-Creation-Date: 2026-10-20 21:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -76,6 +76,6 @@ msgid "**procedures**: sequences of actions, measurements and processing (a dark
 msgstr "les **procédures** : suites d'actions, de mesures et de traitements (un dark, puis des mesures) ;"
 
 #: ../../user_guide/index.md:19
-msgid "**your own components**: elements defined without code, from templates."
-msgstr "**vos propres composants** : des éléments définis sans code, à partir de gabarits."
+msgid "**your own components**: elements defined without code, from templates, and the community catalogue."
+msgstr "**vos propres composants** : des éléments définis sans code, à partir de gabarits, et le catalogue de la communauté."
 

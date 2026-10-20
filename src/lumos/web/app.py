@@ -37,6 +37,7 @@ from lumos.service.models import (
     ActionResult,
     ArchiveFile,
     ArchiveInfo,
+    CatalogueEntry,
     ComponentInfo,
     ConnectionInfo,
     ContextSummary,
@@ -694,6 +695,18 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     @app.post("/api/components/code", dependencies=[simulator])
     def code_component(request: Request, body: dict[str, Any]) -> list[str]:
         return service.define_code_component(sid(request), str(body.get("source", "")))
+
+    @app.get("/api/catalogue", dependencies=[viewer])
+    def catalogue(query: str = "") -> list[CatalogueEntry]:
+        return service.list_catalogue(query=query)
+
+    @app.post("/api/catalogue/component/{component}", dependencies=[simulator])
+    def use_catalogue_component(request: Request, component: str) -> ComponentInfo:
+        return service.use_catalogue_component(sid(request), component)
+
+    @app.post("/api/catalogue/preset/{preset:path}", status_code=201, dependencies=[viewer])
+    def open_catalogue_preset(request: Request, preset: str) -> ContextSummary:
+        return service.open_catalogue_preset(sid(request), preset)
 
     def own_types(request: Request) -> list[dict[str, Any]]:
         """Palette entries of the types made in the session of the request (components, code)."""

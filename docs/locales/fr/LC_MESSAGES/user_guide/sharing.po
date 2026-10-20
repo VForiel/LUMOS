@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Vincent Foriel
+# This file is distributed under the same license as the LUMOS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: LUMOS 0.0.2.dev279\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-20 21:41+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../user_guide/sharing.md:1
+msgid "Create and share a component"
+msgstr "Créer et partager un composant"
+
+#: ../../user_guide/sharing.md:3
+msgid "There are two ways to share an element you made: a **declarative component** in the community catalogue, usable on every instance, or a **Python package** for elements written in code, installed where code may run."
+msgstr "Il y a deux façons de partager un élément que vous avez créé : un **composant déclaratif** dans le catalogue de la communauté, utilisable sur toutes les instances, ou un **paquet Python** pour les éléments écrits en code, installé là où du code peut s'exécuter."
+
+#: ../../user_guide/sharing.md:6
+msgid "The community catalogue"
+msgstr "Le catalogue de la communauté"
+
+#: ../../user_guide/sharing.md:8
+msgid "The catalogue is the `community/` folder of the LUMOS repository, shipped with every version of LUMOS and listed in the **Catalogue** tab of the palette: a component is imported with **Import** (it then is an element of the palette, in *Components*), a shared preset opens with **Open**. Assistants use the MCP tools `list_catalogue` and `use_catalogue`; in Python, `lumos.catalogue.read_index(lumos.catalogue.catalogue_dir())` lists it."
+msgstr "Le catalogue est le dossier `community/` du dépôt LUMOS, livré avec chaque version de LUMOS et listé dans l'onglet **Catalogue** de la palette : un composant s'importe avec **Importer** (il devient alors un élément de la palette, dans *Composants*), un préréglage partagé s'ouvre avec **Ouvrir**. Les assistants utilisent les outils MCP `list_catalogue` et `use_catalogue` ; en Python, `lumos.catalogue.read_index(lumos.catalogue.catalogue_dir())` le liste."
+
+#: ../../user_guide/sharing.md:19
+msgid "To contribute a component:"
+msgstr "Pour proposer un composant :"
+
+#: ../../user_guide/sharing.md:21
+msgid "make it in the component editor (*My blocks* › *New component*, see [Your own components](components.md)) and download it with **Download .lumos**, or write the document by hand;"
+msgstr "créez-le dans l'éditeur de composants (*Mes blocs* › *Nouveau composant*, voir [Vos propres composants](components.md)) et téléchargez-le avec **Télécharger .lumos**, ou écrivez le document à la main ;"
+
+#: ../../user_guide/sharing.md:23
+msgid "give it a license (an SPDX identifier such as `MIT`), its authors, a description of every parameter, and at least one check whose expected value you know independently of LUMOS (an energy balance, an analytic case, a datasheet), saying where it comes from in the description;"
+msgstr "donnez-lui une licence (un identifiant SPDX comme `MIT`), ses auteurs, une description de chaque paramètre et au moins une vérification dont vous connaissez la valeur attendue indépendamment de LUMOS (un bilan d'énergie, un cas analytique, une fiche technique), en indiquant sa provenance dans la description ;"
+
+#: ../../user_guide/sharing.md:26
+msgid "put it at `community/components/<author>/<Name>.lumos`, then check it and rebuild the index:"
+msgstr "placez-le dans `community/components/<auteur>/<Nom>.lumos`, puis vérifiez-le et reconstruisez l'index :"
+
+#: ../../user_guide/sharing.md:34
+msgid "open a pull request: the workflow *Community catalogue* runs the same checks on every change of `community/`."
+msgstr "ouvrez une *pull request* : le workflow *Community catalogue* lance les mêmes vérifications à chaque modification de `community/`."
+
+#: ../../user_guide/sharing.md:37
+msgid "A shared preset is a context saved from the interface or with `lumos.io.save`, whose `meta` gives a `name`, a `description`, the `authors` and a `license`; the components it uses are embedded in it. It goes to `community/presets/<author>/<name>.lumos`."
+msgstr "Un préréglage partagé est un contexte enregistré depuis l'interface ou avec `lumos.io.save`, dont le `meta` donne un `name`, une `description`, les `authors` et une `license` ; les composants qu'il utilise y sont intégrés. Il va dans `community/presets/<auteur>/<nom>.lumos`."
+
+#: ../../user_guide/sharing.md:41
+msgid "Each entry of the index gives the `lumos_format` of its file, the oldest format that reads it: a contribution reaches an instance with the next version of LUMOS that ships it."
+msgstr "Chaque entrée de l'index donne le `lumos_format` de son fichier, le format le plus ancien qui le lit : une contribution arrive sur une instance avec la prochaine version de LUMOS qui la livre."
+
+#: ../../user_guide/sharing.md:44
+msgid "Elements with code"
+msgstr "Éléments avec du code"
+
+#: ../../user_guide/sharing.md:46
+#, python-brace-format
+msgid "An element whose behaviour no template covers is a Python class (see the code view of the component editor on a local instance, or {doc}`../api/index`). Share it as a package named `lumos-component-<name>` that declares the entry point `lumos.elements`, a module whose import registers its element types (`@register`):"
+msgstr "Un élément dont aucun gabarit ne couvre le comportement est une classe Python (voir la vue code de l'éditeur de composants sur une instance locale, ou {doc}`../api/index`). Partagez-le sous la forme d'un paquet nommé `lumos-component-<nom>` qui déclare le point d'entrée `lumos.elements`, un module dont l'import enregistre ses types d'éléments (`@register`) :"
+
+#: ../../user_guide/sharing.md:55
+msgid "Installed with `pip install lumos-component-<name>` where LUMOS runs, its elements are types of the palette: the service loads the packages of this entry point when it starts (in Python, `lumos.core.registry.registry.load_plugins()`). Visitors of the public instance cannot install or run code: there, only the packages installed by its administrator are available."
+msgstr "Installé avec `pip install lumos-component-<nom>` là où LUMOS tourne, ses éléments sont des types de la palette : le service charge les paquets de ce point d'entrée à son démarrage (en Python, `lumos.core.registry.registry.load_plugins()`). Les visiteurs de l'instance publique ne peuvent ni installer ni exécuter de code : seuls les paquets installés par son administrateur y sont disponibles."
+

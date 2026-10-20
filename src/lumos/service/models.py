@@ -14,6 +14,7 @@ __all__ = [
     "ActionResult",
     "ArchiveFile",
     "ArchiveInfo",
+    "CatalogueEntry",
     "ComponentInfo",
     "ConnectionInfo",
     "ContextSummary",
@@ -82,6 +83,9 @@ class ServiceConfig(BaseModel):
         default=50, ge=1, description="finished runs and studies of a session whose results stay in memory"
     )
     presets_dir: str | None = Field(default=None, description="directory of the preset .lumos files")
+    catalogue_dir: str | None = Field(
+        default=None, description="directory of the community catalogue (default: the one shipped, ADR-0026)"
+    )
 
 
 class SessionInfo(BaseModel):
@@ -216,6 +220,20 @@ class Issue(BaseModel):
     element: str | None
     message: str
     hint: str
+
+
+class CatalogueEntry(BaseModel):
+    """A contribution of the community catalogue (ADR-0026): a declarative component or a shared preset."""
+
+    kind: str
+    id: str
+    title: str = ""
+    description: str = ""
+    authors: list[str] = []
+    version: int | None = None
+    license: str = ""
+    template: str = ""
+    lumos_format: str = ""
 
 
 class ComponentInfo(BaseModel):

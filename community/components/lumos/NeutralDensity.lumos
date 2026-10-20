@@ -1,0 +1,39 @@
+{
+  "lumos_format": "1.3",
+  "kind": "component",
+  "component": {
+    "id": "lumos.NeutralDensity",
+    "version": 1,
+    "title": "Neutral density",
+    "description": "A neutral density filter: the power is multiplied by its transmission at every wavelength.",
+    "license": "MIT",
+    "authors": [
+      "LUMOS"
+    ],
+    "template": "gain_phase",
+    "params": {
+      "transmission": {
+        "unit": "",
+        "default": 0.1,
+        "bounds": [
+          0,
+          1
+        ],
+        "doc": "power transmission (10^-OD)"
+      }
+    },
+    "body": {
+      "gain": "$transmission",
+      "phase": "0 rad"
+    },
+    "checks": [
+      {
+        "kind": "power",
+        "wavelength": "1 um",
+        "power": "2 mW",
+        "expect": "0.2 mW",
+        "rtol": 1e-09
+      }
+    ]
+  }
+}

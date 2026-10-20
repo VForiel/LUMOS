@@ -46,7 +46,9 @@
     "show": "Show the elements",
     "hide": "Hide the elements",
     "newComponent": "New component (an element defined without code)",
-    "editComponent": "Edit the component"
+    "editComponent": "Edit the component",
+    "catalogue": "Catalogue",
+    "searchCatalogue": "Search the catalogue…"
   },
   "categories": {
     "sources": "Sources",
@@ -649,5 +651,16 @@
     "run": "Run the code",
     "download": "Download .lumos",
     "save": "Save"
+  },
+  "catalogue": {
+    "empty": "Nothing in the catalogue matches your search.",
+    "import": "Import the component: it becomes an element of the palette",
+    "open": "Open the preset as a new context",
+    "importShort": "Import",
+    "openShort": "Open",
+    "kinds": {
+      "component": "component",
+      "preset": "preset"
+    }
   }
 }

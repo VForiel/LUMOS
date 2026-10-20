@@ -46,7 +46,9 @@
     "show": "Afficher les éléments",
     "hide": "Masquer les éléments",
     "newComponent": "Nouveau composant (un élément défini sans code)",
-    "editComponent": "Modifier le composant"
+    "editComponent": "Modifier le composant",
+    "catalogue": "Catalogue",
+    "searchCatalogue": "Rechercher dans le catalogue…"
   },
   "categories": {
     "sources": "Sources",
@@ -649,5 +651,16 @@
     "run": "Exécuter le code",
     "download": "Télécharger .lumos",
     "save": "Enregistrer"
+  },
+  "catalogue": {
+    "empty": "Rien dans le catalogue ne correspond à votre recherche.",
+    "import": "Importer le composant : il devient un élément de la palette",
+    "open": "Ouvrir le préréglage dans un nouveau contexte",
+    "importShort": "Importer",
+    "openShort": "Ouvrir",
+    "kinds": {
+      "component": "composant",
+      "preset": "préréglage"
+    }
   }
 }

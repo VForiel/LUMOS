@@ -47,6 +47,7 @@ from lumos.service.models import (
     ActionResult,
     ArchiveFile,
     ArchiveInfo,
+    CatalogueEntry,
     ComponentInfo,
     ConnectionInfo,
     ContextSummary,
@@ -215,6 +216,11 @@ class Service:
         self._histories: dict[str, _History] = {}
         self._revisions: dict[str, int] = {}  # changes of each context (P14.18)
         self._scratch: Path | None = None  # recordings without session storage (P14.20)
+        # element packages installed by the administrator (entry point lumos.elements, ADR-0026): code
+        # chosen by whoever runs the instance, so loaded on every profile
+        loaded = registry.load_plugins()
+        if loaded:
+            logger.info("element plugins loaded: %s", ", ".join(loaded))
 
     # --- Sessions ------------------------------------------------------------------------------------------
 
@@ -340,13 +346,18 @@ class Service:
                 continue
             cls = registry.get(type_id)
             summary = (cls.__doc__ or "").strip().splitlines()[0] if cls.__doc__ else ""
-            if words and not all(w in (type_id + " " + summary).lower() for w in words):
+            title = cls.__name__
+            component = getattr(cls, "_lumos_component", None)
+            if component:  # a declarative component shows its own title and description (ADR-0025)
+                title = str(component.get("title") or title)
+                summary = str(component.get("description") or summary)
+            if words and not all(w in (type_id + " " + title + " " + summary).lower() for w in words):
                 continue
             ports = cls.ports()
             items.append(
                 ElementTypeInfo(
                     type_id=type_id,
-                    title=cls.__name__,
+                    title=title,
                     summary=summary,
                     inputs=[n for n, p in ports.items() if p.direction == "in"],
                     outputs=[n for n, p in ports.items() if p.direction == "out"],
@@ -463,6 +474,48 @@ class Service:
             group.name = identifier
             ctx.add(group, id=identifier)
         return self.describe_context(session, context)
+
+    # --- Community catalogue (P15.16, ADR-0026) ---------------------------------------------------------
+
+    def catalogue_dir(self) -> Path:
+        """Directory of the community catalogue."""
+        from lumos.catalogue import catalogue_dir
+
+        return Path(self.config.catalogue_dir) if self.config.catalogue_dir else catalogue_dir()
+
+    def list_catalogue(self, *, query: str = "") -> list[CatalogueEntry]:
+        """Contributions of the community catalogue, filtered by the words of ``query``."""
+        from lumos.catalogue import read_index
+
+        words = query.lower().split()
+        entries = []
+        for entry in read_index(self.catalogue_dir()):
+            text = " ".join(str(entry.get(k, "")) for k in ("id", "title", "description", "authors")).lower()
+            if all(word in text for word in words):
+                entries.append(CatalogueEntry.model_validate({k: v for k, v in entry.items() if k != "path"}))
+        return entries
+
+    def _catalogue_document(self, kind: str, identifier: str) -> dict[str, Any]:
+        """Return the document of an entry of the index; only the files the index lists can be read."""
+        from lumos.catalogue import read_index
+
+        root = self.catalogue_dir().resolve()
+        for entry in read_index(root):
+            if entry.get("kind") == kind and entry.get("id") == identifier:
+                path = (root / str(entry["path"])).resolve()
+                if path.is_relative_to(root) and path.is_file():
+                    return json.loads(path.read_text(encoding="utf-8"))
+        raise ServiceError(
+            f"no {kind} {identifier!r} in the catalogue", hint="list it with list_catalogue", code="not_found"
+        )
+
+    def use_catalogue_component(self, session: str, component: str) -> ComponentInfo:
+        """Import a component of the catalogue: it becomes a type of the palette of the session."""
+        return self.save_component(session, self._catalogue_document("component", component))
+
+    def open_catalogue_preset(self, session: str, preset: str) -> ContextSummary:
+        """Open a preset of the catalogue as a new context."""
+        return self.import_lumos(session, self._catalogue_document("preset", preset))
 
     def define_code_component(self, session: str, source: str) -> list[str]:
         """Run a Python source defining element types (script mode, ADR-0025 §5); return the new types.

@@ -1,0 +1,28 @@
+name: Community catalogue
+
+# Checks of the contributions of community/ (ADR-0026): every component passes its checks, every preset loads
+# and declares its license, and the index is up to date.
+
+on:
+  push:
+    branches: [main]
+    paths: ["community/**", "src/lumos/catalogue.py", "src/lumos/components.py", "tools/build_catalogue.py"]
+  pull_request:
+    paths: ["community/**", "src/lumos/catalogue.py", "src/lumos/components.py", "tools/build_catalogue.py"]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e .
+      - run: lumos component check community/components/*/*.lumos
+      - run: python tools/build_catalogue.py --check
