@@ -1,4 +1,4 @@
-# Pistes d'évolution — retours du 19/10/2026 (à discuter, rien n'est implémenté)
+# Pistes d'évolution — retours du 19/10/2026 (tranchées le 20/10, étapes P15.6 à P15.16 du plan)
 
 Trois demandes de la revue du 19/10 demandent d'abord une décision. Pour chacune : le constat, ce qui est
 faisable, une proposition, l'effort estimé et les questions à trancher. Une fois tranchées, elles deviendront des
@@ -212,8 +212,12 @@ de l'énergie, cas limite analytique) ; documentation (docstring NumPy) ; licenc
 
 ### Catalogue
 
-Un **index public** (dépôt Git : une fiche par composant, auteur, version, licence, tests passés) consultable depuis
-la palette (« Catalogue »). Les composants déclaratifs s'importent d'un clic ; les composants à code s'installent
+Un **index public** (une fiche par composant, auteur, version, licence, tests passés) consultable depuis la palette
+(« Catalogue »). **Décision du 20/10 :** il vit dans le dépôt LUMOS, dans un dossier `community/` réservé aux
+contributions de la communauté (composants, préréglages partagés, ressources de l'instance publique), plutôt que
+dans un dépôt séparé : une seule CI, une seule revue, et les contributions suivent l'évolution du format. La CI
+filtre par chemin (une contribution dans `community/` ne relance que ses propres vérifications), et chaque fiche
+déclare sa licence et la version minimale du format `.lumos`. Les composants déclaratifs s'importent d'un clic ; les composants à code s'installent
 comme paquets Python (`pip install lumos-component-…`, nommage réservé sur PyPI) en local. Une CI de l'index
 exécute `lumos component check` sur chaque contribution. Une page de doc « Créer et partager un composant »
 décrit les deux voies.
@@ -226,8 +230,10 @@ Vue simple + format `component` + validation : ~1 semaine. Catalogue (index, CI,
 ### Questions
 
 1. ~~D'accord pour **pas de code utilisateur sur l'instance publique** (option 1) ?~~ **Tranché le 20/10 : oui.**
-2. Le catalogue : dépôt GitHub dédié (contributions par pull request) — ou autre hébergement ?
-3. Quels gabarits de comportement en priorité ?
+2. ~~Hébergement du catalogue~~ : dossier `community/` du dépôt LUMOS, contributions par pull request (tranché le
+   20/10).
+3. ~~Gabarits prioritaires~~ (tranché le 20/10) : matrice de transfert ; gain ou atténuation et déphasage ;
+   transmission spectrale tabulée ; composite (un groupe). La réponse impulsionnelle vient plus tard.
 
 ---
 
@@ -273,9 +279,11 @@ Blockly, licence Apache-2.0, ou éditeur maison en liste) ; doc, préréglage «
 
 ### Questions
 
-1. Blocs empilés (Blockly) ou liste d'étapes éditable (plus simple, moins ludique) ?
-2. Les résultats nommés doivent-ils pouvoir alimenter les **études** (ex. un Monte-Carlo sur une procédure
-   entière) ?
+1. ~~Blocs empilés ou liste d'étapes~~ : **Blockly** (tranché le 20/10).
+2. ~~Résultats nommés et études~~ : **oui** (tranché le 20/10). Une procédure peut être le corps d'une étude
+   (balayage, Monte-Carlo) et ses résultats nommés en sont les sorties. Les itérations indépendantes (bloc
+   *pour chaque valeur* sans dépendance entre itérations, études sur une procédure) s'exécutent en parallèle sur
+   les *workers* du service, dans la limite des quotas.
 3. ~~Le mode script sur l'instance publique : même réponse que pour les composants (non) ?~~ **Tranché le 20/10 :
    non**, il s'exécute côté serveur sur une instance locale ou privée seulement ; l'instance publique n'a que les
    blocs.
@@ -284,7 +292,24 @@ Blockly, licence Apache-2.0, ou éditeur maison en liste) ; doc, préréglage «
 
 ## Où les placer
 
-Ces trois chantiers ajoutent des fonctions ; aucun n'est nécessaire à la v1.0. Je propose de finir la phase 15
-(v1.0), puis d'en faire une **phase 18 « Extensibilité »** : ports à voies (format 1.3), composants déclaratifs et
-catalogue, procédures. L'ordre recommandé : procédures (forte valeur pour les bancs réels), ports à voies,
-composants.
+~~Première proposition : finir la phase 15 (v1.0), puis en faire une phase 18 « Extensibilité ».~~
+
+**Décision du 20/10 : les trois chantiers font partie de la v1.0.** Sans eux, les cas d'usage possibles depuis
+l'interface web restent trop limités pour que la démonstration (et donc le produit) convainque. Ils passent donc
+**avant** la performance (P15.3), la qualité et la sécurité (P15.4) et la publication (P15.5), qui s'appliquent
+ensuite à eux aussi :
+
+- **performance** : exécution parallèle des boucles et des études de procédures sur les *workers*, vectorisation
+  des bus compactés, mesure des coûts de `Fiber` et de `FizeauCombiner` ;
+- **sécurité** : vérifier que les zones de code (composants à code, mode script des procédures) sont
+  **inaccessibles sur l'instance publique** (service, API web, MCP, chargement de documents), que les documents
+  déclaratifs (`component`, `procedure`) ne peuvent rien exécuter, et que les quotas s'appliquent aux procédures ;
+- **publication** : la v1.0 publiée inclut le format 1.3, les procédures et le catalogue.
+
+**Ordre retenu** (étapes P15.6 à P15.16 du plan, placées avant P15.3) : le modèle des bus d'abord, car il change
+les signaux et le format dont dépendent les deux autres chantiers (le modèle passe aussi avant le rendu B + C, pour
+ne pas écrire `Demux` / `Mux` deux fois) ; puis les procédures, qui apportent le plus à la démonstration ; enfin
+les composants et le catalogue.
+
+Le format `.lumos` 1.3 reste dans le cadre du gel de P15.1 : c'est une version mineure, et le convertisseur lit
+les documents 1.x antérieurs.

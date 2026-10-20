@@ -1,6 +1,6 @@
 # LUMOS — Plan de développement
 
-> Compagnon du [cahier des charges](cahier_des_charges.md). Statut : v0.2, 2026-10-16.
+> Compagnon du [cahier des charges](cahier_des_charges.md). Statut : v0.3, 2026-10-20.
 >
 > Chaque **étape** (`Px.y`) est dimensionnée pour une ou deux sessions de travail. Elle se termine par du code testé, documenté et commité. On ne démarre une étape que lorsque ses dépendances sont validées. Cocher les cases au fil de l'eau.
 
@@ -30,7 +30,7 @@
 | **v0.5** « Opération » | Drivers, LumosLabs, jumeau numérique | 12 |
 | **v0.6** « Assistant » | Couche de service et serveur MCP | 13 |
 | **v0.7** « Web » | Interface web bilingue, instance publique et authentification | 14 |
-| **v1.0** | Stabilisation, docs EN/FR complètes, préréglages et tutoriels | 15 |
+| **v1.0** | Bus et injection des télescopes, procédures, composants utilisateur et catalogue ; stabilisation, docs EN/FR complètes, préréglages et tutoriels | 15 |
 | **v1.x** | Observation de la Terre et photographie ; blocs IA | 16 → 17 |
 
 ```mermaid
@@ -317,9 +317,34 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 - [x] **P15.1 Revue d'API** — nommage et cohérence ; gel de l'API et du format `.lumos` 1.x.
 - [x] **P15.2 Docs complètes EN et FR** — user guide, learn, hardware, web, assistant, ADR ; notebooks ; tutoriels.
-- [ ] **P15.3 Performance** — profilage, optimisation ciblée (extension native seulement si justifiée).
-- [ ] **P15.4 Qualité et sécurité** — couverture, typage strict, audit (chargement `.lumos`, web, MCP, réseau).
-- [ ] **P15.5 Publication** — `lumos-maxima` 1.0 sur PyPI ; mise en ligne de l'instance publique sur le VPS (profil `public`, opération désactivée).
+
+> **Décision du 20/10** ([pistes d'évolution](pistes_evolution.md)) : trois chantiers entrent dans la v1.0 (bus et injection des télescopes, procédures, composants utilisateur et catalogue), sans quoi les cas d'usage de l'interface web restent trop limités pour la démonstration. Ils sont numérotés P15.6 à P15.16 et passent **avant** P15.3, P15.4 et P15.5, qui s'appliquent ensuite à eux aussi. Le code utilisateur s'exécute toujours côté serveur et jamais sur l'instance publique.
+
+**Bus et injection des télescopes** ([pistes d'évolution §1](pistes_evolution.md#1-bus-ports-multi-canaux-et-injection-des-télescopes))
+
+- [ ] **P15.6 Modèle des bus** — ADR ; voie guidée `ModalField` de forme `(sources, λ, modes)` ; bus de N voies (guidées ou en espace libre) avec compactage implicite quand les voies partagent sources, longueurs d'onde, grille… ; recombineurs vérifiant que leurs voies décrivent les mêmes sources ; composant à une voie appliqué à chaque voie d'un bus ; migration des éléments photoniques, de `Fiber` et des détecteurs ; format `.lumos` 1.3 et convertisseur (`channels` désigne des voies).
+- [ ] **P15.7 Rendu des bus et `Demux` / `Mux`** — broches dessinées et regroupées par une accolade ; éléments `Demux(N)` / `Mux(N)` (empilement sans mélange, voie vide pour une entrée non connectée) dans le cœur, le service, le MCP et la palette.
+- [ ] **P15.8 `TelescopeArray` en espace libre** — bus d'`IncoherentBundle` en plan pupille (position projetée portée par chaque voie) ; injection explicite par `Fiber` ; modèle analytique conservé sous le nom `IdealInjectionArray` ; migration des préréglages (`bracewell`, `kernel_nuller`) et des notebooks.
+- [ ] **P15.9 `FizeauCombiner`** — pupille de sortie homothétique (Traub 1986) construite depuis un bus de faisceaux ; tests : franges d'Young sous la figure d'Airy, conservation de l'énergie.
+- [ ] **P15.10 Raccourci « Éclater le port »** — `Demux` / `Mux` accolé au bloc dans l'éditeur (se déplace et se supprime avec lui).
+
+**Procédures** ([pistes d'évolution §3](pistes_evolution.md#3-analyses-procédurales-blocs-dinstructions))
+
+- [ ] **P15.11 Format et moteur des procédures** — ADR ; document `procedure` déclaratif (actions, mesures nommées, répétitions, traitements, utilisation de résultats nommés, attente, conditions, enregistrement, affichage) ; exécution en tâche dans le service (progression, annulation, journal, quotas), identique en simulation et en opération (confirmation des actions matérielles) ; API web et MCP.
+- [ ] **P15.12 Éditeur Blockly** — onglet « Procédures » ; export en Python ; mode script réservé aux instances locales et privées ; préréglage « dark puis mesure » et notebook.
+- [ ] **P15.13 Procédures et études** — une procédure comme corps d'un balayage ou d'un Monte-Carlo, ses résultats nommés comme sorties ; itérations indépendantes exécutées en parallèle sur les *workers*.
+
+**Composants utilisateur et catalogue** ([pistes d'évolution §2](pistes_evolution.md#2-composants-créés-par-lutilisateur-éditeur-intégré-et-catalogue--marketplace-))
+
+- [ ] **P15.14 Composants déclaratifs** — ADR (format, sécurité) ; document `component` ; gabarits : matrice de transfert, gain ou atténuation et déphasage, transmission spectrale tabulée, composite ; commande `lumos component check`.
+- [ ] **P15.15 Éditeur de composants** — vue formulaire (toutes instances) ; vue code (instances locales et privées seulement).
+- [ ] **P15.16 Catalogue `community/`** — dossier du dépôt pour les composants, préréglages et ressources partagés ; index ; CI filtrée par chemin qui lance `lumos component check` ; onglet « Catalogue » de la palette ; page « Créer et partager un composant ».
+
+**Stabilisation et publication** (après P15.6 à P15.16)
+
+- [ ] **P15.3 Performance** — profilage, optimisation ciblée (extension native seulement si justifiée) ; exécution parallèle des procédures et des études sur les *workers* ; vectorisation des bus compactés ; coût de `Fiber` et de `FizeauCombiner`.
+- [ ] **P15.4 Qualité et sécurité** — couverture, typage strict, audit (chargement `.lumos`, web, MCP, réseau) ; zones de code (composants à code, mode script des procédures) inaccessibles sur l'instance publique par toutes les voies (service, API web, MCP, chargement de documents) ; documents `component` et `procedure` sans exécution possible ; quotas appliqués aux procédures.
+- [ ] **P15.5 Publication** — `lumos-maxima` 1.0 sur PyPI (format 1.3, procédures, catalogue) ; mise en ligne de l'instance publique sur le VPS (profil `public`, opération désactivée).
 
 ---
 
@@ -363,4 +388,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-Lancer la **phase 15** (P15.1).
+**P15.6 Modèle des bus** (ADR d'abord), puis P15.7 à P15.16, puis P15.3 à P15.5.
