@@ -111,6 +111,8 @@
     "state": "État",
     "ports": "Ports",
     "inspect": "Inspecter",
+    "split": "Éclater",
+    "splitHelp": "Un port par voie ({{count}}) : un Mux ou un Demux accolé au bloc",
     "group": "Groupe d'éléments",
     "expand": "Déplier",
     "collapse": "Replier",

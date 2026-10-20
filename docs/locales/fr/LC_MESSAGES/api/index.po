@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 17:50+0200\n"
+"POT-Creation-Date: 2026-10-20 18:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -393,6 +393,7 @@ msgstr ""
 #: lumos.service.service.Service.set_free
 #: lumos.service.service.Service.set_observation
 #: lumos.service.service.Service.set_param
+#: lumos.service.service.Service.split_port
 #: lumos.service.service.Service.stop_all lumos.service.service.Service.storage
 #: lumos.service.service.Service.study_csv lumos.service.service.Service.undo
 #: lumos.service.service.Service.ungroup
@@ -876,6 +877,7 @@ msgstr ""
 #: lumos.service.service.Service.set_observation
 #: lumos.service.service.Service.set_param
 #: lumos.service.service.Service.shutdown
+#: lumos.service.service.Service.split_port
 #: lumos.service.service.Service.stop_all lumos.service.service.Service.storage
 #: lumos.service.service.Service.study_csv lumos.service.service.Service.undo
 #: lumos.service.service.Service.ungroup
@@ -1895,7 +1897,9 @@ msgid ""
 "produces one). A bus reaching an input without this flag makes the "
 "element act on every lane, as N identical copies (ADR-0023). The flag "
 "does not change which ports can be connected: the signal type of a port "
-"is the type of its lanes."
+"is the type of its lanes. An output declared ``generic`` passes on the "
+"optical signal it receives (a ``Demux`` or a ``Mux``): it may feed any "
+"optical input, the signal being checked when the element runs."
 msgstr ""
 
 #: lumos.core.port.Input:1 of
@@ -11982,7 +11986,24 @@ msgid ""
 msgstr ""
 
 #: lumos.service.service.Service.remove_element:1 of
-msgid "Remove an element and its connections."
+msgid ""
+"Remove an element and its connections, with the splits of its ports "
+"attached to it (P15.10)."
+msgstr ""
+
+#: lumos.service.service.Service.split_port:1 of
+msgid ""
+"Split the bus port ``port`` into one port per lane (step P15.10, "
+"ADR-0023)."
+msgstr ""
+
+#: lumos.service.service.Service.split_port:3 of
+msgid ""
+"A ``Mux`` is put before a bus input, a ``Demux`` after a bus output, of "
+"as many lanes as the port draws, and attached to the block in "
+"``ui.attached`` (the editor draws it against the block, and it is deleted"
+" with it). An input already wired keeps its signal: the wire goes through"
+" a ``Demux`` whose lanes are wired straight to the ``Mux``."
 msgstr ""
 
 #: lumos.service.service.Service.connect:1 of
@@ -13465,5 +13486,23 @@ msgstr ""
 #~ "Projected baselines ``p_j - p_i`` for"
 #~ " every pair ``i < j``, shape "
 #~ "``(n (n - 1) / 2, 2)``."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "A port declared with ``bus=True`` "
+#~ "carries a :class:`~lumos.fields.Bus` of lanes"
+#~ " of its signal type (an input "
+#~ "receives the bus as it is, an "
+#~ "output produces one). A bus reaching "
+#~ "an input without this flag makes "
+#~ "the element act on every lane, as"
+#~ " N identical copies (ADR-0023). The "
+#~ "flag does not change which ports "
+#~ "can be connected: the signal type "
+#~ "of a port is the type of its"
+#~ " lanes."
+#~ msgstr ""
+
+#~ msgid "Remove an element and its connections."
 #~ msgstr ""
 

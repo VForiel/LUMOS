@@ -111,6 +111,8 @@
     "state": "State",
     "ports": "Ports",
     "inspect": "Inspect",
+    "split": "Split",
+    "splitHelp": "One port per lane ({{count}}): a Mux or a Demux attached to the block",
     "group": "Group of elements",
     "expand": "Expand",
     "collapse": "Collapse",

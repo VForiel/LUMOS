@@ -28,7 +28,7 @@ import { autoLayout } from "../lib/layout";
 import { portOf, signalOfPort, splitPort } from "../lib/ports";
 import { compatible, signalColor } from "../lib/signals";
 import { useStore } from "../store";
-import { ElementNode, type ElementFlowNode } from "./ElementNode";
+import { attachedCentre, ElementNode, portCentre, type ElementFlowNode } from "./ElementNode";
 import { FRAME_HEADER, FRAME_PAD, GroupFrame, type FrameFlowNode } from "./GroupFrame";
 import { FeedbackEdge, FeedbackMarker } from "./FeedbackEdge";
 import { LinkEdge } from "./LinkEdge";
@@ -39,6 +39,9 @@ const nodeTypes = { element: ElementNode, frame: GroupFrame };
 const edgeTypes = { link: LinkEdge, feedback: FeedbackEdge };
 const PAN_BUTTONS = [1, 2]; // in selection mode, the middle and right buttons still move the view
 const NODE_WIDTH = 210;
+/** Width of a Mux or Demux drawn against its block, and the gap between them (P15.10). */
+const ATTACHED_WIDTH = 78;
+const ATTACHED_GAP = 14;
 const NODE_HEIGHT = 170;
 const NONE: Record<string, boolean> = {};
 const DELETE_KEYS = ["Delete", "Backspace"];
@@ -101,7 +104,13 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
       return;
     }
     const built: FlowNode[] = [];
+    const later: FlowNode[] = [];
     const nodeIssues = (id: string) => issues.filter((issue) => issue.element === id);
+    const attached = (context.ui.attached ?? {}) as Record<string, { to: string; port: string; side: "in" | "out" }>;
+    const attachedTo = (id: string) => {
+      const owner = attached[id]?.to;
+      return Boolean(owner && context.elements.some((e) => e.id === owner) && !(context.groups?.[owner] && expanded[owner]));
+    };
     for (const element of context.elements.filter((e) => !e.id.includes("."))) {
       const [x, y] = positions[element.id] ?? [0, 0];
       const isGroup = Boolean(context.groups?.[element.id]);
@@ -141,16 +150,45 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
             data: { element: child, type: types.get(child.type_id), issues: nodeIssues(child.id), running, onInspect, label: name },
           });
         }
+      } else if (attachedTo(element.id)) {
+        // a split of a bus port (P15.10): drawn against its block, moving and deleted with it
+        const { to, port, side } = attached[element.id];
+        const owner = context.elements.find((e) => e.id === to);
+        const index = Math.max(0, (side === "in" ? owner?.inputs : owner?.outputs)?.indexOf(port) ?? 0);
+        const count = Math.max(element.inputs.length, element.outputs.length);
+        later.push({
+          id: element.id,
+          type: "element",
+          parentId: to,
+          position: {
+            x: side === "in" ? -ATTACHED_WIDTH - ATTACHED_GAP : NODE_WIDTH + ATTACHED_GAP,
+            y: portCentre(index) - attachedCentre(count),
+          },
+          draggable: false,
+          selected: selection.includes(element.id),
+          data: { element, type: types.get(element.type_id), issues: nodeIssues(element.id), running, onInspect, attached: side },
+        });
       } else {
         built.push({
           id: element.id,
           type: "element",
           position: { x, y },
           selected: selection.includes(element.id),
-          data: { element, type: types.get(element.type_id), issues: nodeIssues(element.id), running, onInspect, group: isGroup },
+          data: {
+            element,
+            type: types.get(element.type_id),
+            issues: nodeIssues(element.id),
+            running,
+            onInspect,
+            group: isGroup,
+            split: Object.values(attached)
+              .filter((entry) => entry.to === element.id)
+              .map((entry) => entry.port),
+          },
         });
       }
     }
+    built.push(...later); // React Flow wants a parent before its children
     setNodes((previous) => {
       const known = new Map(previous.map((node) => [node.id, node]));
       return built.map((node) => {
@@ -409,7 +447,14 @@ export function Canvas({ onInspect }: { onInspect: (port: string) => void }) {
         onConnectEnd={onConnectEnd}
         isValidConnection={isValidConnection}
         onSelectionChange={onSelectionChange}
-        onNodesDelete={(deleted) => void removeElements(deleted.filter((node) => !node.parentId).map((node) => node.id))}
+        onNodesDelete={(deleted) =>
+          void removeElements(
+            deleted
+              // the inside of a group goes with it; a split attached to a deleted block goes with the block
+              .filter((node) => !node.parentId || ("attached" in node.data && node.data.attached && !deleted.some((d) => d.id === node.parentId)))
+              .map((node) => node.id),
+          )
+        }
         onEdgesDelete={(deleted) => {
           for (const edge of deleted) {
             const data = edge.data as { source: string; target: string; mode?: string } | undefined;

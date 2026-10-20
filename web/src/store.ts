@@ -126,6 +126,8 @@ type Actions = {
   removeFeedback: (source: string, target: string) => Promise<void>;
   setObservation: (minimum: string, maximum: string, n: number) => Promise<boolean>;
   rename: (path: string, name: string) => Promise<void>;
+  /** Split a bus port into one port per lane: a Mux or a Demux attached to the block (P15.10). */
+  splitPort: (port: string) => Promise<void>;
   group: (ids: string[]) => void;
   ungroup: (path: string) => Promise<void>;
   toggleGroup: (path: string) => Promise<void>;
@@ -573,6 +575,10 @@ export const useStore = create<State & Actions>((set, get) => {
 
     async setObservation(minimum, maximum, n) {
       return (await edit((id) => api.setObservation(id, minimum, maximum, n).then(() => true))) ?? false;
+    },
+
+    async splitPort(port) {
+      await edit((id) => api.split(id, port));
     },
 
     async rename(path, name) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 17:27+0200\n"
+"POT-Creation-Date: 2026-10-20 18:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -60,94 +60,98 @@ msgid "A port carrying a **bus** — several guides or telescope arms on one wir
 msgstr "Un port qui porte un **bus** — plusieurs guides ou bras de télescopes sur un même fil — dessine une broche par voie, regroupées par une accolade (un double trait quand le nombre de voies est libre, comme sur un guide d'onde), et son fil est plus épais : un seul fil porte toutes les voies. Pour donner aux voies des composants différents, éclatez le bus avec un **Demux** (catégorie *Bus*), câblez chaque voie, puis regroupez-les avec un **Mux**. Leurs ports suivent leur réglage `n_lanes` ; le diminuer retire les fils des ports qui disparaissent. Une entrée de Mux laissée non connectée est une voie vide, signalée par un avertissement dans les problèmes."
 
 #: ../../web/editing.md:32
+msgid "To wire the lanes of a bus port one by one, press **Split** next to the port in the inspector: a Mux (before an input) or a Demux (after an output) of as many lanes is drawn against the block, moves with it and is deleted with it; an input that was already wired keeps its signal, through a Demux whose lanes go straight to the Mux. The file holds these Demux and Mux as ordinary elements, so a Python script or an assistant sees them as well."
+msgstr "Pour câbler une à une les voies d'un port de bus, cliquez sur **Éclater** à côté du port dans l'inspecteur : un Mux (devant une entrée) ou un Demux (après une sortie) d'autant de voies est dessiné contre le bloc, se déplace avec lui et est supprimé avec lui ; une entrée déjà câblée garde son signal, par un Demux dont les voies vont directement au Mux. Le fichier contient ces Demux et Mux comme des éléments ordinaires : un script Python ou un assistant les voit aussi."
+
+#: ../../web/editing.md:37
 msgid "Moving around"
 msgstr "Se déplacer"
 
-#: ../../web/editing.md:34
+#: ../../web/editing.md:39
 msgid "The **pointer mode** (top left of the canvas) chooses what a drag on the empty canvas does: the hand (**H**) moves the view, the box (**V**) selects the blocks it touches. In both modes, **Space+drag** and the middle or right button move the view, and the wheel zooms."
 msgstr "Le **mode de pointage** (en haut à gauche du canevas) choisit ce que fait un glisser sur le canevas vide : la main (**H**) déplace la vue, le cadre (**V**) sélectionne les blocs qu'il touche. Dans les deux modes, **Espace+glisser** et les boutons du milieu ou de droite déplacent la vue, et la molette zoome."
 
-#: ../../web/editing.md:37
+#: ../../web/editing.md:42
 msgid "**F** fits the view to the blocks; the minimap (bottom right) moves and zooms too."
 msgstr "**F** ajuste la vue aux blocs ; la mini-carte (en bas à droite) déplace et zoome aussi."
 
-#: ../../web/editing.md:38
+#: ../../web/editing.md:43
 msgid "Drag the edge of the palette, of the inspector or of the bottom panel to resize it; the button at the top of the palette and of the inspector hides it. The interface remembers these sizes in your browser."
 msgstr "Tirez le bord de la palette, de l'inspecteur ou du panneau du bas pour le redimensionner ; le bouton en haut de la palette et de l'inspecteur le masque. L'interface mémorise ces tailles dans votre navigateur."
 
-#: ../../web/editing.md:41
+#: ../../web/editing.md:46
 msgid "Editing values"
 msgstr "Modifier les valeurs"
 
-#: ../../web/editing.md:43
+#: ../../web/editing.md:48
 msgid "Select a block: the inspector on the right shows its parameters, settings and state, generated from the element type."
 msgstr "Sélectionnez un bloc : l'inspecteur à droite montre ses paramètres, réglages et état, générés à partir du type de l'élément."
 
-#: ../../web/editing.md:46
+#: ../../web/editing.md:51
 msgid "A quantity has a value and a unit. Type `3`, or `3 mm` to give the unit at the same time; the unit menu shows the same quantity in another unit (`2 mW` becomes `0.002 W`) without changing it."
 msgstr "Une grandeur a une valeur et une unité. Tapez `3`, ou `3 mm` pour donner l'unité en même temps ; le menu des unités montre la même grandeur dans une autre unité (`2 mW` devient `0.002 W`) sans la changer."
 
-#: ../../web/editing.md:48
+#: ../../web/editing.md:53
 msgid "Values outside the bounds of a parameter are flagged and not applied (\"must be greater than 0 m\")."
 msgstr "Les valeurs hors des bornes d'un paramètre sont signalées et non appliquées (« doit être supérieur à 0 m »)."
 
-#: ../../web/editing.md:49
+#: ../../web/editing.md:54
 msgid "The arrow next to a field puts back its default value; the hover text of a name gives its documentation."
 msgstr "La flèche à côté d'un champ rétablit sa valeur par défaut ; l'infobulle d'un nom donne sa documentation."
 
-#: ../../web/editing.md:51
+#: ../../web/editing.md:56
 msgid "With nothing selected, the inspector shows the context: its name, description and **observation band** (wavelengths sampled by stars, scenes and lamps)."
 msgstr "Sans sélection, l'inspecteur montre le contexte : son nom, sa description et sa **bande d'observation** (longueurs d'onde échantillonnées par les étoiles, les scènes et les lampes)."
 
-#: ../../web/editing.md:54
+#: ../../web/editing.md:59
 msgid "Undo, copy, groups"
 msgstr "Annuler, copier, groupes"
 
-#: ../../web/editing.md:56
+#: ../../web/editing.md:61
 msgid "**Ctrl+Z** undoes any edit (values, connections, moves, groups...); **Ctrl+Shift+Z** or **Ctrl+Y** redoes it."
 msgstr "**Ctrl+Z** annule toute modification (valeurs, connexions, déplacements, groupes…) ; **Ctrl+Maj+Z** ou **Ctrl+Y** la rétablit."
 
-#: ../../web/editing.md:57
+#: ../../web/editing.md:62
 msgid "**Ctrl+C** / **Ctrl+V** copy and paste the selected blocks with the wires between them; **Ctrl+D** duplicates."
 msgstr "**Ctrl+C** / **Ctrl+V** copient et collent les blocs sélectionnés avec les fils qui les relient ; **Ctrl+D** duplique."
 
-#: ../../web/editing.md:58
+#: ../../web/editing.md:63
 msgid "**Shift+click** adds a block to the selection, **Shift+drag** (or a drag in the box mode) selects a region, **Ctrl+A** selects everything."
 msgstr "**Maj+clic** ajoute un bloc à la sélection, **Maj+glisser** (ou un glisser en mode cadre) sélectionne une zone, **Ctrl+A** sélectionne tout."
 
-#: ../../web/editing.md:60
+#: ../../web/editing.md:65
 msgid "**Ctrl+G** turns the selection into a **group**: one block whose ports are the free ports of its elements. Expand it to see and edit its elements, collapse it to keep the graph readable, or ungroup it."
 msgstr "**Ctrl+G** transforme la sélection en **groupe** : un bloc dont les ports sont les ports libres de ses éléments. Dépliez-le pour voir et modifier ses éléments, repliez-le pour garder le graphe lisible, ou dissolvez-le."
 
-#: ../../web/editing.md:62
+#: ../../web/editing.md:67
 msgid "**Save as block** keeps a group in *My blocks* (in your browser) to insert it in any context; *Download* saves it as a `.lumos` file, which also loads in Python with `lumos.io.load`."
 msgstr "**Enregistrer comme bloc** garde un groupe dans *Mes blocs* (dans votre navigateur) pour l'insérer dans n'importe quel contexte ; *Télécharger* l'enregistre comme fichier `.lumos`, qui se charge aussi en Python avec `lumos.io.load`."
 
-#: ../../web/editing.md:65
+#: ../../web/editing.md:70
 msgid "Files"
 msgstr "Fichiers"
 
-#: ../../web/editing.md:67
+#: ../../web/editing.md:72
 msgid "**Save** (Ctrl+S) downloads the context as a `.lumos` file, positions of the blocks included."
 msgstr "**Enregistrer** (Ctrl+S) télécharge le contexte en fichier `.lumos`, positions des blocs comprises."
 
-#: ../../web/editing.md:68
+#: ../../web/editing.md:73
 msgid "**Open** (Ctrl+O) loads a `.lumos` file, made in the interface, by the Python library or by an assistant."
 msgstr "**Ouvrir** (Ctrl+O) charge un fichier `.lumos`, créé dans l'interface, par la bibliothèque Python ou par un assistant."
 
-#: ../../web/editing.md:69
+#: ../../web/editing.md:74
 msgid "**Python** shows the script that builds the same context with the library."
 msgstr "**Python** montre le script qui construit le même contexte avec la bibliothèque."
 
-#: ../../web/editing.md:71
+#: ../../web/editing.md:76
 msgid "A context with changes that are not saved shows **Not saved** next to its name (and a dot in the title of the tab). Opening another context, a file or a preset then asks first: save, discard the changes or cancel; closing or reloading the page asks too."
 msgstr "Un contexte qui a des modifications non sauvegardées affiche **Non sauvegardé** à côté de son nom (et un point dans le titre de l'onglet). Ouvrir un autre contexte, un fichier ou un préréglage demande alors d'abord : sauvegarder, abandonner les modifications ou annuler ; fermer ou recharger la page le demande aussi."
 
-#: ../../web/editing.md:75
+#: ../../web/editing.md:80
 msgid "If the server restarts, the interface restores the context you were editing."
 msgstr "Si le serveur redémarre, l'interface restaure le contexte que vous modifiiez."
 
-#: ../../web/editing.md:77
+#: ../../web/editing.md:82
 msgid "Press **?** to see every keyboard shortcut."
 msgstr "Appuyez sur **?** pour voir tous les raccourcis clavier."
 

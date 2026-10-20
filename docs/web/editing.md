@@ -29,6 +29,11 @@ wire carries all the lanes. To give the lanes different components, split the bu
 lowering it removes the wires of the ports that disappear. A Mux input left unconnected is an empty lane,
 reported as a warning in the problems.
 
+To wire the lanes of a bus port one by one, press **Split** next to the port in the inspector: a Mux (before an
+input) or a Demux (after an output) of as many lanes is drawn against the block, moves with it and is deleted
+with it; an input that was already wired keeps its signal, through a Demux whose lanes go straight to the Mux.
+The file holds these Demux and Mux as ordinary elements, so a Python script or an assistant sees them as well.
+
 ## Moving around
 
 - The **pointer mode** (top left of the canvas) chooses what a drag on the empty canvas does: the hand (**H**)

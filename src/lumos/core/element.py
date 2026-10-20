@@ -598,6 +598,7 @@ class Element(ParamHost):
                         "bus": p.bus,
                         "doc": p.doc,
                     }
+                    | ({"generic": True} if p.generic else {})
                     for p in ports
                     if p.direction == code
                 ]

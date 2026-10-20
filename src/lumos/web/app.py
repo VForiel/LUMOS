@@ -235,6 +235,12 @@ class Rename(BaseModel):
     name: str
 
 
+class Split(BaseModel):
+    """Body of ``POST /api/contexts/{id}/split``: the bus port to split (``"mmi.in"``)."""
+
+    port: str
+
+
 class Grouping(BaseModel):
     """Body of ``POST /api/contexts/{id}/groups``."""
 
@@ -889,6 +895,10 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     @app.post("/api/contexts/{cid}/redo", dependencies=[simulator])
     def redo(request: Request, cid: str) -> ContextSummary:
         return service.redo(sid(request), cid)
+
+    @app.post("/api/contexts/{cid}/split", dependencies=[simulator])
+    def split(request: Request, cid: str, body: Split) -> ContextSummary:
+        return service.split_port(sid(request), cid, body.port)
 
     @app.post("/api/contexts/{cid}/elements/{path:path}/rename", dependencies=[simulator])
     def rename(request: Request, cid: str, path: str, body: Rename) -> ContextSummary:

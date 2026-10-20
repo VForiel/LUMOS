@@ -326,7 +326,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [x] **P15.7 Rendu des bus et `Demux` / `Mux`** — broches dessinées et regroupées par une accolade ; éléments `Demux(N)` / `Mux(N)` (empilement sans mélange, voie vide pour une entrée non connectée) dans le cœur, le service, le MCP et la palette.
 - [x] **P15.8 `TelescopeArray` en espace libre** — bus d'`IncoherentBundle` en plan pupille (position projetée portée par chaque voie) ; injection explicite par `Fiber` ; modèle analytique conservé sous le nom `IdealInjectionArray` ; migration des préréglages (`bracewell`, `kernel_nuller`) et des notebooks.
 - [x] **P15.9 `FizeauCombiner`** — pupille de sortie homothétique (Traub 1986) construite depuis un bus de faisceaux ; tests : franges d'Young sous la figure d'Airy, conservation de l'énergie.
-- [ ] **P15.10 Raccourci « Éclater le port »** — `Demux` / `Mux` accolé au bloc dans l'éditeur (se déplace et se supprime avec lui).
+- [x] **P15.10 Raccourci « Éclater le port »** — `Demux` / `Mux` accolé au bloc dans l'éditeur (se déplace et se supprime avec lui).
 
 **Procédures** ([pistes d'évolution §3](pistes_evolution.md#3-analyses-procédurales-blocs-dinstructions))
 
@@ -388,4 +388,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-**P15.10 Raccourci « Éclater le port »**, puis P15.11 à P15.16, puis P15.3 à P15.5.
+**P15.11 Format et moteur des procédures** (ADR d'abord), puis P15.12 à P15.16, puis P15.3 à P15.5.

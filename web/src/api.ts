@@ -99,7 +99,13 @@ export type ContextSummary = {
   feedbacks?: Feedback[];
   outputs: string[];
   groups: Record<string, GroupInfo>;
-  ui: { positions?: Record<string, [number, number]>; expanded?: Record<string, boolean>; [key: string]: unknown };
+  ui: {
+    positions?: Record<string, [number, number]>;
+    expanded?: Record<string, boolean>;
+    /** Splits of bus ports drawn against their block (P15.10). */
+    attached?: Record<string, { to: string; port: string; side: "in" | "out" }>;
+    [key: string]: unknown;
+  };
   can_undo: boolean;
   can_redo: boolean;
   /** Grows at every change of the context, whoever made it. */
@@ -244,6 +250,7 @@ export const api = {
     request<ContextSummary>("PUT", `${ctx(id)}/ui${record ? "" : "?record=false"}`, ui),
   undo: (id: string) => request<ContextSummary>("POST", `${ctx(id)}/undo`),
   redo: (id: string) => request<ContextSummary>("POST", `${ctx(id)}/redo`),
+  split: (id: string, port: string) => request<ContextSummary>("POST", `${ctx(id)}/split`, { port }),
   rename: (id: string, path: string, name: string) =>
     request<ContextSummary>("POST", `${ctx(id)}/elements/${path}/rename`, { name }),
   group: (id: string, elements: string[], name: string) =>

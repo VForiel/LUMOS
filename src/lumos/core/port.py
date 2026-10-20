@@ -13,7 +13,9 @@ is what connections are made of (``ctx.connect(source.out, splitter.in_)``).
 A port declared with ``bus=True`` carries a :class:`~lumos.fields.Bus` of lanes of its signal type (an input
 receives the bus as it is, an output produces one). A bus reaching an input without this flag makes the
 element act on every lane, as N identical copies (ADR-0023). The flag does not change which ports can be
-connected: the signal type of a port is the type of its lanes.
+connected: the signal type of a port is the type of its lanes. An output declared ``generic`` passes on the
+optical signal it receives (a ``Demux`` or a ``Mux``): it may feed any optical input, the signal being checked
+when the element runs.
 """
 
 from __future__ import annotations
@@ -21,7 +23,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, ClassVar, Literal
 
-from lumos.core.signal import Signal
+from lumos.core.signal import OpticalSignal, Signal
 
 __all__ = [
     "Input",
@@ -53,6 +55,7 @@ class Port:
         name: str | None = None,
         doc: str = "",
         bus: bool = False,
+        generic: bool = False,
     ) -> None:
         if not (isinstance(signal_type, type) and issubclass(signal_type, Signal)):
             raise TypeError(f"signal_type must be a subclass of Signal, got {signal_type!r}")
@@ -61,6 +64,7 @@ class Port:
         self._explicit_name = name is not None
         self.doc = doc
         self.bus = bool(bus)
+        self.generic = bool(generic)
 
     def __set_name__(self, owner: type, attribute: str) -> None:
         """Derive the port name from the attribute name unless one was given."""
@@ -190,7 +194,12 @@ def _incompatibility(source: Port | PortRef, target: Port | PortRef) -> str | No
         return f"{source!r} is an input; connections start from an output"
     if dst.direction != "in":
         return f"{target!r} is an output; connections end on an input"
-    if not issubclass(src.signal_type, dst.signal_type) and not _converted(src.signal_type, dst.signal_type):
+    passes_on = src.generic and issubclass(dst.signal_type, OpticalSignal)  # checked when it runs
+    if (
+        not issubclass(src.signal_type, dst.signal_type)
+        and not _converted(src.signal_type, dst.signal_type)
+        and not passes_on
+    ):
         produced, expected = src.signal_type.__name__, dst.signal_type.__name__
         return f"{source!r} produces {produced} but {target!r} expects {expected}"
     return None

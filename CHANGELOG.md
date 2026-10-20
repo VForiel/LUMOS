@@ -256,6 +256,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   Bracewell and kernel-nuller presets inject explicitly.
 - `FizeauCombiner` (P15.9): recombines a bus of pupil-plane beams in one homothetic output pupil (Traub 1986),
   each lane at the projected position of its telescope (sub-pixel Fourier shift, power kept).
+- Splitting a bus port (P15.10): `Service.split_port` and `POST /api/contexts/{id}/split` insert a `Mux` before
+  a bus input or a `Demux` after a bus output, attached to the block (`ui.attached`, renamed and deleted with
+  it); the inspector offers **Split** and the editor draws the split against its port; generic outputs
+  (`Output(..., generic=True)`, those of `Demux` and `Mux`) may feed any optical input, checked at run time.
 
 ### Changed
 

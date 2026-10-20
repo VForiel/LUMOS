@@ -16,6 +16,7 @@ import {
   Plus,
   Repeat,
   ScanSearch,
+  Split,
   Trash2,
   Ungroup,
 } from "lucide-react";
@@ -24,7 +25,7 @@ import { useTranslation } from "react-i18next";
 import { api, download, type ContextSummary, type ElementSummary, type ElementType } from "../api";
 import { category, categoryOf } from "../lib/categories";
 import { signalOfPort } from "../lib/ports";
-import { fieldsOf, type Field } from "../lib/schema";
+import { fieldsOf, portNamed, portsOf, type Field } from "../lib/schema";
 import { signalColor } from "../lib/signals";
 import { componentsOf, isArrayParam, isNumericSetting } from "../lib/targets";
 import { formatNumber, parseQuantity } from "../lib/units";
@@ -357,12 +358,28 @@ function valueOf(element: ElementSummary, field: Field): unknown {
   return group[field.name];
 }
 
+function SplitButton({ port, lanes, onSplit }: { port: string; lanes: number; onSplit: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <button
+      type="button"
+      data-testid={`split-${port}`}
+      onClick={onSplit}
+      title={t("inspector.splitHelp", { count: lanes })}
+      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-accent-600 hover:bg-accent-50 dark:text-accent-300 dark:hover:bg-accent-900/30"
+    >
+      <Split className="size-3.5" />
+      {t("inspector.split")}
+    </button>
+  );
+}
+
 function ElementPanel({ element, type, onInspect }: { element: ElementSummary; type?: ElementType; onInspect: (port: string) => void }) {
   const { t } = useTranslation();
   const context = useStore((s) => s.context)!;
   const role = useStore((s) => s.info?.role);
   const issues = useStore((s) => s.issues).filter((issue) => issue.element === element.id);
-  const { ungroup, toggleGroup, saveBlock, copy, removeElements } = useStore.getState();
+  const { ungroup, toggleGroup, saveBlock, copy, removeElements, splitPort } = useStore.getState();
   const editable = role !== "viewer";
   const isGroup = element.type_id.startsWith("lumos.group") || element.id in (context.groups ?? {});
   const fields = useMemo(() => (type ? fieldsOf(type.schema) : []), [type]);
@@ -375,6 +392,11 @@ function ElementPanel({ element, type, onInspect }: { element: ElementSummary; t
   const palette = useStore((s) => s.palette);
   const types = useMemo(() => new Map((palette?.types ?? []).map((item) => [item.type_id, item])), [palette]);
   const signal = (name: string, direction: "inputs" | "outputs") => signalOfPort(context, types, element.id, name, direction);
+  // a bus port of known width can be split into one port per lane (P15.10); not the splits themselves
+  const splittable = (name: string, direction: "inputs" | "outputs") => {
+    const declared = type ? portNamed(portsOf(type.schema)[direction], name) : undefined;
+    return Boolean(declared?.bus && !declared.count && (element.lanes?.[name] ?? 0) > 1 && !(element.id in (context.ui.attached ?? {})));
+  };
   const expanded = Boolean(context.ui.expanded?.[element.id]);
   const topLevel = !element.id.includes(".");
 
@@ -456,7 +478,10 @@ function ElementPanel({ element, type, onInspect }: { element: ElementSummary; t
               <li key={`in-${port}`} className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                 <span className="size-2.5 rounded-full" style={{ background: signalColor(signal(port, "inputs")) }} />
                 <span className="font-mono">{port}</span>
-                <span className="text-slate-400">← {signal(port, "inputs")}</span>
+                <span className="flex-1 text-slate-400">← {signal(port, "inputs")}</span>
+                {editable && splittable(port, "inputs") && (
+                  <SplitButton port={port} lanes={element.lanes?.[port] ?? 0} onSplit={() => void splitPort(`${element.id}.${port}`)} />
+                )}
               </li>
             ))}
             {element.outputs.map((port) => (
@@ -464,6 +489,9 @@ function ElementPanel({ element, type, onInspect }: { element: ElementSummary; t
                 <span className="size-2.5 rounded-full" style={{ background: signalColor(signal(port, "outputs")) }} />
                 <span className="font-mono">{port}</span>
                 <span className="flex-1 text-slate-400">→ {signal(port, "outputs")}</span>
+                {editable && splittable(port, "outputs") && (
+                  <SplitButton port={port} lanes={element.lanes?.[port] ?? 0} onSplit={() => void splitPort(`${element.id}.${port}`)} />
+                )}
                 <button
                   type="button"
                   data-testid={`inspect-${port}`}

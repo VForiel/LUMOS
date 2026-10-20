@@ -738,11 +738,72 @@ class Service:
         return self._element_summary(ctx.id_of(group), group)
 
     def remove_element(self, session: str, context: str, element: str) -> None:
-        """Remove an element and its connections."""
+        """Remove an element and its connections, with the splits of its ports attached to it (P15.10)."""
         ctx = self._context(session, context)
         target = self._element(ctx, element)
+        attached = dict(ctx.ui.get("attached") or {})
+        followers = [key for key, entry in attached.items() if entry.get("to") == element]
         with self._editing(session, context):
             ctx.remove(target)
+            for key in followers:
+                if key in ctx.elements:
+                    ctx.remove(ctx.elements[key])
+            for key in [element, *followers]:
+                attached.pop(key, None)
+            ctx.ui = {**ctx.ui, "attached": attached}
+
+    def split_port(self, session: str, context: str, port: str) -> ContextSummary:
+        """Split the bus port ``port`` into one port per lane (step P15.10, ADR-0023).
+
+        A ``Mux`` is put before a bus input, a ``Demux`` after a bus output, of as many lanes as the port
+        draws, and attached to the block in ``ui.attached`` (the editor draws it against the block, and it is
+        deleted with it). An input already wired keeps its signal: the wire goes through a ``Demux`` whose
+        lanes are wired straight to the ``Mux``.
+        """
+        from lumos.elements.buses import Demux, Mux
+
+        ctx = self._context(session, context)
+        ref = self._port(ctx, port)
+        owner, _, name = port.rpartition(".")
+        if "." in owner:
+            raise ServiceError(
+                f"{port} is inside a group", hint="split the ports of the blocks of the context"
+            )
+        if not ref.port.bus:
+            raise ServiceError(f"{port} does not carry a bus", hint="only bus ports have lanes to split")
+        port_lanes = getattr(ref.owner, "port_lanes", None)
+        n = port_lanes(name) if port_lanes is not None else None
+        if not n:
+            raise ServiceError(
+                f"the number of lanes of {port} is free",
+                hint="add a Demux or a Mux of the number of lanes you need (category Buses)",
+            )
+
+        def free(base: str) -> str:
+            candidate, k = base, 2
+            while candidate in ctx.elements:
+                candidate, k = f"{base}_{k}", k + 1
+            return candidate
+
+        split = free(f"{owner}_{name}")
+        with self._editing(session, context):
+            if ref.direction == "in":
+                mux = ctx.add(Mux(name=split, n_lanes=n), id=split)
+                for connection in ctx.graph.incoming(ref):
+                    lanes_id = free(f"{split}_lanes")
+                    demux = ctx.add(Demux(name=lanes_id, n_lanes=n), id=lanes_id)
+                    ctx.graph.disconnect(connection.source, ref)
+                    ctx.connect(connection.source, demux.port("in"))
+                    for k in range(n):
+                        ctx.connect(demux.port(f"out{k}"), mux.port(f"in{k}"))
+                ctx.connect(mux.port("out"), ref)
+            else:
+                demux = ctx.add(Demux(name=split, n_lanes=n), id=split)
+                ctx.connect(ref, demux.port("in"))
+            attached = dict(ctx.ui.get("attached") or {})
+            attached[split] = {"to": owner, "port": name, "side": ref.direction}
+            ctx.ui = {**ctx.ui, "attached": attached}
+        return self._summary(context, self._context(session, context))
 
     def _port(self, ctx: Context | ElementGroup, reference: str) -> Any:
         owner, _, port = reference.rpartition(".")

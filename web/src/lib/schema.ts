@@ -27,6 +27,8 @@ export type Port = {
   bus?: boolean;
   /** Whether an input may stay unconnected (an empty lane for a Mux). */
   optional?: boolean;
+  /** An output passing on the optical signal it receives (Demux, Mux): it may feed any optical input. */
+  generic?: boolean;
   count?: string;
 };
 

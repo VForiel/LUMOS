@@ -18,7 +18,29 @@ export type ElementData = {
   /** Name shown instead of the path (elements inside an expanded group). */
   label?: string;
   group?: boolean;
+  /** A split of a bus port drawn against its block, on the side of the port (P15.10). */
+  attached?: "in" | "out";
+  /** Ports of this block split by an attached Mux or Demux: drawn as ordinary ports. */
+  split?: string[];
 };
+
+/** Vertical centre of the handle of port ``index`` of an ordinary block (for the splits drawn against it). */
+export function portCentre(index: number): number {
+  return HEADER + 4 + index * PORT_GAP + (PORT_GAP - 6) / 2;
+}
+
+/** Height of a Mux or Demux drawn against a block. */
+export function attachedHeight(ports: number): number {
+  return Math.max(ports, 1) * PORT_GAP + 18;
+}
+
+/** Vertical centre of the single port (out of a Mux, in of a Demux) of a split drawn against a block. */
+export function attachedCentre(ports: number): number {
+  return ATTACHED_TOP + (attachedHeight(ports) - 18) / 2;
+}
+
+/** Height of the title of a split drawn against a block, above its ports. */
+const ATTACHED_TOP = 16;
 
 export type ElementFlowNode = Node<ElementData, "element">;
 
@@ -100,14 +122,61 @@ function preview(element: ElementSummary): [string, string][] {
     .slice(0, 3) as [string, string][];
 }
 
+/** A Mux or a Demux attached to a block: a narrow strip of numbered ports, like a widened brace. */
+function AttachedNode({ data, selected }: { data: ElementData; selected: boolean }) {
+  const { element, type, issues } = data;
+  const { inputs, outputs } = ports(element, type);
+  const color = category("buses").color;
+  const errors = issues.filter((issue) => issue.severity === "error").length;
+  const height = attachedHeight(Math.max(inputs.length, outputs.length));
+  const short = (name: string) => name.replace(/^(in|out)(?=\d)/, "");
+  const handle = (port: Port, kind: "target" | "source", index: number, count: number) => (
+    <div
+      key={`${kind}-${port.name}`}
+      className="pointer-events-none absolute inset-x-0"
+      style={{ top: ATTACHED_TOP + ((index + 0.5) * (height - 18)) / count - (PORT_GAP - 6) / 2, height: PORT_GAP - 6 }}
+    >
+      <Handle
+        id={port.name}
+        type={kind}
+        position={kind === "target" ? Position.Left : Position.Right}
+        className="lumos-port"
+        style={{ "--port-color": signalColor(port.generic ? "OpticalSignal" : port.signal) } as CSSProperties}
+        title={`${element.id}.${port.name}`}
+      >
+        {short(port.name)}
+      </Handle>
+    </div>
+  );
+  return (
+    <div
+      data-testid="attached-node"
+      className={`relative w-[78px] rounded-lg border bg-white text-center shadow-sm dark:bg-slate-900 ${
+        selected ? "shadow-md" : ""
+      } ${errors ? "border-red-300 dark:border-red-800" : "border-sky-300 dark:border-sky-800"}`}
+      style={{ height }}
+      title={`${element.id} (${type?.title ?? element.type_id})`}
+    >
+      <div className="truncate px-1 pt-0.5 text-[10px] font-semibold" style={{ color }}>
+        {type?.title ?? element.type_id.split(".").pop()}
+      </div>
+      {inputs.map((port, index) => handle(port, "target", index, inputs.length))}
+      {outputs.map((port, index) => handle(port, "source", index, outputs.length))}
+    </div>
+  );
+}
+
 export const ElementNode = memo(function ElementNode({ data, selected }: NodeProps<ElementFlowNode>) {
   const { t } = useTranslation();
   const { element, type, issues } = data;
+  if (data.attached) return <AttachedNode data={data} selected={Boolean(selected)} />;
   const group = Boolean(data.group) || element.type_id.startsWith("lumos.group");
   const name = group ? "group" : categoryOf(element.type_id);
   const { icon: Icon, color } = category(name);
   const { inputs, outputs } = ports(element, type);
-  const lanes = element.lanes ?? {};
+  const split = new Set(data.split ?? []);
+  // a split port is drawn as an ordinary port: the Mux or Demux against it shows the lanes
+  const lanes = Object.fromEntries(Object.entries(element.lanes ?? {}).filter(([name]) => !split.has(name)));
   const inputTops = offsets(inputs, lanes);
   const outputTops = offsets(outputs, lanes);
   const bottom = (list: Port[], tops: number[]) =>
@@ -171,7 +240,7 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
             className="pointer-events-none absolute inset-x-0"
             style={{ top: inputTops[index], height: rowHeight(port, lanes[port.name]) - 6 }}
           >
-            {port.bus && !port.count && (
+            {port.bus && !port.count && !split.has(port.name) && (
               <BusPins side="left" lanes={lanes[port.name]} height={rowHeight(port, lanes[port.name]) - 6} color={signalColor(port.signal)} />
             )}
             <Handle
@@ -192,7 +261,7 @@ export const ElementNode = memo(function ElementNode({ data, selected }: NodePro
             className="pointer-events-none absolute inset-x-0"
             style={{ top: outputTops[index], height: rowHeight(port, lanes[port.name]) - 6 }}
           >
-            {port.bus && !port.count && (
+            {port.bus && !port.count && !split.has(port.name) && (
               <BusPins side="right" lanes={lanes[port.name]} height={rowHeight(port, lanes[port.name]) - 6} color={signalColor(port.signal)} />
             )}
             <Handle

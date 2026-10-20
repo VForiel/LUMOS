@@ -2,6 +2,7 @@
 
 import type { ContextSummary, ElementType } from "../api";
 import { portNamed, portsOf, type Port } from "./schema";
+import { ANY_OPTICAL } from "./signals";
 
 export function splitPort(reference: string): [string, string] {
   const index = reference.lastIndexOf(".");
@@ -36,5 +37,7 @@ export function signalOfPort(
   port: string,
   direction: "inputs" | "outputs",
 ): string {
-  return portOf(context, types, path, port, direction)?.signal ?? "Signal";
+  const declared = portOf(context, types, path, port, direction);
+  if (declared?.generic) return ANY_OPTICAL;
+  return declared?.signal ?? "Signal";
 }

@@ -4,9 +4,13 @@ export type Signals = Record<string, { parents: string[] }>;
 
 const NUMERICAL_FIELDS = ["Wavefront", "Wavecube"];
 
+/** Signal of a generic output (Demux, Mux): whatever optical signal it receives, checked when it runs. */
+export const ANY_OPTICAL = "OpticalSignal*";
+
 /** Whether an output producing ``source`` can feed an input expecting ``target`` (lumos.core.port). */
 export function compatible(source: string, target: string, signals: Signals): boolean {
   const lineage = (name: string) => [name, ...(signals[name]?.parents ?? [])];
+  if (source === ANY_OPTICAL) return lineage(target).includes("OpticalSignal");
   if (lineage(source).includes(target)) return true;
   if (source === "SymbolicField") {
     // converted to a numerical field (P10.6)
@@ -32,6 +36,7 @@ const COLOURS: Record<string, string> = {
 
 /** Colour of a kind of signal (stable; a colour derived from its name for unknown kinds). */
 export function signalColor(name: string): string {
+  if (name === ANY_OPTICAL) return COLOURS.OpticalSignal;
   if (COLOURS[name]) return COLOURS[name];
   let hash = 0;
   for (const char of name) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;

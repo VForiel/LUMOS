@@ -78,6 +78,12 @@ def _rename_references(document: Document, mapping: Mapping[str, str]) -> None:
             head, dot, rest = key.partition(".")
             updated[f"{mapping.get(head, head)}{dot}{rest}"] = value
         document["ui"]["positions"] = updated
+    attached = document["ui"].get("attached")
+    if attached:  # splits of bus ports drawn against their block (P15.10)
+        document["ui"]["attached"] = {
+            mapping.get(key, key): {**entry, "to": mapping.get(entry["to"], entry["to"])}
+            for key, entry in attached.items()
+        }
 
 
 def rename(document: Document, element: str, name: str) -> Document:

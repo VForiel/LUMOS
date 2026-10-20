@@ -96,7 +96,7 @@ class _Repeated(Element):
             "bus": template.bus,
             "optional": getattr(template, "optional", False),
             "doc": template.doc,
-        }
+        } | ({"generic": True} if template.generic else {})
         key = "inputs" if direction == "in" else "outputs"
         schema["x-lumos-ports"][key].insert(
             0 if direction == "in" else len(schema["x-lumos-ports"][key]), entry
@@ -113,7 +113,7 @@ class Demux(_Repeated):
 
     @classmethod
     def _make_port(cls, index: int) -> Port:
-        return Output(OpticalSignal, doc=f"lane {index} of the bus")
+        return Output(OpticalSignal, generic=True, doc=f"lane {index} of the bus")
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
@@ -131,7 +131,7 @@ class Mux(_Repeated):
     """Put N lanes side by side in one bus, in the order of the ports, without mixing them."""
 
     repeated = ("in", "in")
-    out = Output(OpticalSignal, bus=True, doc="bus of the lanes, in the order of the inputs")
+    out = Output(OpticalSignal, bus=True, generic=True, doc="bus of the lanes, in the order of the inputs")
 
     @classmethod
     def _make_port(cls, index: int) -> Port:
