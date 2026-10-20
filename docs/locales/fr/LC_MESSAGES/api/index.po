@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 18:25+0200\n"
+"POT-Creation-Date: 2026-10-20 19:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -116,7 +116,9 @@ msgstr ""
 #: lumos.core.priors.Prior.sample lumos.core.priors.Uniform.sample
 #: lumos.core.priors.prior_to_json lumos.core.procedure.Procedure.devices
 #: lumos.core.procedure.Procedure.from_json
-#: lumos.core.procedure.Procedure.problems lumos.core.procedure.ProcedureResult
+#: lumos.core.procedure.Procedure.problems
+#: lumos.core.procedure.Procedure.to_python
+#: lumos.core.procedure.ProcedureResult
 #: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
 #: lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
@@ -358,6 +360,7 @@ msgstr ""
 #: lumos.service.service.Service.explain_sampling
 #: lumos.service.service.Service.export_element
 #: lumos.service.service.Service.export_lumos
+#: lumos.service.service.Service.export_procedure
 #: lumos.service.service.Service.export_python
 #: lumos.service.service.Service.focus
 #: lumos.service.service.Service.get_element_schema
@@ -571,6 +574,7 @@ msgstr ""
 #: lumos.core.procedure.Procedure.from_json
 #: lumos.core.procedure.Procedure.problems
 #: lumos.core.procedure.Procedure.to_json
+#: lumos.core.procedure.Procedure.to_python
 #: lumos.core.registry.Registry.add_migration lumos.core.registry.Registry.get
 #: lumos.core.registry.Registry.load_plugins
 #: lumos.core.registry.Registry.migrate lumos.core.registry.Registry.register
@@ -851,6 +855,7 @@ msgstr ""
 #: lumos.service.service.Service.explain_sampling
 #: lumos.service.service.Service.export_element
 #: lumos.service.service.Service.export_lumos
+#: lumos.service.service.Service.export_procedure
 #: lumos.service.service.Service.export_python
 #: lumos.service.service.Service.focus
 #: lumos.service.service.Service.get_element_schema
@@ -5137,6 +5142,19 @@ msgid "marks the named ``results`` to display"
 msgstr ""
 
 #: lumos.core.procedure:29 of
+#, python-brace-format
+msgid ""
+"A procedure may instead be a Python **script** (``{\"name\", "
+"\"script\"}``, the *script mode*): it runs with ``ctx``, ``results`` (the"
+" named results), ``u`` (astropy units), ``np`` and ``call`` (the "
+"processing functions) in its namespace. It is code: the service runs it "
+"only where scripts are enabled (local and private instances, never the "
+"public one), and loading a document never runs it. "
+":meth:`Procedure.to_python` exports the steps of a procedure to an "
+"equivalent script (not the reverse)."
+msgstr ""
+
+#: lumos.core.procedure:35 of
 msgid ""
 "Values are numbers, booleans, text, quantities written as text (``\"2 "
 "mm\"``) or named results (``\"$dark\"``). :meth:`Procedure.problems` "
@@ -5163,6 +5181,10 @@ msgstr ""
 msgid "A named list of steps (see the module documentation)."
 msgstr ""
 
+#: lumos.core.procedure.Procedure.is_script:1 of
+msgid "Whether the procedure is a Python script (script mode) rather than steps."
+msgstr ""
+
 #: lumos.core.procedure.Procedure.from_json:1 of
 msgid ""
 "Read a procedure from its JSON form (checks its structure; "
@@ -5173,10 +5195,24 @@ msgstr ""
 msgid "Return the JSON form of the procedure."
 msgstr ""
 
+#: lumos.core.procedure.Procedure.to_python:1 of
+msgid ""
+"Return a Python script doing what the steps do, in a context named "
+"``context``."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.to_python:3 of
+msgid "The script leaves the named results in a dictionary ``results``."
+msgstr ""
+
 #: lumos.core.procedure.Procedure.problems:1 of
 msgid ""
 "Return what would stop the procedure in the context ``ctx`` (empty when "
 "it can run)."
+msgstr ""
+
+#: lumos.core.procedure.Procedure.problems:3 of
+msgid "A script cannot be checked before it runs."
 msgstr ""
 
 #: lumos.core.procedure.Procedure.count_steps:1 of
@@ -12469,6 +12505,12 @@ msgstr ""
 
 #: lumos.service.service.Service.get_procedure:1 of
 msgid "JSON form of a procedure."
+msgstr ""
+
+#: lumos.service.service.Service.export_procedure:1 of
+msgid ""
+"Python script doing what a procedure does (blocks to script, not the "
+"reverse)."
 msgstr ""
 
 #: lumos.service.service.Service.remove_procedure:1 of

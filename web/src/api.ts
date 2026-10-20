@@ -1,5 +1,6 @@
 // Typed client of the HTTP API of LUMOS (lumos.web, ADR-0018).
 
+import type { ProcedureJson } from "./lib/procedures";
 import type { Signals } from "./lib/signals";
 import type { UnitChoices } from "./lib/units";
 
@@ -8,6 +9,8 @@ export type Info = {
   version: string;
   profile: "local" | "public";
   operation: boolean;
+  /** Whether procedures written as Python scripts run on this instance (never on the public one). */
+  scripts?: boolean;
   languages: string[];
   user: string | null;
   role: Role | null;
@@ -16,6 +19,9 @@ export type Info = {
 };
 
 export type Role = "viewer" | "simulator" | "operator";
+
+/** A procedure of a context (ADR-0024) with its problems and the equipment it acts on. */
+export type ProcedureInfo = { name: string; description: string; steps: number; script: boolean; problems: string[]; devices: string[] };
 
 export type ElementType = {
   type_id: string;
@@ -97,6 +103,8 @@ export type ContextSummary = {
   elements: ElementSummary[];
   connections: Connection[];
   feedbacks?: Feedback[];
+  /** Names of the procedures of the context (P15.11). */
+  procedures?: string[];
   outputs: string[];
   groups: Record<string, GroupInfo>;
   ui: {
@@ -250,6 +258,15 @@ export const api = {
     request<ContextSummary>("PUT", `${ctx(id)}/ui${record ? "" : "?record=false"}`, ui),
   undo: (id: string) => request<ContextSummary>("POST", `${ctx(id)}/undo`),
   redo: (id: string) => request<ContextSummary>("POST", `${ctx(id)}/redo`),
+  procedures: (id: string) => request<ProcedureInfo[]>("GET", `${ctx(id)}/procedures`),
+  procedure: (id: string, name: string) => request<ProcedureJson>("GET", `${ctx(id)}/procedures/${enc(name)}`),
+  putProcedure: (id: string, procedure: ProcedureJson) =>
+    request<ProcedureInfo>("PUT", `${ctx(id)}/procedures/${enc(procedure.name)}`, procedure),
+  removeProcedure: (id: string, name: string) => request<void>("DELETE", `${ctx(id)}/procedures/${enc(name)}`),
+  runProcedure: (id: string, name: string, confirmed = false) =>
+    request<JobInfo>("POST", `${ctx(id)}/procedures/${enc(name)}/run`, { confirmed }),
+  exportProcedure: (id: string, name: string) =>
+    request<string>("GET", `${ctx(id)}/procedures/${enc(name)}/export.py`, undefined, true),
   split: (id: string, port: string) => request<ContextSummary>("POST", `${ctx(id)}/split`, { port }),
   rename: (id: string, path: string, name: string) =>
     request<ContextSummary>("POST", `${ctx(id)}/elements/${path}/rename`, { name }),

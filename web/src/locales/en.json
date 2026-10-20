@@ -506,5 +506,70 @@
     "first": "First point",
     "last": "Last point",
     "slider": "Point of the study"
+  },
+  "view": {
+    "graph": "Graph",
+    "procedures": "Procedures"
+  },
+  "procedures": {
+    "none": "No procedure",
+    "new": "New procedure",
+    "newScript": "New script",
+    "newScriptHelp": "A procedure written in Python (local or private instance only)",
+    "name": "Name of the procedure",
+    "create": "Create",
+    "delete": "Delete this procedure",
+    "saved": "Saved",
+    "python": "Export to Python",
+    "run": "Run",
+    "add": "Add a step:",
+    "results": "Results",
+    "empty": "A procedure is a sequence of actions, measurements and processing, such as a dark then measurements. Create one, then drag blocks from the toolbox or add steps with the buttons.",
+    "confirm": "This procedure acts on equipment ({{devices}}). Run it?",
+    "scriptHelp": "Python run with ctx (the context), results (the named results), u, np and call(function, ...). Scripts run only on a local or private instance.",
+    "kind": {
+      "action": "action",
+      "measure": "measure",
+      "repeat": "repeat",
+      "for_each": "for each",
+      "process": "process",
+      "set": "set",
+      "use": "use",
+      "wait": "wait",
+      "if": "if",
+      "save": "save",
+      "show": "show"
+    },
+    "block": {
+      "action": "do",
+      "measure": "measure",
+      "collect": "collect",
+      "repeat": "repeat",
+      "for_each": "for each",
+      "in": "in",
+      "list": "list",
+      "range": "range",
+      "set": "set",
+      "use": "use",
+      "wait": "wait",
+      "if": "if",
+      "else": "else",
+      "save": "save",
+      "show": "show"
+    },
+    "help": {
+      "procedure": "A procedure: its steps run from top to bottom",
+      "action": "Call an action of an element: element . action ( arguments, name=value )",
+      "measure": "Compute output ports (comma-separated) and name the result; collect: add it to a list",
+      "repeat": "Run the inner steps several times",
+      "for_each": "Run the inner steps for each value of a list (comma-separated) or a range (start, stop, number)",
+      "process": "Apply a processing function to named results ($name) and values: name = function(arg=value, ...)",
+      "set": "Set a parameter: element.field = value or $name",
+      "use": "Feed an input port with a named result in the following measurements",
+      "wait": "Let time pass",
+      "if": "Run the inner steps when the comparison holds, else the other ones",
+      "save": "Write named results (comma-separated) to an archive",
+      "show": "Show named results (comma-separated)"
+    }
   }
 }

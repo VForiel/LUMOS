@@ -134,6 +134,8 @@ class WebConfig(BaseModel):
             for key, value in PUBLIC_SERVICE_DEFAULTS.items():
                 if key not in given:
                     setattr(self.service, key, value)
+        elif "scripts_enabled" not in self.service.model_fields_set:
+            self.service.scripts_enabled = True  # the user of a local instance runs code on their own machine
         return self
 
     @property
@@ -164,6 +166,11 @@ class WebConfig(BaseModel):
             )
         if self.profile == "public" and self.anonymous_role == "operator":
             raise ConfigError("anonymous visitors of a public instance cannot be operators")
+        if self.profile == "public" and self.anonymous_role is not None and self.service.scripts_enabled:
+            raise ConfigError(
+                "a public instance open to anonymous visitors never runs scripts: set anonymous_role = "
+                '"none" (a private instance, every visitor logs in) or scripts_enabled = false'
+            )
         users = load_users(self.users_file) if self.users_file else {}
         if self.service.operation_enabled and not self.local_only:
             if not self.tls:

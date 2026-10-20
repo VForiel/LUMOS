@@ -70,6 +70,13 @@ The processing functions are `mean`, `median`, `stack` (`method`: mean, median o
 `divide`, `scale`, `subtract_dark`, `flat_field`, `crop`, `rebin`, `total`, `maximum`, `minimum`, `average`,
 `element` and `photometry`; a procedure cannot run anything else.
 
+## Python
+
+`procedure.to_python()` writes an equivalent Python script (the steps become calls on `ctx`, the processing
+`call("mean", frames=...)`). A procedure may also *be* a script, `{"name": ..., "script": "..."}`, run with
+`ctx`, `results`, `u`, `np` and `call` in its namespace: it is code, so the service runs it only where
+`scripts_enabled` is set (local and private instances, never the public one), and loading a file never runs it.
+
 ## Checks, equipment and saving
 
 `procedure.problems(ctx)` lists what would stop a procedure before it runs: unknown elements, ports, actions,

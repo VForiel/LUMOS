@@ -266,6 +266,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `Context.run_procedure`, `Context.run(feeds=...)`; `.lumos` documents of kind `procedure` and the procedures
   of a context in its document (format 1.3); service, web API and MCP tools (`set_procedure`,
   `list_procedures`, `remove_procedure`, `run_procedure`), jobs of kind `procedure`.
+- Procedures tab (P15.12): blocks (Blockly) next to the graph, quick buttons per step, problems, run and named
+  results, export to Python (`Procedure.to_python`, `GET .../procedures/{name}/export.py`); script mode
+  (`{"name", "script"}`) run only with `ServiceConfig.scripts_enabled` (local profile; refused on a public
+  instance open to anonymous visitors); preset `dark_then_measure` and notebook 15.
 
 ### Changed
 

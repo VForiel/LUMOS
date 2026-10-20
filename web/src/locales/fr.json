@@ -506,5 +506,70 @@
     "first": "Premier point",
     "last": "Dernier point",
     "slider": "Point de l'étude"
+  },
+  "view": {
+    "graph": "Graphe",
+    "procedures": "Procédures"
+  },
+  "procedures": {
+    "none": "Aucune procédure",
+    "new": "Nouvelle procédure",
+    "newScript": "Nouveau script",
+    "newScriptHelp": "Une procédure écrite en Python (instance locale ou privée seulement)",
+    "name": "Nom de la procédure",
+    "create": "Créer",
+    "delete": "Supprimer cette procédure",
+    "saved": "Enregistré",
+    "python": "Exporter en Python",
+    "run": "Lancer",
+    "add": "Ajouter une étape :",
+    "results": "Résultats",
+    "empty": "Une procédure est une suite d'actions, de mesures et de traitements, comme un dark puis des mesures. Créez-en une, puis glissez des blocs depuis la boîte à outils ou ajoutez des étapes avec les boutons.",
+    "confirm": "Cette procédure agit sur du matériel ({{devices}}). La lancer ?",
+    "scriptHelp": "Python exécuté avec ctx (le contexte), results (les résultats nommés), u, np et call(fonction, ...). Les scripts ne s'exécutent que sur une instance locale ou privée.",
+    "kind": {
+      "action": "action",
+      "measure": "mesure",
+      "repeat": "répéter",
+      "for_each": "pour chaque",
+      "process": "traiter",
+      "set": "régler",
+      "use": "utiliser",
+      "wait": "attendre",
+      "if": "si",
+      "save": "enregistrer",
+      "show": "afficher"
+    },
+    "block": {
+      "action": "faire",
+      "measure": "mesurer",
+      "collect": "collecter",
+      "repeat": "répéter",
+      "for_each": "pour chaque",
+      "in": "dans",
+      "list": "liste",
+      "range": "plage",
+      "set": "régler",
+      "use": "utiliser",
+      "wait": "attendre",
+      "if": "si",
+      "else": "sinon",
+      "save": "enregistrer",
+      "show": "afficher"
+    },
+    "help": {
+      "procedure": "Une procédure : ses étapes s'exécutent de haut en bas",
+      "action": "Appeler une action d'un élément : élément . action ( arguments, nom=valeur )",
+      "measure": "Calculer des ports de sortie (séparés par des virgules) et nommer le résultat ; collecter : l'ajouter à une liste",
+      "repeat": "Exécuter plusieurs fois les étapes intérieures",
+      "for_each": "Exécuter les étapes intérieures pour chaque valeur d'une liste (séparée par des virgules) ou d'une plage (début, fin, nombre)",
+      "process": "Appliquer une fonction de traitement à des résultats nommés ($nom) et des valeurs : nom = fonction(arg=valeur, ...)",
+      "set": "Régler un paramètre : élément.champ = valeur ou $nom",
+      "use": "Alimenter un port d'entrée avec un résultat nommé pour les mesures suivantes",
+      "wait": "Laisser passer du temps",
+      "if": "Exécuter les étapes intérieures si la comparaison est vraie, sinon les autres",
+      "save": "Écrire des résultats nommés (séparés par des virgules) dans une archive",
+      "show": "Afficher des résultats nommés (séparés par des virgules)"
+    }
   }
 }

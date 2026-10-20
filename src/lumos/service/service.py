@@ -90,9 +90,18 @@ def _summarize_result(name: str, value: Any, *, figure: bool = False) -> PortSum
         return summary
     if isinstance(value, dict):
         return PortSummary(port=name, kind="mapping", details={k: type(v).__name__ for k, v in value.items()})
+    if isinstance(value, bool | int | float):
+        return PortSummary(port=name, kind="number", values=[float(value)])
     if isinstance(value, u.Quantity) and value.isscalar:
         return PortSummary(port=name, kind="Quantity", unit=str(value.unit), values=[float(value.value)])
     return summarize(name, value, figure=figure)
+
+
+#: Why a script procedure cannot run on this instance (ADR-0024 §6).
+_SCRIPTS_DISABLED = (
+    "this procedure is a Python script, and scripts run only on a local or private instance "
+    "(scripts_enabled), never on the public one"
+)
 
 
 class _Cancelled(Exception):
@@ -468,6 +477,7 @@ class Service:
             elements=elements,
             connections=connections,
             feedbacks=[FeedbackInfo(source=f.source, target=f.target, mode=f.mode) for f in ctx.feedbacks],
+            procedures=list(ctx.procedures),
             outputs=list(ctx.meta.get("outputs", [])),
             groups=self._groups(ctx),
             ui=json.loads(json.dumps(ctx.ui, default=str)),
@@ -1043,7 +1053,7 @@ class Service:
         issues = []
         fed = {port for procedure in ctx.procedures.values() for port in procedure.fed_ports()}
         for name, procedure in ctx.procedures.items():
-            for problem in procedure.problems(ctx):
+            for problem in self._procedure_problems(ctx, procedure):
                 issues.append(
                     Issue(
                         severity="warning",
@@ -1444,12 +1454,19 @@ class Service:
 
     # --- Procedures (P15.11, ADR-0024) ---------------------------------------------------------------------
 
+    def _procedure_problems(self, ctx: Context, procedure: Any) -> list[str]:
+        problems = procedure.problems(ctx)
+        if procedure.is_script and not self.config.scripts_enabled:
+            problems.append(_SCRIPTS_DISABLED)
+        return problems
+
     def _procedure_info(self, ctx: Context, procedure: Any) -> ProcedureInfo:
         return ProcedureInfo(
             name=procedure.name,
             description=procedure.description,
             steps=len(procedure.steps),
-            problems=procedure.problems(ctx),
+            script=procedure.is_script,
+            problems=self._procedure_problems(ctx, procedure),
             devices=procedure.devices(ctx),
         )
 
@@ -1483,6 +1500,10 @@ class Service:
         """JSON form of a procedure."""
         return self._procedure(self._context(session, context), name).to_json()
 
+    def export_procedure(self, session: str, context: str, name: str) -> str:
+        """Python script doing what a procedure does (blocks to script, not the reverse)."""
+        return self._procedure(self._context(session, context), name).to_python()
+
     def remove_procedure(self, session: str, context: str, name: str) -> None:
         """Remove a procedure from its context."""
         ctx = self._context(session, context)
@@ -1502,7 +1523,7 @@ class Service:
 
         ctx = self._context(session, context)
         procedure = self._procedure(ctx, name)
-        problems = procedure.problems(ctx)
+        problems = self._procedure_problems(ctx, procedure)
         if problems:
             raise ServiceError(f"the procedure {name!r} cannot run: {'; '.join(problems)}", hint=problems[0])
         devices = procedure.devices(ctx)

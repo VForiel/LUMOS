@@ -18,9 +18,11 @@ from astropy.time import Time
 
 import lumos.io
 from lumos import Context
+from lumos.core.procedure import Procedure
 from lumos.elements.coronagraphs import VortexCoronagraph
 from lumos.elements.detectors import Camera, PowerMeter
 from lumos.elements.fibers import Fiber
+from lumos.elements.lab import Shutter
 from lumos.elements.optics import FreeSpace, ThinLens
 from lumos.elements.photonics import bracewell, kernel_nuller
 from lumos.elements.sources import GaussianLaser, PointSource
@@ -244,6 +246,65 @@ def debris_disk() -> Context:
     return ctx
 
 
+#: The procedure of the review of 19/10/2026: a dark from frames taken shutter closed, then measurements.
+DARK_THEN_MEASURE = {
+    "name": "dark then measure",
+    "description": "20 frames shutter closed averaged into a dark, then 10 frames shutter open minus the dark",
+    "steps": [
+        {"do": "action", "element": "shutter", "action": "close"},
+        {
+            "do": "repeat",
+            "times": 20,
+            "steps": [
+                {"do": "action", "element": "camera", "action": "expose"},
+                {"do": "measure", "outputs": ["camera.out"], "as": "darks", "collect": True},
+            ],
+        },
+        {"do": "process", "function": "mean", "args": {"frames": "$darks"}, "as": "dark"},
+        {"do": "action", "element": "shutter", "action": "open"},
+        {
+            "do": "repeat",
+            "times": 10,
+            "steps": [
+                {"do": "action", "element": "camera", "action": "expose"},
+                {"do": "measure", "outputs": ["camera.out"], "as": "images", "collect": True},
+            ],
+        },
+        {"do": "process", "function": "mean", "args": {"frames": "$images"}, "as": "image"},
+        {
+            "do": "process",
+            "function": "subtract_dark",
+            "args": {"frame": "$image", "dark": "$dark"},
+            "as": "science",
+        },
+        {"do": "show", "results": ["dark", "science"]},
+    ],
+}
+
+
+def dark_then_measure() -> Context:
+    ctx = _context(
+        "dark then measure",
+        "A laser beam on a camera behind a shutter: the procedure takes a dark shutter closed, then subtracts it "
+        "from measurements shutter open (Procedures tab).",
+        ["camera.out"],
+    )
+    laser = ctx.add(GaussianLaser(name="laser", power=1e-13 * u.W, n_pixels=64, pixel_scale=0.05 * u.mm))
+    shutter = ctx.add(Shutter(name="shutter"))
+    camera = ctx.add(
+        Camera(
+            name="camera",
+            exposure=0.5 * u.s,
+            dark_current=200 * u.electron / u.s,
+            read_noise=5 * u.electron,
+            bias=100 * u.adu,
+        )
+    )
+    laser >> shutter >> camera
+    ctx.procedures["dark then measure"] = Procedure.from_json(DARK_THEN_MEASURE)
+    return ctx
+
+
 def symbolic_focus() -> Context:
     """Gaussian beam focused by a lens, kept symbolic up to its new waist (closed form by ABCD)."""
     import math
@@ -282,6 +343,7 @@ BUILDERS: dict[str, Callable[[], Context]] = {
     "bracewell": bracewell_preset,
     "debris_disk": debris_disk,
     "symbolic_focus": symbolic_focus,
+    "dark_then_measure": dark_then_measure,
 }
 
 

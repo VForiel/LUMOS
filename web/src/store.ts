@@ -28,7 +28,7 @@ export type Inspected = { context: string; port: string; summary: PortSummary | 
 export type BottomTab = "results" | "study" | "journal" | "problems" | "operation" | "assistant";
 export type Dialog =
   | { kind: "prompt"; title: string; label: string; value: string; confirm: string; onConfirm: (value: string) => void }
-  | { kind: "python"; code: string }
+  | { kind: "python"; code: string; testId?: string; fileName?: string }
   | { kind: "shortcuts" }
   | { kind: "presets" }
   | { kind: "login" }
@@ -93,6 +93,8 @@ type State = {
   /** The context changed since it was opened or saved. */
   dirty: boolean;
   pointer: Pointer;
+  /** Main view: the graph of the context or its procedures (P15.12). */
+  view: "graph" | "procedures";
   layout: Layout;
   /** The last study started in this tab, its points once done, and the request it was made of. */
   studyJob: string | null;
@@ -149,6 +151,7 @@ type Actions = {
   /** Open a context in place of the current one, once the user accepted to lose its unsaved changes. */
   replace: (load: () => Promise<ContextSummary>) => Promise<boolean>;
   setPointer: (pointer: Pointer) => void;
+  setView: (view: "graph" | "procedures") => void;
   setLayout: (change: Partial<Layout>) => void;
   /** Ask the user to confirm what the assistant wants to do (MCP elicitation). */
   ask: (message: string) => Promise<boolean>;
@@ -315,6 +318,7 @@ export const useStore = create<State & Actions>((set, get) => {
     studyRequest: null,
     storage: null,
     pointer: storage()?.getItem(POINTER_KEY) === "select" ? "select" : "pan",
+    view: "graph",
     layout: readLayout(),
 
     async start() {
@@ -459,6 +463,10 @@ export const useStore = create<State & Actions>((set, get) => {
         get().fail(error);
         return false;
       }
+    },
+
+    setView(view) {
+      set({ view });
     },
 
     setPointer(pointer) {

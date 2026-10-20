@@ -60,6 +60,15 @@ body of a study, and never running user code on the public instance.
 7. **Studies** (P15.13): a procedure may be the body of a sweep or a Monte-Carlo run, its named results being the
    outputs of each point.
 
+## Amendment (P15.12): script mode and export
+
+`Procedure.to_python()` exports the steps; a procedure `{"name", "script"}` is the script mode, run by `exec` with
+`ctx`, `results`, `u`, `np` and `call` only when the service has `scripts_enabled`: true by default on the local
+profile, false on the public one, where the configuration refuses it unless `anonymous_role = "none"` (a
+private instance whose visitors all log in). Loading a document never runs a script. The web interface edits
+the steps with Blockly (13.3, Apache-2.0), loaded only in the Procedures tab; the blocks are converted to and
+from the JSON of the procedure by pure functions (`web/src/lib/procedures.ts`).
+
 ## Alternatives considered
 
 - **A Python subset or an expression language in the documents**: flexible, but it is code; a document could

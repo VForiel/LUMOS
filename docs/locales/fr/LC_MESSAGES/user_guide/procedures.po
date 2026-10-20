@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 18:25+0200\n"
+"POT-Creation-Date: 2026-10-20 19:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -31,7 +31,7 @@ msgstr "Une **procédure** est ce que l'on fait avec un banc, étape après éta
 msgid "A procedure is data, not code: a list of steps, each naming its kind in `do`."
 msgstr "Une procédure est une donnée, pas du code : une liste d'étapes, chacune nommant sa nature dans `do`."
 
-#: ../../user_guide/procedures.md:38
+#: ../../user_guide/procedures.md:52
 msgid "Steps"
 msgstr "Étapes"
 
@@ -180,19 +180,28 @@ msgstr ""
 msgid "marks results to display"
 msgstr "marque des résultats à afficher"
 
-#: ../../user_guide/procedures.md:54
+#: ../../user_guide/procedures.md:68
 msgid "Values are numbers, booleans, text, quantities written as text (`\"2 mm\"`) or named results (`\"$dark\"`). The processing functions are `mean`, `median`, `stack` (`method`: mean, median or sigma_clip), `subtract`, `divide`, `scale`, `subtract_dark`, `flat_field`, `crop`, `rebin`, `total`, `maximum`, `minimum`, `average`, `element` and `photometry`; a procedure cannot run anything else."
 msgstr "Les valeurs sont des nombres, des booléens, du texte, des quantités écrites en texte (`\"2 mm\"`) ou des résultats nommés (`\"$dark\"`). Les fonctions de traitement sont `mean`, `median`, `stack` (`method` : mean, median ou sigma_clip), `subtract`, `divide`, `scale`, `subtract_dark`, `flat_field`, `crop`, `rebin`, `total`, `maximum`, `minimum`, `average`, `element` et `photometry` ; une procédure ne peut rien exécuter d'autre."
 
-#: ../../user_guide/procedures.md:59
+#: ../../user_guide/procedures.md:73
+msgid "Python"
+msgstr "Python"
+
+#: ../../user_guide/procedures.md:75
+#, python-brace-format
+msgid "`procedure.to_python()` writes an equivalent Python script (the steps become calls on `ctx`, the processing `call(\"mean\", frames=...)`). A procedure may also *be* a script, `{\"name\": ..., \"script\": \"...\"}`, run with `ctx`, `results`, `u`, `np` and `call` in its namespace: it is code, so the service runs it only where `scripts_enabled` is set (local and private instances, never the public one), and loading a file never runs it."
+msgstr "`procedure.to_python()` écrit un script Python équivalent (les étapes deviennent des appels sur `ctx`, les traitements `call(\"mean\", frames=...)`). Une procédure peut aussi *être* un script, `{\"name\": ..., \"script\": \"...\"}`, exécuté avec `ctx`, `results`, `u`, `np` et `call` dans son espace de noms : c'est du code, donc le service ne l'exécute que si `scripts_enabled` est activé (instances locales et privées, jamais l'instance publique), et le chargement d'un fichier ne l'exécute jamais."
+
+#: ../../user_guide/procedures.md:80
 msgid "Checks, equipment and saving"
 msgstr "Vérifications, matériel et sauvegarde"
 
-#: ../../user_guide/procedures.md:61
+#: ../../user_guide/procedures.md:82
 msgid "`procedure.problems(ctx)` lists what would stop a procedure before it runs: unknown elements, ports, actions, functions or fields, results used before they are defined, more than 10 000 loop iterations in all. A procedure that acts on equipment (elements in operation mode) runs only after a human confirmation of the list of devices (`ctx.run_procedure(name, confirm=...)`, the confirmation dialog of the interface, or `confirmed=true` given by an assistant after asking the user)."
 msgstr "`procedure.problems(ctx)` liste ce qui empêcherait une procédure de s'exécuter, avant de la lancer : éléments, ports, actions, fonctions ou champs inconnus, résultats utilisés avant d'être définis, plus de 10 000 itérations de boucle au total. Une procédure qui agit sur du matériel (éléments en mode opération) ne s'exécute qu'après une confirmation humaine de la liste des appareils (`ctx.run_procedure(name, confirm=...)`, la fenêtre de confirmation de l'interface, ou `confirmed=true` donné par un assistant après avoir demandé à l'utilisateur)."
 
-#: ../../user_guide/procedures.md:67
+#: ../../user_guide/procedures.md:88
 msgid "The procedures of a context are saved in its `.lumos` file (format 1.3); `lumos.io.save(procedure, path)` writes one alone (document of kind `procedure`). In the service, `run_procedure` starts a job (progress, cancellation, quotas) whose outputs are the named results, read with `get_result`."
 msgstr "Les procédures d'un contexte sont enregistrées dans son fichier `.lumos` (format 1.3) ; `lumos.io.save(procedure, path)` en écrit une seule (document de type `procedure`). Dans le service, `run_procedure` lance une tâche (progression, annulation, quotas) dont les sorties sont les résultats nommés, lus avec `get_result`."
 

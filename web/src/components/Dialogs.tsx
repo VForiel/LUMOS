@@ -90,7 +90,7 @@ function PromptDialog({ dialog }: { dialog: Extract<Dialog, { kind: "prompt" }> 
   );
 }
 
-function PythonDialog({ code }: { code: string }) {
+function PythonDialog({ code, testId, fileName: name }: { code: string; testId?: string; fileName?: string }) {
   const { t } = useTranslation();
   const context = useStore((s) => s.context);
   const [copied, setCopied] = useState(false);
@@ -99,7 +99,7 @@ function PythonDialog({ code }: { code: string }) {
     <Modal title={t("dialog.python.title")} onClose={close} wide>
       <div className="space-y-3 p-5">
         <p className="text-sm text-slate-600 dark:text-slate-400">{t("dialog.python.hint")}</p>
-        <pre data-testid="python-code" className="max-h-[55vh] overflow-auto rounded-xl bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100">
+        <pre data-testid={testId ?? "python-code"} className="max-h-[55vh] overflow-auto rounded-xl bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-100">
           {code}
         </pre>
         <div className="flex justify-end gap-2">
@@ -112,7 +112,7 @@ function PythonDialog({ code }: { code: string }) {
             {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
             {copied ? t("dialog.python.copied") : t("dialog.python.copy")}
           </Button>
-          <Button primary onClick={() => download(fileName(context?.name ?? "context", ".py"), code, "text/x-python")}>
+          <Button primary onClick={() => download(name ?? fileName(context?.name ?? "context", ".py"), code, "text/x-python")}>
             <Download className="size-4" />
             {t("dialog.python.download")}
           </Button>
@@ -193,7 +193,7 @@ export function Dialogs({ extra }: { extra?: (dialog: Dialog) => ReactNode }) {
     case "prompt":
       return <PromptDialog dialog={dialog} />;
     case "python":
-      return <PythonDialog code={dialog.code} />;
+      return <PythonDialog code={dialog.code} testId={dialog.testId} fileName={dialog.fileName} />;
     case "shortcuts":
       return <ShortcutsDialog />;
     case "discard":

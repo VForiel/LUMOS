@@ -79,6 +79,7 @@ Quotas of the computations (`[service]`), shared with the MCP server:
 | `max_contexts_per_session` | 20 / 5 | contexts open per visitor |
 | `max_workers` | 4 | threads computing the runs |
 | `operation_enabled` | `false` | allow actions on real equipment |
+| `scripts_enabled` | `true` on the local profile, `false` on the public one | run procedures written as Python scripts; a public instance accepts it only with `anonymous_role = "none"` (a private instance) |
 | `archive_root`, `presets_dir` | — | directories of the archives and of the presets |
 | `session_storage` | `false` / `true` | archives of each visitor in a directory of their own, listed to them only and deleted when their session ends |
 | `max_session_bytes` | none / 10⁹ (1 GB) | data kept per session; beyond, its oldest archives and recordings are deleted |

@@ -643,6 +643,7 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
             "version": lumos.__version__,
             "profile": config.profile,
             "operation": service.config.operation_enabled,
+            "scripts": service.config.scripts_enabled,
             "languages": ["en", "fr"],
             "user": session.user,
             "role": role_of(session),
@@ -919,6 +920,11 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     @app.delete("/api/contexts/{cid}/procedures/{name}", status_code=204, dependencies=[simulator])
     def delete_procedure(request: Request, cid: str, name: str) -> None:
         service.remove_procedure(sid(request), cid, name)
+
+    @app.get("/api/contexts/{cid}/procedures/{name}/export.py", dependencies=[viewer])
+    def export_procedure(request: Request, cid: str, name: str) -> Response:
+        text = service.export_procedure(sid(request), cid, name)
+        return _attachment(text, _filename(name, ".py"), "text/x-python")
 
     @app.post("/api/contexts/{cid}/procedures/{name}/run", dependencies=[simulator])
     def run_procedure(request: Request, cid: str, name: str, body: ProcedureRun) -> JobInfo:

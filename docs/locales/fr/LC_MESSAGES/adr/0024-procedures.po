@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 18:25+0200\n"
+"POT-Creation-Date: 2026-10-20 19:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -282,10 +282,29 @@ msgid ""
 msgstr ""
 
 #: ../../adr/0024-procedures.md:63
-msgid "Alternatives considered"
+msgid "Amendment (P15.12): script mode and export"
 msgstr ""
 
 #: ../../adr/0024-procedures.md:65
+#, python-brace-format
+msgid ""
+"`Procedure.to_python()` exports the steps; a procedure `{\"name\", "
+"\"script\"}` is the script mode, run by `exec` with `ctx`, `results`, "
+"`u`, `np` and `call` only when the service has `scripts_enabled`: true by"
+" default on the local profile, false on the public one, where the "
+"configuration refuses it unless `anonymous_role = \"none\"` (a private "
+"instance whose visitors all log in). Loading a document never runs a "
+"script. The web interface edits the steps with Blockly (13.3, "
+"Apache-2.0), loaded only in the Procedures tab; the blocks are converted "
+"to and from the JSON of the procedure by pure functions "
+"(`web/src/lib/procedures.ts`)."
+msgstr ""
+
+#: ../../adr/0024-procedures.md:72
+msgid "Alternatives considered"
+msgstr ""
+
+#: ../../adr/0024-procedures.md:74
 msgid ""
 "**A Python subset or an expression language in the documents**: flexible,"
 " but it is code; a document could then compute anything, which the public"
@@ -293,37 +312,37 @@ msgid ""
 "vulnerabilities."
 msgstr ""
 
-#: ../../adr/0024-procedures.md:68
+#: ../../adr/0024-procedures.md:77
 msgid ""
 "**Procedures as graphs**: the graph describes a computation without time;"
 " a procedure is ordered in time (actions, waits) with state (named "
 "results), which a list of instructions shows directly."
 msgstr ""
 
-#: ../../adr/0024-procedures.md:70
+#: ../../adr/0024-procedures.md:79
 msgid ""
 "**Reusing recorded sequences** (ADR-0014): they replay commands only, "
 "without measurement, processing nor control flow."
 msgstr ""
 
-#: ../../adr/0024-procedures.md:73
+#: ../../adr/0024-procedures.md:82
 msgid "Consequences"
 msgstr ""
 
-#: ../../adr/0024-procedures.md:75
+#: ../../adr/0024-procedures.md:84
 msgid ""
 "Procedures run identically in Python, in the web interface and through "
 "the MCP server, and are saved with their context."
 msgstr ""
 
-#: ../../adr/0024-procedures.md:77
+#: ../../adr/0024-procedures.md:86
 msgid ""
 "The table of processing functions is the vocabulary of the procedures: "
 "adding a function is a change of LUMOS (with its tests), not of a "
 "document."
 msgstr ""
 
-#: ../../adr/0024-procedures.md:79
+#: ../../adr/0024-procedures.md:88
 msgid ""
 "The Blockly editor (P15.12) only edits this JSON, which keeps the blocks "
 "and the engine independent."

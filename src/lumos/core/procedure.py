@@ -26,6 +26,12 @@ functions of :data:`FUNCTIONS`.
 ``show``       marks the named ``results`` to display
 =============  ==========================================================================================
 
+A procedure may instead be a Python **script** (``{"name", "script"}``, the *script mode*): it runs with
+``ctx``, ``results`` (the named results), ``u`` (astropy units), ``np`` and ``call`` (the processing
+functions) in its namespace. It is code: the service runs it only where scripts are enabled (local and private
+instances, never the public one), and loading a document never runs it. :meth:`Procedure.to_python` exports
+the steps of a procedure to an equivalent script (not the reverse).
+
 Values are numbers, booleans, text, quantities written as text (``"2 mm"``) or named results (``"$dark"``).
 :meth:`Procedure.problems` checks a procedure against its context before it runs (elements, ports, actions,
 functions, names defined before use, at most :data:`MAX_ITERATIONS` loop iterations). The context stores its
@@ -53,6 +59,7 @@ __all__ = [
     "Procedure",
     "ProcedureError",
     "ProcedureResult",
+    "call",
     "run_procedure",
 ]
 
@@ -209,6 +216,13 @@ FUNCTIONS: dict[str, Function] = {
 }
 
 
+def call(function: str, **args: Any) -> Any:
+    """Apply the processing function ``function`` of :data:`FUNCTIONS` (used by the exported scripts)."""
+    if function not in FUNCTIONS:
+        raise ProcedureError(f"unknown function {function!r}; functions: {', '.join(FUNCTIONS)}")
+    return FUNCTIONS[function].run(**args)
+
+
 # --- Values -----------------------------------------------------------------------------------------------
 
 
@@ -253,6 +267,12 @@ class Procedure:
     name: str
     steps: list[dict[str, Any]] = field(default_factory=list)
     description: str = ""
+    script: str | None = None
+
+    @property
+    def is_script(self) -> bool:
+        """Whether the procedure is a Python script (script mode) rather than steps."""
+        return self.script is not None
 
     @classmethod
     def from_json(cls, data: Mapping[str, Any]) -> Procedure:
@@ -262,19 +282,52 @@ class Procedure:
         name = data.get("name")
         if not isinstance(name, str) or not name.strip():
             raise ProcedureError("a procedure needs a name")
+        description = str(data.get("description", ""))
+        if "script" in data:
+            if "steps" in data:
+                raise ProcedureError("a procedure has steps or a script, not both")
+            if not isinstance(data["script"], str):
+                raise ProcedureError("the script of a procedure is a text")
+            return cls(name=name, description=description, script=data["script"])
         steps = data.get("steps", [])
         if not isinstance(steps, list):
             raise ProcedureError("the steps of a procedure are a list")
-        return cls(name=name, steps=copy.deepcopy(list(steps)), description=str(data.get("description", "")))
+        return cls(name=name, steps=copy.deepcopy(list(steps)), description=description)
 
     def to_json(self) -> dict[str, Any]:
         """Return the JSON form of the procedure."""
+        if self.script is not None:
+            return {"name": self.name, "description": self.description, "script": self.script}
         return {"name": self.name, "description": self.description, "steps": copy.deepcopy(self.steps)}
+
+    def to_python(self, context: str = "ctx") -> str:
+        """Return a Python script doing what the steps do, in a context named ``context``.
+
+        The script leaves the named results in a dictionary ``results``.
+        """
+        if self.script is not None:
+            return self.script
+        lines = [
+            f"# procedure {self.name!r}" + (f": {self.description}" if self.description else ""),
+            "from astropy import units as u",
+            "",
+            "from lumos.core.procedure import call",
+            "",
+            "results = {}",
+            "feeds = {}",
+        ]
+        _Exporter(context, lines).steps(self.steps, 0)
+        return "\n".join(lines) + "\n"
 
     # --- Checks -------------------------------------------------------------------------------------
 
     def problems(self, ctx: Any) -> list[str]:
-        """Return what would stop the procedure in the context ``ctx`` (empty when it can run)."""
+        """Return what would stop the procedure in the context ``ctx`` (empty when it can run).
+
+        A script cannot be checked before it runs.
+        """
+        if self.script is not None:
+            return []
         checker = _Checker(ctx)
         checker.steps(self.steps, "steps", depth=0)
         if checker.iterations > MAX_ITERATIONS:
@@ -305,6 +358,103 @@ class Procedure:
     def fed_ports(self) -> list[str]:
         """Return the inputs fed by ``use`` steps."""
         return [str(step["port"]) for step in _walk(self.steps) if step.get("do") == "use" and "port" in step]
+
+
+def _python(value: Any) -> str:
+    """Python expression of a value of a step."""
+    name = _reference(value)
+    if name is not None:
+        return f"results[{name!r}]"
+    literal = _literal(value)
+    if isinstance(literal, u.Quantity):
+        return f"u.Quantity({str(value).strip()!r})"
+    return repr(value)
+
+
+class _Exporter:
+    """Write the steps of a procedure as Python statements."""
+
+    def __init__(self, context: str, lines: list[str]) -> None:
+        self.ctx = context
+        self.lines = lines
+        self.loops = 0
+
+    def emit(self, depth: int, text: str) -> None:
+        self.lines.append("    " * depth + text)
+
+    def steps(self, steps: Sequence[Mapping[str, Any]], depth: int) -> None:
+        if not steps:
+            self.emit(depth, "pass")
+        for step in steps:
+            self.step(step, depth)
+
+    def step(self, step: Mapping[str, Any], depth: int) -> None:
+        kind = step["do"]
+        ctx = self.ctx
+        if kind == "action":
+            args = [_python(a) for a in step.get("args", [])]
+            args += [f"{k}={_python(v)}" for k, v in dict(step.get("kwargs", {})).items()]
+            self.emit(depth, f'{ctx}["{step["element"]}"].{step["action"]}({", ".join(args)})')
+        elif kind == "measure":
+            outputs = list(step["outputs"])
+            run = f"{ctx}.run({outputs!r}, feeds=feeds)"
+            value = (
+                f"{run}[{outputs[0]!r}]"
+                if len(outputs) == 1
+                else f"(lambda r: {{o: r[o] for o in {outputs!r}}})({run})"
+            )
+            if step.get("collect"):
+                self.emit(depth, f"results.setdefault({step['as']!r}, []).append({value})")
+            else:
+                self.emit(depth, f"results[{step['as']!r}] = {value}")
+        elif kind == "repeat":
+            self.emit(depth, f"for _ in range({int(step['times'])}):")
+            self.steps(step.get("steps", []), depth + 1)
+        elif kind == "for_each":
+            spec = step["values"]
+            if isinstance(spec, Mapping):
+                start, stop = str(spec["start"]), str(spec["stop"])
+                space = "geomspace" if spec.get("log") else "linspace"
+                low, high = f"u.Quantity({start!r})", f"u.Quantity({stop!r})"
+                values = (
+                    f"[{low}.unit * v for v in __import__('numpy').{space}("
+                    f"{low}.value, {high}.to_value({low}.unit), {int(spec['num'])})]"
+                )
+            else:
+                values = "[" + ", ".join(_python(v) for v in spec) + "]"
+            self.loops += 1
+            variable = f"value_{self.loops}"
+            self.emit(depth, f"for {variable} in {values}:")
+            self.emit(depth + 1, f"results[{step['as']!r}] = {variable}")
+            self.steps(step.get("steps", []), depth + 1)
+            self.emit(depth, f"results.pop({step['as']!r}, None)")
+        elif kind == "process":
+            args = ", ".join(f"{k}={_python(v)}" for k, v in dict(step.get("args", {})).items())
+            separator = ", " if args else ""
+            self.emit(depth, f"results[{step['as']!r}] = call({step['function']!r}{separator}{args})")
+        elif kind == "set":
+            owner, _, name = str(step["target"]).rpartition(".")
+            self.emit(depth, f'{ctx}["{owner}"].set_target({name!r}, {_python(step["value"])})')
+        elif kind == "use":
+            if step.get("result") is None:
+                self.emit(depth, f"feeds.pop({step['port']!r}, None)")
+            else:
+                self.emit(depth, f"feeds[{step['port']!r}] = results[{step['result']!r}]")
+        elif kind == "wait":
+            self.emit(depth, f"{ctx}.wait({_python(step['duration'])})")
+        elif kind == "if":
+            self.emit(depth, f"if {_python(step['left'])} {step['op']} {_python(step['right'])}:")
+            self.steps(step.get("then", []), depth + 1)
+            if step.get("else"):
+                self.emit(depth, "else:")
+                self.steps(step["else"], depth + 1)
+        elif kind == "save":
+            self.emit(depth, "from lumos.results import new_archive")
+            self.emit(depth, f"archive = new_archive({ctx}, {str(step.get('archive') or 'procedure')!r})")
+            for name in step["results"]:
+                self.emit(depth, f"archive.save_data({name!r}, results[{name!r}])")
+        elif kind == "show":
+            self.emit(depth, f"print({', '.join(f'results[{n!r}]' for n in step['results'])})")
 
 
 def _walk(steps: Sequence[Any]) -> list[dict[str, Any]]:
@@ -557,6 +707,24 @@ class ProcedureResult:
 _ABSENT = object()
 
 
+def _run_script(ctx: Any, procedure: Procedure) -> ProcedureResult:
+    """Run a script procedure (script mode): its code, with the context and the named results."""
+    result = ProcedureResult(procedure.name)
+    namespace: dict[str, Any] = {"ctx": ctx, "results": result.results, "u": u, "np": np, "call": call}
+    entry = ctx._entry("procedure")
+    entry.args = procedure.name
+    started = _time.perf_counter()
+    try:
+        exec(compile(procedure.script or "", f"<procedure {procedure.name}>", "exec"), namespace)
+    except Exception as error:
+        raise ProcedureError(f"the script of {procedure.name!r} failed: {error}") from error
+    finally:
+        entry.measured = _time.perf_counter() - started
+        entry.message = f"script procedure {procedure.name!r} in {entry.measured:.3g} s"
+        ctx.journal.append(entry)
+    return result
+
+
 class _Runner:
     def __init__(
         self,
@@ -718,6 +886,8 @@ def run_procedure(
     ProcedureError
         If the procedure has problems, is not confirmed, is cancelled, or a step fails.
     """
+    if procedure.script is not None:
+        return _run_script(ctx, procedure)
     problems = procedure.problems(ctx)
     if problems:
         raise ProcedureError(f"the procedure {procedure.name!r} cannot run: " + "; ".join(problems))

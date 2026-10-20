@@ -21,6 +21,36 @@ import { useShortcuts } from "./shortcuts";
 import { startTour } from "./tour";
 import { useStore } from "./store";
 
+const ProceduresView = lazy(() => import("./components/Procedures").then((module) => ({ default: module.ProceduresView })));
+
+/** Switch between the graph of the context and its procedures. */
+function ViewSwitch() {
+  const { t } = useTranslation();
+  const view = useStore((s) => s.view);
+  const context = useStore((s) => s.context);
+  const count = context?.procedures?.length ?? 0;
+  const tab = (name: "graph" | "procedures", label: string) => (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={view === name}
+      data-testid={`view-${name}`}
+      onClick={() => useStore.getState().setView(name)}
+      className={`rounded-md px-3 py-1 text-xs font-medium ${
+        view === name ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+      }`}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div role="tablist" className="flex items-center gap-0.5 self-start rounded-lg bg-slate-100 p-0.5 m-2 mb-0 dark:bg-slate-800">
+      {tab("graph", t("view.graph"))}
+      {tab("procedures", count ? `${t("view.procedures")} (${count})` : t("view.procedures"))}
+    </div>
+  );
+}
+
 const AssistantPanel = lazy(() => import("./components/Assistant").then((module) => ({ default: module.AssistantPanel })));
 
 function Separator() {
@@ -38,6 +68,7 @@ function Editor() {
   const showAssistant = Boolean(info?.assistant && (info.role === "simulator" || info.role === "operator"));
   const showOperation = Boolean(info?.operation || context?.mode === "operation" || context?.elements.some((e) => e.actions.length));
   const editable = role !== "viewer";
+  const view = useStore((s) => s.view);
 
   const inspect = useCallback((port: string) => void useStore.getState().inspect(port), []);
   const actions = useMemo(() => ({ open: () => fileInput.current?.click(), run: () => void useStore.getState().run() }), []);
@@ -106,7 +137,15 @@ function Editor() {
       <div className="flex min-h-0 flex-1">
         <Palette />
         <main className="relative flex min-w-0 flex-1 flex-col">
-          <Canvas onInspect={inspect} />
+          <ViewSwitch />
+          <div className={view === "graph" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
+            <Canvas onInspect={inspect} />
+          </div>
+          {view === "procedures" && (
+            <Suspense fallback={<div className="flex-1" />}>
+              <ProceduresView />
+            </Suspense>
+          )}
           <BottomPanel
             extraTabs={[
               ...(showOperation ? [{ tab: "operation" as const, icon: Cpu, label: "tabs.operation" }] : []),

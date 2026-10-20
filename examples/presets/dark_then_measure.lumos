@@ -1,0 +1,246 @@
+{
+  "lumos_format": "1.3",
+  "kind": "context",
+  "lumos_version": "0.0.2.dev279",
+  "created_at": "2026-10-20T17:28:11Z",
+  "meta": {
+    "name": "dark then measure",
+    "description": "A laser beam on a camera behind a shutter: the procedure takes a dark shutter closed, then subtracts it from measurements shutter open (Procedures tab).",
+    "outputs": [
+      "camera.out"
+    ],
+    "author": "LUMOS"
+  },
+  "context": {
+    "mode": "simulation",
+    "twin": true,
+    "seed": 1,
+    "backend": {
+      "preferred": "auto"
+    },
+    "clock": {
+      "start": "2026-01-01T00:00:00.000",
+      "elapsed": {
+        "value": 0.0,
+        "unit": "s"
+      }
+    },
+    "observation": {
+      "band": null,
+      "n": 1,
+      "rule": "midpoint",
+      "extra": {}
+    },
+    "simulate": []
+  },
+  "elements": [
+    {
+      "id": "laser",
+      "type": "lumos.sources.GaussianLaser",
+      "type_version": 1,
+      "name": "laser",
+      "params": {
+        "wavelength": {
+          "value": 633.0,
+          "unit": "nm"
+        },
+        "power": {
+          "value": 1e-13,
+          "unit": "W"
+        },
+        "waist": {
+          "value": 1.0,
+          "unit": "mm"
+        },
+        "pixel_scale": {
+          "value": 0.05,
+          "unit": "mm"
+        }
+      },
+      "settings": {
+        "n_pixels": 64
+      },
+      "state": {},
+      "free": {}
+    },
+    {
+      "id": "shutter",
+      "type": "lumos.lab.Shutter",
+      "type_version": 1,
+      "name": "shutter",
+      "params": {},
+      "settings": {},
+      "state": {
+        "is_open": {
+          "value": 0.0,
+          "unit": ""
+        }
+      },
+      "free": {}
+    },
+    {
+      "id": "camera",
+      "type": "lumos.detectors.Camera",
+      "type_version": 1,
+      "name": "camera",
+      "params": {
+        "quantum_efficiency": {
+          "value": {
+            "dtype": "<f8",
+            "shape": [
+              1
+            ],
+            "data": "mpmZmZmZ6T8="
+          },
+          "unit": ""
+        },
+        "qe_wavelengths": {
+          "value": {
+            "dtype": "<f8",
+            "shape": [
+              0
+            ],
+            "data": ""
+          },
+          "unit": "nm"
+        },
+        "exposure": {
+          "value": 0.5,
+          "unit": "s"
+        },
+        "dark_current": {
+          "value": 200.0,
+          "unit": "electron / s"
+        },
+        "read_noise": {
+          "value": 5.0,
+          "unit": "electron"
+        },
+        "gain": {
+          "value": 1.0,
+          "unit": "electron / adu"
+        },
+        "bias": {
+          "value": 100.0,
+          "unit": "adu"
+        },
+        "full_well": {
+          "value": 100000.0,
+          "unit": "electron"
+        }
+      },
+      "settings": {
+        "bits": 16,
+        "binning": 1,
+        "noise": true
+      },
+      "state": {
+        "frame": {
+          "value": 0.0,
+          "unit": ""
+        }
+      },
+      "free": {}
+    }
+  ],
+  "connections": [
+    {
+      "from": "laser.out",
+      "to": "shutter.in"
+    },
+    {
+      "from": "shutter.out",
+      "to": "camera.in"
+    }
+  ],
+  "feedbacks": [],
+  "procedures": {
+    "dark then measure": {
+      "name": "dark then measure",
+      "description": "20 frames shutter closed averaged into a dark, then 10 frames shutter open minus the dark",
+      "steps": [
+        {
+          "do": "action",
+          "element": "shutter",
+          "action": "close"
+        },
+        {
+          "do": "repeat",
+          "times": 20,
+          "steps": [
+            {
+              "do": "action",
+              "element": "camera",
+              "action": "expose"
+            },
+            {
+              "do": "measure",
+              "outputs": [
+                "camera.out"
+              ],
+              "as": "darks",
+              "collect": true
+            }
+          ]
+        },
+        {
+          "do": "process",
+          "function": "mean",
+          "args": {
+            "frames": "$darks"
+          },
+          "as": "dark"
+        },
+        {
+          "do": "action",
+          "element": "shutter",
+          "action": "open"
+        },
+        {
+          "do": "repeat",
+          "times": 10,
+          "steps": [
+            {
+              "do": "action",
+              "element": "camera",
+              "action": "expose"
+            },
+            {
+              "do": "measure",
+              "outputs": [
+                "camera.out"
+              ],
+              "as": "images",
+              "collect": true
+            }
+          ]
+        },
+        {
+          "do": "process",
+          "function": "mean",
+          "args": {
+            "frames": "$images"
+          },
+          "as": "image"
+        },
+        {
+          "do": "process",
+          "function": "subtract_dark",
+          "args": {
+            "frame": "$image",
+            "dark": "$dark"
+          },
+          "as": "science"
+        },
+        {
+          "do": "show",
+          "results": [
+            "dark",
+            "science"
+          ]
+        }
+      ]
+    }
+  },
+  "ui": {}
+}

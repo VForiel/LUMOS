@@ -41,6 +41,10 @@ class ServiceConfig(BaseModel):
     """Configuration of a service (deployment profiles set it, step P14.3)."""
 
     operation_enabled: bool = Field(default=False, description="allow actions on real equipment")
+    scripts_enabled: bool = Field(
+        default=False,
+        description="run procedures written as Python scripts (local or private instances, never public)",
+    )
     max_contexts_per_session: int = Field(default=20, ge=1)
     max_jobs_per_session: int = Field(default=2, ge=1, description="runs in progress at the same time")
     max_workers: int = Field(default=4, ge=1, description="threads executing the runs")
@@ -172,6 +176,7 @@ class ContextSummary(BaseModel):
     elements: list[ElementSummary]
     connections: list[ConnectionInfo]
     feedbacks: list[FeedbackInfo] = []
+    procedures: list[str] = Field(default=[], description="names of the procedures of the context")
     outputs: list[str] = []
     groups: dict[str, GroupInfo] = {}
     ui: dict[str, Any] = {}
@@ -217,6 +222,7 @@ class ProcedureInfo(BaseModel):
     name: str
     description: str = ""
     steps: int = Field(description="number of top-level steps")
+    script: bool = Field(default=False, description="a Python script (script mode) rather than steps")
     problems: list[str] = Field(default=[], description="what stops it from running in its context")
     devices: list[str] = Field(
         default=[], description="elements acting on equipment (a confirmation is needed)"

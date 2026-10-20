@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 19:13+0200\n"
+"POT-Creation-Date: 2026-10-20 19:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -380,6 +380,19 @@ msgid "allow actions on real equipment"
 msgstr "autoriser les actions sur du matériel réel"
 
 #: ../../web/configuration.md
+#, fuzzy
+msgid "`scripts_enabled`"
+msgstr "`operation_enabled`"
+
+#: ../../web/configuration.md
+msgid "`true` on the local profile, `false` on the public one"
+msgstr "`true` en profil local, `false` en profil public"
+
+#: ../../web/configuration.md
+msgid "run procedures written as Python scripts; a public instance accepts it only with `anonymous_role = \"none\"` (a private instance)"
+msgstr "exécuter les procédures écrites en scripts Python ; une instance publique ne l'accepte qu'avec `anonymous_role = \"none\"` (une instance privée)"
+
+#: ../../web/configuration.md
 msgid "`archive_root`, `presets_dir`"
 msgstr "`archive_root`, `presets_dir`"
 
@@ -440,15 +453,15 @@ msgstr "600 / 60"
 msgid "finished runs and studies of a session whose results stay in memory"
 msgstr "exécutions et études terminées d'une session dont les résultats restent en mémoire"
 
-#: ../../web/configuration.md:88
+#: ../../web/configuration.md:89
 msgid "A refused computation answers with the code `quota` and says which limit applies, so that the user can reduce the number of pixels or of wavelengths."
 msgstr "Un calcul refusé répond avec le code `quota` et indique la limite en cause, pour que l'utilisateur puisse réduire le nombre de pixels ou de longueurs d'onde."
 
-#: ../../web/configuration.md:91
+#: ../../web/configuration.md:92
 msgid "Enabling the operation on a public instance"
 msgstr "Activer l'opération sur une instance publique"
 
-#: ../../web/configuration.md:93
+#: ../../web/configuration.md:94
 msgid "Set `operation_enabled = true` in `[service]`, serve the instance over TLS (`tls_certfile` and `tls_keyfile`, or `trust_proxy = true` behind a proxy with HTTPS) and register at least one operator in the users file. Anonymous visitors can never be operators there. Each action is still confirmed in the interface and written to the audit journal."
 msgstr "Réglez `operation_enabled = true` dans `[service]`, servez l'instance en TLS (`tls_certfile` et `tls_keyfile`, ou `trust_proxy = true` derrière un mandataire en HTTPS) et enregistrez au moins un opérateur dans le fichier des utilisateurs. Les visiteurs anonymes ne peuvent jamais y être opérateurs. Chaque action reste confirmée dans l'interface et écrite dans le journal d'audit."
 
