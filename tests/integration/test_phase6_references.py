@@ -36,7 +36,7 @@ from lumos.elements.detectors import PowerMeter
 from lumos.elements.optics import FreeSpace, ThinLens
 from lumos.elements.photonics import KERNEL_PAIRS, bracewell, kernel_nuller, kernels
 from lumos.elements.sources import PointSource
-from lumos.elements.telescopes import Telescope, TelescopeArray
+from lumos.elements.telescopes import IdealInjectionArray, Telescope
 from lumos.fields import Grid
 
 H, C = 6.62607015e-34, 299_792_458.0
@@ -150,7 +150,9 @@ def test_kernel_nuller_response():
     planet = ctx.add(
         PointSource(name="planet", flux_density=0.01 * u.Jy, theta_x=tx * u.rad, theta_y=ty * u.rad)
     )
-    array = ctx.add(TelescopeArray(name="array", frame="sky", positions=positions * u.m, diameter=2 * u.m))
+    array = ctx.add(
+        IdealInjectionArray(name="array", frame="sky", positions=positions * u.m, diameter=2 * u.m)
+    )
     ctx.connect(star.port("out"), array.port("in"))
     ctx.connect(planet.port("out"), array.port("in"))
     chain = array >> kernel_nuller(name="chip")
@@ -191,7 +193,7 @@ def test_bracewell_transmission_map():
     baseline = 20.0
     source = ctx.add(PointSource(name="src", flux_density=1 * u.Jy))
     array = ctx.add(
-        TelescopeArray(
+        IdealInjectionArray(
             name="array",
             frame="sky",
             positions=[[-baseline / 2, 0.0], [baseline / 2, 0.0]] * u.m,

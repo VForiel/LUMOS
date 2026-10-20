@@ -25,7 +25,7 @@ from lumos import Context
 from lumos.elements.detectors import PowerMeter
 from lumos.elements.photonics import PhaseShifter, bracewell, kernel_nuller
 from lumos.elements.sources import PointSource
-from lumos.elements.telescopes import TelescopeArray
+from lumos.elements.telescopes import IdealInjectionArray
 from lumos.fields import DataProduct
 from lumos.processing.interferometry import (
     KernelObservables,
@@ -47,7 +47,7 @@ def bracewell_bench(phase_error=0.0, baseline=20.0):
     ctx = band(9.99, 10.01)
     source = ctx.add(PointSource(name="src", flux_density=1 * u.Jy))
     array = ctx.add(
-        TelescopeArray(
+        IdealInjectionArray(
             name="array",
             frame="sky",
             positions=[[-baseline / 2, 0.0], [baseline / 2, 0.0]] * u.m,
@@ -94,7 +94,9 @@ def kernel_bench(pistons):
     ctx = band(3.5, 4.0)
     positions = np.array([[0.0, 0.0], [30.0, 10.0], [55.0, -20.0], [80.0, 25.0]])
     star = ctx.add(PointSource(name="star", flux_density=1 * u.Jy))
-    array = ctx.add(TelescopeArray(name="array", frame="sky", positions=positions * u.m, diameter=2 * u.m))
+    array = ctx.add(
+        IdealInjectionArray(name="array", frame="sky", positions=positions * u.m, diameter=2 * u.m)
+    )
     chain = star >> array
     for k, piston in enumerate(pistons):
         chain = chain >> PhaseShifter(name=f"piston{k}", phase=piston * u.rad, achromatic=True, channels=[k])

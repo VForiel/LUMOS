@@ -33,7 +33,7 @@ from astropy import units as u
 from lumos import Context
 from lumos.elements.optics import FreeSpace, ThinLens
 from lumos.elements.sources import PointSource
-from lumos.elements.telescopes import Telescope, TelescopeArray, life, vlti
+from lumos.elements.telescopes import IdealInjectionArray, Telescope, TelescopeArray, life, vlti
 from lumos.fields import Bus, Grid, IncoherentBundle, ModalField
 
 SIDEREAL_DAY = 86164.0905  # s
@@ -219,7 +219,7 @@ def test_array_output_amplitudes_and_phases():
         PointSource(name="planet", flux_density=0.01 * u.Jy, theta_x=tx * u.rad, theta_y=ty * u.rad)
     )
     array = ctx.add(
-        TelescopeArray(
+        IdealInjectionArray(
             name="array", frame="sky", positions=[[0, 0], [20, 5], [-7, 30]] * u.m, diameter=2 * u.m
         )
     )

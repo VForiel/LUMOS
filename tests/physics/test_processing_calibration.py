@@ -27,7 +27,7 @@ from lumos import Context
 from lumos.elements.detectors import PowerMeter
 from lumos.elements.photonics import PhaseShifter, bracewell
 from lumos.elements.sources import PointSource
-from lumos.elements.telescopes import TelescopeArray
+from lumos.elements.telescopes import IdealInjectionArray
 from lumos.fields import DataProduct
 from lumos.processing import calibration
 from lumos.processing.interferometry import null_depth
@@ -40,7 +40,9 @@ def nuller(errors):
     ctx.observation.band = (9.99 * u.um, 10.01 * u.um)
     source = ctx.add(PointSource(name="src", flux_density=1 * u.Jy))
     array = ctx.add(
-        TelescopeArray(name="array", frame="sky", positions=[[-5.0, 0.0], [5.0, 0.0]] * u.m, diameter=2 * u.m)
+        IdealInjectionArray(
+            name="array", frame="sky", positions=[[-5.0, 0.0], [5.0, 0.0]] * u.m, diameter=2 * u.m
+        )
     )
     chain = source >> array
     for k, error in enumerate(errors):
