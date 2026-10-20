@@ -7,11 +7,10 @@ est dans les commits et les ADR). Pour répondre : une ligne commençant par `->
 
 ## Actions de ton côté
 
-- [ ] **Connecteur Claude.ai « Lumos »** : il échoue parce que son lien est mort (le serveur répond « unknown or
-  revoked connector link ») : un lien de connecteur était rattaché à ta session de navigateur, qui a expiré. Je
-  rends les liens durables (ils survivent à la session et au redémarrage, révocables) ; une fois poussé et
-  déployé, crée un nouveau lien (panneau Assistant › Créer un lien de connecteur) et remplace l'URL du
-  connecteur dans Claude.ai.
+- [ ] **Connecteur Claude.ai « Lumos »** : il échouait parce que son lien était mort avec ta session de navigateur
+  (« unknown or revoked connector link »). Corrigé et déployé : un lien vit maintenant 90 jours, survit à la
+  fin de la session et aux redémarrages. À faire une fois : créer un nouveau lien (panneau Assistant › Créer un
+  lien de connecteur) et remplacer l'URL du connecteur dans Claude.ai.
 - [ ] **PyPI (pour P15.5, pas urgent)** : créer un compte sur https://pypi.org (2FA), puis y déclarer un
   *trusted publisher* en attente : projet `lumos-maxima`, dépôt `VForiel/LUMOS`, workflow `publish.yml`,
   environnement `pypi` (et de même sur https://test.pypi.org avec l'environnement `testpypi`). Aucun mot de passe ni jeton à me transmettre.
