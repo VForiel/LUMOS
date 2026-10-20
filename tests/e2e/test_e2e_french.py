@@ -48,4 +48,4 @@ def test_results_in_french(page):
     expect(results).to_contain_text("Dernier calcul")
     expect(results).to_contain_text("terminé", timeout=60_000)
     expect(page.get_by_test_id("toast-success")).to_contain_text("Calcul terminé")
-    expect(page.get_by_test_id("tab-results")).to_contain_text("Résultats")
+    expect(page.get_by_test_id("tab-results")).to_contain_text("Sorties")
