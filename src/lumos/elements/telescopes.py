@@ -13,12 +13,14 @@ the power :math:`P^2 < P`, the pupil is scaled so that :math:`\sum P^2 \Delta x 
 anti-aliased area :math:`\sum P \Delta x \Delta y`, which converges to the exact area.
 
 A :class:`TelescopeArray` models an interferometer whose beams are injected into single-mode guides with an
-ideal coupling: telescope :math:`j` at the projected position :math:`(u_j, v_j)` delivers the amplitude
+ideal coupling: it returns a :class:`~lumos.fields.Bus` of single-mode guided lanes (``T1``... ``Tn``, with
+the projected positions of the telescopes, ADR-0023), in which telescope :math:`j` at the projected position
+:math:`(u_j, v_j)` delivers the amplitude
 
 .. math:: a_{mkj} = \sqrt{\eta A F_{mk} b_k}\; \exp\!\left[\frac{2i\pi}{\lambda_k}
           (u_j\,\theta_{x,m} + v_j\,\theta_{y,m})\right]
 
-(a :class:`~lumos.fields.ModalField` with one channel per telescope, :math:`\eta` the throughput), the
+(:math:`\eta` the throughput), the
 geometric delay of the phase centre being compensated by the delay lines. Angles are direction cosines on the
 sky, :math:`\theta_x` towards the East (u) and :math:`\theta_y` towards the North (v).
 
@@ -56,6 +58,7 @@ from lumos.core.element import Element, Values
 from lumos.core.param import Param, Setting
 from lumos.core.port import Input, Output
 from lumos.core.registry import register
+from lumos.fields.bus import Bus
 from lumos.fields.grid import Grid
 from lumos.fields.incoherent import IncoherentBundle
 from lumos.fields.modal import ModalField
@@ -123,7 +126,8 @@ class Telescope(Element):
         """Sample the plane waves of the received sources on the pupil."""
         from lumos.elements.apertures import _with_spiders
 
-        tx, ty, lam, bw, flux = _arrays(combine(inputs["in"]))
+        sources = combine(inputs["in"])
+        tx, ty, lam, bw, flux = _arrays(sources)
         grid = Telescope.pupil_grid(values)
         mask = shapes.annulus(grid, values.diameter, values.obstruction, supersample=values.supersample)
         mask = _with_spiders(values, grid, mask)
@@ -134,7 +138,7 @@ class Telescope(Element):
         amplitude = np.sqrt(flux * bw[None, :])[:, :, None, None]
         field = amplitude * mask[None, None] * np.exp(1j * phase)
         template = Wavecube(field[0], grid, lam * u.m, power_unit=_PHOTON_RATE)
-        return {"out": IncoherentBundle(field, template)}
+        return {"out": IncoherentBundle(field, template, sources=sources.identifier)}
 
 
 # --- Arrays -----------------------------------------------------------------------------------------
@@ -169,7 +173,7 @@ def _projected(values: Values) -> np.ndarray:
 
 @register("lumos.telescopes.TelescopeArray")
 class TelescopeArray(Element):
-    """Array of identical telescopes injecting each beam in a single-mode channel (ideal coupling)."""
+    """Array of identical telescopes injecting each beam in a single-mode guide (ideal coupling)."""
 
     time_dependent = True
     positions = Param(
@@ -199,7 +203,7 @@ class TelescopeArray(Element):
     rotation_rate = Param(unit=u.deg / u.hour, default=0 * u.deg / u.hour, doc="sky frame: rotation rate")
     frame = Setting(str, default="ground", choices=("ground", "sky"), doc="frame of the positions")
     in_ = Input(SourceList, multiple=True)
-    out = Output(ModalField)
+    out = Output(ModalField, bus=True, doc="one single-mode guided lane per telescope")
 
     @property
     def n_telescopes(self) -> int:
@@ -228,16 +232,19 @@ class TelescopeArray(Element):
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
-        """Return the amplitudes injected by every telescope for every source and channel."""
-        tx, ty, lam, bw, flux = _arrays(combine(inputs["in"]))
+        """Return the bus of the amplitudes injected by every telescope for every source and channel."""
+        sources = combine(inputs["in"])
+        tx, ty, lam, bw, flux = _arrays(sources)
         uv = _projected(values)
         area = math.pi * (values.diameter**2 - values.obstruction**2) / 4
         modulus = np.sqrt(values.throughput * area * flux * bw[None, :])  # (M, nλ)
         opd = tx[:, None] * uv[None, :, 0] + ty[:, None] * uv[None, :, 1]  # (M, n)
         phase = 2 * math.pi * opd[:, None, :] / lam[None, :, None]
         amplitudes = modulus[:, :, None] * np.exp(1j * phase)
-        labels = [f"T{j + 1}" for j in range(len(uv))]
-        return {"out": ModalField(amplitudes, lam * u.m, labels=labels, power_unit=_PHOTON_RATE)}
+        bus = Bus.guided(
+            amplitudes, lam * u.m, positions=uv * u.m, power_unit=_PHOTON_RATE, sources=sources.identifier
+        )
+        return {"out": bus}
 
 
 # --- Presets -----------------------------------------------------------------------------------------

@@ -161,9 +161,11 @@ class ElementGroup(Element):
         source = internal.port
         port: Port
         if source.direction == "in":
-            port = Input(source.signal_type, name=name, multiple=source.multiple, doc=source.doc)
+            port = Input(
+                source.signal_type, name=name, multiple=source.multiple, doc=source.doc, bus=source.bus
+            )
         else:
-            port = Output(source.signal_type, name=name, doc=source.doc)
+            port = Output(source.signal_type, name=name, doc=source.doc, bus=source.bus)
         port.attribute = name
         self._exposed[name] = (port, internal)
         self._on_field_changed("ports")

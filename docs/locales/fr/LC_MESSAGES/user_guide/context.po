@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 19:13+0200\n"
+"POT-Creation-Date: 2026-10-20 17:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -112,6 +112,6 @@ msgid "Files and scripts"
 msgstr "Fichiers et scripts"
 
 #: ../../user_guide/context.md:151
-msgid "`lumos.io.save(ctx, \"bench.lumos\")` writes the whole context: settings, clock, elements, groups and connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting point for a system built in the web interface or by an assistant. The JSON Schema of the format is published with the documentation (`lumos-1.2.schema.json`; `lumos-1.1.schema.json` for documents without free settings or components, `lumos-1.0.schema.json` for those without feedback loops)."
-msgstr "`lumos.io.save(ctx, \"bench.lumos\")` écrit tout le contexte : réglages, horloge, éléments, groupes et connexions ; les tableaux de plus de 64 ko vont dans un fichier `bench.npz` à côté. `lumos.io.load` le relit sans importer aucun module. `ctx.to_python()` écrit un script Python équivalent, un point de départ lisible pour un système construit dans l'interface web ou par un assistant. Le schéma JSON du format est publié avec la documentation (`lumos-1.2.schema.json` ; `lumos-1.1.schema.json` pour les documents sans réglages ni composantes libres, `lumos-1.0.schema.json` pour ceux sans boucles de rétroaction)."
+msgid "`lumos.io.save(ctx, \"bench.lumos\")` writes the whole context: settings, clock, elements, groups and connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting point for a system built in the web interface or by an assistant. The JSON Schema of the format is published with the documentation (`lumos-1.3.schema.json`; in format 1.3 the `channels` settings of photonic components designate the lanes of a bus; `lumos-1.2.schema.json` and `lumos-1.1.schema.json` for older documents without free settings or components, `lumos-1.0.schema.json` for those without feedback loops)."
+msgstr "`lumos.io.save(ctx, \"bench.lumos\")` écrit tout le contexte : réglages, horloge, éléments, groupes et connexions ; les tableaux de plus de 64 ko vont dans un fichier `bench.npz` à côté. `lumos.io.load` le relit sans importer aucun module. `ctx.to_python()` écrit un script Python équivalent, point de départ lisible pour un système construit dans l'interface web ou par un assistant. Le schéma JSON du format est publié avec la documentation (`lumos-1.3.schema.json` ; dans le format 1.3, les réglages `channels` des composants photoniques désignent les voies d'un bus ; `lumos-1.2.schema.json` et `lumos-1.1.schema.json` pour les documents plus anciens sans réglages ni composantes libres, `lumos-1.0.schema.json` pour ceux sans boucle de rétroaction)."
 

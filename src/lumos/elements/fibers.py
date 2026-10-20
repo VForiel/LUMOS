@@ -11,12 +11,14 @@ so :math:`|a_n|^2` is the power coupled into mode :math:`n` (the overlap-integra
 Roddier 1988 for a single mode). Over the length :math:`L` every mode gets the phase :math:`\beta_n L`,
 :math:`\beta_n = 2\pi n_{\mathrm{eff},n}/\lambda`, and the power transmission :math:`10^{-\alpha L/10}` of the
 attenuation :math:`\alpha`. Outputs: ``modes``, the amplitudes at the output end (a
-:class:`~lumos.fields.ModalField`, one channel per mode and polarisation), and ``out``, the near field
-:math:`\sum_n a_n \psi_n` on the output face, sampled on the input grid.
+:class:`~lumos.fields.ModalField`, one guided lane whose modes are the LP modes and polarisations), and
+``out``, the near field :math:`\sum_n a_n \psi_n` on the output face, sampled on the input grid. On a
+:class:`~lumos.fields.Bus` of beams, the fibre acts on every lane (one identical fibre per lane, ADR-0023)
+and both outputs are buses.
 
 Modes come from :mod:`lumos.physics.fibers`: exact LP modes (``mode_model="lp"``; modes with
 :math:`\ell \ge 1` have a cosine ``a`` and a sine ``b`` orientation), or the Gaussian approximation of LP01
-(``"gaussian"``) with the given mode field diameter or Marcuse's waist. The channels are the modes guided at
+(``"gaussian"``) with the given mode field diameter or Marcuse's waist. The modes are those guided at
 the shortest wavelength; at longer wavelengths the modes beyond cutoff carry no light. Material dispersion is
 not modelled (constant ``cladding_index`` and numerical aperture).
 """
@@ -149,6 +151,7 @@ def _transfer(values: Values, signal: Any) -> tuple[ModalField, Any]:
         weights=weights,
         labels=labels,
         power_unit=signal.power_unit,
+        sources=signal.sources if bundle else None,
     )
     out = signal._with_field(backend.asarray(exit_field.reshape(shape)))
     return modal, out

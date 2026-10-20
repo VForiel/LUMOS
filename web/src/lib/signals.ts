@@ -22,6 +22,7 @@ const COLOURS: Record<string, string> = {
   Wavecube: "#a78bfa",
   IncoherentBundle: "#22d3ee",
   ModalField: "#2dd4bf",
+  Bus: "#2dd4bf",
   RadianceField: "#fb923c",
   SourceList: "#fbbf24",
   SymbolicField: "#f472b6",

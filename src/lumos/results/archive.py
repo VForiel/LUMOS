@@ -64,6 +64,7 @@ SIGNAL_CLASSES: tuple[str, ...] = (
     "IncoherentBundle",
     "RadianceField",
     "ModalField",
+    "Bus",
     "SourceList",
     "SymbolicField",
 )

@@ -215,6 +215,7 @@ _SIGNAL_COLOURS = {
     "IncoherentBundle": "#2a9d8f",
     "RadianceField": "#d1495b",
     "ModalField": "#00a6c8",
+    "Bus": "#00a6c8",
     "DataProduct": "#555555",
 }
 

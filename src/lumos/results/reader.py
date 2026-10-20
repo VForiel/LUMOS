@@ -58,9 +58,9 @@ class LoadedArchive:
 
 
 def _signal_classes() -> dict[str, Any]:
-    from lumos.fields import IncoherentBundle, ModalField, RadianceField, SourceList, Wavecube, Wavefront
+    from lumos.fields import Bus, IncoherentBundle, ModalField, RadianceField, SourceList, Wavecube, Wavefront
 
-    classes = (Wavefront, Wavecube, IncoherentBundle, RadianceField, ModalField, SourceList)
+    classes = (Wavefront, Wavecube, IncoherentBundle, RadianceField, ModalField, Bus, SourceList)
     known: dict[str, Any] = {cls.__name__: cls for cls in classes}
     known["SymbolicField"] = _SymbolicFieldReader  # imports SymPy only for archives holding one
     return known

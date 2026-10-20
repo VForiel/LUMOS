@@ -79,6 +79,9 @@
 .. automodule:: lumos.fields.modal
    :members: ModalField
 
+.. automodule:: lumos.fields.bus
+   :members: Bus
+
 .. automodule:: lumos.fields.dataproduct
    :members: DataProduct
 

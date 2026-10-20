@@ -7,11 +7,13 @@ Each channel covers the bandwidth :math:`b_k`, so a collecting area :math:`A` re
 :math:`A \sum_k F_{mk} b_k` photons per second from source :math:`m`.
 
 A telescope turns a source list into the plane waves sampled on its pupil grid (an
-:class:`~lumos.fields.IncoherentBundle`).
+:class:`~lumos.fields.IncoherentBundle`). :attr:`SourceList.identifier` names the list, so that the signals
+derived from it can tell whether they describe the same sources (lanes interfere only then, ADR-0023).
 """
 
 from __future__ import annotations
 
+import hashlib
 from typing import Any, cast
 
 import numpy as np
@@ -113,6 +115,15 @@ class SourceList(OpticalSignal):
     def flux(self) -> u.Quantity:
         """Spectral photon flux densities, shape ``(M, nλ)``."""
         return self._flux * PHOTON_FLUX_DENSITY
+
+    @property
+    def identifier(self) -> str:
+        """Digest of the directions, spectral channels, fluxes and names: equal for equal lists."""
+        digest = hashlib.sha256()
+        for array in (self._tx, self._ty, self._lam, self._bw, self._flux):
+            digest.update(np.ascontiguousarray(array, dtype=float).tobytes())
+        digest.update("\x1f".join(self._names).encode("utf-8"))
+        return digest.hexdigest()[:16]
 
     def photon_rate(self, area: u.Quantity) -> u.Quantity:
         """Photons per second collected by ``area`` from each source, shape ``(M,)``."""

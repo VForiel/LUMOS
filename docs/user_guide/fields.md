@@ -11,7 +11,8 @@ physical quantities as `astropy.units.Quantity` objects.
 | `Wavecube` | Coherent field at several wavelengths | `(nλ, [2,] ny, nx)` |
 | `IncoherentBundle` | Mutually incoherent modes | `(M, *mode_shape)` |
 | `RadianceField` | Spectral radiance of an incoherent scene | `(nλ, [4,] ny, nx)` |
-| `ModalField` | Amplitudes in guided channels | `([M,] nλ, n)` |
+| `ModalField` | Amplitudes of the modes of one guide | `([M,] nλ, n)` |
+| `Bus` | Lanes separated in space (guides, telescope arms) | one array when packed |
 | `DataProduct` | Detected or processed data | any |
 
 ## Grids
@@ -106,16 +107,43 @@ Stokes parameters. The radiance may be given per wavelength or per frequency, in
 
 ## Guided light
 
-A `ModalField` holds the complex amplitudes of light in waveguides or guided modes. Photonic components act
-by scattering matrices; `lumos.fields.smatrix` provides directional couplers and phase shifters.
+A `ModalField` holds the complex amplitudes of light in the modes of **one** guide (one mode for a
+single-mode guide), for each wavelength and each incoherent source. Its `sources` attribute identifies the
+source list they come from. Scattering matrices act on its modes; `lumos.fields.smatrix` provides directional
+couplers and phase shifters.
 
 ```python
 from lumos.fields import ModalField, smatrix
 
-light = ModalField([[1, 0]], [1.55] * u.um)
+light = ModalField([[1, 0]], [1.55] * u.um)  # one guide with two modes
 mzi = smatrix.coupler(0.5) @ smatrix.phase_shifter([0.3 * u.rad, 0 * u.rad]) @ smatrix.coupler(0.5)
-light.apply(mzi).channel_power
+light.apply(mzi).mode_power
 ```
+
+## Buses
+
+Guides separated in space — the waveguides of a chip, the arms of an interferometer — are the **lanes** of a
+`Bus`. A bus behaves as a sequence of signals of one class (`len(bus)`, `bus[i]`, iteration), names its lanes
+(`T1`, `T2`... by default) and may carry the projected position of the telescope feeding each lane. Spectral
+channels, incoherent sources and the modes of one guide are never lanes: they share the same beam or guide.
+
+```python
+from lumos.fields import Bus
+
+guides = Bus.guided([[1, 0, 0, 0]], [1.55] * u.um)  # four single-mode lanes
+len(guides), guides.names  # 4, ('T1', 'T2', 'T3', 'T4')
+guides[0].mode_power
+```
+
+When its lanes share their metadata (same sources, wavelengths, spectral weights and power unit for guided
+lanes; same grid and metadata for beams), a bus stores them in one array (`bus.packed`): `bus.modal` holds all
+the modes of all the guided lanes, `bus.field` the stacked beams. Otherwise it keeps a list of lanes, with the
+same interface, and `Bus.packing_problem(lanes)` says why. Guided lanes interfere only if they describe the
+same sources in the same order: a component mixing lanes that cannot be packed together refuses them.
+
+An element whose input does not declare a bus acts on every lane of a bus it receives, as N identical copies
+(a stochastic element draws an independent stream per lane): a `Fiber` on a bus of beams returns a bus of
+guided lanes. Elements producing data (cameras, processing blocks) need one beam: recombine the lanes first.
 
 ## Data products
 

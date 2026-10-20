@@ -237,9 +237,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `max_jobs_kept` in `ServiceConfig` (public profile: per-session archives deleted with the session, 1 GB per
   session, 2 GB kept free, 20 runs in memory); `Service.storage` and `/api/storage`; job warnings; the
   results panel shows the data of the session.
+- Buses (P15.6, ADR-0023): `lumos.fields.Bus` groups lanes separated in space (guides of a chip, arms of an
+  interferometer), named and with optional telescope positions, packed in one array when they share their
+  metadata (`Bus.guided`, `modal`, `field`, `select`, `concatenate`, `packing_problem`); ports declare buses
+  (`Input(..., bus=True)`, `x-lumos-ports[].bus` in the schemas); an element whose input does not declare a bus
+  acts on every lane of a bus (one random stream per lane); `SourceList.identifier` and the `sources` of
+  `ModalField` and `IncoherentBundle`, checked before lanes interfere; `.lumos` format 1.3.
 
 ### Changed
 
+- Guided light (P15.6, ADR-0023): a `ModalField` is the modes of one guide (`n_sources`, `n_modes`,
+  `mode_power` replace `n_modes`, `n_channels`, `channel_power`); photonic components take and return buses
+  of guided lanes and their `channels` designate lanes; `TelescopeArray` returns a packed bus with the
+  positions of its telescopes; a `Fiber` on a bus of beams acts on every lane; photodiodes and power meters
+  read a lane (all its modes) as one value and a bus as one value per lane.
 - Review of the public API before its 1.x freeze (P15.1, ADR-0021): American spelling of the identifiers
   (`FlatField` and `KernelObservables` settings and the keyword of `flat_field` and `kernel_observables`
   renamed `normalize`, type version 2 reading the older documents; `subaperture_centers`); the element class

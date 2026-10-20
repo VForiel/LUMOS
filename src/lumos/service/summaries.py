@@ -15,6 +15,7 @@ from lumos.service.values import format_value
 __all__ = ["figure_of", "figure_png", "job_text", "study_text", "summarize", "summary_text"]
 
 _MAX_VALUES = 16
+_MAX_LANE_NAMES = 8
 
 
 def _statistics(values: np.ndarray) -> dict[str, float]:
@@ -63,7 +64,7 @@ def _wavelengths(signal: Any) -> dict[str, str]:
 
 def summarize(port: str, signal: Any, *, figure: bool = False) -> PortSummary:
     """Return the :class:`PortSummary` of ``signal``, with a PNG figure if requested and possible."""
-    from lumos.fields import DataProduct, IncoherentBundle, ModalField, Wavecube, Wavefront
+    from lumos.fields import Bus, DataProduct, IncoherentBundle, ModalField, Wavecube, Wavefront
 
     kind = type(signal).__name__
     summary = PortSummary(port=port, kind=kind)
@@ -103,11 +104,26 @@ def summarize(port: str, signal: Any, *, figure: bool = False) -> PortSummary:
         summary.details.update(_wavelengths(signal[0]))
     elif isinstance(signal, ModalField):
         power = np.asarray(to_numpy(np.abs(signal.amplitudes) ** 2), dtype=float)
-        per_channel = power.reshape(-1, power.shape[-1]).sum(axis=0)
+        per_mode = power.reshape(-1, power.shape[-1]).sum(axis=0)
         summary.unit = signal.power_unit.to_string()
         summary.shape = list(power.shape)
-        summary.values = [float(v) for v in per_channel[:_MAX_VALUES]]
-        summary.details = {"channels": str(per_channel.size)}
+        summary.values = [float(v) for v in per_mode[:_MAX_VALUES]]
+        summary.details = {"modes": str(per_mode.size)}
+    elif isinstance(signal, Bus):
+        summary.shape = [len(signal)]
+        summary.details = {
+            "lane signal": signal.lane_type.__name__,
+            "lanes": f"{len(signal)}: {', '.join(signal.names[:_MAX_LANE_NAMES])}"
+            + (" ..." if len(signal) > _MAX_LANE_NAMES else ""),
+            "packed": "yes" if signal.packed else f"no ({Bus.packing_problem(signal.lanes)})",
+        }
+        if signal.lane_type is ModalField:
+            # power of each lane, summed over its sources, wavelengths and modes
+            powers = [float(np.sum(to_numpy(np.abs(lane.amplitudes) ** 2))) for lane in signal]
+            summary.unit = signal[0].power_unit.to_string()
+            summary.values = powers[:_MAX_VALUES]
+            counts = signal.mode_counts[:_MAX_LANE_NAMES]
+            summary.details["modes per lane"] = ", ".join(str(n) for n in counts)
     elif kind == "SymbolicField":
         summary.details = {"latex": signal.latex(), "plane": signal.plane}
         if signal.wavelength is not None:

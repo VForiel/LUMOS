@@ -36,6 +36,7 @@ from astropy import units as u
 
 from lumos.core.param import MISSING, Field, Param, ParamHost, Setting
 from lumos.core.port import Port, PortRef
+from lumos.core.signal import OpticalSignal
 from lumos.units import quantity_to_json
 
 __all__ = ["Element", "Values", "generator"]
@@ -59,6 +60,9 @@ _ARRAY_SCHEMA: dict[str, Any] = {
     "additionalProperties": False,
 }
 _SETTING_TYPES = {bool: "boolean", int: "integer", float: "number", str: "string"}
+#: Marker inserted in the random key of a stochastic element applied to the lanes of a bus, before the lane
+#: index: every lane draws its own stream, as N copies of the element would (ADR-0023).
+_LANE_STREAM = 0x6C616E65
 
 
 class Values(Mapping[str, Any]):
@@ -374,10 +378,10 @@ class Element(ParamHost):
             if port.multiple and not isinstance(signals, Sequence):
                 raise TypeError(f"{self!r}: input {name!r} accepts several signals and expects a sequence")
             for signal in signals:
-                if not isinstance(signal, port.signal_type) and not _is_symbolic(signal):  # converted below
+                if not _carries(signal, port.signal_type) and not _is_symbolic(signal):  # converted below
                     raise TypeError(
                         f"{self!r}: input {name!r} expects {port.signal_type.__name__}, "
-                        f"got {type(signal).__name__}"
+                        f"got {_signal_name(signal)}"
                     )
 
         outputs = None
@@ -386,6 +390,13 @@ class Element(ParamHost):
             from lumos.symbolic.integration import dispatch
 
             outputs, inputs = dispatch(self, inputs)
+        mapped = [
+            name
+            for name, port in input_ports.items()
+            if not port.bus and not port.multiple and _is_bus(inputs[name])
+        ]
+        if outputs is None and mapped:
+            outputs = self._apply_to_lanes(dict(inputs), mapped, output_ports)
         if outputs is None:
             outputs = type(self).transfer(self.values(), dict(inputs))
         if not isinstance(outputs, Mapping) or set(outputs) != set(output_ports):
@@ -394,12 +405,50 @@ class Element(ParamHost):
                 f"{self!r}: transfer returned {produced}, expected outputs {sorted(output_ports)}"
             )
         for name, port in output_ports.items():
-            if not isinstance(outputs[name], port.signal_type):
+            if not _carries(outputs[name], port.signal_type):
                 raise TypeError(
                     f"{self!r}: output {name!r} must be {port.signal_type.__name__}, "
-                    f"got {type(outputs[name]).__name__}"
+                    f"got {_signal_name(outputs[name])}"
                 )
         return outputs
+
+    def _apply_to_lanes(
+        self, inputs: dict[str, Any], mapped: list[str], output_ports: Mapping[str, Port]
+    ) -> Mapping[str, Any]:
+        """Apply the transfer to every lane of the buses on the inputs ``mapped``, as N copies (ADR-0023)."""
+        from lumos.fields.bus import Bus
+
+        buses: list[Bus] = [inputs[name] for name in mapped]
+        counts = [len(bus) for bus in buses]
+        if len(set(counts)) > 1:
+            listed = ", ".join(f"{name!r} ({n})" for name, n in zip(mapped, counts, strict=True))
+            raise ValueError(f"{self!r}: the buses on the inputs {listed} must have as many lanes")
+        data = [
+            name for name, port in output_ports.items() if not issubclass(port.signal_type, OpticalSignal)
+        ]
+        if data:
+            raise TypeError(
+                f"{self!r} reads one beam or guide and produces data ({', '.join(data)}): it cannot take a "
+                f"bus of {counts[0]} lanes on {', '.join(repr(n) for n in mapped)}. Recombine the lanes, or "
+                "split the bus with a Demux and give each lane its own element"
+            )
+        values = self.values()
+        per_lane = []
+        for index in range(counts[0]):
+            lane_values = values
+            if type(self).stochastic:
+                key = (*values["random_key"], _LANE_STREAM, index)
+                lane_values = Values({**values, "random_key": key})
+            lane_inputs = {**inputs, **{name: inputs[name][index] for name in mapped}}
+            per_lane.append(type(self).transfer(lane_values, lane_inputs))
+        first = buses[0]
+        produced = per_lane[0]
+        if not isinstance(produced, Mapping) or set(produced) != set(output_ports):
+            return produced  # reported by apply
+        return {
+            name: Bus([outputs[name] for outputs in per_lane], names=first.names, positions=first.positions)
+            for name in output_ports
+        }
 
     # --- Serialisation -----------------------------------------------------------------------------
 
@@ -532,7 +581,13 @@ class Element(ParamHost):
             "additionalProperties": False,
             "x-lumos-ports": {
                 direction: [
-                    {"name": p.name, "signal": p.signal_type.__name__, "multiple": p.multiple, "doc": p.doc}
+                    {
+                        "name": p.name,
+                        "signal": p.signal_type.__name__,
+                        "multiple": p.multiple,
+                        "bus": p.bus,
+                        "doc": p.doc,
+                    }
                     for p in ports
                     if p.direction == code
                 ]
@@ -613,6 +668,25 @@ def _connect_shorthand(left: Any, right: Any) -> Any:
 
 
 _RESERVED_NAMES = {name for name in dir(Element) if not name.startswith("_")} | {"name"}
+
+
+def _is_bus(signal: Any) -> bool:
+    """Whether ``signal`` is a :class:`~lumos.fields.Bus`, without importing the fields at start-up."""
+    module = sys.modules.get("lumos.fields.bus")
+    return module is not None and isinstance(signal, module.Bus)
+
+
+def _carries(signal: Any, signal_type: type) -> bool:
+    """Whether ``signal`` is a ``signal_type``, or a bus of lanes of that type."""
+    if _is_bus(signal):
+        return issubclass(signal.lane_type, signal_type)
+    return isinstance(signal, signal_type)
+
+
+def _signal_name(signal: Any) -> str:
+    if _is_bus(signal):
+        return f"a bus of {signal.lane_type.__name__}"
+    return type(signal).__name__
 
 
 def _is_symbolic(signal: Any) -> bool:

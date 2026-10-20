@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev16\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 15:27+0200\n"
+"POT-Creation-Date: 2026-10-20 17:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -104,12 +104,24 @@ msgid "`ModalField`"
 msgstr "`ModalField`"
 
 #: ../../user_guide/fields.md
-msgid "Amplitudes in guided channels"
-msgstr "Amplitudes dans des canaux guidés"
+msgid "Amplitudes of the modes of one guide"
+msgstr "Amplitudes des modes d'un guide"
 
 #: ../../user_guide/fields.md
 msgid "`([M,] nλ, n)`"
 msgstr "`([M,] nλ, n)`"
+
+#: ../../user_guide/fields.md
+msgid "`Bus`"
+msgstr ""
+
+#: ../../user_guide/fields.md
+msgid "Lanes separated in space (guides, telescope arms)"
+msgstr "Voies séparées dans l'espace (guides, bras de télescopes)"
+
+#: ../../user_guide/fields.md
+msgid "one array when packed"
+msgstr "un seul tableau quand il est compacté"
 
 #: ../../user_guide/fields.md
 msgid "`DataProduct`"
@@ -123,91 +135,110 @@ msgstr "Données détectées ou traitées"
 msgid "any"
 msgstr "quelconque"
 
-#: ../../user_guide/fields.md:17
+#: ../../user_guide/fields.md:18
 msgid "Grids"
 msgstr "Grilles"
 
-#: ../../user_guide/fields.md:19
+#: ../../user_guide/fields.md:20
 msgid "A `Grid` has `nx × ny` pixels of steps `dx, dy` around a centre `(x0, y0)`. The unit of `dx` decides the plane: a length gives a spatial plane (pupil, detector), an angle gives an angular plane (sky, far field)."
 msgstr "Une `Grid` compte `nx × ny` pixels de pas `dx, dy` autour d'un centre `(x0, y0)`. L'unité de `dx` détermine le plan : une longueur donne un plan spatial (pupille, détecteur), un angle donne un plan angulaire (ciel, champ lointain)."
 
-#: ../../user_guide/fields.md:31
+#: ../../user_guide/fields.md:32
 msgid "Arrays are indexed `[..., y, x]`, and the central pixel is index `N // 2` for even and odd `N`: the pixel coordinates are `x_i = (i - N//2)·dx + x0`. This is also the origin of the centred Fourier transforms of `lumos.backend.fft`, so a field and its spectrum share the same central pixel."
 msgstr "Les tableaux sont indexés `[..., y, x]` et le pixel central est l'indice `N // 2`, pour `N` pair comme impair : les coordonnées des pixels sont `x_i = (i - N//2)·dx + x0`. C'est aussi l'origine des transformées de Fourier centrées de `lumos.backend.fft` : un champ et son spectre partagent donc le même pixel central."
 
-#: ../../user_guide/fields.md:35
+#: ../../user_guide/fields.md:36
 msgid "Wavefronts"
 msgstr "Fronts d'onde"
 
-#: ../../user_guide/fields.md:37
+#: ../../user_guide/fields.md:38
 msgid "A `Wavefront` is a complex amplitude `U` sampled on a grid at one vacuum wavelength. Its normalisation is chosen so that `Σ |U|² dx dy` is the power, in watts or in photons per second (`power_unit`)."
 msgstr "Un `Wavefront` est une amplitude complexe `U` échantillonnée sur une grille à une longueur d'onde dans le vide. Sa normalisation est choisie pour que `Σ |U|² dx dy` soit la puissance, en watts ou en photons par seconde (`power_unit`)."
 
-#: ../../user_guide/fields.md:49
+#: ../../user_guide/fields.md:50
 msgid "Fields follow the convention `E = Re{U e^{-iωt}}`: a wave travelling towards +z varies as `e^{+ikz}`. Multiplying a wavefront by an array applies a transmission mask; adding two wavefronts superposes them coherently."
 msgstr "Les champs suivent la convention `E = Re{U e^{-iωt}}` : une onde se propageant vers +z varie comme `e^{+ikz}`. Multiplier un front d'onde par un tableau applique un masque de transmission ; additionner deux fronts d'onde les superpose de façon cohérente."
 
-#: ../../user_guide/fields.md:53
+#: ../../user_guide/fields.md:54
 msgid "Polarisation"
 msgstr "Polarisation"
 
-#: ../../user_guide/fields.md:55
+#: ../../user_guide/fields.md:56
 msgid "A polarised wavefront holds the Jones components `(Ex, Ey)` in the laboratory basis. The module `lumos.fields.jones` provides basis states, Jones matrices (polarisers, retarders, wave plates, rotators) and Stokes parameters:"
 msgstr "Un front d'onde polarisé contient les composantes de Jones `(Ex, Ey)` dans la base du laboratoire. Le module `lumos.fields.jones` fournit les états de base, les matrices de Jones (polariseurs, retardateurs, lames d'onde, rotateurs) et les paramètres de Stokes :"
 
-#: ../../user_guide/fields.md:67
+#: ../../user_guide/fields.md:68
 msgid "The right circular state is `R = (1, i)/√2` and has `S3 = +S0`."
 msgstr "L'état circulaire droit est `R = (1, i)/√2` et vérifie `S3 = +S0`."
 
-#: ../../user_guide/fields.md:69
+#: ../../user_guide/fields.md:70
 msgid "Polychromatic light"
 msgstr "Lumière polychromatique"
 
-#: ../../user_guide/fields.md:71
+#: ../../user_guide/fields.md:72
 msgid "A `Wavecube` stacks wavefronts at several wavelengths on the same grid, with spectral weights. Fields at different wavelengths do not interfere, so the detected intensity is the weighted sum of the monochromatic intensities. `spectral_samples` samples a band with the midpoint or Gauss-Legendre rule:"
 msgstr "Un `Wavecube` empile des fronts d'onde à plusieurs longueurs d'onde sur la même grille, avec des poids spectraux. Les champs de longueurs d'onde différentes n'interfèrent pas : l'intensité détectée est la somme pondérée des intensités monochromatiques. `spectral_samples` échantillonne une bande avec la règle du point milieu ou de Gauss-Legendre :"
 
-#: ../../user_guide/fields.md:83
+#: ../../user_guide/fields.md:84
 msgid "Incoherent light"
 msgstr "Lumière incohérente"
 
-#: ../../user_guide/fields.md:85
+#: ../../user_guide/fields.md:86
 msgid "An `IncoherentBundle` gathers modes that do not interfere: the stars of a field, samples of an extended object, or the two polarisations of natural light. Elements process all the modes at once, and the detected intensity is the sum of the mode intensities."
 msgstr "Un `IncoherentBundle` regroupe des modes qui n'interfèrent pas : les étoiles d'un champ, les échantillons d'un objet étendu ou les deux polarisations de la lumière naturelle. Les éléments traitent tous les modes à la fois, et l'intensité détectée est la somme des intensités des modes."
 
-#: ../../user_guide/fields.md:98
+#: ../../user_guide/fields.md:99
 msgid "A point source at infinity in the direction `(θx, θy)` illuminates the pupil with the plane wave `exp[ik(x sin θx + y sin θy)]`."
 msgstr "Une source ponctuelle à l'infini dans la direction `(θx, θy)` éclaire la pupille avec l'onde plane `exp[ik(x sin θx + y sin θy)]`."
 
-#: ../../user_guide/fields.md:101
+#: ../../user_guide/fields.md:102
 msgid "Radiance maps"
 msgstr "Cartes de radiance"
 
-#: ../../user_guide/fields.md:103
+#: ../../user_guide/fields.md:104
 msgid "A `RadianceField` describes a scene without phase: its spectral radiance `L(x, y, λ)`, optionally with the Stokes parameters. The radiance may be given per wavelength or per frequency, in energy or photon units (`W m⁻² sr⁻¹ m⁻¹`, `Jy sr⁻¹`...). `resample` changes the grid while conserving the flux."
 msgstr "Une `RadianceField` décrit une scène sans phase : sa radiance spectrale `L(x, y, λ)`, éventuellement avec les paramètres de Stokes. La radiance peut être donnée par longueur d'onde ou par fréquence, en unités d'énergie ou de photons (`W m⁻² sr⁻¹ m⁻¹`, `Jy sr⁻¹`...). `resample` change de grille en conservant le flux."
 
-#: ../../user_guide/fields.md:107
+#: ../../user_guide/fields.md:108
 msgid "Guided light"
 msgstr "Lumière guidée"
 
-#: ../../user_guide/fields.md:109
-msgid "A `ModalField` holds the complex amplitudes of light in waveguides or guided modes. Photonic components act by scattering matrices; `lumos.fields.smatrix` provides directional couplers and phase shifters."
-msgstr "Un `ModalField` contient les amplitudes complexes de la lumière dans des guides d'onde ou des modes guidés. Les composants photoniques agissent par matrices de diffusion ; `lumos.fields.smatrix` fournit des coupleurs directionnels et des déphaseurs."
+#: ../../user_guide/fields.md:110
+msgid "A `ModalField` holds the complex amplitudes of light in the modes of **one** guide (one mode for a single-mode guide), for each wavelength and each incoherent source. Its `sources` attribute identifies the source list they come from. Scattering matrices act on its modes; `lumos.fields.smatrix` provides directional couplers and phase shifters."
+msgstr "Un `ModalField` contient les amplitudes complexes de la lumière dans les modes d'**un seul** guide (un mode pour un guide monomode), pour chaque longueur d'onde et chaque source incohérente. Son attribut `sources` identifie la liste de sources dont elles proviennent. Les matrices de diffusion agissent sur ses modes ; `lumos.fields.smatrix` fournit des coupleurs directionnels et des déphaseurs."
 
-#: ../../user_guide/fields.md:120
+#: ../../user_guide/fields.md:123
+msgid "Buses"
+msgstr "Bus"
+
+#: ../../user_guide/fields.md:125
+msgid "Guides separated in space — the waveguides of a chip, the arms of an interferometer — are the **lanes** of a `Bus`. A bus behaves as a sequence of signals of one class (`len(bus)`, `bus[i]`, iteration), names its lanes (`T1`, `T2`... by default) and may carry the projected position of the telescope feeding each lane. Spectral channels, incoherent sources and the modes of one guide are never lanes: they share the same beam or guide."
+msgstr "Des guides séparés dans l'espace — les guides d'onde d'une puce, les bras d'un interféromètre — sont les **voies** d'un `Bus`. Un bus se comporte comme une séquence de signaux d'une même classe (`len(bus)`, `bus[i]`, itération), nomme ses voies (`T1`, `T2`… par défaut) et peut porter la position projetée du télescope qui alimente chaque voie. Les canaux spectraux, les sources incohérentes et les modes d'un même guide ne sont jamais des voies : ils partagent le même faisceau ou le même guide."
+
+#: ../../user_guide/fields.md:138
+msgid "When its lanes share their metadata (same sources, wavelengths, spectral weights and power unit for guided lanes; same grid and metadata for beams), a bus stores them in one array (`bus.packed`): `bus.modal` holds all the modes of all the guided lanes, `bus.field` the stacked beams. Otherwise it keeps a list of lanes, with the same interface, and `Bus.packing_problem(lanes)` says why. Guided lanes interfere only if they describe the same sources in the same order: a component mixing lanes that cannot be packed together refuses them."
+msgstr "Quand ses voies partagent leurs métadonnées (mêmes sources, longueurs d'onde, poids spectraux et unité de puissance pour des voies guidées ; même grille et mêmes métadonnées pour des faisceaux), un bus les range dans un seul tableau (`bus.packed`) : `bus.modal` contient tous les modes de toutes les voies guidées, `bus.field` les faisceaux empilés. Sinon il garde une liste de voies, avec la même interface, et `Bus.packing_problem(lanes)` en donne la raison. Des voies guidées n'interfèrent que si elles décrivent les mêmes sources dans le même ordre : un composant qui mélange des voies impossibles à compacter ensemble les refuse."
+
+#: ../../user_guide/fields.md:144
+msgid "An element whose input does not declare a bus acts on every lane of a bus it receives, as N identical copies (a stochastic element draws an independent stream per lane): a `Fiber` on a bus of beams returns a bus of guided lanes. Elements producing data (cameras, processing blocks) need one beam: recombine the lanes first."
+msgstr "Un élément dont l'entrée ne déclare pas de bus agit sur chaque voie d'un bus qu'il reçoit, comme N copies identiques (un élément stochastique tire un flux aléatoire indépendant par voie) : une `Fiber` sur un bus de faisceaux renvoie un bus de voies guidées. Les éléments qui produisent des données (caméras, blocs de traitement) ont besoin d'un seul faisceau : recombinez d'abord les voies."
+
+#: ../../user_guide/fields.md:148
 msgid "Data products"
 msgstr "Produits de données"
 
-#: ../../user_guide/fields.md:122
+#: ../../user_guide/fields.md:150
 msgid "A `DataProduct` is detected data with physical axes, a mask, uncertainties and acquisition metadata. It is written to FITS (with a WCS for regular axes), NPZ or HDF5 files:"
 msgstr "Un `DataProduct` est une donnée détectée avec des axes physiques, un masque, des incertitudes et des métadonnées d'acquisition. Il s'écrit en FITS (avec un WCS pour les axes réguliers), NPZ ou HDF5 :"
 
-#: ../../user_guide/fields.md:132
+#: ../../user_guide/fields.md:160
 msgid "Plots"
 msgstr "Tracés"
 
-#: ../../user_guide/fields.md:134
+#: ../../user_guide/fields.md:162
 msgid "`lumos.plotting` draws intensities, phases (with a cyclic colour map), radiance maps and data products with physical axes and the origin at the bottom left."
 msgstr "`lumos.plotting` trace les intensités, les phases (avec une carte de couleurs cyclique), les cartes de radiance et les produits de données, avec des axes physiques et l'origine en bas à gauche."
+
+#~ msgid "Amplitudes in guided channels"
+#~ msgstr "Amplitudes dans des canaux guidés"
 

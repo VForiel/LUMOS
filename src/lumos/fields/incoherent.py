@@ -43,20 +43,26 @@ class IncoherentBundle(OpticalSignal):
 
     Build bundles with :meth:`from_signals`, :meth:`point_sources` or :meth:`unpolarized`.
 
+    ``sources`` identifies the source list the modes come from (``None``: unknown); lanes of a
+    :class:`~lumos.fields.Bus` interfere only if they describe the same sources (ADR-0023).
+
     Notes
     -----
     Bundles are immutable JAX pytrees whose only leaf is the field of shape ``(M, *mode_shape)``.
     """
 
-    __slots__ = ("_field", "_member_aux", "_member_cls", "_mode_weights")
+    __slots__ = ("_field", "_member_aux", "_member_cls", "_mode_weights", "_sources")
     __array_ufunc__ = None
 
     _field: Any
     _member_cls: type[Wavefront] | type[Wavecube]
     _member_aux: tuple[Any, ...]
     _mode_weights: np.ndarray
+    _sources: str | None
 
-    def __init__(self, field: Any, template: Member, *, mode_weights: Any = None) -> None:
+    def __init__(
+        self, field: Any, template: Member, *, mode_weights: Any = None, sources: str | None = None
+    ) -> None:
         """Wrap ``field`` of shape ``(M, *template.shape)``; ``template`` gives grid, wavelengths and unit."""
         if not isinstance(template, Wavefront | Wavecube):
             raise TypeError("template must be a Wavefront or a Wavecube")
@@ -65,7 +71,7 @@ class IncoherentBundle(OpticalSignal):
         array = target.asarray(field if target.is_array(field) else np.asarray(field), dtype=complex_dtype)
         n = int(array.shape[0]) if array.ndim else 0
         weights = np.ones(n) if mode_weights is None else np.asarray(mode_weights, dtype=float)
-        self._init(array, type(template), template._tree_flatten()[1], weights, template.shape)
+        self._init(array, type(template), template._tree_flatten()[1], weights, template.shape, sources)
 
     def _init(
         self,
@@ -74,6 +80,7 @@ class IncoherentBundle(OpticalSignal):
         member_aux: tuple[Any, ...],
         mode_weights: np.ndarray,
         mode_shape: tuple[int, ...],
+        sources: str | None = None,
     ) -> None:
         if tuple(field.shape[1:]) != mode_shape or field.shape[0] < 1:
             raise ValueError(
@@ -87,10 +94,18 @@ class IncoherentBundle(OpticalSignal):
         self._member_cls = member_cls
         self._member_aux = member_aux
         self._mode_weights = mode_weights
+        self._sources = None if sources is None else str(sources)
 
     def _with_field(self, field: Any) -> IncoherentBundle:
         new = object.__new__(type(self))
-        new._init(field, self._member_cls, self._member_aux, self._mode_weights, tuple(field.shape[1:]))
+        new._init(
+            field,
+            self._member_cls,
+            self._member_aux,
+            self._mode_weights,
+            tuple(field.shape[1:]),
+            self._sources,
+        )
         return new
 
     @property
@@ -101,7 +116,9 @@ class IncoherentBundle(OpticalSignal):
     # --- Factories --------------------------------------------------------------------------------
 
     @classmethod
-    def from_signals(cls, signals: Sequence[Member], *, weights: Any = None) -> IncoherentBundle:
+    def from_signals(
+        cls, signals: Sequence[Member], *, weights: Any = None, sources: str | None = None
+    ) -> IncoherentBundle:
         """Bundle wavefronts (or wavecubes) sharing grid, wavelengths, power unit and polarisation."""
         if not signals:
             raise ValueError("an IncoherentBundle needs at least one mode")
@@ -121,7 +138,7 @@ class IncoherentBundle(OpticalSignal):
                 raise ValueError("every mode must share the same spectral weights")
         xp = get(first.backend).xp
         field = xp.stack([convert(signal.field, first.backend) for signal in signals])
-        return cls(field, first, mode_weights=weights)
+        return cls(field, first, mode_weights=weights, sources=sources)
 
     @classmethod
     def point_sources(
@@ -208,6 +225,11 @@ class IncoherentBundle(OpticalSignal):
     def n_modes(self) -> int:
         """Number of modes ``M``."""
         return int(self._field.shape[0])
+
+    @property
+    def sources(self) -> str | None:
+        """Identifier of the source list the modes come from, or ``None``."""
+        return self._sources
 
     @property
     def mode_weights(self) -> np.ndarray:
@@ -301,7 +323,7 @@ class IncoherentBundle(OpticalSignal):
     def map(self, function: Any) -> IncoherentBundle:
         """Apply ``function`` (member signal -> member signal) to every mode and bundle the results."""
         return IncoherentBundle.from_signals(
-            [function(member) for member in self.members()], weights=self._mode_weights
+            [function(member) for member in self.members()], weights=self._mode_weights, sources=self._sources
         )
 
     def with_power_unit(self, unit: Any) -> IncoherentBundle:
@@ -334,17 +356,18 @@ class IncoherentBundle(OpticalSignal):
     # --- JAX pytree -------------------------------------------------------------------------------
 
     def _tree_flatten(self) -> tuple[tuple[Any], tuple[Any, ...]]:
-        aux = (self._member_cls, self._member_aux, tuple(float(v) for v in self._mode_weights))
+        aux = (self._member_cls, self._member_aux, tuple(float(v) for v in self._mode_weights), self._sources)
         return (self._field,), aux
 
     @classmethod
     def _tree_unflatten(cls, aux: tuple[Any, ...], children: Any) -> IncoherentBundle:
-        member_cls, member_aux, weights = aux
+        member_cls, member_aux, weights, sources = aux
         new = object.__new__(cls)
         new._field = children[0]
         new._member_cls = member_cls
         new._member_aux = member_aux
         new._mode_weights = np.asarray(weights)
+        new._sources = sources
         return new
 
     # --- Serialisation ----------------------------------------------------------------------------
@@ -354,6 +377,7 @@ class IncoherentBundle(OpticalSignal):
         return {
             "mode": {"kind": type(self._template).__name__, **self._template.to_json()},
             "mode_weights": quantity_to_json(u.Quantity(self._mode_weights)),
+            "sources": self._sources,
             "field": quantity_to_json(u.Quantity(get(self.backend).to_numpy(self._field))),
         }
 
@@ -368,6 +392,7 @@ class IncoherentBundle(OpticalSignal):
             quantity_from_json(data["field"]).value,
             template,
             mode_weights=quantity_from_json(data["mode_weights"]).value,
+            sources=data.get("sources"),
         )
 
 

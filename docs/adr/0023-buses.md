@@ -13,7 +13,7 @@ it into single-mode guides were one element with an ideal coupling: no coupling 
 most about 80 % of its power into a single-mode fibre, Shaklan & Roddier 1988, Appl. Opt. 27, 2334), no antenna
 lobe of the fibre (off-axis sources coupled like on-axis ones, which distorts the transmission maps of nullers),
 and nothing could be placed on one arm before the injection. The review of 19/10/2026 and its decisions of
-20/10 ([pistes d'évolution §1](../specs/pistes_evolution.md)) settle the model; this record fixes its design.
+20/10 (`docs/specs/pistes_evolution.md`, §1) settle the model; this record fixes its design.
 
 ## Decision
 

@@ -9,6 +9,11 @@ Ports are declared as class attributes::
 
 Reading a port on an instance returns a :class:`PortRef`, which identifies "this port of this object" and
 is what connections are made of (``ctx.connect(source.out, splitter.in_)``).
+
+A port declared with ``bus=True`` carries a :class:`~lumos.fields.Bus` of lanes of its signal type (an input
+receives the bus as it is, an output produces one). A bus reaching an input without this flag makes the
+element act on every lane, as N identical copies (ADR-0023). The flag does not change which ports can be
+connected: the signal type of a port is the type of its lanes.
 """
 
 from __future__ import annotations
@@ -40,13 +45,21 @@ class Port:
     direction: ClassVar[Literal["in", "out"]]
     multiple: bool = False  # whether several connections may be attached to this port
 
-    def __init__(self, signal_type: type[Signal] = Signal, *, name: str | None = None, doc: str = "") -> None:
+    def __init__(
+        self,
+        signal_type: type[Signal] = Signal,
+        *,
+        name: str | None = None,
+        doc: str = "",
+        bus: bool = False,
+    ) -> None:
         if not (isinstance(signal_type, type) and issubclass(signal_type, Signal)):
             raise TypeError(f"signal_type must be a subclass of Signal, got {signal_type!r}")
         self.signal_type = signal_type
         self.name = name or "<unnamed>"
         self._explicit_name = name is not None
         self.doc = doc
+        self.bus = bool(bus)
 
     def __set_name__(self, owner: type, attribute: str) -> None:
         """Derive the port name from the attribute name unless one was given."""
@@ -82,6 +95,8 @@ class Input(Port):
         Whether several connections may feed this input (fan-in). By default an input takes one connection.
     doc
         Description of the port.
+    bus
+        Whether the input receives a bus of lanes as it is (otherwise the element is applied to each lane).
     """
 
     direction: ClassVar[Literal["in", "out"]] = "in"
@@ -93,13 +108,14 @@ class Input(Port):
         name: str | None = None,
         multiple: bool = False,
         doc: str = "",
+        bus: bool = False,
     ) -> None:
-        super().__init__(signal_type, name=name, doc=doc)
+        super().__init__(signal_type, name=name, doc=doc, bus=bus)
         self.multiple = multiple
 
 
 class Output(Port):
-    """An output port. An output can feed any number of inputs (fan-out)."""
+    """An output port. An output can feed any number of inputs (fan-out); ``bus=True``: it produces a bus."""
 
     direction: ClassVar[Literal["in", "out"]] = "out"
     multiple = True

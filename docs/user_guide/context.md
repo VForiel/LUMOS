@@ -152,5 +152,6 @@ an `AOController` drives only a mirror of its own geometry.
 connections; arrays larger than 64 kB go to a `bench.npz` file next to it. `lumos.io.load` reads it back
 without importing any module. `ctx.to_python()` writes an equivalent Python script, a readable starting point
 for a system built in the web interface or by an assistant. The JSON Schema of the format is published with
-the documentation (`lumos-1.2.schema.json`; `lumos-1.1.schema.json` for documents without free settings or
-components, `lumos-1.0.schema.json` for those without feedback loops).
+the documentation (`lumos-1.3.schema.json`; in format 1.3 the `channels` settings of photonic components
+designate the lanes of a bus; `lumos-1.2.schema.json` and `lumos-1.1.schema.json` for older documents without
+free settings or components, `lumos-1.0.schema.json` for those without feedback loops).

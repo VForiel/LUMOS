@@ -65,8 +65,8 @@ __all__ = [
     "to_document",
 ]
 
-FORMAT_VERSION = "1.2"
-_SUPPORTED = (1, 2)
+FORMAT_VERSION = "1.3"
+_SUPPORTED = (1, 3)
 _VERSION_RE = re.compile(r"^(\d+)\.(\d+)$")
 _BODY_KEYS = ("name", "params", "settings", "state")
 

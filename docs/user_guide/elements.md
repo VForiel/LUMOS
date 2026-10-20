@@ -46,7 +46,7 @@ image = ctx.run(["gap.out"])["gap.out"]
 ```
 
 A `TelescopeArray` models an interferometer whose beams are injected into single-mode guides: its output is a
-`ModalField` with one channel per telescope. In the `"ground"` frame the station positions are projected on
+`Bus` of single-mode guided lanes, one per telescope, carrying the projected position of each telescope. In the `"ground"` frame the station positions are projected on
 the sky for the declination and hour angle of the target, and the hour angle follows the clock of the context;
 in the `"sky"` frame (space arrays such as LIFE) the array rotates about the line of sight.
 
@@ -88,8 +88,10 @@ of the pupil.
 ## Guided and integrated optics
 
 A `Fiber` projects the field on its face onto its LP modes, propagates them and outputs both the modal
-amplitudes and the near field at its output. Photonic components transform `ModalField` signals with their
-scattering matrices, on the channels listed in their `channels` setting. Chips are element groups:
+amplitudes (a `ModalField`, one lane) and the near field at its output; on a bus of beams it acts on every
+lane. Photonic components transform buses of guided lanes with their scattering matrices, on the lanes listed
+in their `channels` setting (all lanes when empty); a mixing component (coupler, MMI, transfer matrix) acts on
+all the modes of its lanes, which must describe the same sources. Chips are element groups:
 
 ```python
 from lumos.elements.detectors import PowerMeter
@@ -115,8 +117,8 @@ print(kernels(power.value))  # three kernel outputs, zero for an on-axis star
 A `Camera` reads the field sampled on its pixels: quantum efficiency (constant or a curve), photon and dark
 noise, full-well saturation, charge binning, read noise, gain, bias and analog-to-digital conversion. Its
 `expose()` action lasts the exposure time and draws a new frame; with `noise=False` it returns the expected
-image. A `Photodiode` gives a photocurrent with shot noise and a `PowerMeter` the power in watts; both read
-every channel of a `ModalField`.
+image. A `Photodiode` gives a photocurrent with shot noise and a `PowerMeter` the power in watts; both read a
+beam or a guided lane (all its modes) as one value, and a bus as one value per lane.
 
 ## Random streams
 

@@ -21,7 +21,8 @@ Photodiode and power meter
 A photodiode delivers the current :math:`I = q \sum_k w_k \eta N_k + I_\mathrm{dark}` (responsivity
 :math:`\eta q \lambda / hc`) with the shot noise :math:`\sigma_I = \sqrt{2 q I \Delta f}` over its bandwidth
 (Schottky 1918); :meth:`Photodiode.acquire` takes a new sample. A power meter reads the power in watts. Both
-give one value per guided channel when they receive a :class:`~lumos.fields.ModalField`.
+read a beam or a guided lane (all its modes) as one value, and a :class:`~lumos.fields.Bus` as one value per
+lane (axis ``channel``, ADR-0023).
 """
 
 from __future__ import annotations
@@ -38,6 +39,7 @@ from lumos.core.param import Param, Setting, State
 from lumos.core.port import Input, Output
 from lumos.core.registry import register
 from lumos.core.signal import OpticalSignal
+from lumos.fields.bus import Bus
 from lumos.fields.dataproduct import DataProduct
 from lumos.fields.incoherent import IncoherentBundle
 from lumos.fields.modal import ModalField
@@ -221,14 +223,18 @@ class Camera(Element):
 
 
 def _channel_axes(signal: Any, n: int) -> dict[str, u.Quantity] | None:
-    return {"channel": np.arange(n) * u.dimensionless_unscaled} if isinstance(signal, ModalField) else None
+    return {"channel": np.arange(n) * u.dimensionless_unscaled} if isinstance(signal, Bus) else None
 
 
-def _totals(signal: Any, per_channel: np.ndarray) -> np.ndarray:
-    """Sum the spatial samples of fields; keep the channels of modal fields."""
-    if isinstance(signal, ModalField):
-        return per_channel
-    return np.asarray(per_channel.sum(axis=(-2, -1)))
+def _totals(signal: Any, convert: Any) -> np.ndarray:
+    """Return the spectrally weighted total of a lane (all its modes or pixels), or one per lane of a bus.
+
+    ``convert(lams, power, unit)`` turns the power per wavelength into the measured quantity.
+    """
+    if isinstance(signal, Bus):
+        return np.array([float(_totals(lane, convert)) for lane in signal])
+    lams, weights, power, unit = _spectral_power(signal)
+    return np.asarray(np.sum(_weighted(weights, convert(lams, power, unit))))
 
 
 @register("lumos.detectors.Photodiode")
@@ -247,7 +253,7 @@ class Photodiode(Element):
     )
     sample = State(default=0.0, doc="number of samples acquired")
     noise = Setting(bool, default=True, doc="False: expected values")
-    in_ = Input(OpticalSignal)
+    in_ = Input(OpticalSignal, bus=True, doc="a beam, a guided lane or a bus of them")
     out = Output(DataProduct)
 
     @action(duration=lambda self: 1 / (2 * self.bandwidth))
@@ -257,10 +263,9 @@ class Photodiode(Element):
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
-        """Return the photocurrent in A (one value per guided channel for modal fields)."""
+        """Return the photocurrent in A (one value per lane for a bus)."""
         signal = inputs["in"]
-        lams, weights, power, unit = _spectral_power(signal)
-        photons = _totals(signal, _weighted(weights, _photon_rates(lams, power, unit)))
+        photons = _totals(signal, _photon_rates)
         current = _Q * values.quantum_efficiency * photons + values.dark_current
         if values.noise:
             rng = generator({"random_key": (*values.random_key, int(values.sample))})
@@ -276,8 +281,8 @@ class PowerMeter(Element):
 
     lumoslabs_model = "LL-PM"
 
-    channel = Setting(int, default=-1, doc="guided channel read (-1: every channel)")
-    in_ = Input(OpticalSignal)
+    channel = Setting(int, default=-1, doc="lane of a bus read (-1: every lane)")
+    in_ = Input(OpticalSignal, bus=True, doc="a beam, a guided lane or a bus of them")
     out = Output(DataProduct)
 
     def twin_feed(self, inputs: Any, simulated: Any) -> Any:
@@ -286,13 +291,14 @@ class PowerMeter(Element):
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
-        """Return the power in W (one value per guided channel for modal fields, or the selected channel)."""
+        """Return the power in W (one value per lane for a bus, or the lane selected by ``channel``)."""
         signal = inputs["in"]
-        lams, weights, power, unit = _spectral_power(signal)
-        watts = np.asarray(_totals(signal, _weighted(weights, _watts(lams, power, unit))), dtype=float)
+        watts = np.asarray(_totals(signal, _watts), dtype=float)
         channel = int(values.channel)
-        if channel >= 0 and isinstance(signal, ModalField):
+        if channel >= 0 and isinstance(signal, Bus):
             if channel >= watts.size:
-                raise ValueError(f"the power meter reads channel {channel}, but the field has {watts.size}")
+                raise ValueError(
+                    f"the power meter reads channel {channel}, but the bus has {watts.size} lanes"
+                )
             return {"out": DataProduct(np.atleast_1d(watts[channel]) * u.W)}
         return {"out": DataProduct(watts * u.W, axes=_channel_axes(signal, watts.size))}

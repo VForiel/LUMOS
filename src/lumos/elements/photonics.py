@@ -1,11 +1,15 @@
-r"""Integrated photonics (§5.9, step P6.8): components, chips and recombiner presets.
+r"""Integrated photonics (§5.9, steps P6.8 and P15.6): components, chips and recombiner presets.
 
-Every component maps a :class:`~lumos.fields.ModalField` to a new one through its scattering matrix
-:math:`S(\lambda)` (:mod:`lumos.fields.smatrix`), acting on the channels listed in its ``channels`` setting
-(all channels when empty) and leaving the others unchanged. Components with as many outputs as inputs write
-their outputs on the same channels; the others (Y-junctions) put their outputs where their first input was.
-A chip is an :class:`~lumos.core.group.ElementGroup` chaining components; :func:`bracewell` and
-:func:`kernel_nuller` build the recombiners of Bracewell (1978) and Martinache & Ireland (2018).
+Every component maps a :class:`~lumos.fields.Bus` of guided lanes (one guide each, ADR-0023) to a new bus
+through its scattering matrix :math:`S(\lambda)` (:mod:`lumos.fields.smatrix`), acting on the lanes listed in
+its ``channels`` setting (all lanes when empty) and leaving the others unchanged; a single
+:class:`~lumos.fields.ModalField` is a bus of one lane. A diagonal component (waveguide, phase shifter) acts
+on each selected lane; a mixing component applies its matrix to the vector of all the modes of its selected
+lanes, which must describe the same sources (otherwise they cannot interfere). Components with as many outputs
+as input modes write their outputs on the same lanes; the others (Y-junctions, non-square matrices) put
+single-mode output lanes where their first selected lane was. A chip is an
+:class:`~lumos.core.group.ElementGroup` chaining components; :func:`bracewell` and :func:`kernel_nuller` build
+the recombiners of Bracewell (1978) and Martinache & Ireland (2018).
 
 Components
 ----------
@@ -42,6 +46,7 @@ from lumos.core.param import Param, Setting
 from lumos.core.port import Input, Output
 from lumos.core.registry import register
 from lumos.fields import smatrix
+from lumos.fields.bus import Bus
 from lumos.fields.modal import ModalField
 from lumos.physics.photonics import beat_length, effective_width, mmi_matrix, port_positions
 from lumos.units import to_si
@@ -65,55 +70,80 @@ __all__ = [
 _DB_PER_CM = float(to_si(1 * u.dB / u.cm))
 
 
-def _selected(values: Values, n_channels: int, n_in: int | None) -> list[int]:
-    channels = [int(c) for c in values.channels] if values.channels else list(range(n_channels))
-    if n_in is not None and len(channels) != n_in:
-        raise ValueError(f"this component acts on {n_in} channel(s), got channels={channels}")
-    if len(set(channels)) != len(channels) or not all(0 <= c < n_channels for c in channels):
-        raise ValueError(f"channels {channels} must be distinct indices below {n_channels}")
-    return channels
+def _as_bus(signal: Bus | ModalField) -> Bus:
+    """Return ``signal`` as a bus (a single guided lane is a bus of one lane)."""
+    return signal if isinstance(signal, Bus) else Bus([signal])
 
 
-def _embed(field: ModalField, selected: list[int], block: np.ndarray) -> ModalField:
-    """Apply ``block`` (nλ, n_out, n_in) to the ``selected`` channels of ``field``."""
-    n = field.n_channels
-    n_out = block.shape[1]
-    labels = field.labels
-    if n_out == len(selected):
-        rows: list[tuple[str, int]] = [("pass", c) for c in range(n)]
-        for k, c in enumerate(selected):
-            rows[c] = ("out", k)
-    else:
-        first = min(selected)
-        rows = []
-        for c in range(n):
-            if c == first:
-                rows += [("out", k) for k in range(n_out)]
-            elif c not in selected:
-                rows.append(("pass", c))
-    full = np.zeros((block.shape[0], len(rows), n), dtype=complex)
-    new_labels: list[str] | None = [] if labels is not None else None
-    for r, (kind, index) in enumerate(rows):
-        if kind == "pass":
-            full[:, r, index] = 1.0
-            if new_labels is not None and labels is not None:
-                new_labels.append(labels[index])
-        else:
-            full[:, r, selected] = block[:, index, :]
-            if new_labels is not None and labels is not None:
-                base = labels[selected[index]] if n_out == len(selected) else labels[min(selected)]
-                new_labels.append(base if n_out == len(selected) else f"{base}.{index}")
-    return field.apply(full, labels=new_labels)
+def _selected(values: Values, n_lanes: int) -> list[int]:
+    """Return the indices of the lanes listed in ``channels`` (all lanes when empty), in their order."""
+    lanes = [int(c) for c in values.channels] if values.channels else list(range(n_lanes))
+    if len(set(lanes)) != len(lanes) or not all(0 <= c < n_lanes for c in lanes):
+        raise ValueError(f"channels {lanes} must be distinct lane indices below {n_lanes}")
+    return lanes
+
+
+def _modes(bus: Bus, selected: list[int], n_in: int | None) -> ModalField:
+    """Return all the modes of the ``selected`` lanes, which must be able to interfere."""
+    lanes = [bus[i] for i in selected]
+    names = ", ".join(bus.names[i] for i in selected)
+    problem = Bus.packing_problem(lanes)
+    if problem is not None:
+        raise ValueError(f"the lanes {names} cannot interfere: {problem}")
+    modal = Bus(lanes).modal
+    if n_in is not None and modal.n_modes != n_in:
+        raise ValueError(
+            f"this component acts on {n_in} mode(s), but the lanes {names} (channels={selected}) carry "
+            f"{modal.n_modes}: list the lanes it acts on in the setting channels"
+        )
+    return modal
+
+
+def _replace(bus: Bus, selected: list[int], out: ModalField) -> Bus:
+    """Put the modes ``out`` of the outputs of a component back into ``bus``.
+
+    With as many output modes as input modes, the outputs replace the selected lanes (same numbers of
+    modes); otherwise they are single-mode lanes put where the first selected lane was, named after it.
+    """
+    lanes: list[Any] = list(bus)
+    names = list(bus.names)
+    known = bus.positions
+    positions = None if known is None else [(float(x), float(y)) for x, y in np.asarray(known.to_value(u.m))]
+    counts = [lanes[i].n_modes for i in selected]
+    if out.n_modes == sum(counts):
+        start = 0
+        for i, count in zip(selected, counts, strict=True):
+            labels = None if out.labels is None else out.labels[start : start + count]
+            lanes[i] = out._with(out.amplitudes[..., start : start + count], labels)
+            start += count
+        return Bus(lanes, names=names, positions=bus.positions)
+    first = min(selected)
+    base = names[first]
+    new_lanes = [out._with(out.amplitudes[..., k : k + 1], None) for k in range(out.n_modes)]
+    rebuilt_lanes: list[Any] = []
+    rebuilt_names: list[str] = []
+    rebuilt_positions: list[tuple[float, float]] = []
+    for index, lane in enumerate(lanes):
+        if index == first:
+            rebuilt_lanes += new_lanes
+            rebuilt_names += [f"{base}.{k}" for k in range(out.n_modes)]
+            rebuilt_positions += [(np.nan, np.nan)] * out.n_modes
+        elif index not in selected:
+            rebuilt_lanes.append(lane)
+            rebuilt_names.append(names[index])
+            rebuilt_positions.append(positions[index] if positions is not None else (np.nan, np.nan))
+    kept = None if positions is None else np.array(rebuilt_positions, dtype=float) * u.m
+    return Bus(rebuilt_lanes, names=rebuilt_names, positions=kept)
 
 
 class PhotonicComponent(Element):
-    """Base class: a scattering matrix applied to some channels of a modal field."""
+    """Base class: a scattering matrix applied to some lanes of a bus of guides."""
 
-    channels = Setting(list, default=[], doc="indices of the channels the component acts on ([]: all)")
-    in_ = Input(ModalField)
-    out = Output(ModalField)
+    channels = Setting(list, default=[], doc="indices of the lanes the component acts on ([]: all)")
+    in_ = Input(ModalField, bus=True, doc="bus of guided lanes (or one lane)")
+    out = Output(ModalField, bus=True, doc="bus of guided lanes")
 
-    #: Number of input channels (None: any number, the matrix is diagonal).
+    #: Number of input modes (None: any number, the matrix is diagonal and acts on each lane).
     n_inputs: int | None = None
 
     @classmethod
@@ -122,10 +152,20 @@ class PhotonicComponent(Element):
 
     @classmethod
     def _transfer(cls, values: Values, inputs: Any) -> dict[str, Any]:
-        field: ModalField = inputs["in"]
-        selected = _selected(values, field.n_channels, cls.n_inputs)
-        block = cls._block(values, np.asarray(field.wavelengths_si, dtype=float), len(selected))
-        return {"out": _embed(field, selected, block)}
+        bus = _as_bus(inputs["in"])
+        selected = _selected(values, len(bus))
+        if cls.n_inputs is None:
+            lanes = list(bus)
+            for i in selected:
+                lane: ModalField = lanes[i]
+                lanes[i] = lane.apply(cls._block(values, lane.wavelengths_si, lane.n_modes))
+            return {"out": Bus(lanes, names=bus.names, positions=bus.positions)}
+        modes = _modes(bus, selected, cls.n_inputs)
+        return {
+            "out": _replace(
+                bus, selected, modes.apply(cls._block(values, modes.wavelengths_si, modes.n_modes))
+            )
+        }
 
 
 def _diagonal(factors: np.ndarray, n_in: int) -> np.ndarray:
@@ -214,12 +254,13 @@ class YJunction(PhotonicComponent):
 
     @classmethod
     def _transfer(cls, values: Values, inputs: Any) -> dict[str, Any]:
-        field: ModalField = inputs["in"]
+        bus = _as_bus(inputs["in"])
         split = values.mode == "split"
-        selected = _selected(values, field.n_channels, 1 if split else 2)
+        selected = _selected(values, len(bus))
+        modes = _modes(bus, selected, 1 if split else 2)
         matrix = np.array([[1.0], [1.0]]) if split else np.array([[1.0, 1.0]])
-        block = _constant(matrix / math.sqrt(2), field.n_wavelengths)
-        return {"out": _embed(field, selected, block)}
+        block = _constant(matrix / math.sqrt(2), modes.n_wavelengths)
+        return {"out": _replace(bus, selected, modes.apply(block))}
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
@@ -304,9 +345,10 @@ class MMI(PhotonicComponent):
 
     @classmethod
     def _transfer(cls, values: Values, inputs: Any) -> dict[str, Any]:
-        field: ModalField = inputs["in"]
+        bus = _as_bus(inputs["in"])
         n = int(values.n_ports)
-        selected = _selected(values, field.n_channels, n)
+        selected = _selected(values, len(bus))
+        modes = _modes(bus, selected, n)
         block = np.stack(
             [
                 _mmi_block(
@@ -319,10 +361,10 @@ class MMI(PhotonicComponent):
                     float(values.reference_wavelength),
                     float(lam),
                 )
-                for lam in field.wavelengths_si
+                for lam in modes.wavelengths_si
             ]
         )
-        return {"out": _embed(field, selected, block)}
+        return {"out": _replace(bus, selected, modes.apply(block))}
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
@@ -397,27 +439,22 @@ class TransferMatrix(PhotonicComponent):
 
     @classmethod
     def _transfer(cls, values: Values, inputs: Any) -> dict[str, Any]:
-        field: ModalField = inputs["in"]
+        bus = _as_bus(inputs["in"])
         amplitudes = np.asarray(values.amplitudes, dtype=float)
         phases = np.asarray(values.phases, dtype=float)
         problems = cls._problems(amplitudes, phases)
         if problems:
             raise ValueError(problems[0])
-        n_in = amplitudes.shape[1]
-        if not values.channels and field.n_channels != n_in:
-            raise ValueError(
-                f"the matrix has {n_in} input(s) but the field has {field.n_channels} channels: "
-                "list the channels it acts on in the setting channels"
-            )
-        selected = _selected(values, field.n_channels, n_in)
-        wavelengths = np.asarray(field.wavelengths_si, dtype=float)
+        selected = _selected(values, len(bus))
+        modes = _modes(bus, selected, amplitudes.shape[1])
+        wavelengths = np.asarray(modes.wavelengths_si, dtype=float)
         scale = (
             np.ones_like(wavelengths)
             if values.dispersion == "achromatic"
             else float(values.wavelength) / wavelengths
         )
         block = amplitudes[None] * np.exp(1j * phases[None] * scale[:, None, None])
-        return {"out": _embed(field, selected, block)}
+        return {"out": _replace(bus, selected, modes.apply(block))}
 
     @staticmethod
     def transfer(values: Values, inputs: Any) -> dict[str, Any]:
