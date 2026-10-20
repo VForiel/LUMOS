@@ -142,7 +142,7 @@ def _injection(name: str, wavelength: u.Quantity, diameter: u.Quantity, focal_le
     Shaklan & Roddier 1988), at ``wavelength``.
     """
     w_pupil = diameter / 2 / 1.1209
-    waist = (wavelength * focal_length / (math.pi * w_pupil)).to(u.um)
+    waist = u.Quantity(wavelength * focal_length / (math.pi * w_pupil)).to(u.um)
     return Fiber(
         name=name,
         mode_model="gaussian",
