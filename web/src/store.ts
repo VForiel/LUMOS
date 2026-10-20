@@ -36,7 +36,8 @@ export type Dialog =
   | { kind: "elicit"; message: string; answer: (accepted: boolean) => void }
   | { kind: "discard"; answer: (choice: "save" | "discard" | "cancel") => void }
   | { kind: "study" }
-  | { kind: "browser" };
+  | { kind: "browser" }
+  | { kind: "archives" };
 export type Pointer = "pan" | "select";
 /** Sizes (pixels) and visibility of the panels around the canvas, kept by the browser. */
 export type Layout = { palette: number; inspector: number; bottom: number; paletteOpen: boolean; inspectorOpen: boolean };
@@ -199,13 +200,23 @@ function readBlocks(): Block[] {
   }
 }
 
+/** Width (pixels) below which the window is narrow: one side column at a time, bottom tabs in a menu. */
+export const NARROW_WIDTH = 1100;
+
+export function isNarrow(): boolean {
+  return typeof window !== "undefined" && window.innerWidth < NARROW_WIDTH;
+}
+
 function readLayout(): Layout {
+  let layout = DEFAULT_LAYOUT;
   try {
     const saved = JSON.parse(storage()?.getItem(LAYOUT_KEY) ?? "{}") as Partial<Layout>;
-    return { ...DEFAULT_LAYOUT, ...saved };
+    layout = { ...DEFAULT_LAYOUT, ...saved };
   } catch {
-    return DEFAULT_LAYOUT;
+    // keep the default layout
   }
+  // a narrow window opens with both side columns closed, leaving the canvas its room
+  return isNarrow() ? { ...layout, paletteOpen: false, inspectorOpen: false } : layout;
 }
 
 function clamp(value: number, [low, high]: readonly [number, number]): number {
@@ -476,6 +487,9 @@ export const useStore = create<State & Actions>((set, get) => {
 
     setLayout(change) {
       const layout = { ...get().layout, ...change };
+      // in a narrow window only one side column is open: opening one closes the other
+      if (isNarrow() && change.paletteOpen) layout.inspectorOpen = false;
+      if (isNarrow() && change.inspectorOpen) layout.paletteOpen = false;
       layout.palette = clamp(layout.palette, LAYOUT_LIMITS.palette);
       layout.inspector = clamp(layout.inspector, LAYOUT_LIMITS.inspector);
       layout.bottom = clamp(layout.bottom, LAYOUT_LIMITS.bottom);

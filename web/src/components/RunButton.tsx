@@ -11,7 +11,7 @@ export function RunButton() {
   const archive = useStore((s) => s.archive);
   const role = useStore((s) => s.info?.role);
   const errors = useStore((s) => s.issues.filter((i) => i.severity === "error").length);
-  const { run, cancel, setArchive } = useStore.getState();
+  const { run, cancel } = useStore.getState();
   const running = job && (job.status === "queued" || job.status === "running") && job.context === context?.id;
   const allowed = role === "simulator" || role === "operator";
 
@@ -19,7 +19,7 @@ export function RunButton() {
     <div className="flex items-center gap-1.5" data-tour="run">
       <button
         type="button"
-        onClick={() => setArchive(!archive)}
+        onClick={() => useStore.getState().setDialog({ kind: "archives" })}
         title={t("run.archive")}
         aria-pressed={archive}
         data-testid="archive-toggle"

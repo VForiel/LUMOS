@@ -340,6 +340,10 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 - [ ] **P15.15 Éditeur de composants** — vue formulaire (toutes instances) ; vue code (instances locales et privées seulement).
 - [ ] **P15.16 Catalogue `community/`** — dossier du dépôt pour les composants, préréglages et ressources partagés ; index ; CI filtrée par chemin qui lance `lumos component check` ; onglet « Catalogue » de la palette ; page « Créer et partager un composant ».
 
+**Retours du 20/10**
+
+- [x] **P15.17 Ergonomie** — fenêtre étroite : colonnes latérales fermées au chargement et une seule ouverte à la fois, onglets du bas repliés dans un menu ; onglet « Résultats » renommé « Sorties » ; bouton d'archivage ouvrant une fenêtre (activation de l'archivage, navigateur des archives de la session : téléchargement, aperçu des données, suppression).
+
 **Stabilisation et publication** (après P15.6 à P15.16)
 
 - [ ] **P15.3 Performance** — profilage, optimisation ciblée (extension native seulement si justifiée) ; exécution parallèle des procédures et des études sur les *workers* ; vectorisation des bus compactés ; coût de `Fiber` et de `FizeauCombiner`.

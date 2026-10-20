@@ -14,6 +14,7 @@ import asyncio
 import contextlib
 import copy
 import logging
+import mimetypes
 import re
 import secrets
 import time
@@ -34,6 +35,7 @@ import lumos
 from lumos.service import Service, ServiceError
 from lumos.service.models import (
     ActionResult,
+    ArchiveFile,
     ArchiveInfo,
     ConnectionInfo,
     ContextSummary,
@@ -1103,6 +1105,32 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
     def archive_download(request: Request, path: str) -> Response:
         data = service.archive_zip(path, session=sid(request))
         return _attachment(data, f"{Path(path).name}.zip", "application/zip")
+
+    @app.get("/api/archives/files", dependencies=[viewer])
+    def archive_files(request: Request, path: str) -> list[ArchiveFile]:
+        return service.archive_files(path, session=sid(request))
+
+    @app.get("/api/archives/data", dependencies=[viewer])
+    def archive_data(request: Request, path: str, name: str) -> PortSummary:
+        return service.archive_data(path, name, session=sid(request), figure=False)
+
+    @app.get("/api/archives/figure.png", dependencies=[viewer])
+    def archive_figure(request: Request, path: str, name: str) -> Response:
+        png = service.archive_data(path, name, session=sid(request)).figure_png
+        if png is None:
+            raise ServiceError(f"no figure for {name}", hint="only images and 1-D or 2-D data have a figure")
+        return Response(png, media_type="image/png")
+
+    @app.get("/api/archives/file", dependencies=[viewer])
+    def archive_file(request: Request, path: str, name: str) -> Response:
+        data = service.archive_file(path, name, session=sid(request))
+        media = mimetypes.guess_type(name)[0] or "application/octet-stream"
+        disposition = f'inline; filename="{Path(name).name}"'
+        return Response(data, media_type=media, headers={"Content-Disposition": disposition})
+
+    @app.delete("/api/archives", status_code=204, dependencies=[simulator])
+    def delete_archive(request: Request, path: str) -> None:
+        service.delete_archive(path, session=sid(request))
 
     @app.get("/api/archives/metadata", dependencies=[viewer])
     def archive_metadata(request: Request, path: str) -> dict[str, Any]:

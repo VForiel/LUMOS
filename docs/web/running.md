@@ -6,12 +6,17 @@ Press **Run** (or **Ctrl+Enter**). The outputs listed by the context are compute
 chosen by its author; otherwise every output not connected to anything). While it runs, the progress bar
 tells which element is being computed; **Cancel** stops the run after the current element.
 
-When the run ends, the **Results** tab shows each output with its figure, its statistics (minimum, maximum,
+When the run ends, the **Outputs** tab shows each output with its figure, its statistics (minimum, maximum,
 mean, sum, with units) and details such as the grid, the power or the beam radius. A failed run shows the error
 and how to fix it.
 
-Turn on the **archive** button (next to Run) to keep the results of each run on the server, with its
-metadata, figures, data and journal; the archive can then be downloaded as a `.zip` file.
+The **archive** button (next to Run) opens the archives of the session: a switch keeps each run on the server,
+with its context, metadata, figures, data and journal (the button is highlighted while it is on), and the list
+of the archives written so far. Choose one to download it as a `.zip` file, delete it, or open its files: a
+data file shows its statistics and its figure, a figure is displayed, and every file can be downloaded alone.
+
+In a narrow window, only one side column (elements or inspector) is open at a time, both closed when the page
+loads, and the tabs of the bottom panel are gathered in a menu (three lines) next to the name of the open tab.
 
 ## Inspecting any port
 

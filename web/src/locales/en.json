@@ -192,14 +192,15 @@
     "problems_other": "{{count}} problems to fix first (see Problems)"
   },
   "tabs": {
-    "results": "Results",
+    "results": "Outputs",
     "journal": "Journal",
     "problems": "Problems",
     "show": "Show the panel",
     "hide": "Hide the panel",
     "operation": "Operation",
     "assistant": "Assistant",
-    "study": "Study"
+    "study": "Study",
+    "menu": "Panels"
   },
   "results": {
     "storage": "Session data: {{used}} of {{limit}}",
@@ -571,5 +572,19 @@
       "save": "Write named results (comma-separated) to an archive",
       "show": "Show named results (comma-separated)"
     }
+  },
+  "archives": {
+    "title": "Archives",
+    "switch": "Archive each run",
+    "switchHelp": "Every run then writes an archive: the context, its journal, the outputs and the figures.",
+    "list": "Archives of the session",
+    "none": "No archive yet: turn the switch on, then run.",
+    "pick": "Choose an archive to see its files.",
+    "download": "Download (.zip)",
+    "downloadFile": "Download this file",
+    "delete": "Delete",
+    "kind": "kind",
+    "shape": "shape",
+    "openFile": "Open the file"
   }
 }

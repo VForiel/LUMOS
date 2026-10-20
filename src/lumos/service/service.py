@@ -45,6 +45,7 @@ from lumos.service import editing as edits
 from lumos.service.errors import ServiceError
 from lumos.service.models import (
     ActionResult,
+    ArchiveFile,
     ArchiveInfo,
     ConnectionInfo,
     ContextSummary,
@@ -2145,6 +2146,56 @@ class Service:
                 f"no archive at {path}", hint="use a path given by list_archives", code="not_found"
             )
         return target
+
+    def _archive_member(self, path: str, name: str, session: str | None) -> Path:
+        """Return a file of an archive (never a path outside it)."""
+        root = self._archive_path(path, session).resolve()
+        target = (root / name).resolve()
+        if root not in target.parents or not target.is_file():
+            raise ServiceError(
+                f"no file {name!r} in this archive",
+                hint="use a name given by archive_files",
+                code="not_found",
+            )
+        return target
+
+    def archive_files(self, path: str, *, session: str | None = None) -> list[ArchiveFile]:
+        """Files of an archive (data, figures, context, journal, metadata), by name."""
+        root = self._archive_path(path, session)
+        kinds = {"context.lumos": "context", "lumos.log": "journal", "metadata.yml": "metadata"}
+        found = []
+        for file in sorted(root.rglob("*")):
+            if not file.is_file():
+                continue
+            name = file.relative_to(root).as_posix()
+            kind = kinds.get(name) or {"data": "data", "figures": "figure"}.get(name.split("/")[0], "other")
+            found.append(ArchiveFile(name=name, kind=kind, size_bytes=file.stat().st_size))
+        return found
+
+    def archive_data(
+        self, path: str, name: str, *, session: str | None = None, figure: bool = True
+    ) -> PortSummary:
+        """Summary (with a figure) of a data file of an archive, as an output of a run."""
+        from lumos.results.reader import _read_json, _read_npz
+
+        target = self._archive_member(path, name, session)
+        if target.suffix not in (".npz", ".json"):
+            raise ServiceError(f"{name} is not a data file", hint="data files end with .npz or .json")
+        try:
+            value = _read_npz(target) if target.suffix == ".npz" else _read_json(target)
+        except (OSError, ValueError, KeyError) as error:
+            raise ServiceError(
+                f"cannot read {name}: {error}", hint="the file may come from another version"
+            ) from error
+        return summarize(target.stem, value, figure=figure)
+
+    def archive_file(self, path: str, name: str, *, session: str | None = None) -> bytes:
+        """Bytes of one file of an archive."""
+        return self._archive_member(path, name, session).read_bytes()
+
+    def delete_archive(self, path: str, *, session: str | None = None) -> None:
+        """Delete an archive of the session."""
+        shutil.rmtree(self._archive_path(path, session))
 
     def archive_zip(self, path: str, *, session: str | None = None) -> bytes:
         """Return an archive of the archive directory as the bytes of a ``.zip`` file."""

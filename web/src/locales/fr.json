@@ -192,14 +192,15 @@
     "problems_other": "{{count}} problèmes à corriger d'abord (voir Problèmes)"
   },
   "tabs": {
-    "results": "Résultats",
+    "results": "Sorties",
     "journal": "Journal",
     "problems": "Problèmes",
     "show": "Afficher le panneau",
     "hide": "Masquer le panneau",
     "operation": "Opération",
     "assistant": "Assistant",
-    "study": "Étude"
+    "study": "Étude",
+    "menu": "Panneaux"
   },
   "results": {
     "storage": "Données de la session : {{used}} sur {{limit}}",
@@ -571,5 +572,19 @@
       "save": "Écrire des résultats nommés (séparés par des virgules) dans une archive",
       "show": "Afficher des résultats nommés (séparés par des virgules)"
     }
+  },
+  "archives": {
+    "title": "Archives",
+    "switch": "Archiver chaque exécution",
+    "switchHelp": "Chaque exécution écrit alors une archive : le contexte, son journal, les sorties et les figures.",
+    "list": "Archives de la session",
+    "none": "Aucune archive pour l'instant : activez l'archivage, puis lancez.",
+    "pick": "Choisissez une archive pour voir ses fichiers.",
+    "download": "Télécharger (.zip)",
+    "downloadFile": "Télécharger ce fichier",
+    "delete": "Supprimer",
+    "kind": "type",
+    "shape": "forme",
+    "openFile": "Ouvrir le fichier"
   }
 }

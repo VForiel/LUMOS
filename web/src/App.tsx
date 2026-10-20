@@ -4,6 +4,7 @@ import { Bot, Code2, Cpu, FilePlus2, FlaskConical, FolderOpen, GraduationCap, Ke
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AccountMenu, LoginDialog } from "./components/Account";
+import { ArchivesDialog } from "./components/Archives";
 import { BottomPanel } from "./components/BottomPanel";
 import { Canvas } from "./components/Canvas";
 import { Dialogs } from "./components/Dialogs";
@@ -19,7 +20,7 @@ import { ToolButton, TopBar } from "./components/TopBar";
 import { connectEvents, disconnectEvents } from "./events";
 import { useShortcuts } from "./shortcuts";
 import { startTour } from "./tour";
-import { useStore } from "./store";
+import { isNarrow, useStore } from "./store";
 
 const ProceduresView = lazy(() => import("./components/Procedures").then((module) => ({ default: module.ProceduresView })));
 
@@ -69,6 +70,16 @@ function Editor() {
   const showOperation = Boolean(info?.operation || context?.mode === "operation" || context?.elements.some((e) => e.actions.length));
   const editable = role !== "viewer";
   const view = useStore((s) => s.view);
+
+  // a window becoming narrow keeps one side column only
+  useEffect(() => {
+    const fit = () => {
+      const { layout, setLayout } = useStore.getState();
+      if (isNarrow() && layout.paletteOpen && layout.inspectorOpen) setLayout({ inspectorOpen: false });
+    };
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
 
   const inspect = useCallback((port: string) => void useStore.getState().inspect(port), []);
   const actions = useMemo(() => ({ open: () => fileInput.current?.click(), run: () => void useStore.getState().run() }), []);
@@ -169,6 +180,8 @@ function Editor() {
             <StudyDialog />
           ) : dialog.kind === "browser" ? (
             <ResultsBrowser />
+          ) : dialog.kind === "archives" ? (
+            <ArchivesDialog />
           ) : dialog.kind === "login" ? (
             <LoginDialog />
           ) : dialog.kind === "elicit" ? (

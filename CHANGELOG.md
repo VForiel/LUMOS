@@ -270,6 +270,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   results, export to Python (`Procedure.to_python`, `GET .../procedures/{name}/export.py`); script mode
   (`{"name", "script"}`) run only with `ServiceConfig.scripts_enabled` (local profile; refused on a public
   instance open to anonymous visitors); preset `dark_then_measure` and notebook 15.
+- Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
+  files, preview of the data with its figure, deletion; `Service.archive_files`, `archive_data`,
+  `archive_file`, `delete_archive` and their routes); the bottom tab "Results" is named "Outputs"; in a narrow
+  window one side column at a time (both closed at load) and the bottom tabs in a menu.
 
 ### Changed
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 19:37+0200\n"
+"POT-Creation-Date: 2026-10-20 19:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -338,6 +338,9 @@ msgstr ""
 #: lumos.scenes.scene.SceneCombiner.transfer lumos.scenes.scene.scene_grid
 #: lumos.service.service.Service.add_element
 #: lumos.service.service.Service.add_feedback
+#: lumos.service.service.Service.archive_data
+#: lumos.service.service.Service.archive_file
+#: lumos.service.service.Service.archive_files
 #: lumos.service.service.Service.archive_zip
 #: lumos.service.service.Service.associate_devices
 #: lumos.service.service.Service.build_pipeline
@@ -351,6 +354,7 @@ msgstr ""
 #: lumos.service.service.Service.create_group
 #: lumos.service.service.Service.create_session
 #: lumos.service.service.Service.default_outputs
+#: lumos.service.service.Service.delete_archive
 #: lumos.service.service.Service.describe_context
 #: lumos.service.service.Service.device_status
 #: lumos.service.service.Service.disconnect
@@ -832,6 +836,9 @@ msgstr ""
 #: lumos.service.errors.ServiceError.to_json
 #: lumos.service.service.Service.add_element
 #: lumos.service.service.Service.add_feedback
+#: lumos.service.service.Service.archive_data
+#: lumos.service.service.Service.archive_file
+#: lumos.service.service.Service.archive_files
 #: lumos.service.service.Service.archive_root
 #: lumos.service.service.Service.archive_zip
 #: lumos.service.service.Service.associate_devices
@@ -846,6 +853,7 @@ msgstr ""
 #: lumos.service.service.Service.create_group
 #: lumos.service.service.Service.create_session
 #: lumos.service.service.Service.default_outputs
+#: lumos.service.service.Service.delete_archive
 #: lumos.service.service.Service.describe_context
 #: lumos.service.service.Service.device_status
 #: lumos.service.service.Service.disconnect
@@ -12649,6 +12657,24 @@ msgid ""
 " and the warnings."
 msgstr ""
 
+#: lumos.service.service.Service.archive_files:1 of
+msgid "Files of an archive (data, figures, context, journal, metadata), by name."
+msgstr ""
+
+#: lumos.service.service.Service.archive_data:1 of
+msgid ""
+"Summary (with a figure) of a data file of an archive, as an output of a "
+"run."
+msgstr ""
+
+#: lumos.service.service.Service.archive_file:1 of
+msgid "Bytes of one file of an archive."
+msgstr ""
+
+#: lumos.service.service.Service.delete_archive:1 of
+msgid "Delete an archive of the session."
+msgstr ""
+
 #: lumos.service.service.Service.archive_zip:1 of
 msgid ""
 "Return an archive of the archive directory as the bytes of a ``.zip`` "
@@ -12726,6 +12752,7 @@ msgid ""
 msgstr ""
 
 #: lumos.service.models.ActionResult.model_config:1
+#: lumos.service.models.ArchiveFile.model_config:1
 #: lumos.service.models.ArchiveInfo.model_config:1
 #: lumos.service.models.ConnectionInfo.model_config:1
 #: lumos.service.models.ContextSummary.model_config:1
@@ -12752,6 +12779,10 @@ msgstr ""
 msgid ""
 "Configuration for the model, should be a dictionary conforming to "
 "[`ConfigDict`][pydantic.config.ConfigDict]."
+msgstr ""
+
+#: lumos.service.models.ArchiveFile:1 of
+msgid "A file of an archive: its path in the archive, its kind and size."
 msgstr ""
 
 #: lumos.service.models.ArchiveInfo:1 of

@@ -20,6 +20,10 @@ export type Info = {
 
 export type Role = "viewer" | "simulator" | "operator";
 
+/** An archive of a run, and one of its files (P15.17). */
+export type ArchiveInfo = { path: string; name: string; created_at: string; outputs: string[]; size_bytes: number };
+export type ArchiveFile = { name: string; kind: "data" | "figure" | "context" | "journal" | "metadata" | "other"; size_bytes: number };
+
 /** A procedure of a context (ADR-0024) with its problems and the equipment it acts on. */
 export type ProcedureInfo = { name: string; description: string; steps: number; script: boolean; problems: string[]; devices: string[] };
 
@@ -258,6 +262,11 @@ export const api = {
     request<ContextSummary>("PUT", `${ctx(id)}/ui${record ? "" : "?record=false"}`, ui),
   undo: (id: string) => request<ContextSummary>("POST", `${ctx(id)}/undo`),
   redo: (id: string) => request<ContextSummary>("POST", `${ctx(id)}/redo`),
+  archives: () => request<ArchiveInfo[]>("GET", "/api/archives"),
+  archiveFiles: (path: string) => request<ArchiveFile[]>("GET", `/api/archives/files?path=${enc(path)}`),
+  archiveData: (path: string, name: string) =>
+    request<PortSummary>("GET", `/api/archives/data?path=${enc(path)}&name=${enc(name)}`),
+  deleteArchive: (path: string) => request<void>("DELETE", `/api/archives?path=${enc(path)}`),
   procedures: (id: string) => request<ProcedureInfo[]>("GET", `${ctx(id)}/procedures`),
   procedure: (id: string, name: string) => request<ProcedureJson>("GET", `${ctx(id)}/procedures/${enc(name)}`),
   putProcedure: (id: string, procedure: ProcedureJson) =>

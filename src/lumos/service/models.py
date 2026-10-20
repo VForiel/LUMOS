@@ -12,6 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 __all__ = [
     "ActionResult",
+    "ArchiveFile",
     "ArchiveInfo",
     "ConnectionInfo",
     "ContextSummary",
@@ -290,6 +291,14 @@ class PortFile(BaseModel):
     filename: str
     media_type: str
     content: bytes
+
+
+class ArchiveFile(BaseModel):
+    """A file of an archive: its path in the archive, its kind and size."""
+
+    name: str
+    kind: str = Field(description="data, figure, context, journal, metadata or other")
+    size_bytes: int
 
 
 class ArchiveInfo(BaseModel):

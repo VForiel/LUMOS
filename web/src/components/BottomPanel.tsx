@@ -1,11 +1,11 @@
 // Bottom panel (REQ-WEB-5): results of the last run and of inspected ports, live journal, problems.
 
-import { AlertTriangle, Archive, CheckCircle2, ChevronDown, ChevronUp, Download, FileJson, FlaskConical, GalleryHorizontalEnd, Image, ListTree, Loader2, ScrollText, Table2, X } from "lucide-react";
+import { AlertTriangle, Archive, CheckCircle2, ChevronDown, ChevronUp, Download, FileJson, FlaskConical, GalleryHorizontalEnd, Image, ListTree, Loader2, Menu, ScrollText, Table2, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type JournalEntry, type PortSummary } from "../api";
 import { formatNumber } from "../lib/units";
-import { FIGURE_KINDS, useStore, type BottomTab } from "../store";
+import { FIGURE_KINDS, isNarrow, useStore, type BottomTab } from "../store";
 import { Resizer } from "./Resizer";
 import { StudyPanel } from "./Study";
 
@@ -282,6 +282,65 @@ const TABS: { tab: BottomTab; icon: typeof ListTree; label: string }[] = [
   { tab: "problems", icon: AlertTriangle, label: "tabs.problems" },
 ];
 
+/** Whether the window is narrow, following its size. */
+function useNarrow(): boolean {
+  const [narrow, setNarrow] = useState(isNarrow());
+  useEffect(() => {
+    const update = () => setNarrow(isNarrow());
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return narrow;
+}
+
+/** The tabs of a narrow window: a menu (three lines) and the name of the open tab. */
+function TabMenu({ tabs, current, onPick }: { tabs: typeof TABS; current: BottomTab | null; onPick: (tab: BottomTab) => void }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const shown = tabs.find((item) => item.tab === current);
+  return (
+    <div className="relative flex items-center gap-1.5">
+      <button
+        type="button"
+        data-testid="bottom-menu"
+        aria-expanded={open}
+        aria-label={t("tabs.menu")}
+        onClick={() => setOpen(!open)}
+        className="grid size-7 place-items-center rounded-md text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+      >
+        <Menu className="size-4" />
+      </button>
+      {shown && (
+        <span data-testid="bottom-current" className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-800 dark:text-slate-100">
+          <shown.icon className="size-3.5" />
+          {t(shown.label)}
+        </span>
+      )}
+      {open && (
+        <ul role="menu" className="absolute bottom-8 left-0 z-30 min-w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+          {tabs.map(({ tab, icon: Icon, label }) => (
+            <li key={tab}>
+              <button
+                type="button"
+                role="menuitem"
+                data-testid={`menu-tab-${tab}`}
+                onClick={() => {
+                  onPick(tab);
+                  setOpen(false);
+                }}
+                className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-slate-50 dark:hover:bg-slate-800 ${tab === current ? "font-semibold" : ""}`}
+              >
+                <Icon className="size-3.5" />
+                {t(label)}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function BottomPanel({ extraTabs, renderExtra }: { extraTabs?: typeof TABS; renderExtra?: (tab: BottomTab) => ReactNode }) {
   const { t } = useTranslation();
   const bottom = useStore((s) => s.bottom);
@@ -291,11 +350,13 @@ export function BottomPanel({ extraTabs, renderExtra }: { extraTabs?: typeof TAB
   const tabs = [...TABS, ...(extraTabs ?? [])];
   const height = useStore((s) => s.layout.bottom);
   const setLayout = useStore((s) => s.setLayout);
+  const narrow = useNarrow();
   return (
     <div data-tour="results" data-testid="bottom-panel" className="relative flex shrink-0 flex-col border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" style={{ height: bottom ? height : 36 }}>
       {bottom && <Resizer side="top" size={height} onResize={(size) => setLayout({ bottom: size })} testId="resize-bottom" />}
       <div className="flex h-9 shrink-0 items-center gap-0.5 border-b border-slate-100 px-2 dark:border-slate-800">
-        {tabs.map(({ tab, icon: Icon, label }) => (
+        {narrow && <TabMenu tabs={tabs} current={bottom} onPick={(tab) => setBottom(tab)} />}
+        {!narrow && tabs.map(({ tab, icon: Icon, label }) => (
           <button
             key={tab}
             type="button"
