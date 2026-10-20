@@ -45,7 +45,8 @@ format.
   en bus reste un seul fil.
 - **L'éclatement explicite (C).** `Demux(N)` éclate un bus en N ports à une voie, et `Mux(N)` regroupe N voies en
   un bus. Ce sont deux éléments purs du cœur, utilisables aussi en Python et par le MCP, et utiles ailleurs (par
-  exemple envoyer une partie des canaux d'un bus vers une autre puce).
+  exemple traiter séparément les bras d'un `TelescopeArray`, ou envoyer une partie des canaux d'un bus vers une
+  autre puce). Ils ne découpent que l'axe des voies spatiales (voir la question 3).
 - **Ce que fait `Mux`.** C'est là qu'est la seule logique nouvelle : assembler les voies dans l'ordre des ports,
   vérifier qu'elles sont compatibles (grille, longueurs d'onde) et compléter une voie non connectée par un canal
   vide (amplitude nulle), avec un avertissement à la validation.
@@ -72,8 +73,21 @@ voie : il crée alors lui-même `Demux` et `Mux`, alors que l'option A aurait pe
 1. ~~Mélange d'un bus et de voies isolées sur un même port~~ : sans objet avec B + C (un port reçoit soit un bus,
    soit la sortie d'un `Mux`).
 2. ~~Voie non connectée~~ : canal vide (amplitude nulle) avec un avertissement à la validation.
-3. Faut-il étendre l'idée aux autres signaux à plusieurs composantes (faisceaux incohérents, cubes) ? Ma
-   recommandation : non, pas de cas d'usage aujourd'hui ; `Demux` / `Mux` restent limités à `ModalField`.
+3. ~~Extension aux autres signaux à plusieurs composantes~~ (tranché le 20/10). Un bus regroupe des signaux
+   **séparés dans l'espace**, sur lesquels on peut placer des composants différents : guides d'onde d'une puce,
+   bras d'un interféromètre. `Demux` / `Mux` découpent donc **uniquement l'axe des voies spatiales** ; chaque voie
+   garde toutes ses sources et toutes ses longueurs d'onde.
+   - **Composantes spectrales** : pas de bus. Séparer les longueurs d'onde est le rôle d'un composant physique
+     (prisme, réseau, filtre dichroïque), pas d'un démultiplexeur logique.
+   - **Composantes incohérentes** (sources d'un `IncoherentBundle`, axe des sources d'un `ModalField`) : pas de
+     bus non plus. Elles se superposent dans le même faisceau, et aucun composant ne peut agir sur l'une sans
+     agir sur les autres.
+   - **Sortie d'un `TelescopeArray`** : c'est un bus. Elle est déjà un `ModalField` dont les voies sont les
+     télescopes (`T1`…`Tn`). Le bloc dessine une broche par télescope, et un `Demux` permet de traiter chaque bras
+     séparément (ligne à retard, fibre, atténuateur) avant de tout regrouper avec un `Mux` vers le recombineur.
+   - **Plus tard** : un bus de `Wavefront` (un front d'onde par ouverture, en plan pupille) servirait aux
+     recombinaisons de type Fizeau ou à une optique adaptative par bras. Aucun élément ne produit encore ce
+     signal ; à reprendre quand un cas d'usage apparaîtra.
 
 ---
 
