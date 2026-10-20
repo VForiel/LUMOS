@@ -148,6 +148,14 @@ Une ADR pour le modèle des signaux et des bus (1.2 et 1.3), écrite avant l'ét
    bloc : il se déplace et se supprime avec lui, et l'accolade devient visuellement le démultiplexeur. On obtient
    le rendu de A (un fil par guide d'onde) ; le document contient toujours des `Demux` / `Mux` explicites, donc le
    Python et le MCP voient exactement ce qui est dans le fichier. Effort : environ 1 jour.
+5. **`FizeauCombiner`.** Recombine un bus de faisceaux en plan pupille en **une seule pupille de sortie** : chaque
+   voie est placée à la position de son télescope, à une échelle commune (pupille de sortie homothétique de la
+   pupille d'entrée, condition de Traub 1986, J. Opt. Soc. Am. A 3, 1491, pour garder un champ étendu). La sortie
+   est un `IncoherentBundle` unique, que les éléments de propagation existants amènent au plan focal. Pour cela,
+   chaque voie du bus porte la position projetée de son télescope (donnée par `TelescopeArray` à chaque instant).
+   Tests de référence : deux ouvertures donnent la figure d'Airy d'une ouverture modulée par des franges en
+   cos²(π B θ / λ) (Born & Wolf, *Principles of Optics*, § 8.6) ; énergie conservée entre
+   les voies d'entrée et la pupille de sortie. Effort : 1,5 à 2 jours.
 
 ### Questions
 
@@ -156,9 +164,8 @@ Une ADR pour le modèle des signaux et des bus (1.2 et 1.3), écrite avant l'ét
 2. ~~Voie non connectée~~ : voie vide (amplitude nulle) avec un avertissement à la validation.
 3. ~~Extension aux autres signaux à plusieurs composantes~~ : un bus regroupe uniquement des voies séparées dans
    l'espace, guidées ou en espace libre (voir 1.2).
-4. Nom du modèle rapide : `IdealInjectionArray` convient-il ?
-5. Un bus en espace libre en plan pupille ouvre la recombinaison de type Fizeau (les N pupilles recombinées sur
-   un même détecteur). Faut-il un élément dédié, ou attendre un cas d'usage ?
+4. ~~Nom du modèle rapide~~ : `IdealInjectionArray` (retenu le 20/10).
+5. ~~Recombinaison de type Fizeau~~ : un élément dédié, `FizeauCombiner` (retenu le 20/10, étape 5).
 
 ---
 
