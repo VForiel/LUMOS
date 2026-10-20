@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 19:13+0200\n"
+"POT-Creation-Date: 2026-10-20 17:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -104,58 +104,58 @@ msgid "A Claude.ai or ChatGPT **subscription** cannot be used by other applicati
 msgstr "Un **abonnement** Claude.ai ou ChatGPT ne peut pas être utilisé par d'autres applications : leurs fournisseurs ne donnent accès à l'API qu'avec des clés d'API. Mais tous deux acceptent LUMOS comme **connecteur** (un serveur MCP distant) : leur propre assistant travaille alors sur les contextes de votre onglet, et vous voyez ses modifications dans l'interface au fur et à mesure."
 
 #: ../../web/assistant.md:36
-msgid "In the assistant tab, press **Create a connector link**. The link is the address of the MCP server of your session, with a secret: anyone with it works in your session, so keep it private and revoke it when you are done. It ends with your session (idle time of the instance)."
-msgstr "Dans l'onglet assistant, appuyez sur **Créer un lien de connecteur**. Le lien est l'adresse du serveur MCP de votre session, avec un secret : quiconque le possède travaille dans votre session ; gardez-le privé et révoquez-le quand vous avez fini. Il expire avec votre session (délai d'inactivité de l'instance)."
+msgid "In the assistant tab, press **Create a connector link**. The link is the address of the MCP server of your session, with a secret: anyone with it works in your session, so keep it private and revoke it when you are done. It stays valid for 90 days (`connector_link_days`), even after your browser session ended or the server restarted: the assistant then works in a new session, and asking it for the link to see its work (below) opens that session in your browser. Creating a new link or revoking it ends the old one."
+msgstr "Dans l'onglet de l'assistant, cliquez sur **Créer un lien de connecteur**. Ce lien est l'adresse du serveur MCP de votre session, avec un secret : quiconque le possède travaille dans votre session, gardez-le donc pour vous et révoquez-le quand vous avez fini. Il reste valable 90 jours (`connector_link_days`), même après la fin de votre session de navigateur ou un redémarrage du serveur : l'assistant travaille alors dans une nouvelle session, et lui demander le lien pour voir son travail (ci-dessous) ouvre cette session dans votre navigateur. Créer un nouveau lien ou le révoquer met fin à l'ancien."
 
-#: ../../web/assistant.md:39
+#: ../../web/assistant.md:41
 msgid "Add it to your assistant:"
 msgstr "Ajoutez-le à votre assistant :"
 
-#: ../../web/assistant.md:40
+#: ../../web/assistant.md:42
 msgid "**Claude** (Pro, Max, Team or Enterprise): *Settings › Connectors › Add custom connector*, paste the link, then enable LUMOS in a conversation;"
 msgstr "**Claude** (Pro, Max, Team ou Enterprise) : *Paramètres › Connecteurs › Ajouter un connecteur personnalisé*, collez le lien, puis activez LUMOS dans une conversation ;"
 
-#: ../../web/assistant.md:42
+#: ../../web/assistant.md:44
 msgid "**ChatGPT** (Plus or Pro): *Settings › Apps & Connectors › Advanced settings › Developer mode*, then *Create*, paste the link, no authentication;"
 msgstr "**ChatGPT** (Plus ou Pro) : *Paramètres › Applications et connecteurs › Paramètres avancés › Mode développeur*, puis *Créer*, collez le lien, sans authentification ;"
 
-#: ../../web/assistant.md:44
+#: ../../web/assistant.md:46
 msgid "**Claude Code**: `claude mcp add --transport http lumos <link>`."
 msgstr "**Claude Code** : `claude mcp add --transport http lumos <lien>`."
 
-#: ../../web/assistant.md:46
+#: ../../web/assistant.md:48
 msgid "The page follows the assistant: its edits appear in the open context, and a context it creates or loads is opened in the editor (the previous one stays in the session). If your page is closed, or you never opened it, ask the assistant for **the link to see its work**: the tool `get_view_link` gives a link opening the context in your browser, in the same session. Like the connector link, it gives access to your session: keep it to yourself. It lasts a day."
 msgstr "La page suit l'assistant : ses modifications apparaissent dans le contexte ouvert, et un contexte qu'il crée ou charge est ouvert dans l'éditeur (le précédent reste dans la session). Si votre page est fermée, ou que vous ne l'avez jamais ouverte, demandez à l'assistant **le lien pour voir son travail** : l'outil `get_view_link` donne un lien qui ouvre le contexte dans votre navigateur, dans la même session. Comme le lien de connecteur, il donne accès à votre session : gardez-le pour vous. Il dure un jour."
 
-#: ../../web/assistant.md:52
+#: ../../web/assistant.md:54
 msgid "Claude.ai and ChatGPT reach the connector from the Internet: use the link of a public instance (HTTPS). On your own machine (`lumos web`), only local clients can use it: Claude Code, Claude Desktop, or `lumos mcp` directly."
 msgstr "Claude.ai et ChatGPT atteignent le connecteur depuis Internet : utilisez le lien d'une instance publique (HTTPS). Sur votre propre machine (`lumos web`), seuls les clients locaux peuvent l'utiliser : Claude Code, Claude Desktop, ou directement `lumos mcp`."
 
-#: ../../web/assistant.md:56
+#: ../../web/assistant.md:58
 msgid "What it can do"
 msgstr "Ce qu'il sait faire"
 
-#: ../../web/assistant.md:58
+#: ../../web/assistant.md:60
 msgid "The assistant uses the tools of the MCP server of the instance (the same as `lumos mcp`, see the [AI assistant guide](../assistant/index.md)), in **your session**: what it adds or changes appears at once in the editor, and you can undo it like any edit. Its actions are journaled with the origin `mcp`. Figures returned by the tools (inspected ports) are shown in the conversation and given to models that read images."
 msgstr "L'assistant utilise les outils du serveur MCP de l'instance (les mêmes que `lumos mcp`, voir le [guide de l'assistant IA](../assistant/index.md)), dans **votre session** : ce qu'il ajoute ou modifie apparaît aussitôt dans l'éditeur, et vous pouvez l'annuler comme toute modification. Ses actions sont journalisées avec l'origine `mcp`. Les figures renvoyées par les outils (ports inspectés) sont affichées dans la conversation et données aux modèles qui lisent les images."
 
-#: ../../web/assistant.md:63
+#: ../../web/assistant.md:65
 msgid "Viewers cannot use the assistant; simulators can; only operators get the tools that drive equipment, and every action on equipment is confirmed in a dialog, whoever asks for it."
 msgstr "Les lecteurs ne peuvent pas utiliser l'assistant ; les simulateurs le peuvent ; seuls les opérateurs obtiennent les outils qui pilotent le matériel, et chaque action sur le matériel est confirmée dans une boîte de dialogue, quel que soit le demandeur."
 
-#: ../../web/assistant.md:65
+#: ../../web/assistant.md:67
 msgid "An administrator turns the panel and the connector links off with `assistant = false` in the configuration."
 msgstr "Un administrateur désactive le panneau et les liens de connecteur avec `assistant = false` dans la configuration."
 
-#: ../../web/assistant.md:68
+#: ../../web/assistant.md:70
 msgid "Other MCP clients"
 msgstr "Autres clients MCP"
 
-#: ../../web/assistant.md:70
+#: ../../web/assistant.md:72
 msgid "The same server is at `/mcp` on the instance (streamable HTTP), with the authentication of the interface. A client such as Claude Code connects with a bearer token from `lumos login`:"
 msgstr "Le même serveur est à `/mcp` sur l'instance (HTTP en flux), avec l'authentification de l'interface. Un client comme Claude Code s'y connecte avec un jeton porteur obtenu par `lumos login` :"
 
-#: ../../web/assistant.md:78
+#: ../../web/assistant.md:80
 msgid "On your own machine, `lumos mcp` (stdio) remains the simplest way."
 msgstr "Sur votre propre machine, `lumos mcp` (stdio) reste le moyen le plus simple."
 
