@@ -49,11 +49,12 @@ def band(ctx, low_um, high_um, n=1):
     ctx.observation.n_wavelengths = n
 
 
-def gaussian_fiber(beta, *, focal_length=1.0, lam=LAM):
+def gaussian_fiber(beta, *, focal_length=1.0, lam=LAM, name="fiber"):
     """A Gaussian-mode fibre whose mode imaged in a pupil of diameter D has the waist R / beta."""
     w_pupil = D / 2 / beta
     w0 = lam * focal_length / (math.pi * w_pupil)
     return Fiber(
+        name=name,
         mode_model="gaussian",
         mode_field_diameter=2 * w0 * u.m,
         length=0 * u.m,
@@ -124,7 +125,6 @@ def test_coupling_of_a_circular_pupil_into_a_single_mode_fibre(beta):
     star = ctx.add(PointSource(name="star", flux_density=1 * u.Jy))
     scope = ctx.add(Telescope(name="scope", diameter=D * u.m, n_pixels=256, oversize=1.02))
     fiber = ctx.add(gaussian_fiber(beta))
-    fiber.name = "fiber"
     ctx.connect(star.port("out"), scope.port("in"))
     ctx.connect(scope.port("out"), fiber.port("in"))
     result = ctx.run(["scope.out", "fiber.modes"])
@@ -147,7 +147,6 @@ def test_antenna_lobe_of_the_fibre(theta_over):
     star = ctx.add(PointSource(name="star", flux_density=1 * u.Jy, theta_x=theta * u.rad))
     scope = ctx.add(Telescope(name="scope", diameter=D * u.m, n_pixels=256, oversize=1.02))
     fiber = ctx.add(gaussian_fiber(beta))
-    fiber.name = "fiber"
     ctx.connect(star.port("out"), scope.port("in"))
     ctx.connect(scope.port("out"), fiber.port("in"))
     result = ctx.run(["scope.out", "fiber.modes"])
@@ -167,7 +166,6 @@ def test_a_fiber_on_the_array_gives_a_bus_of_guided_lanes():
         )
     )
     fiber = ctx.add(gaussian_fiber(1.1209))
-    fiber.name = "fiber"
     ctx.connect(star.port("out"), array.port("in"))
     ctx.connect(array.port("out"), fiber.port("in"))
     modes = ctx.run(["fiber.modes"])["fiber.modes"]
@@ -195,10 +193,9 @@ def test_a_bracewell_nuller_sees_fringes_under_the_antenna_lobe(theta_over):
         )
     )
     fiber = ctx.add(gaussian_fiber(beta))
-    fiber.name = "fiber"
     ctx.connect(star.port("out"), array.port("in"))
     ctx.connect(array.port("out"), fiber.port("in"))
-    fiber >> bracewell(name="chip") >> PowerMeter(name="meter")
+    fiber.port("modes") >> bracewell(name="chip") >> PowerMeter(name="meter")
     result = ctx.run(["meter.out", "array.out"])
     lane = result["array.out"][0]
     lam = (
