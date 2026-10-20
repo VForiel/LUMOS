@@ -11,26 +11,40 @@ A procedure is data, not code: a list of steps, each naming its kind in `do`.
 ```python
 from lumos.core.procedure import Procedure
 
-ctx.procedures["dark then measure"] = Procedure.from_json({
-    "name": "dark then measure",
-    "steps": [
-        {"do": "action", "element": "shutter", "action": "close"},
-        {"do": "repeat", "times": 20, "steps": [
-            {"do": "action", "element": "camera", "action": "expose"},
-            {"do": "measure", "outputs": ["camera.out"], "as": "darks", "collect": True},
-        ]},
-        {"do": "process", "function": "mean", "args": {"frames": "$darks"}, "as": "dark"},
-        {"do": "action", "element": "shutter", "action": "open"},
-        {"do": "repeat", "times": 10, "steps": [
-            {"do": "action", "element": "camera", "action": "expose"},
-            {"do": "measure", "outputs": ["camera.out"], "as": "images", "collect": True},
-        ]},
-        {"do": "process", "function": "mean", "args": {"frames": "$images"}, "as": "image"},
-        {"do": "process", "function": "subtract_dark", "args": {"frame": "$image", "dark": "$dark"},
-         "as": "science"},
-        {"do": "show", "results": ["science"]},
-    ],
-})
+ctx.procedures["dark then measure"] = Procedure.from_json(
+    {
+        "name": "dark then measure",
+        "steps": [
+            {"do": "action", "element": "shutter", "action": "close"},
+            {
+                "do": "repeat",
+                "times": 20,
+                "steps": [
+                    {"do": "action", "element": "camera", "action": "expose"},
+                    {"do": "measure", "outputs": ["camera.out"], "as": "darks", "collect": True},
+                ],
+            },
+            {"do": "process", "function": "mean", "args": {"frames": "$darks"}, "as": "dark"},
+            {"do": "action", "element": "shutter", "action": "open"},
+            {
+                "do": "repeat",
+                "times": 10,
+                "steps": [
+                    {"do": "action", "element": "camera", "action": "expose"},
+                    {"do": "measure", "outputs": ["camera.out"], "as": "images", "collect": True},
+                ],
+            },
+            {"do": "process", "function": "mean", "args": {"frames": "$images"}, "as": "image"},
+            {
+                "do": "process",
+                "function": "subtract_dark",
+                "args": {"frame": "$image", "dark": "$dark"},
+                "as": "science",
+            },
+            {"do": "show", "results": ["science"]},
+        ],
+    }
+)
 result = ctx.run_procedure("dark then measure")
 result["science"]  # a DataProduct
 ```
