@@ -349,7 +349,7 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 **Stabilisation et publication** (après P15.6 à P15.16)
 
-- [ ] **P15.3 Performance** — profilage, optimisation ciblée (extension native seulement si justifiée) ; exécution parallèle des procédures et des études sur les *workers* ; vectorisation des bus compactés ; coût de `Fiber` et de `FizeauCombiner`.
+- [x] **P15.3 Performance** — profilage, optimisation ciblée (extension native seulement si justifiée) ; exécution parallèle des procédures et des études sur les *workers* ; vectorisation des bus compactés ; coût de `Fiber` et de `FizeauCombiner`.
 - [ ] **P15.4 Qualité et sécurité** — couverture, typage strict, audit (chargement `.lumos`, web, MCP, réseau) ; zones de code (composants à code, mode script des procédures) inaccessibles sur l'instance publique par toutes les voies (service, API web, MCP, chargement de documents) ; documents `component` et `procedure` sans exécution possible ; quotas appliqués aux procédures.
 - [ ] **P15.5 Publication** — `lumos-maxima` 1.0 sur PyPI (format 1.3, procédures, catalogue) ; mise en ligne de l'instance publique sur le VPS (profil `public`, opération désactivée).
 
@@ -395,4 +395,4 @@ Chaque élément arrive avec ses paramètres déclaratifs, ses ports, son transf
 
 ## Prochaine étape
 
-**P15.3 Performance**, puis P15.4 et P15.5.
+**P15.4 Qualité et sécurité**, puis P15.5.

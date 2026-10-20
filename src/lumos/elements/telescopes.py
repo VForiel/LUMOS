@@ -73,6 +73,7 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 
+from lumos.backend import fft
 from lumos.backend._core import get
 from lumos.core.element import Element, Values
 from lumos.core.param import Param, Setting
@@ -319,7 +320,7 @@ def _shifted(field: np.ndarray, sx: float, sy: float) -> np.ndarray:
     kx = np.fft.fftfreq(nx)[None, :]
     ky = np.fft.fftfreq(ny)[:, None]
     ramp = np.exp(-2j * math.pi * (kx * sx + ky * sy))
-    return np.fft.ifft2(np.fft.fft2(field, axes=(-2, -1)) * ramp, axes=(-2, -1))
+    return fft.ifft2(fft.fft2(np.asarray(field, dtype=complex)) * ramp)  # threaded transforms (scipy.fft)
 
 
 @register("lumos.telescopes.FizeauCombiner")

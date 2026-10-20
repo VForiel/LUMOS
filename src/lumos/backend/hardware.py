@@ -7,6 +7,7 @@ installed backends and versions of the main libraries. The report is stored in a
 
 from __future__ import annotations
 
+import importlib.util
 import logging
 import os
 import platform
@@ -121,6 +122,15 @@ def _library_versions() -> dict[str, str | None]:
     return versions
 
 
+#: Packages through which JAX sees accelerators (the ``jax_plugins`` namespace holds the CUDA, ROCm and Metal
+#: plugins of recent versions). Without one JAX only sees the CPU, so the probe skips importing it.
+JAX_ACCELERATOR_PLUGINS = ("jax_plugins", "jax_cuda12_plugin", "jax_cuda13_plugin", "libtpu")
+
+
+def _jax_may_see_accelerators() -> bool:
+    return any(importlib.util.find_spec(name) is not None for name in JAX_ACCELERATOR_PLUGINS)
+
+
 def _jax_gpus() -> list[GPUInfo]:
     prepare_jax()
     import jax
@@ -179,6 +189,10 @@ def hardware_report(*, probe_gpus: bool = True) -> HardwareReport:
     if probe_gpus:
         for name in _GPU_PREFERENCE:
             if name in backends:
+                if name == "jax":
+                    prepare_jax()  # before anything may list the JAX devices (ADR-0008)
+                    if not _jax_may_see_accelerators():
+                        continue  # JAX would only see the CPU: not worth its import (seconds)
                 try:
                     # import-time warnings of GPU libraries (e.g. CuPy without CUDA_PATH) are logged, not
                     # raised: under ``-W error`` they would otherwise hide working GPUs

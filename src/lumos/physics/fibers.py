@@ -24,6 +24,7 @@ The Gaussian approximation of LP01 has the waist :math:`w/a = 0.65 + 1.619 V^{-3
 
 from __future__ import annotations
 
+import functools
 import math
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -62,6 +63,12 @@ def _characteristic(ell: int, v: float, x: float) -> float:
     return float(x * jv(ell - 1, x) * kv(ell, w) + w * kv(ell - 1, w) * jv(ell, x))
 
 
+def _characteristics(ell: int, v: float, xs: np.ndarray) -> np.ndarray:
+    """:func:`_characteristic` at every point of ``xs`` (the same ufuncs, so the same values)."""
+    w = np.sqrt(np.maximum(v * v - xs * xs, 0.0))
+    return xs * jv(ell - 1, xs) * kv(ell, w) + w * kv(ell - 1, w) * jv(ell, xs)
+
+
 def _root(function: Callable[[float], float], low: float, high: float) -> float:
     root: Any = brentq(function, low, high, xtol=1e-15, rtol=np.float64(1e-15))
     return float(root)
@@ -70,7 +77,7 @@ def _root(function: Callable[[float], float], low: float, high: float) -> float:
 def _roots(ell: int, v: float) -> list[float]:
     samples = max(400, int(200 * v))
     xs = np.linspace(1e-9 * v, v * (1 - 1e-12), samples)
-    values = [_characteristic(ell, v, float(x)) for x in xs]
+    values = _characteristics(ell, v, xs)
     return [
         _root(lambda x: _characteristic(ell, v, x), float(xs[i]), float(xs[i + 1]))
         for i in range(samples - 1)
@@ -79,9 +86,18 @@ def _roots(ell: int, v: float) -> list[float]:
 
 
 def lp_modes(v: float) -> list[LPMode]:
-    """Return the guided LP modes at the normalised frequency ``v``, by decreasing propagation constant."""
+    """Return the guided LP modes at the normalised frequency ``v``, by decreasing propagation constant.
+
+    The modes depend on ``v`` only: they are computed once per value (the fibres of an array, the same
+    wavelengths at every run).
+    """
     if not v > 0:
         raise ValueError(f"the normalised frequency must be positive, got {v}")
+    return list(_lp_modes(float(v)))
+
+
+@functools.lru_cache(maxsize=4096)
+def _lp_modes(v: float) -> tuple[LPMode, ...]:
     modes: list[LPMode] = []
     ell = 0
     while True:
@@ -90,7 +106,7 @@ def lp_modes(v: float) -> list[LPMode]:
             break
         modes += [LPMode(ell, m, x, math.sqrt(v * v - x * x), v) for m, x in enumerate(roots, start=1)]
         ell += 1
-    return sorted(modes, key=lambda mode: -mode.b)
+    return tuple(sorted(modes, key=lambda mode: -mode.b))
 
 
 def lp_radial(mode: LPMode, rho: np.ndarray) -> np.ndarray:

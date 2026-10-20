@@ -17,6 +17,12 @@ sampling compute the parts :math:`M (W_{k-1} - W_k)` and :math:`M W_{K}` near th
 scheme follows the one used for vortex coronagraphs by Krist et al. (2012, Proc. SPIE 8151). The residual of
 ideal masks is then set by the sampling of the pupil (it decreases as :math:`1/N^2` for :math:`N` samples
 across the pupil), not by the focal-plane computation.
+
+A batch of fields (the sources of an extended scene) is transformed a few fields at a time, which bounds the
+memory of the zero-padded planes. The coarse FFT skips the transforms of the rows and columns that only hold
+padding (the forward transform along :math:`x` needs the rows of the pupil only, the inverse one along
+:math:`x` the rows kept in the pupil only), and the matrix Fourier transforms of the batch are computed as a
+few large matrix products.
 """
 
 from __future__ import annotations
@@ -25,6 +31,9 @@ import math
 from collections.abc import Callable
 
 import numpy as np
+import scipy.fft
+
+from lumos._config import config
 
 __all__ = ["DEFAULT_LEVELS", "lyot_plane", "window"]
 
@@ -36,6 +45,9 @@ DEFAULT_LEVELS: tuple[tuple[float, float, float], ...] = (
 )
 
 Mask = Callable[[np.ndarray, np.ndarray], np.ndarray]
+
+#: Fields transformed together: bounds the memory of the zero-padded planes (16 fields of 512² are 64 MB).
+CHUNK = 16
 
 
 def window(r: np.ndarray, inner: float, outer: float) -> np.ndarray:
@@ -77,37 +89,66 @@ def lyot_plane(
     dy = float(y[1] - y[0]) if ny > 1 else dx
     if not math.isclose(dx, dy, rel_tol=1e-9):
         raise ValueError("coronagraph masks need square pupil pixels")
+    batch = field.reshape(-1, ny, nx)
 
     # coarse level: whole focal plane, zero-padded FFT, mask × (1 - W0)
     n_pad = int(pad) * max(nx, ny)
-    padded = np.zeros((*field.shape[:-2], n_pad, n_pad), dtype=complex)
     oy, ox = n_pad // 2 - ny // 2, n_pad // 2 - nx // 2
-    padded[..., oy : oy + ny, ox : ox + nx] = field
     du = 1.0 / (n_pad * dx)
     u = _centered_axis(n_pad, du)
     ux, uy = np.meshgrid(u, u)
     weight = mask(ux, uy)
     if levels:
         weight = weight * (1 - window(np.hypot(ux, uy), levels[0][0], levels[0][1]))
-    # phase ramps place the origin of x at the pupil coordinates x[nx // 2] and u = 0 at index n_pad // 2
-    spectrum = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(padded, axes=(-2, -1))), axes=(-2, -1))
-    back = np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(spectrum * weight, axes=(-2, -1))), axes=(-2, -1))
-    result = back[..., oy : oy + ny, ox : ox + nx]
-    # the centred FFT puts the origin of the transform at pixel n // 2: the fine levels do the same
-    x0, y0 = float(x[nx // 2]), float(y[ny // 2])
+    # the centred transform (origin of x at x[nx // 2], u = 0 at index n_pad // 2) in FFT order: the weight
+    # moves with the spectrum, and the pupil sits at the rows and columns where the centred grid puts them
+    weight = np.fft.ifftshift(weight)
+    where = np.empty(n_pad, dtype=int)
+    where[np.fft.ifftshift(np.arange(n_pad))] = np.arange(n_pad)
+    rows, cols = where[oy : oy + ny], where[ox : ox + nx]
 
     # fine levels: matrix Fourier transforms over the windowed central regions
+    x0, y0 = float(x[nx // 2]), float(y[ny // 2])
+    fine = []
     for index, (_inner, outer, sampling) in enumerate(levels):
         n_u = 2 * math.ceil(outer / sampling) + 1
         u = _centered_axis(n_u, sampling)
         ux, uy = np.meshgrid(u, u)
         r = np.hypot(ux, uy)
-        weight = window(r, levels[index][0], levels[index][1])
+        level_weight = window(r, levels[index][0], levels[index][1])
         if index + 1 < len(levels):
-            weight = weight - window(r, levels[index + 1][0], levels[index + 1][1])
-        weight = weight * mask(ux, uy)
+            level_weight = level_weight - window(r, levels[index + 1][0], levels[index + 1][1])
+        level_weight = level_weight * mask(ux, uy) * (dx * dy * sampling**2)
         ax = np.exp(-2j * math.pi * np.outer(u, x - x0))  # (n_u, nx)
         ay = np.exp(-2j * math.pi * np.outer(u, y - y0))  # (n_u, ny)
-        spectrum = ay @ field @ ax.T * dx * dy
-        result = result + np.conj(ay).T @ (spectrum * weight) @ np.conj(ax) * sampling**2
-    return result
+        fine.append((ax, ay, level_weight))
+
+    result = np.empty_like(batch)
+    workers = config.fft_workers
+    for first in range(0, len(batch), CHUNK):
+        part = batch[first : first + CHUNK]
+        k = len(part)
+        rows_x = np.zeros((k, ny, n_pad), dtype=complex)
+        rows_x[:, :, cols] = part
+        plane = np.zeros((k, n_pad, n_pad), dtype=complex)
+        plane[:, rows, :] = scipy.fft.fft(rows_x, axis=-1, workers=workers, overwrite_x=True)
+        plane = scipy.fft.fft(plane, axis=-2, workers=workers, overwrite_x=True)
+        plane *= weight
+        kept = np.asarray(scipy.fft.ifft(plane, axis=-2, workers=workers, overwrite_x=True))[:, rows, :]
+        out = np.asarray(scipy.fft.ifft(kept, axis=-1, workers=workers, overwrite_x=True))[:, :, cols]
+        for ax, ay, level_weight in fine:
+            out += _mft_pair(part, ax, ay, level_weight)
+        result[first : first + k] = out
+    return result.reshape(field.shape)
+
+
+def _mft_pair(part: np.ndarray, ax: np.ndarray, ay: np.ndarray, weight: np.ndarray) -> np.ndarray:
+    """Return ``Ayᴴ ((Ay F Axᵀ) ∘ weight) Ax*`` for every field ``F`` of ``part`` (large matrix products)."""
+    k, ny, nx = part.shape
+    n_u = ax.shape[0]
+    along_x = (part.reshape(k * ny, nx) @ ax.T).reshape(k, ny, n_u)  # F Axᵀ
+    spectrum = ay @ along_x.transpose(1, 0, 2).reshape(ny, k * n_u)  # Ay F Axᵀ, columns by field
+    spectrum = spectrum.reshape(n_u, k, n_u).transpose(1, 0, 2) * weight  # (k, n_u, n_u)
+    back_x = (spectrum.reshape(k * n_u, n_u) @ np.conj(ax)).reshape(k, n_u, nx)  # (…) Ax*
+    back = np.conj(ay).T @ back_x.transpose(1, 0, 2).reshape(n_u, k * nx)  # Ayᴴ (…)
+    return back.reshape(ny, k, nx).transpose(1, 0, 2)

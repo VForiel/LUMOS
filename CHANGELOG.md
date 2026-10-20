@@ -298,6 +298,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   and the *Catalogue* tab of the palette; the service loads the element packages of the entry point
   `lumos.elements` when it starts; the guide page "Create and share a component". A component appears in the
   palette under its title.
+- Performance (P15.3), results unchanged: the Lyot-plane transform of coronagraphs works on batches a few
+  fields at a time, skips the FFTs of the zero padding and computes its matrix Fourier transforms as large
+  matrix products (debris-disk preset 5.9 s → 3.2 s); the LP modes of fibres are found with a vectorised
+  scan and kept per normalised frequency (identical fibres and repeated runs solve them once; kernel nuller
+  over 50 wavelengths 2.4 s → 0.9 s for a first run, 0.11 s for the next ones); the automatic choice of backend no longer imports
+  JAX when no JAX accelerator plugin is installed (about 2 s saved on the first run of every process);
+  `FizeauCombiner` shifts its beams with threaded FFTs; benchmarks of every preset
+  (`pytest -m benchmark tests/benchmarks`).
 - Top bar for every window (P15.19): no control cut off whatever the width; the commands without room go into a
   **More** menu.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
