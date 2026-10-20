@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 20:37+0200\n"
+"POT-Creation-Date: 2026-10-20 20:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -339,6 +339,7 @@ msgstr ""
 #: lumos.scenes.procedural._anti_aliased.<locals>.transfer
 #: lumos.scenes.scene.Scene.add lumos.scenes.scene.Scene.from_catalog
 #: lumos.scenes.scene.SceneCombiner.transfer lumos.scenes.scene.scene_grid
+#: lumos.service.service.Service.add_component
 #: lumos.service.service.Service.add_element
 #: lumos.service.service.Service.add_feedback
 #: lumos.service.service.Service.archive_data
@@ -348,6 +349,7 @@ msgstr ""
 #: lumos.service.service.Service.associate_devices
 #: lumos.service.service.Service.build_pipeline
 #: lumos.service.service.Service.cancel_job
+#: lumos.service.service.Service.check_component
 #: lumos.service.service.Service.close_context
 #: lumos.service.service.Service.close_session
 #: lumos.service.service.Service.confirmation_needed
@@ -357,6 +359,7 @@ msgstr ""
 #: lumos.service.service.Service.create_group
 #: lumos.service.service.Service.create_session
 #: lumos.service.service.Service.default_outputs
+#: lumos.service.service.Service.define_code_component
 #: lumos.service.service.Service.delete_archive
 #: lumos.service.service.Service.describe_context
 #: lumos.service.service.Service.device_status
@@ -370,6 +373,7 @@ msgstr ""
 #: lumos.service.service.Service.export_procedure
 #: lumos.service.service.Service.export_python
 #: lumos.service.service.Service.focus
+#: lumos.service.service.Service.get_component
 #: lumos.service.service.Service.get_element_schema
 #: lumos.service.service.Service.get_focus
 #: lumos.service.service.Service.get_job
@@ -384,6 +388,7 @@ msgstr ""
 #: lumos.service.service.Service.journal
 #: lumos.service.service.Service.journal_since
 #: lumos.service.service.Service.list_archives
+#: lumos.service.service.Service.list_components
 #: lumos.service.service.Service.list_contexts
 #: lumos.service.service.Service.list_devices
 #: lumos.service.service.Service.list_element_types
@@ -405,6 +410,7 @@ msgstr ""
 #: lumos.service.service.Service.revisions lumos.service.service.Service.run
 #: lumos.service.service.Service.run_loop
 #: lumos.service.service.Service.run_procedure
+#: lumos.service.service.Service.save_component
 #: lumos.service.service.Service.search_docs
 #: lumos.service.service.Service.set_context
 #: lumos.service.service.Service.set_free
@@ -841,6 +847,7 @@ msgstr ""
 #: lumos.scenes.scene.Scene.add lumos.scenes.scene.Scene.from_catalog
 #: lumos.scenes.scene.SceneCombiner.transfer lumos.scenes.scene.scene_grid
 #: lumos.service.errors.ServiceError.to_json
+#: lumos.service.service.Service.add_component
 #: lumos.service.service.Service.add_element
 #: lumos.service.service.Service.add_feedback
 #: lumos.service.service.Service.archive_data
@@ -851,6 +858,7 @@ msgstr ""
 #: lumos.service.service.Service.associate_devices
 #: lumos.service.service.Service.build_pipeline
 #: lumos.service.service.Service.cancel_job
+#: lumos.service.service.Service.check_component
 #: lumos.service.service.Service.close_context
 #: lumos.service.service.Service.close_session
 #: lumos.service.service.Service.confirmation_needed
@@ -860,6 +868,7 @@ msgstr ""
 #: lumos.service.service.Service.create_group
 #: lumos.service.service.Service.create_session
 #: lumos.service.service.Service.default_outputs
+#: lumos.service.service.Service.define_code_component
 #: lumos.service.service.Service.delete_archive
 #: lumos.service.service.Service.describe_context
 #: lumos.service.service.Service.device_status
@@ -873,6 +882,7 @@ msgstr ""
 #: lumos.service.service.Service.export_procedure
 #: lumos.service.service.Service.export_python
 #: lumos.service.service.Service.focus
+#: lumos.service.service.Service.get_component
 #: lumos.service.service.Service.get_element_schema
 #: lumos.service.service.Service.get_focus
 #: lumos.service.service.Service.get_job
@@ -887,6 +897,7 @@ msgstr ""
 #: lumos.service.service.Service.journal
 #: lumos.service.service.Service.journal_since
 #: lumos.service.service.Service.list_archives
+#: lumos.service.service.Service.list_components
 #: lumos.service.service.Service.list_contexts
 #: lumos.service.service.Service.list_devices
 #: lumos.service.service.Service.list_element_types
@@ -910,6 +921,7 @@ msgstr ""
 #: lumos.service.service.Service.revisions lumos.service.service.Service.run
 #: lumos.service.service.Service.run_loop
 #: lumos.service.service.Service.run_procedure
+#: lumos.service.service.Service.save_component
 #: lumos.service.service.Service.search_docs
 #: lumos.service.service.Service.set_context
 #: lumos.service.service.Service.set_free
@@ -12359,6 +12371,48 @@ msgstr ""
 msgid "Element types, filtered by words of ``query``, a page at a time."
 msgstr ""
 
+#: lumos.service.service.Service.list_element_types:3 of
+msgid ""
+"Components and code types made in a session are listed to that session "
+"only."
+msgstr ""
+
+#: lumos.service.service.Service.check_component:1 of
+msgid ""
+"Return what makes a component document invalid (empty when valid); its "
+"checks are run."
+msgstr ""
+
+#: lumos.service.service.Service.save_component:1 of
+msgid ""
+"Check and register a declarative component; it becomes a type of the "
+"palette of the session."
+msgstr ""
+
+#: lumos.service.service.Service.list_components:1 of
+msgid "Components of the session."
+msgstr ""
+
+#: lumos.service.service.Service.get_component:1 of
+msgid "Return the document of a component of the session."
+msgstr ""
+
+#: lumos.service.service.Service.add_component:1 of
+msgid ""
+"Add a component to a context: an element, or a group for a composite "
+"component."
+msgstr ""
+
+#: lumos.service.service.Service.define_code_component:1 of
+msgid ""
+"Run a Python source defining element types (script mode, ADR-0025 §5); "
+"return the new types."
+msgstr ""
+
+#: lumos.service.service.Service.define_code_component:3 of
+msgid "Only where scripts are enabled (local and private instances): it is code."
+msgstr ""
+
 #: lumos.service.service.Service.get_element_schema:1 of
 msgid "JSON Schema of an element type (parameters with units and bounds, ports)."
 msgstr ""
@@ -12923,6 +12977,7 @@ msgstr ""
 #: lumos.service.models.ActionResult.model_config:1
 #: lumos.service.models.ArchiveFile.model_config:1
 #: lumos.service.models.ArchiveInfo.model_config:1
+#: lumos.service.models.ComponentInfo.model_config:1
 #: lumos.service.models.ConnectionInfo.model_config:1
 #: lumos.service.models.ContextSummary.model_config:1
 #: lumos.service.models.DeviceModel.model_config:1
@@ -12956,6 +13011,10 @@ msgstr ""
 
 #: lumos.service.models.ArchiveInfo:1 of
 msgid "An archive of a run."
+msgstr ""
+
+#: lumos.service.models.ComponentInfo:1 of
+msgid "A declarative component of the session (ADR-0025)."
 msgstr ""
 
 #: lumos.service.models.ConnectionInfo:1 of

@@ -66,6 +66,8 @@ With nothing selected, the inspector shows the context: its name, description an
   Expand it to see and edit its elements, collapse it to keep the graph readable, or ungroup it.
 - **Save as block** keeps a group in *My blocks* (in your browser) to insert it in any context; *Download*
   saves it as a `.lumos` file, which also loads in Python with `lumos.io.load`.
+- **New component** (the button of *My blocks*) defines an element without code: see
+  [Your own components](../user_guide/components.md).
 
 ## Files
 

@@ -278,6 +278,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `transfer_matrix`, `gain_phase`, `spectral_transmission` and `composite`, `register_component`, `create`,
   `check_component` running the checks of the component), `lumos component check FILE`, definitions embedded
   in the documents that use them (format 1.3), category *Components* of the palette.
+- Component editor (P15.15): the button *New component* of *My blocks* opens a form (identifier, texts,
+  license, parameters, template and behaviour, checks) whose problems are listed while it is typed, the
+  document it makes, and, where scripts run, a code view defining element types in Python; a saved component
+  is a type of the palette of the session (composite ones are placed from *My blocks*).
+  `Service.check_component`, `save_component`, `list_components`, `get_component`, `add_component`,
+  `define_code_component`, the routes `/api/components...` and the MCP tools `list_components`,
+  `check_component`, `save_component`, `add_component`.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
   files, preview of the data with its figure, deletion; `Service.archive_files`, `archive_data`,
   `archive_file`, `delete_archive` and their routes); the bottom tab "Results" is named "Outputs"; in a narrow

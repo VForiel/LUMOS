@@ -43,7 +43,9 @@
     "blocksHint": "Enregistrez un groupe comme bloc pour le réutiliser ici.",
     "forgetBlock": "Retirer de mes blocs",
     "show": "Afficher les éléments",
-    "hide": "Masquer les éléments"
+    "hide": "Masquer les éléments",
+    "newComponent": "Nouveau composant (un élément défini sans code)",
+    "editComponent": "Modifier le composant"
   },
   "categories": {
     "sources": "Sources",
@@ -88,7 +90,9 @@
     "runDone": "Calcul terminé en {{seconds}} s.",
     "actionDone": "{{action}} effectuée ({{mode}}, {{seconds}} s)",
     "stopped": "Arrêt d'urgence envoyé à tous les appareils du contexte.",
-    "studyDone": "Étude terminée en {{seconds}} s."
+    "studyDone": "Étude terminée en {{seconds}} s.",
+    "componentSaved": "Composant {{name}} enregistré : il est dans la palette.",
+    "componentDefined": "Types d'éléments définis : {{types}}."
   },
   "fields": {
     "free": "paramètre libre (ajusté par calibration)",
@@ -592,5 +596,55 @@
     "kind": "type",
     "shape": "forme",
     "openFile": "Ouvrir le fichier"
+  },
+  "component": {
+    "title": "Nouveau composant",
+    "editTitle": "Modifier le composant",
+    "form": "Formulaire",
+    "document": "Document",
+    "code": "Code",
+    "author": "Auteur",
+    "authorHelp": "Lettres et chiffres, par ex. acme",
+    "name": "Nom",
+    "nameHelp": "Commence par une majuscule, par ex. Attenuator",
+    "version": "Version",
+    "titleField": "Titre",
+    "license": "Licence",
+    "licenseHelp": "Identifiant SPDX, par ex. MIT ou CC-BY-4.0",
+    "description": "Description",
+    "params": "Paramètres",
+    "addParam": "Paramètre",
+    "paramsHint": "Les paramètres se modifient dans l'inspecteur et peuvent être balayés ; utilisez-les dans le comportement sous la forme $nom.",
+    "paramName": "nom",
+    "unit": "unité",
+    "default": "défaut",
+    "paramDoc": "description",
+    "remove": "Retirer",
+    "behaviour": "Comportement",
+    "template": "Gabarit",
+    "templates": {
+      "gain_phase": "Multiplie le champ par √gain·e^(i·phase), sur toute lumière.",
+      "spectral_transmission": "Une transmission en puissance tabulée en fonction de la longueur d'onde.",
+      "transfer_matrix": "Une matrice sur un bus de voies guidées.",
+      "composite": "Un groupe d'éléments, placé comme un groupe."
+    },
+    "gain": "Gain en puissance",
+    "valueHelp": "Un nombre, une grandeur (3 dB) ou $paramètre",
+    "phase": "Phase",
+    "amplifier": "Amplifie (gain supérieur à 1)",
+    "wavelengths": "Longueurs d'onde",
+    "transmission": "Transmissions en puissance",
+    "body": "Corps (JSON)",
+    "bodyHelp": "Voir le guide « Vos propres composants » pour les clés de ce gabarit.",
+    "checks": "Vérifications",
+    "addCheck": "Vérification",
+    "checksHint": "Un faisceau de la puissance et de la longueur d'onde données entre ; la puissance totale en sortie est comparée à la valeur attendue, connue indépendamment.",
+    "checkWavelength": "longueur d'onde (1 um)",
+    "checkPower": "puissance d'entrée (4 mW)",
+    "checkExpect": "sortie attendue (1 mW)",
+    "codeHelp": "Code Python définissant des types d'éléments avec @register (instances locales seulement). Ils sont ajoutés à la palette de votre session.",
+    "run": "Exécuter le code",
+    "download": "Télécharger .lumos",
+    "save": "Enregistrer"
   }
 }

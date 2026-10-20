@@ -30,6 +30,7 @@ from lumos.mcp.resources import register_resources
 from lumos.service import Service, ServiceConfig, ServiceError
 from lumos.service.models import (
     ArchiveInfo,
+    ComponentInfo,
     ConnectionInfo,
     ContextSummary,
     DocHit,
@@ -523,6 +524,32 @@ def create_server(
         total, maximum, minimum, average, element, photometry. The answer lists the problems found.
         """
         return service.set_procedure(session, state.context(context), procedure)
+
+    @tool
+    def list_components() -> list[ComponentInfo]:
+        """List the declarative components of the session (ADR-0025), usable as element types."""
+        return service.list_components(session)
+
+    @tool
+    def check_component(document: dict[str, Any]) -> list[str]:
+        """List the problems of a component document (``{"kind": "component", "component": {...}}``).
+
+        The component is ``{"id": "author.Name", "version", "title", "description", "license", "authors",
+        "template", "params", "body", "checks"}``; templates: transfer_matrix (amplitudes, phases, wavelength,
+        dispersion), gain_phase (gain, phase, amplifier), spectral_transmission (wavelengths, transmission),
+        composite (group); checks: ``{"kind": "power", "wavelength", "power", "expect", "rtol"}``.
+        """
+        return service.check_component(document)
+
+    @tool
+    def save_component(document: dict[str, Any]) -> ComponentInfo:
+        """Check and register a component (see check_component): a new element type of the session."""
+        return service.save_component(session, document)
+
+    @tool
+    def add_component(component: str, name: str | None = None, context: str | None = None) -> ContextSummary:
+        """Add a component of the session (``author.Name``) to a context (a group for a composite one)."""
+        return service.add_component(session, state.context(context), component, name=name)
 
     @tool
     def remove_procedure(name: str, context: str | None = None) -> str:

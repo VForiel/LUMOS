@@ -1,10 +1,10 @@
 // Palette of element types, generated from the registry (REQ-WEB-2): search, categories, drag or click to add.
 
 import { useReactFlow } from "@xyflow/react";
-import { ChevronDown, ChevronRight, FileUp, Package, PanelLeftClose, PanelLeftOpen, Search, Trash2, X } from "lucide-react";
+import { Blocks, ChevronDown, ChevronRight, FilePlus2, FileUp, Package, PanelLeftClose, PanelLeftOpen, Pencil, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { ElementType } from "../api";
+import { api, type ElementType } from "../api";
 import { category, CATEGORY_ORDER } from "../lib/categories";
 import { storage, useStore } from "../store";
 import { Resizer } from "./Resizer";
@@ -99,6 +99,18 @@ export function Palette() {
   const blocks = useStore((s) => s.blocks);
   const { insertBlock, forgetBlock } = useStore.getState();
   const shownBlocks = blocks.filter((b) => !query || b.name.toLowerCase().includes(query.toLowerCase()));
+  const components = useStore((s) => s.components);
+  const composites = components.filter((c) => c.template === "composite" && (!query || c.title.toLowerCase().includes(query.toLowerCase())));
+  const context = useStore((s) => s.context);
+  const addComposite = async (id: string) => {
+    if (!context) return;
+    try {
+      await api.addComponent(context.id, id);
+      await useStore.getState().refresh();
+    } catch (error) {
+      useStore.getState().fail(error);
+    }
+  };
   const layout = useStore((s) => s.layout);
   const setLayout = useStore((s) => s.setLayout);
 
@@ -172,6 +184,16 @@ export function Palette() {
             <div className="flex items-center gap-2 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
               <Package className="size-4 text-indigo-500" />
               <span className="flex-1">{t("palette.blocks")}</span>
+              <button
+                type="button"
+                data-testid="new-component"
+                onClick={() => useStore.getState().setDialog({ kind: "component" })}
+                title={t("palette.newComponent")}
+                aria-label={t("palette.newComponent")}
+                className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+              >
+                <FilePlus2 className="size-3.5" />
+              </button>
               <label className="cursor-pointer rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800" title={t("palette.importBlock")}>
                 <FileUp className="size-3.5" />
                 <input
@@ -187,7 +209,42 @@ export function Palette() {
                 />
               </label>
             </div>
-            {shownBlocks.length === 0 ? (
+            {components.length > 0 && (
+              <ul className="mb-1 space-y-0.5" data-testid="my-components">
+                {components
+                  .filter((c) => !query || `${c.id} ${c.title}`.toLowerCase().includes(query.toLowerCase()))
+                  .map((c) => (
+                    <li key={c.id} className="group flex items-center">
+                      {c.template === "composite" ? (
+                        <button
+                          type="button"
+                          data-testid="component-item"
+                          onClick={() => void addComposite(c.id)}
+                          className="flex flex-1 items-center gap-1.5 truncate rounded-md px-2 py-1 text-left text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"
+                        >
+                          <Blocks className="size-3.5 shrink-0 text-indigo-400" />
+                          {c.title || c.id}
+                        </button>
+                      ) : (
+                        <span className="flex flex-1 items-center gap-1.5 truncate px-2 py-1 text-sm text-slate-500">
+                          <Blocks className="size-3.5 shrink-0 text-indigo-400" />
+                          {c.title || c.id}
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        data-testid="edit-component"
+                        onClick={() => useStore.getState().setDialog({ kind: "component", id: c.id })}
+                        title={t("palette.editComponent")}
+                        className="invisible rounded p-1 text-slate-400 group-hover:visible hover:text-slate-600"
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            )}
+            {shownBlocks.length === 0 && composites.length === 0 && components.length === 0 ? (
               <p className="px-2 pb-1 text-[11px] text-slate-400">{t("palette.blocksHint")}</p>
             ) : (
               <ul className="space-y-0.5">

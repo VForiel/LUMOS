@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 18:25+0200\n"
+"POT-Creation-Date: 2026-10-20 20:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -452,6 +452,44 @@ msgid "Run a procedure; its named results are the outputs of the job (`get_resul
 msgstr "Exécuter une procédure ; ses résultats nommés sont les sorties de la tâche (`get_result`). Sur du matériel, seulement avec `confirmed=true`, après confirmation de l'utilisateur."
 
 #: ../../assistant/reference.md:95
+msgid "Components"
+msgstr "Composants"
+
+#: ../../assistant/reference.md
+#, fuzzy
+msgid "`list_components`"
+msgstr "`list_contexts`"
+
+#: ../../assistant/reference.md
+msgid "Declarative components of the session, usable as element types."
+msgstr "Composants déclaratifs de la session, utilisables comme types d'éléments."
+
+#: ../../assistant/reference.md
+msgid "`check_component`"
+msgstr ""
+
+#: ../../assistant/reference.md
+msgid "Problems of a component document (templates, parameters, checks), its checks run."
+msgstr "Problèmes d'un document de composant (gabarits, paramètres, vérifications), ses vérifications exécutées."
+
+#: ../../assistant/reference.md
+msgid "`save_component`"
+msgstr ""
+
+#: ../../assistant/reference.md
+msgid "Check and register a component: a new element type of the session."
+msgstr "Vérifier et enregistrer un composant : un nouveau type d'élément de la session."
+
+#: ../../assistant/reference.md
+#, fuzzy
+msgid "`add_component`"
+msgstr "`add_element`"
+
+#: ../../assistant/reference.md
+msgid "Add a component of the session to a context (a group for a composite one)."
+msgstr "Ajouter un composant de la session à un contexte (un groupe pour un composant composite)."
+
+#: ../../assistant/reference.md:104
 msgid "Catalogues and processing"
 msgstr "Catalogues et traitement"
 
@@ -471,7 +509,7 @@ msgstr "`evaluate_detection`"
 msgid "5σ contrast curve of a residual image."
 msgstr "Courbe de contraste à 5σ d'une image résiduelle."
 
-#: ../../assistant/reference.md:102
+#: ../../assistant/reference.md:111
 msgid "Operation"
 msgstr "Opération"
 
@@ -523,7 +561,7 @@ msgstr "`associate_devices`"
 msgid "Attach the discovered devices to elements (only with `--enable-operation`)."
 msgstr "Rattacher les équipements découverts aux éléments (seulement avec `--enable-operation`)."
 
-#: ../../assistant/reference.md:113
+#: ../../assistant/reference.md:122
 msgid "Resources"
 msgstr "Ressources"
 
@@ -629,7 +667,7 @@ msgstr "`lumos://archives`"
 msgid "`lumos://archives/{+path}`"
 msgstr "`lumos://archives/{+path}`"
 
-#: ../../assistant/reference.md:130
+#: ../../assistant/reference.md:139
 msgid "Prompts"
 msgstr "Prompts"
 
@@ -693,39 +731,39 @@ msgstr "`problem`, `context`"
 msgid "Find why a simulation is wrong, slow or suspicious."
 msgstr "Trouver pourquoi une simulation est fausse, lente ou suspecte."
 
-#: ../../assistant/reference.md:139
+#: ../../assistant/reference.md:148
 msgid "Evaluation"
 msgstr "Évaluation"
 
-#: ../../assistant/reference.md:141
+#: ../../assistant/reference.md:150
 msgid "The scenarios of `lumos.mcp.evaluation` check that an assistant reaches verifiable results through the server: the transmission map of a Bracewell nuller (UC1), a Gaussian beam propagated with two methods (UC8) and the raw contrast of a vortex coronagraph (UC9), each compared with its analytic solution. `tools/mcp_eval.py` solves them with scripted tool calls, as the tests do; `tools/mcp_eval.py --claude-code` lets Claude Code solve them with your subscription (no API key) and checks its answers."
 msgstr "Les scénarios de `lumos.mcp.evaluation` vérifient qu'un assistant atteint des résultats vérifiables par le serveur : la carte de transmission d'un nuller de Bracewell (UC1), un faisceau gaussien propagé par deux méthodes (UC8) et le contraste brut d'un coronographe vortex (UC9), chacun comparé à sa solution analytique. `tools/mcp_eval.py` les résout par des appels d'outils scriptés, comme les tests ; `tools/mcp_eval.py --claude-code` les fait résoudre par Claude Code avec votre abonnement (sans clé d'API) et vérifie ses réponses."
 
-#: ../../assistant/reference.md:147
+#: ../../assistant/reference.md:156
 msgid "Safety"
 msgstr "Sécurité"
 
-#: ../../assistant/reference.md:149
+#: ../../assistant/reference.md:158
 msgid "**Operation disabled by default.** Without `--enable-operation`, the assistant cannot discover or drive equipment; actions on elements in operation mode are refused. Actions on simulated elements are allowed."
 msgstr "**Opération désactivée par défaut.** Sans `--enable-operation`, l'assistant ne peut ni découvrir ni piloter d'équipement ; les actions sur les éléments en mode opération sont refusées. Les actions sur des éléments simulés sont permises."
 
-#: ../../assistant/reference.md:151
+#: ../../assistant/reference.md:160
 msgid "**Human confirmation.** With `--enable-operation`, every action on real equipment is confirmed by you: the server itself asks the question through the client (MCP elicitation), so the assistant cannot answer it. A client that cannot ask you cannot act on equipment."
 msgstr "**Confirmation humaine.** Avec `--enable-operation`, chaque action sur du matériel réel est confirmée par vous : le serveur pose lui-même la question par le client (élicitation MCP), si bien que l'assistant ne peut pas y répondre. Un client qui ne peut pas vous interroger ne peut pas agir sur le matériel."
 
-#: ../../assistant/reference.md:154
+#: ../../assistant/reference.md:163
 msgid "**Limits enforced by the server.** Software limits, dry runs and confirmations of the drivers apply whatever the request ([Operating a bench](../hardware/operation.md)); `stop_all` is always available and never asks."
 msgstr "**Limites imposées par le serveur.** Les limites logicielles, les exécutions à blanc et les confirmations des pilotes s'appliquent quelle que soit la demande ([Opérer un banc](../hardware/operation.md)) ; `stop_all` est toujours disponible et ne demande jamais rien."
 
-#: ../../assistant/reference.md:156
+#: ../../assistant/reference.md:165
 msgid "**Traceability.** Every run and action is recorded in the journal of its context with the origin `mcp`, and archives record it too."
 msgstr "**Traçabilité.** Chaque exécution et chaque action sont enregistrées dans le journal de leur contexte avec l'origine `mcp`, et les archives les enregistrent aussi."
 
-#: ../../assistant/reference.md:158
+#: ../../assistant/reference.md:167
 msgid "**Quotas.** Contexts per session, runs at a time and run duration are limited by the service."
 msgstr "**Quotas.** Les contextes par session, les exécutions simultanées et la durée d'une exécution sont limités par le service."
 
-#: ../../assistant/reference.md:159
+#: ../../assistant/reference.md:168
 msgid "**Network.** The HTTP transport listens on your machine only, unless `--allow-remote`; remote clients can never drive equipment."
 msgstr "**Réseau.** Le transport HTTP n'écoute que sur votre machine, sauf avec `--allow-remote` ; les clients distants ne peuvent jamais piloter d'équipement."
 

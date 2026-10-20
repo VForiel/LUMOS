@@ -37,6 +37,7 @@ from lumos.service.models import (
     ActionResult,
     ArchiveFile,
     ArchiveInfo,
+    ComponentInfo,
     ConnectionInfo,
     ContextSummary,
     DeviceModel,
@@ -670,8 +671,48 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
 
     palette_cache: dict[str, Any] = {}
 
+    @app.get("/api/components", dependencies=[viewer])
+    def components(request: Request) -> list[ComponentInfo]:
+        return service.list_components(sid(request))
+
+    @app.post("/api/components/check", dependencies=[viewer])
+    def check_component(body: dict[str, Any]) -> list[str]:
+        return service.check_component(body)
+
+    @app.put("/api/components", dependencies=[simulator])
+    def save_component(request: Request, body: dict[str, Any]) -> ComponentInfo:
+        return service.save_component(sid(request), body)
+
+    @app.get("/api/components/{component}", dependencies=[viewer])
+    def get_component(request: Request, component: str) -> dict[str, Any]:
+        return service.get_component(sid(request), component)
+
+    @app.post("/api/contexts/{cid}/components/{component}", dependencies=[simulator])
+    def add_component(request: Request, cid: str, component: str, name: str | None = None) -> ContextSummary:
+        return service.add_component(sid(request), cid, component, name=name)
+
+    @app.post("/api/components/code", dependencies=[simulator])
+    def code_component(request: Request, body: dict[str, Any]) -> list[str]:
+        return service.define_code_component(sid(request), str(body.get("source", "")))
+
+    def own_types(request: Request) -> list[dict[str, Any]]:
+        """Palette entries of the types made in the session of the request (components, code)."""
+        listing = service.list_element_types(page_size=10_000, session=sid(request))
+        base = {item["type_id"] for item in palette_cache.get("types", [])}
+        return [
+            {
+                **item.model_dump(),
+                "category": "components"
+                if item.type_id.startswith("components.")
+                else item.type_id.split(".")[1],
+                "schema": _bounds_in_unit(service.get_element_schema(item.type_id)),
+            }
+            for item in listing.items
+            if item.type_id not in base
+        ]
+
     @app.get("/api/palette", dependencies=[viewer])
-    def palette() -> dict[str, Any]:
+    def palette(request: Request) -> dict[str, Any]:
         if not palette_cache:
             listing = service.list_element_types(page_size=10_000)
             palette_cache["types"] = [
@@ -684,7 +725,11 @@ def create_app(config: WebConfig | None = None, *, service: Service | None = Non
             ]
             palette_cache["signals"] = _signals()
             palette_cache["units"] = unit_choices(_units_of(palette_cache["types"]))
-        return palette_cache
+        extra = own_types(request)
+        if not extra:
+            return palette_cache
+        types = [*palette_cache["types"], *extra]
+        return {**palette_cache, "types": types, "units": unit_choices(_units_of(types))}
 
     @app.get("/api/docs/search", dependencies=[viewer])
     def docs_search(q: str, limit: int = Query(5, ge=1, le=50)) -> list[DocHit]:

@@ -14,6 +14,7 @@ __all__ = [
     "ActionResult",
     "ArchiveFile",
     "ArchiveInfo",
+    "ComponentInfo",
     "ConnectionInfo",
     "ContextSummary",
     "DeviceModel",
@@ -215,6 +216,16 @@ class Issue(BaseModel):
     element: str | None
     message: str
     hint: str
+
+
+class ComponentInfo(BaseModel):
+    """A declarative component of the session (ADR-0025)."""
+
+    id: str
+    type_id: str
+    title: str = ""
+    template: str
+    version: int = 1
 
 
 class ProcedureInfo(BaseModel):

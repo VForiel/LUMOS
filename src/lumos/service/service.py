@@ -47,6 +47,7 @@ from lumos.service.models import (
     ActionResult,
     ArchiveFile,
     ArchiveInfo,
+    ComponentInfo,
     ConnectionInfo,
     ContextSummary,
     DeviceModel,
@@ -156,6 +157,8 @@ class _Session:
     focus: FocusInfo = field(default_factory=FocusInfo)
     jobs: dict[str, _Job] = field(default_factory=dict)
     lock: threading.RLock = field(default_factory=threading.RLock)
+    components: list[str] = field(default_factory=list)  # declarative components made or opened here
+    code_types: list[str] = field(default_factory=list)  # element types defined by code here (local)
 
 
 #: Working copies of a field held at once by a computation, in the memory estimate of the quotas.
@@ -317,15 +320,24 @@ class Service:
     # --- Discovery -----------------------------------------------------------------------------------------
 
     def list_element_types(
-        self, *, query: str = "", page: int = 1, page_size: int = 50
+        self, *, query: str = "", page: int = 1, page_size: int = 50, session: str | None = None
     ) -> Page[ElementTypeInfo]:
-        """Element types, filtered by words of ``query``, a page at a time."""
+        """Element types, filtered by words of ``query``, a page at a time.
+
+        Components and code types made in a session are listed to that session only.
+        """
         import lumos.processing
         import lumos.symbolic.source  # noqa: F401 - registers the symbolic source
 
+        own: set[str] = set()
+        if session is not None:
+            state = self._session(session)
+            own = {f"components.{c}" for c in state.components} | set(state.code_types)
         items = []
         words = query.lower().split()
         for type_id in sorted(registry):
+            if type_id in self._private_types and type_id not in own:
+                continue
             cls = registry.get(type_id)
             summary = (cls.__doc__ or "").strip().splitlines()[0] if cls.__doc__ else ""
             if words and not all(w in (type_id + " " + summary).lower() for w in words):
@@ -357,6 +369,125 @@ class Service:
             close = difflib.get_close_matches(type_id, list(registry), n=3, cutoff=0.4)
             hint = f"did you mean {', '.join(close)}?" if close else "list them with list_element_types()"
             raise ServiceError(f"unknown element type {type_id!r}", hint=hint, code="not_found") from None
+
+    # --- Components (P15.14, P15.15, ADR-0025) -------------------------------------------------------------
+
+    @property
+    def _private_types(self) -> set[str]:
+        """Element types made in sessions (components and code), listed to their sessions only."""
+        found = getattr(self, "_private", None)
+        if found is None:
+            found = set()
+            self._private = found
+        return found
+
+    def check_component(self, document: Mapping[str, Any]) -> list[str]:
+        """Return what makes a component document invalid (empty when valid); its checks are run."""
+        from lumos.components import check_component
+
+        return check_component(document)
+
+    def save_component(self, session: str, document: Mapping[str, Any]) -> ComponentInfo:
+        """Check and register a declarative component; it becomes a type of the palette of the session."""
+        from lumos.components import ComponentError, component_from_document, register_component
+
+        problems = self.check_component(document)
+        if problems:
+            raise ServiceError(f"the component is invalid: {'; '.join(problems)}", hint=problems[0])
+        spec = component_from_document(document)
+        try:
+            register_component(spec)
+        except ComponentError as error:
+            raise ServiceError(
+                str(error), hint="raise the version of the component, or change its id"
+            ) from error
+        return self._remember_component(session, spec)
+
+    def _remember_component(self, session: str, spec: Any) -> ComponentInfo:
+        state = self._session(session)
+        if spec.id not in state.components:
+            state.components.append(spec.id)
+        if spec.template != "composite":
+            self._private_types.add(spec.type_id)
+        return ComponentInfo(
+            id=spec.id,
+            type_id=spec.type_id,
+            title=str(spec.data.get("title", "")),
+            template=spec.template,
+            version=int(spec.data.get("version", 1)),
+        )
+
+    def _component_spec(self, session: str, component: str) -> Any:
+        from lumos.components import _components
+        from lumos.core import registry as module
+
+        if component not in self._session(session).components:
+            raise ServiceError(
+                f"no component {component!r} in this session", hint="save it first", code="not_found"
+            )
+        return _components(module.registry)[component]
+
+    def list_components(self, session: str) -> list[ComponentInfo]:
+        """Components of the session."""
+        from lumos.components import _components
+        from lumos.core import registry as module
+
+        known = _components(module.registry)
+        return [
+            self._remember_component(session, known[c])
+            for c in list(self._session(session).components)
+            if c in known
+        ]
+
+    def get_component(self, session: str, component: str) -> dict[str, Any]:
+        """Return the document of a component of the session."""
+        spec = self._component_spec(session, component)
+        return {"lumos_format": "1.3", "kind": "component", "component": spec.to_json()}
+
+    def add_component(
+        self, session: str, context: str, component: str, *, name: str | None = None
+    ) -> ContextSummary:
+        """Add a component to a context: an element, or a group for a composite component."""
+        spec = self._component_spec(session, component)
+        if spec.template != "composite":
+            self.add_element(session, context, spec.type_id, name=name)
+            return self.describe_context(session, context)
+        from lumos.components import create
+
+        group = create(component, name=name)
+        with self._editing(session, context) as ctx:
+            identifier = name or spec.id.split(".")[1].lower()
+            base, k = identifier, 2
+            while identifier in ctx.elements:
+                identifier, k = f"{base}{k}", k + 1
+            group.name = identifier
+            ctx.add(group, id=identifier)
+        return self.describe_context(session, context)
+
+    def define_code_component(self, session: str, source: str) -> list[str]:
+        """Run a Python source defining element types (script mode, ADR-0025 §5); return the new types.
+
+        Only where scripts are enabled (local and private instances): it is code.
+        """
+        if not self.config.scripts_enabled:
+            raise ServiceError(
+                "code components are Python scripts, and scripts run only on a local or private instance",
+                hint="make a declarative component with the form instead",
+                code="forbidden",
+            )
+        before = set(registry)
+        namespace: dict[str, Any] = {"__name__": "lumos_user_component"}
+        try:
+            exec(compile(source, "<component>", "exec"), namespace)
+        except Exception as error:  # the error of the code of the user
+            raise ServiceError(f"the code failed: {error}", hint="fix the code and run it again") from error
+        new = sorted(set(registry) - before)
+        state = self._session(session)
+        for type_id in new:
+            self._private_types.add(type_id)
+            if type_id not in state.code_types:
+                state.code_types.append(type_id)
+        return new
 
     def get_element_schema(self, type_id: str) -> dict[str, Any]:
         """JSON Schema of an element type (parameters with units and bounds, ports)."""
@@ -439,7 +570,15 @@ class Service:
             raise ServiceError(
                 "the document describes an element, not a context", hint="give a document of kind 'context'"
             )
+        self._remember_embedded(session, data)
         return self._register(session, ctx)
+
+    def _remember_embedded(self, session: str, document: Mapping[str, Any]) -> None:
+        """Make the components embedded in an opened document types of the palette of the session."""
+        from lumos.components import ComponentSpec
+
+        for definition in dict(document.get("components") or {}).values():
+            self._remember_component(session, ComponentSpec.from_json(definition))
 
     def export_lumos(self, session: str, context: str) -> str:
         """Return the ``.lumos`` document of a context (JSON text)."""

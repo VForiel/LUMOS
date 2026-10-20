@@ -43,7 +43,9 @@
     "blocksHint": "Save a group as a block to reuse it here.",
     "forgetBlock": "Remove from my blocks",
     "show": "Show the elements",
-    "hide": "Hide the elements"
+    "hide": "Hide the elements",
+    "newComponent": "New component (an element defined without code)",
+    "editComponent": "Edit the component"
   },
   "categories": {
     "sources": "Sources",
@@ -88,7 +90,9 @@
     "runDone": "Run finished in {{seconds}} s.",
     "actionDone": "{{action}} done ({{mode}}, {{seconds}} s)",
     "stopped": "Emergency stop sent to every device of the context.",
-    "studyDone": "Study finished in {{seconds}} s."
+    "studyDone": "Study finished in {{seconds}} s.",
+    "componentSaved": "Component {{name}} saved: it is in the palette.",
+    "componentDefined": "Element types defined: {{types}}."
   },
   "fields": {
     "free": "free parameter (fitted by calibration)",
@@ -592,5 +596,55 @@
     "kind": "kind",
     "shape": "shape",
     "openFile": "Open the file"
+  },
+  "component": {
+    "title": "New component",
+    "editTitle": "Edit the component",
+    "form": "Form",
+    "document": "Document",
+    "code": "Code",
+    "author": "Author",
+    "authorHelp": "Letters and digits, e.g. acme",
+    "name": "Name",
+    "nameHelp": "Starts with a capital, e.g. Attenuator",
+    "version": "Version",
+    "titleField": "Title",
+    "license": "License",
+    "licenseHelp": "SPDX identifier, e.g. MIT or CC-BY-4.0",
+    "description": "Description",
+    "params": "Parameters",
+    "addParam": "Parameter",
+    "paramsHint": "Parameters are edited in the inspector and can be swept; use them in the behaviour as $name.",
+    "paramName": "name",
+    "unit": "unit",
+    "default": "default",
+    "paramDoc": "description",
+    "remove": "Remove",
+    "behaviour": "Behaviour",
+    "template": "Template",
+    "templates": {
+      "gain_phase": "Multiplies the field by √gain·e^(i·phase), on any light.",
+      "spectral_transmission": "A power transmission tabulated against the wavelength.",
+      "transfer_matrix": "A matrix on a bus of guided lanes.",
+      "composite": "A group of elements, placed as a group."
+    },
+    "gain": "Power gain",
+    "valueHelp": "A number, a quantity (3 dB) or $parameter",
+    "phase": "Phase",
+    "amplifier": "Amplifies (gain above 1)",
+    "wavelengths": "Wavelengths",
+    "transmission": "Power transmissions",
+    "body": "Body (JSON)",
+    "bodyHelp": "See the guide “Your own components” for the keys of this template.",
+    "checks": "Checks",
+    "addCheck": "Check",
+    "checksHint": "A beam of the given power and wavelength enters; the total output power is compared with the expected value, known independently.",
+    "checkWavelength": "wavelength (1 um)",
+    "checkPower": "input power (4 mW)",
+    "checkExpect": "expected output (1 mW)",
+    "codeHelp": "Python code defining element types with @register (local instances only). They are added to the palette of your session.",
+    "run": "Run the code",
+    "download": "Download .lumos",
+    "save": "Save"
   }
 }

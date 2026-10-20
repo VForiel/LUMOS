@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 20:37+0200\n"
+"POT-Creation-Date: 2026-10-20 20:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -107,4 +107,28 @@ msgstr "`lumos component check attenuator.lumos` liste ce qui rend un composant 
 #: ../../user_guide/components.md:60
 msgid "A context saved with components holds their definitions under `\"components\"`, so it opens on any instance."
 msgstr "Un contexte enregistré avec des composants contient leurs définitions sous `\"components\"`, il s'ouvre donc sur n'importe quelle instance."
+
+#: ../../user_guide/components.md:62
+msgid "In the web interface"
+msgstr "Dans l'interface web"
+
+#: ../../user_guide/components.md:64
+msgid "The button **New component** of *My blocks* in the palette opens the component editor:"
+msgstr "Le bouton **Nouveau composant** de *Mes blocs* dans la palette ouvre l'éditeur de composants :"
+
+#: ../../user_guide/components.md:66
+msgid "**Form**: the author and the name make the identifier; the title, description and license are required. Add parameters (name, unit, default, bounds, description), pick a template and fill its behaviour (a value is a number, a quantity such as `3 dB`, or `$name` for a parameter), then add at least one check. The problems of the component are listed while you type, and **Save** is possible only when there is none."
+msgstr "**Formulaire** : l'auteur et le nom forment l'identifiant ; le titre, la description et la licence sont obligatoires. Ajoutez des paramètres (nom, unité, valeur par défaut, bornes, description), choisissez un gabarit et remplissez son comportement (une valeur est un nombre, une grandeur comme `3 dB`, ou `$nom` pour un paramètre), puis ajoutez au moins une vérification. Les problèmes du composant sont listés pendant la saisie, et **Enregistrer** n'est possible que lorsqu'il n'y en a aucun."
+
+#: ../../user_guide/components.md:70
+msgid "**Document**: the `.lumos` document the form makes, which **Download .lumos** saves."
+msgstr "**Document** : le document `.lumos` produit par le formulaire, que **Télécharger .lumos** enregistre."
+
+#: ../../user_guide/components.md:71
+msgid "**Code** (local and private instances only, where scripts run): Python code defining element types with `@register`, run in the server."
+msgstr "**Code** (instances locales et privées seulement, là où les scripts s'exécutent) : du code Python définissant des types d'éléments avec `@register`, exécuté dans le serveur."
+
+#: ../../user_guide/components.md:74
+msgid "A saved component is a type of the palette of your session, in the category *Components*, added like any element and edited with the pencil next to it in *My blocks*; a composite component is placed from *My blocks* as a group. Assistants do the same with the MCP tools `check_component`, `save_component`, `list_components` and `add_component`."
+msgstr "Un composant enregistré est un type de la palette de votre session, dans la catégorie *Composants*, ajouté comme tout élément et modifié avec le crayon à côté de lui dans *Mes blocs* ; un composant composite se place depuis *Mes blocs* comme un groupe. Les assistants font de même avec les outils MCP `check_component`, `save_component`, `list_components` et `add_component`."
 

@@ -5,6 +5,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AccountMenu, LoginDialog } from "./components/Account";
 import { ArchivesDialog } from "./components/Archives";
+import { ComponentEditor } from "./components/ComponentEditor";
 import { BottomPanel } from "./components/BottomPanel";
 import { Canvas } from "./components/Canvas";
 import { Dialogs } from "./components/Dialogs";
@@ -182,6 +183,8 @@ function Editor() {
             <ResultsBrowser />
           ) : dialog.kind === "archives" ? (
             <ArchivesDialog />
+          ) : dialog.kind === "component" ? (
+            <ComponentEditor id={dialog.id} />
           ) : dialog.kind === "login" ? (
             <LoginDialog />
           ) : dialog.kind === "elicit" ? (

@@ -27,6 +27,11 @@ export type ArchiveFile = { name: string; kind: "data" | "figure" | "context" | 
 /** A procedure of a context (ADR-0024) with its problems and the equipment it acts on. */
 export type ProcedureInfo = { name: string; description: string; steps: number; script: boolean; problems: string[]; devices: string[] };
 
+/** A declarative component of the session (ADR-0025, P15.15). */
+export type ComponentInfo = { id: string; type_id: string; title: string; template: string; version: number };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ComponentDocument = { lumos_format: string; kind: "component"; component: Record<string, any> };
+
 export type ElementType = {
   type_id: string;
   title: string;
@@ -269,6 +274,12 @@ export const api = {
   archiveData: (path: string, name: string) =>
     request<PortSummary>("GET", `/api/archives/data?path=${enc(path)}&name=${enc(name)}`),
   deleteArchive: (path: string) => request<void>("DELETE", `/api/archives?path=${enc(path)}`),
+  components: () => request<ComponentInfo[]>("GET", "/api/components"),
+  checkComponent: (document: ComponentDocument) => request<string[]>("POST", "/api/components/check", document),
+  saveComponent: (document: ComponentDocument) => request<ComponentInfo>("PUT", "/api/components", document),
+  component: (id: string) => request<ComponentDocument>("GET", `/api/components/${enc(id)}`),
+  addComponent: (context: string, id: string) => request<ContextSummary>("POST", `${ctx(context)}/components/${enc(id)}`),
+  codeComponent: (source: string) => request<string[]>("POST", "/api/components/code", { source }),
   procedures: (id: string) => request<ProcedureInfo[]>("GET", `${ctx(id)}/procedures`),
   procedure: (id: string, name: string) => request<ProcedureJson>("GET", `${ctx(id)}/procedures/${enc(name)}`),
   putProcedure: (id: string, procedure: ProcedureJson) =>

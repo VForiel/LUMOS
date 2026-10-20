@@ -7,6 +7,7 @@ import {
   ApiError,
   download,
   fileName,
+  type ComponentInfo,
   type ContextSummary,
   type Focus,
   type StorageInfo,
@@ -37,7 +38,8 @@ export type Dialog =
   | { kind: "discard"; answer: (choice: "save" | "discard" | "cancel") => void }
   | { kind: "study" }
   | { kind: "browser" }
-  | { kind: "archives" };
+  | { kind: "archives" }
+  | { kind: "component"; id?: string };
 export type Pointer = "pan" | "select";
 /** Sizes (pixels) and visibility of the panels around the canvas, kept by the browser. */
 export type Layout = { palette: number; inspector: number; bottom: number; paletteOpen: boolean; inspectorOpen: boolean };
@@ -73,6 +75,10 @@ export type Block = { name: string; document: string; saved: string };
 type State = {
   info: Info | null;
   palette: Palette | null;
+  /** Declarative components of the session (P15.15); composite ones are placed from "My blocks". */
+  components: ComponentInfo[];
+  /** Fetch again the palette and the components (after a component was saved). */
+  refreshPalette: () => Promise<void>;
   context: ContextSummary | null;
   positions: Record<string, [number, number]>;
   selection: string[];
@@ -306,6 +312,7 @@ export const useStore = create<State & Actions>((set, get) => {
   return {
     info: null,
     palette: null,
+    components: [],
     context: null,
     positions: {},
     selection: [],
@@ -336,7 +343,7 @@ export const useStore = create<State & Actions>((set, get) => {
       try {
         // the first request alone: it opens the session (cookie) used by all the others
         const info = await api.info();
-        set({ info, palette: await api.palette() });
+        set({ info, palette: await api.palette(), components: await api.components() });
       } catch (error) {
         get().fail(error);
         return;
@@ -724,6 +731,10 @@ export const useStore = create<State & Actions>((set, get) => {
       set({ bottom: tab });
     },
 
+    async refreshPalette() {
+      const [palette, components] = await Promise.all([api.palette(), api.components()]);
+      set({ palette, components });
+    },
     setDialog(dialog) {
       set({ dialog });
     },

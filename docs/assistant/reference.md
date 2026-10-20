@@ -92,6 +92,15 @@ also listed by any MCP client (`/mcp` in Claude Code).
 | `remove_procedure` | Remove a procedure. |
 | `run_procedure` | Run a procedure; its named results are the outputs of the job (`get_result`). On equipment, only with `confirmed=true` after the user confirmed. |
 
+### Components
+
+| Tool | Purpose |
+|------|---------|
+| `list_components` | Declarative components of the session, usable as element types. |
+| `check_component` | Problems of a component document (templates, parameters, checks), its checks run. |
+| `save_component` | Check and register a component: a new element type of the session. |
+| `add_component` | Add a component of the session to a context (a group for a composite one). |
+
 ### Catalogues and processing
 
 | Tool | Purpose |

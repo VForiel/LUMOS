@@ -58,3 +58,20 @@ of that power per input of a matrix) and compares the total output power with `e
 or an analytic value you know.
 
 A context saved with components holds their definitions under `"components"`, so it opens on any instance.
+
+## In the web interface
+
+The button **New component** of *My blocks* in the palette opens the component editor:
+
+- **Form**: the author and the name make the identifier; the title, description and license are required.
+  Add parameters (name, unit, default, bounds, description), pick a template and fill its behaviour (a value
+  is a number, a quantity such as `3 dB`, or `$name` for a parameter), then add at least one check. The
+  problems of the component are listed while you type, and **Save** is possible only when there is none.
+- **Document**: the `.lumos` document the form makes, which **Download .lumos** saves.
+- **Code** (local and private instances only, where scripts run): Python code defining element types with
+  `@register`, run in the server.
+
+A saved component is a type of the palette of your session, in the category *Components*, added like any
+element and edited with the pencil next to it in *My blocks*; a composite component is placed from *My blocks*
+as a group. Assistants do the same with the MCP tools `check_component`, `save_component`, `list_components`
+and `add_component`.
