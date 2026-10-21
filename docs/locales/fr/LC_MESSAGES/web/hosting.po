@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-19 19:13+0200\n"
+"POT-Creation-Date: 2026-10-21 10:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -174,22 +174,30 @@ msgid "It stays disabled unless you decide otherwise: set `operation_enabled = t
 msgstr "Cela reste désactivé à moins que vous n'en décidiez autrement : réglez `operation_enabled = true`, gardez l'instance derrière TLS (`trust_proxy = true` avec le mandataire ci-dessus) et enregistrez au moins un opérateur. Le serveur refuse de démarrer s'il en manque un. Chaque action est confirmée dans l'interface et écrite dans le journal d'audit."
 
 #: ../../web/hosting.md:91
+msgid "What runs on a public instance"
+msgstr "Ce qui s'exécute sur une instance publique"
+
+#: ../../web/hosting.md:93
+msgid "Visitors build and run contexts, procedures made of blocks and declarative components: data, never code. Procedures written as Python scripts and components with code run only on local and private instances; a public instance open to anonymous visitors refuses to start with `scripts_enabled = true`, and a script procedure opened from a file can be read but not run. Element packages you install yourself (entry point `lumos.elements`, see [Create and share a component](../user_guide/sharing.md)) are loaded at start-up. Procedures run as jobs, within the same quotas as runs."
+msgstr "Les visiteurs construisent et exécutent des contextes, des procédures faites de blocs et des composants déclaratifs : des données, jamais du code. Les procédures écrites en scripts Python et les composants avec du code ne s'exécutent que sur les instances locales et privées ; une instance publique ouverte aux visiteurs anonymes refuse de démarrer avec `scripts_enabled = true`, et une procédure script ouverte depuis un fichier peut être lue mais pas exécutée. Les paquets d'éléments que vous installez vous-même (point d'entrée `lumos.elements`, voir [Créer et partager un composant](../user_guide/sharing.md)) sont chargés au démarrage. Les procédures s'exécutent comme des tâches, dans les mêmes quotas que les calculs."
+
+#: ../../web/hosting.md:100
 msgid "Maintenance"
 msgstr "Maintenance"
 
-#: ../../web/hosting.md:93
+#: ../../web/hosting.md:102
 msgid "**Updates**: pull the new version, then `docker compose -f deploy/public/compose.yaml up -d --build`. Sessions are kept in memory: a restart logs everybody out (the interface restores the context of each visitor from their browser)."
 msgstr "**Mises à jour** : récupérez la nouvelle version, puis `docker compose -f deploy/public/compose.yaml up -d --build`. Les sessions sont gardées en mémoire : un redémarrage déconnecte tout le monde (l'interface restaure le contexte de chaque visiteur depuis son navigateur)."
 
-#: ../../web/hosting.md:96
+#: ../../web/hosting.md:105
 msgid "**Backups**: the `lumos-data` volume holds the users file, the audit journal and the archives."
 msgstr "**Sauvegardes** : le volume `lumos-data` contient le fichier des utilisateurs, le journal d'audit et les archives."
 
-#: ../../web/hosting.md:97
+#: ../../web/hosting.md:106
 msgid "**Logs**: `docker compose logs lumos`; security events are in `/data/audit.log` (one JSON object per line)."
 msgstr "**Journaux** : `docker compose logs lumos` ; les événements de sécurité sont dans `/data/audit.log` (un objet JSON par ligne)."
 
-#: ../../web/hosting.md:98
+#: ../../web/hosting.md:107
 msgid "**Checklist**: HTTPS only (Caddy redirects HTTP), `allowed_hosts` set, operation disabled or guarded, quotas adapted, volume backed up, the image updated with LUMOS."
 msgstr "**Liste de contrôle** : HTTPS seulement (Caddy redirige HTTP), `allowed_hosts` renseigné, opération désactivée ou protégée, quotas adaptés, volume sauvegardé, image mise à jour avec LUMOS."
 

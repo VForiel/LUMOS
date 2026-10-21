@@ -169,6 +169,16 @@ include = ["src", "tests", "tools"]
 exclude = ["src/lumos/_vendor"]  # vendored code kept as upstream
 pythonVersion = "3.12"
 typeCheckingMode = "standard"
+# strict typing for the modules facing untrusted input or deciding access (P15.4); the readers of JSON
+# documents (components, procedures, .lumos) validate at run time and are fuzzed (tests/unit/test_untrusted_documents.py)
+strict = [
+    "src/lumos/catalogue.py",
+    "src/lumos/io/schema.py",
+    "src/lumos/mcp/server.py",
+    "src/lumos/web/auth.py",
+    "src/lumos/web/config.py",
+    "src/lumos/web/sessions.py",
+]
 venvPath = "."
 venv = ".venv"
 # Tests deliberately misuse the API (invalid arguments, forbidden overrides, dynamic attributes)
@@ -203,6 +213,8 @@ source = ["lumos"]
 branch = true
 
 [tool.coverage.report]
+# 90 % measured at P15.4 (2026-10-21); the floor leaves room for code paths of other platforms
+fail_under = 88
 show_missing = true
 skip_covered = true
 exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]

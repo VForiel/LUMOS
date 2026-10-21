@@ -20,6 +20,7 @@ import struct
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any, cast
 
 from lumos.web.config import ConfigError
 
@@ -99,7 +100,7 @@ class User:
     name: str
     role: str
     password: str | None = None
-    ssh_keys: list[str] = field(default_factory=list)
+    ssh_keys: list[str] = field(default_factory=list[str])
 
 
 def load_users(path: str | Path) -> dict[str, User]:
@@ -116,23 +117,30 @@ def load_users(path: str | Path) -> dict[str, User]:
         raise ConfigError(f"no users file at {path} (create it with lumos users add)") from None
     except (OSError, tomllib.TOMLDecodeError) as error:
         raise ConfigError(f"cannot read the users file {path}: {error}") from error
-    users = {}
-    for name, entry in data.get("users", {}).items():
-        unknown = set(entry) - {"role", "password", "ssh_keys"}
+    users: dict[str, User] = {}
+    tables: Any = data.get("users", {})
+    if not isinstance(tables, dict):
+        raise ConfigError(f"the users file {path} holds tables [users.<name>]")
+    for name, entry in cast("dict[str, Any]", tables).items():
+        if not isinstance(entry, dict):
+            raise ConfigError(f"user {name}: a table [users.{name}] with a role")
+        table = cast("dict[str, Any]", entry)
+        unknown = set(table) - {"role", "password", "ssh_keys"}
         if unknown:
             raise ConfigError(f"user {name}: unknown settings {', '.join(sorted(unknown))}")
-        role = entry.get("role")
+        role = table.get("role")
         if role not in ROLES:
             raise ConfigError(f"user {name}: role must be one of {', '.join(ROLES)}, not {role!r}")
-        password = entry.get("password")
+        password = table.get("password")
         if password is not None and not str(password).startswith("$argon2id$"):
             raise ConfigError(f"user {name}: the password must be an Argon2id hash (use lumos users add)")
-        keys = entry.get("ssh_keys", [])
-        if not isinstance(keys, list) or not all(isinstance(k, str) for k in keys):
+        given: Any = table.get("ssh_keys", [])
+        if not isinstance(given, list) or not all(isinstance(k, str) for k in cast("list[Any]", given)):
             raise ConfigError(f"user {name}: ssh_keys must be a list of public key lines")
+        keys = cast("list[str]", given)
         for key in keys:
             _key_blob(key)  # checks the format
-        users[name] = User(name=name, role=role, password=password, ssh_keys=list(keys))
+        users[name] = User(name=str(name), role=str(role), password=password, ssh_keys=list(keys))
     return users
 
 

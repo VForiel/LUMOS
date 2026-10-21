@@ -53,7 +53,7 @@ from lumos.core.element import Element
 from lumos.core.group import GROUP_TYPE, ElementGroup, group_class, group_type_of
 from lumos.core.param import Param, Setting
 from lumos.core.priors import prior_from_json, prior_to_json
-from lumos.core.registry import Registry
+from lumos.core.registry import Registry, UnknownTypeError
 from lumos.errors import FormatVersionError, LumosFormatError
 from lumos.units import quantity_from_json, quantity_to_json
 
@@ -255,6 +255,16 @@ def from_document(document: Mapping[str, Any], *, registry: Registry | None = No
     lumos.core.registry.UnknownTypeError
         If the element type is not registered.
     """
+    try:
+        return _from_document(document, registry)
+    except (LumosFormatError, UnknownTypeError):
+        raise
+    except (TypeError, ValueError, AttributeError, KeyError, IndexError) as error:
+        # a field of the wrong type deep in the document (documents are untrusted input)
+        raise LumosFormatError(f"malformed document: {type(error).__name__}: {error}") from error
+
+
+def _from_document(document: Mapping[str, Any], registry: Registry | None) -> Any:
     reg = _registry(registry)
     if not isinstance(document, Mapping):
         raise LumosFormatError("a .lumos document must be a JSON object")

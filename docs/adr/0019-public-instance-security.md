@@ -71,3 +71,31 @@ the secret, user, role, expiry (`connector_link_days`, 90 by default) — kept i
 gone, a valid link opens a new session for the same user and role. Creating a new link or revoking it deletes
 the record. The secret remains the only credential, as before; its exposure lasts longer, which the
 revocation in the assistant panel bounds.
+
+## Amendment (2026-10-21): audit of the code zones and of untrusted documents (P15.4)
+
+Procedures written as Python scripts (ADR-0024) and components with code (ADR-0025) are the only places where
+a user's code runs. The audit traced every route to them and pinned each with a test
+(`tests/integration/test_public_instance_security.py`):
+
+- configuration: a public instance open to anonymous visitors refuses to start with `scripts_enabled`;
+- service: running a script procedure, a study on one and defining code components check `scripts_enabled`;
+- web API and MCP server: thin adapters of the service, with no other route to code (the MCP server has no
+  code tool); a script procedure can be saved and read but never run;
+- documents: opening a `.lumos` file never runs its scripts; a component document holds data only (bodies
+  are parsed by astropy, procedure functions come from a fixed table); element types are looked up in the
+  registry, and the only modules a document can trigger are those of a fixed list of built-in types;
+- element packages of the `lumos.elements` entry point (ADR-0026) are code installed by whoever runs the
+  instance, loaded on every profile.
+
+Readers of untrusted JSON (components, procedures, `.lumos` documents) are fuzzed with Hypothesis
+(`tests/unit/test_untrusted_documents.py`): they raise only their documented errors and never call `exec`,
+`eval`, a command or a process. Fuzzing found two crashes, both fixed: a step without element broke the checks
+of a procedure (malformed steps are now reported as problems), and a field of the wrong type escaped
+`from_document` as a `TypeError` (now a `LumosFormatError`). Procedures run as jobs: they share the quotas of
+runs (time of a run, runs at a time per session and per instance) and their loops are bounded (10 000
+iterations).
+
+The modules deciding access or reading configuration and catalogue (`web/auth`, `web/sessions`,
+`web/config`, `catalogue`, `io/schema`, `mcp/server`) are type-checked in strict mode; the readers of JSON
+documents validate types at run time instead, where strict mode only adds casts, and rely on the fuzzing.

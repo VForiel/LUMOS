@@ -50,6 +50,10 @@ export function visibleBounds(flow: ReturnType<typeof useReactFlow>, margin = 70
   return { x0: a.x, y0: a.y, x1: b.x, y1: b.y };
 }
 
+/** Spots given to blocks still being added: taken until the context shows them, so that blocks added in
+ * quick succession (or while the server is slow) never get the same spot. */
+const reserved: [number, number][] = [];
+
 export function useCanvasCentre(): () => [number, number] {
   const flow = useReactFlow();
   return () => {
@@ -58,7 +62,10 @@ export function useCanvasCentre(): () => [number, number] {
     const point = flow.screenToFlowPosition({ x: canvas.left + canvas.width / 2, y: canvas.top + canvas.height / 2 });
     const positions = useStore.getState().positions;
     const taken = Object.entries(positions).filter(([id]) => !id.includes(".")).map(([, xy]) => xy);
-    return freeSpot([point.x - 115, point.y - 60], taken, visibleBounds(flow));
+    const spot = freeSpot([point.x - 115, point.y - 60], [...taken, ...reserved], visibleBounds(flow));
+    reserved.push(spot);
+    window.setTimeout(() => reserved.splice(reserved.indexOf(spot), 1), 10_000);
+    return spot;
   };
 }
 

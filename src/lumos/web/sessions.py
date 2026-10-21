@@ -22,7 +22,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from lumos.service import Service, ServiceError
 
@@ -117,7 +117,9 @@ class WebSessions:
         except (OSError, ValueError) as error:
             logger.warning("cannot read the connector links %s: %s", self._links_file, error)
             return {}
-        return {str(k): dict(v) for k, v in records.items()} if isinstance(records, dict) else {}
+        if not isinstance(records, dict):
+            return {}
+        return {str(k): dict(cast("dict[str, Any]", v)) for k, v in cast("dict[Any, Any]", records).items()}
 
     def _save_records(self) -> None:
         """Write the records (called with the lock held)."""

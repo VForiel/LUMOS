@@ -88,6 +88,15 @@ It stays disabled unless you decide otherwise: set `operation_enabled = true`, k
 (`trust_proxy = true` with the proxy above) and register at least one operator. The server refuses to start
 when one of these is missing. Every action is confirmed in the interface and written to the audit journal.
 
+### What runs on a public instance
+
+Visitors build and run contexts, procedures made of blocks and declarative components: data, never code.
+Procedures written as Python scripts and components with code run only on local and private instances; a
+public instance open to anonymous visitors refuses to start with `scripts_enabled = true`, and a script
+procedure opened from a file can be read but not run. Element packages you install yourself (entry point
+`lumos.elements`, see [Create and share a component](../user_guide/sharing.md)) are loaded at start-up.
+Procedures run as jobs, within the same quotas as runs.
+
 ### Maintenance
 
 - **Updates**: pull the new version, then `docker compose -f deploy/public/compose.yaml up -d --build`.

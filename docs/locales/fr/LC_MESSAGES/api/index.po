@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.1.dev10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-20 21:41+0200\n"
+"POT-Creation-Date: 2026-10-21 10:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -6844,6 +6844,17 @@ msgid ""
 "plane computation."
 msgstr ""
 
+#: lumos.physics.coronagraphy:21 of
+msgid ""
+"A batch of fields (the sources of an extended scene) is transformed a few"
+" fields at a time, which bounds the memory of the zero-padded planes. The"
+" coarse FFT skips the transforms of the rows and columns that only hold "
+"padding (the forward transform along :math:`x` needs the rows of the "
+"pupil only, the inverse one along :math:`x` the rows kept in the pupil "
+"only), and the matrix Fourier transforms of the batch are computed as a "
+"few large matrix products."
+msgstr ""
+
 #: lumos.physics.coronagraphy.DEFAULT_LEVELS:1 of
 msgid ""
 "(inner radius, outer radius, sampling) of the windows of the fine levels,"
@@ -6958,6 +6969,12 @@ msgstr ""
 msgid ""
 "Return the guided LP modes at the normalised frequency ``v``, by "
 "decreasing propagation constant."
+msgstr ""
+
+#: lumos.physics.fibers.lp_modes:3 of
+msgid ""
+"The modes depend on ``v`` only: they are computed once per value (the "
+"fibres of an array, the same wavelengths at every run)."
 msgstr ""
 
 #: lumos.physics.fibers.lp_radial:1 of

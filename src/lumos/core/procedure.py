@@ -369,7 +369,7 @@ class Procedure:
             path = step.get("element")
             try:
                 element = ctx[path]
-            except (KeyError, TypeError, ValueError):
+            except _MALFORMED:
                 continue
             if ctx.mode_of(element) == "operation" and path not in found:
                 found.append(str(path))
@@ -497,6 +497,10 @@ def _walk(steps: Sequence[Any]) -> list[dict[str, Any]]:
     return found
 
 
+#: Errors of a step whose fields have the wrong types, reported as problems by the checks.
+_MALFORMED = (TypeError, ValueError, AttributeError, KeyError, LookupError, ArithmeticError)
+
+
 class _Checker:
     """Static checks of the steps (with ``ctx`` None: only counts)."""
 
@@ -544,7 +548,10 @@ class _Checker:
 
     def steps(self, steps: Any, where: str, depth: int) -> None:
         if depth == 0:
-            self.iterations = self._loops(steps if isinstance(steps, list) else [])
+            try:
+                self.iterations = self._loops(steps if isinstance(steps, list) else [])
+            except _MALFORMED:
+                self.iterations = 0  # the malformed step is reported below
         if depth > MAX_DEPTH:
             self.problems.append(f"{where}: more than {MAX_DEPTH} nested loops or conditions")
             return
@@ -552,7 +559,10 @@ class _Checker:
             self.problems.append(f"{where}: the steps are a list")
             return
         for index, step in enumerate(steps):
-            self.step(step, f"{where}[{index}]", depth)
+            try:
+                self.step(step, f"{where}[{index}]", depth)
+            except _MALFORMED as error:  # a field of the wrong type (a document is untrusted input)
+                self.problems.append(f"{where}[{index}]: malformed step ({type(error).__name__}: {error})")
 
     def need(self, value: Any, where: str) -> None:
         name = _reference(value)
@@ -567,6 +577,9 @@ class _Checker:
             self.defined.add(name)
 
     def element(self, path: Any, where: str) -> Any:
+        if not isinstance(path, str):
+            self.problems.append(f"{where}: give the element as a path such as 'camera', not {path!r}")
+            return None
         try:
             return self.ctx[path]
         except (KeyError, TypeError, ValueError, LookupError):
@@ -574,6 +587,9 @@ class _Checker:
             return None
 
     def port(self, path: Any, where: str, direction: str) -> None:
+        if not isinstance(path, str):
+            self.problems.append(f"{where}: give the port as a path such as 'camera.out', not {path!r}")
+            return
         try:
             ref = self.ctx.port(path)
         except (KeyError, TypeError, ValueError, LookupError, AttributeError):

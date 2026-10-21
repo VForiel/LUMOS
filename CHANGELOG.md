@@ -306,6 +306,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   JAX when no JAX accelerator plugin is installed (about 2 s saved on the first run of every process);
   `FizeauCombiner` shifts its beams with threaded FFTs; benchmarks of every preset
   (`pytest -m benchmark tests/benchmarks`).
+- Quality and security (P15.4, ADR-0019 amendment): every route to code (configuration, service, web API,
+  MCP server, studies, opened documents) is pinned refused on a public instance; the readers of untrusted
+  components, procedures and `.lumos` documents are fuzzed (they never execute anything); a procedure step
+  without element or with fields of the wrong type is reported as a problem instead of crashing the checks;
+  a malformed `.lumos` field gives a `LumosFormatError`; a users file whose entries are not tables is
+  refused cleanly; strict type checking of the authentication, sessions, configuration, catalogue, schema
+  and MCP modules; a coverage floor of 88 % in CI (90 % measured); blocks added in quick succession (or while
+  the server is slow) no longer land on the same spot.
 - Top bar for every window (P15.19): no control cut off whatever the width; the commands without room go into a
   **More** menu.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
