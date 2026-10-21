@@ -5,13 +5,16 @@
 #        LUMOS_CONFIG=/home/me/lumos.toml   # a copy of lumos.toml with quotas for the machine (optional)
 #        LUMOS_CPUS=1.8                     # CPU and memory of the container (optional)
 #        LUMOS_MEMORY=3g
-#   3. docker compose -f deploy/public/compose.yaml up -d --build
-# Updates: git pull, then the same command.
+#   3. sh deploy/public/update.sh (pulls, then docker compose up -d --build with the version of the code)
+# Updates: the same command (sh deploy/public/update.sh v1.0.0 for a release).
 services:
   lumos:
     build:
       context: ../..
       dockerfile: deploy/Dockerfile
+      args:
+        # the image has no git history: update.sh computes the version (tools/release_version.py)
+        LUMOS_VERSION: ${LUMOS_VERSION:-0.0.0}
     image: lumos:public
     command: ["--config", "/etc/lumos/lumos.toml"]
     volumes:

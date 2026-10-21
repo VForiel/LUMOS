@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LUMOS 0.0.2.dev279\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 10:50+0200\n"
+"POT-Creation-Date: 2026-10-21 11:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -64,31 +64,31 @@ msgid "Steps"
 msgstr "Étapes"
 
 #: ../../web/hosting.md:36
-msgid "Copy the repository to the VPS (or only `deploy/` with an image built elsewhere)."
-msgstr "Copiez le dépôt sur le VPS (ou seulement `deploy/` avec une image construite ailleurs)."
+msgid "Clone the repository on the VPS (`deploy/public/update.sh` needs `git` and `python3`), or copy only `deploy/` with an image built elsewhere."
+msgstr "Clonez le dépôt sur le VPS (`deploy/public/update.sh` a besoin de `git` et de `python3`), ou copiez seulement `deploy/` avec une image construite ailleurs."
 
-#: ../../web/hosting.md:37
+#: ../../web/hosting.md:38
 msgid "Replace `lumos.example.org` by your host name in `deploy/public/lumos.toml` (`allowed_hosts`) and `deploy/public/Caddyfile`."
 msgstr "Remplacez `lumos.example.org` par votre nom d'hôte dans `deploy/public/lumos.toml` (`allowed_hosts`) et `deploy/public/Caddyfile`."
 
-#: ../../web/hosting.md:39
+#: ../../web/hosting.md:40
 msgid "Adapt the quotas of `lumos.toml` to the machine (see below)."
 msgstr "Adaptez les quotas de `lumos.toml` à la machine (voir ci-dessous)."
 
-#: ../../web/hosting.md:40
+#: ../../web/hosting.md:41
 msgid "Start it:"
 msgstr "Démarrez-la :"
 
-#: ../../web/hosting.md:47
+#: ../../web/hosting.md:48
 #, python-brace-format
 msgid "Open `https://lumos.example.org`. `https://lumos.example.org/api/health` answers `{\"status\": \"ok\"}`."
 msgstr "Ouvrez `https://lumos.example.org`. `https://lumos.example.org/api/health` répond `{\"status\": \"ok\"}`."
 
-#: ../../web/hosting.md:49
+#: ../../web/hosting.md:50
 msgid "Sizing the quotas"
 msgstr "Dimensionner les quotas"
 
-#: ../../web/hosting.md:51
+#: ../../web/hosting.md:52
 msgid "The quotas bound what one visitor and all visitors together may compute ([Configuration](configuration.md)):"
 msgstr "Les quotas bornent ce qu'un visiteur et l'ensemble des visiteurs peuvent calculer ([Configuration](configuration.md)) :"
 
@@ -140,64 +140,64 @@ msgstr "`max_sessions`, `requests_per_minute`"
 msgid "a few hundred"
 msgstr "quelques centaines"
 
-#: ../../web/hosting.md:61
+#: ../../web/hosting.md:62
 msgid "The compose file also limits the CPU and memory of the container, so that the proxy stays responsive."
 msgstr "Le fichier compose limite aussi le processeur et la mémoire du conteneur, pour que le mandataire reste réactif."
 
-#: ../../web/hosting.md:63
+#: ../../web/hosting.md:64
 msgid "Disk"
 msgstr "Disque"
 
-#: ../../web/hosting.md:65
+#: ../../web/hosting.md:66
 #, python-format
 msgid "Results do not pile up on a public instance: the archives of a visitor are kept in a directory of their session (`session-<id>` under `archive_root`), which only they can list and download, and which is deleted when the session ends (logout, idle time). A session keeps at most `max_session_bytes` (1 GB): beyond, its oldest data are deleted and the visitor is told so. Visitors see the data of their session in the results panel and are warned when they reach 80 % of it, or when less than twice `min_free_disk_bytes` stays free on the disk; below `min_free_disk_bytes` (2 GB), archiving is refused while runs go on. Only the 20 latest finished runs of a session keep their results in memory (`max_jobs_kept`). Size the volume for `max_sessions` × `max_session_bytes` in the worst case, or lower these values."
 msgstr "Les résultats ne s'accumulent pas sur une instance publique : les archives d'un visiteur sont gardées dans un dossier de sa session (`session-<id>` sous `archive_root`), que lui seul peut lister et télécharger, et qui est supprimé à la fin de la session (déconnexion, inactivité). Une session garde au plus `max_session_bytes` (1 Go) : au-delà, ses données les plus anciennes sont supprimées et le visiteur en est informé. Les visiteurs voient les données de leur session dans le panneau des résultats et sont avertis quand ils en atteignent 80 %, ou quand il reste moins de deux fois `min_free_disk_bytes` libres sur le disque ; sous `min_free_disk_bytes` (2 Go), l'archivage est refusé mais les calculs continuent. Seules les 20 dernières exécutions terminées d'une session gardent leurs résultats en mémoire (`max_jobs_kept`). Dimensionnez le volume pour `max_sessions` × `max_session_bytes` dans le pire cas, ou baissez ces valeurs."
 
-#: ../../web/hosting.md:74
+#: ../../web/hosting.md:75
 msgid "Accounts"
 msgstr "Comptes"
 
-#: ../../web/hosting.md:76
+#: ../../web/hosting.md:77
 msgid "Anonymous visitors need no account. To give some users more rights (or to require a login with `anonymous_role = \"none\"`), create the users file in the volume and point `users_file` to it:"
 msgstr "Les visiteurs anonymes n'ont besoin d'aucun compte. Pour donner plus de droits à certains utilisateurs (ou exiger une connexion avec `anonymous_role = \"none\"`), créez le fichier des utilisateurs dans le volume et faites-y pointer `users_file` :"
 
-#: ../../web/hosting.md:83
+#: ../../web/hosting.md:84
 msgid "See [Accounts and security](accounts.md)."
 msgstr "Voir [Comptes et sécurité](accounts.md)."
 
-#: ../../web/hosting.md:85
+#: ../../web/hosting.md:86
 msgid "Operating equipment from a public instance"
 msgstr "Opérer du matériel depuis une instance publique"
 
-#: ../../web/hosting.md:87
+#: ../../web/hosting.md:88
 msgid "It stays disabled unless you decide otherwise: set `operation_enabled = true`, keep the instance behind TLS (`trust_proxy = true` with the proxy above) and register at least one operator. The server refuses to start when one of these is missing. Every action is confirmed in the interface and written to the audit journal."
 msgstr "Cela reste désactivé à moins que vous n'en décidiez autrement : réglez `operation_enabled = true`, gardez l'instance derrière TLS (`trust_proxy = true` avec le mandataire ci-dessus) et enregistrez au moins un opérateur. Le serveur refuse de démarrer s'il en manque un. Chaque action est confirmée dans l'interface et écrite dans le journal d'audit."
 
-#: ../../web/hosting.md:91
+#: ../../web/hosting.md:92
 msgid "What runs on a public instance"
 msgstr "Ce qui s'exécute sur une instance publique"
 
-#: ../../web/hosting.md:93
+#: ../../web/hosting.md:94
 msgid "Visitors build and run contexts, procedures made of blocks and declarative components: data, never code. Procedures written as Python scripts and components with code run only on local and private instances; a public instance open to anonymous visitors refuses to start with `scripts_enabled = true`, and a script procedure opened from a file can be read but not run. Element packages you install yourself (entry point `lumos.elements`, see [Create and share a component](../user_guide/sharing.md)) are loaded at start-up. Procedures run as jobs, within the same quotas as runs."
 msgstr "Les visiteurs construisent et exécutent des contextes, des procédures faites de blocs et des composants déclaratifs : des données, jamais du code. Les procédures écrites en scripts Python et les composants avec du code ne s'exécutent que sur les instances locales et privées ; une instance publique ouverte aux visiteurs anonymes refuse de démarrer avec `scripts_enabled = true`, et une procédure script ouverte depuis un fichier peut être lue mais pas exécutée. Les paquets d'éléments que vous installez vous-même (point d'entrée `lumos.elements`, voir [Créer et partager un composant](../user_guide/sharing.md)) sont chargés au démarrage. Les procédures s'exécutent comme des tâches, dans les mêmes quotas que les calculs."
 
-#: ../../web/hosting.md:100
+#: ../../web/hosting.md:101
 msgid "Maintenance"
 msgstr "Maintenance"
 
-#: ../../web/hosting.md:102
-msgid "**Updates**: pull the new version, then `docker compose -f deploy/public/compose.yaml up -d --build`. Sessions are kept in memory: a restart logs everybody out (the interface restores the context of each visitor from their browser)."
-msgstr "**Mises à jour** : récupérez la nouvelle version, puis `docker compose -f deploy/public/compose.yaml up -d --build`. Les sessions sont gardées en mémoire : un redémarrage déconnecte tout le monde (l'interface restaure le contexte de chaque visiteur depuis son navigateur)."
+#: ../../web/hosting.md:103
+msgid "**Updates**: `sh deploy/public/update.sh` pulls the new version and rebuilds the image with its version number (`sh deploy/public/update.sh v1.0.0` deploys a release). Sessions are kept in memory: a restart logs everybody out (the interface restores the context of each visitor from their browser)."
+msgstr "**Mises à jour** : `sh deploy/public/update.sh` récupère la nouvelle version et reconstruit l'image avec son numéro de version (`sh deploy/public/update.sh v1.0.0` déploie une version publiée). Les sessions sont gardées en mémoire : un redémarrage déconnecte tout le monde (l'interface restaure le contexte de chaque visiteur depuis son navigateur)."
 
-#: ../../web/hosting.md:105
+#: ../../web/hosting.md:107
 msgid "**Backups**: the `lumos-data` volume holds the users file, the audit journal and the archives."
 msgstr "**Sauvegardes** : le volume `lumos-data` contient le fichier des utilisateurs, le journal d'audit et les archives."
 
-#: ../../web/hosting.md:106
+#: ../../web/hosting.md:108
 msgid "**Logs**: `docker compose logs lumos`; security events are in `/data/audit.log` (one JSON object per line)."
 msgstr "**Journaux** : `docker compose logs lumos` ; les événements de sécurité sont dans `/data/audit.log` (un objet JSON par ligne)."
 
-#: ../../web/hosting.md:107
+#: ../../web/hosting.md:109
 msgid "**Checklist**: HTTPS only (Caddy redirects HTTP), `allowed_hosts` set, operation disabled or guarded, quotas adapted, volume backed up, the image updated with LUMOS."
 msgstr "**Liste de contrôle** : HTTPS seulement (Caddy redirige HTTP), `allowed_hosts` renseigné, opération désactivée ou protégée, quotas adaptés, volume sauvegardé, image mise à jour avec LUMOS."
 

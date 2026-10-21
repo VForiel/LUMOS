@@ -33,14 +33,15 @@ and renews the certificates by itself.
 
 ### Steps
 
-1. Copy the repository to the VPS (or only `deploy/` with an image built elsewhere).
+1. Clone the repository on the VPS (`deploy/public/update.sh` needs `git` and `python3`), or copy only
+   `deploy/` with an image built elsewhere.
 2. Replace `lumos.example.org` by your host name in `deploy/public/lumos.toml` (`allowed_hosts`) and
    `deploy/public/Caddyfile`.
 3. Adapt the quotas of `lumos.toml` to the machine (see below).
 4. Start it:
 
    ```console
-   $ docker compose -f deploy/public/compose.yaml up -d --build
+   $ sh deploy/public/update.sh
    $ docker compose -f deploy/public/compose.yaml logs -f lumos
    ```
 
@@ -99,7 +100,8 @@ Procedures run as jobs, within the same quotas as runs.
 
 ### Maintenance
 
-- **Updates**: pull the new version, then `docker compose -f deploy/public/compose.yaml up -d --build`.
+- **Updates**: `sh deploy/public/update.sh` pulls the new version and rebuilds the image with its version
+  number (`sh deploy/public/update.sh v1.0.0` deploys a release).
   Sessions are kept in memory: a restart logs everybody out (the interface restores the context of each
   visitor from their browser).
 - **Backups**: the `lumos-data` volume holds the users file, the audit journal and the archives.

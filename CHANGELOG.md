@@ -314,6 +314,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   refused cleanly; strict type checking of the authentication, sessions, configuration, catalogue, schema
   and MCP modules; a coverage floor of 88 % in CI (90 % measured); blocks added in quick succession (or while
   the server is slow) no longer land on the same spot.
+- Public instance (P15.5): `deploy/public/update.sh` pulls and rebuilds the image with the version of the
+  code (`tools/release_version.py`, the scheme of the package), so the instance no longer shows 0.0.0.
 - Top bar for every window (P15.19): no control cut off whatever the width; the commands without room go into a
   **More** menu.
 - Review of 20/10 (P15.17): the archive button opens the archives of the session (switch, list, download,
