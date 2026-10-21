@@ -20,7 +20,11 @@ from hypothesis import strategies as st
 
 from lumos.components import check_component
 from lumos.core.procedure import Procedure, ProcedureError
+from lumos.core.registry import UnknownTypeError
 from lumos.io.lumos_format import LumosFormatError, from_document
+
+#: The documented errors of ``from_document``: a malformed document, or an element type not registered.
+REFUSED = (LumosFormatError, UnknownTypeError)
 
 ATTACKS = [
     "__import__('os').system('echo pwned')",
@@ -153,7 +157,7 @@ def test_hostile_procedure_steps_are_reported_not_run(steps):
 @FUZZ
 @given(document=json_values)
 def test_any_lumos_document_is_loaded_or_refused(document):
-    with nothing_runs(), contextlib.suppress(LumosFormatError):
+    with nothing_runs(), contextlib.suppress(*REFUSED):
         from_document(document)
 
 
@@ -175,5 +179,5 @@ def test_documents_naming_modules_never_import_them(kind, entries):
         "elements": entries,
         "element": entries[0] if entries else {},
     }
-    with nothing_runs(), contextlib.suppress(LumosFormatError):
+    with nothing_runs(), contextlib.suppress(*REFUSED):
         from_document(document)
