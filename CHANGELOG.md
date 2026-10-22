@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-22
+
 ### Added
 
 - Project skeleton: `lumos-maxima` distribution, `lumos` package, MIT license.
@@ -370,3 +372,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - In single precision, the chirps of the Fraunhofer and one-step Fresnel propagations and the lens phase of
   `focus` are computed in double precision and rounded once (phases such as `k z` were lost in float32).
 - The propagation benchmarks wait for CuPy results; the CuPy times first documented were too short.
+
+[Unreleased]: https://github.com/VForiel/LUMOS/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/VForiel/LUMOS/releases/tag/v1.0.0
