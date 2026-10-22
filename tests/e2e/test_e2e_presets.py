@@ -29,6 +29,7 @@ def test_a_first_visit_offers_the_presets_and_the_tour(page):
 def test_the_gallery_opens_from_the_toolbar(page):
     page.goto("/")
     page.get_by_test_id("presets").get_by_test_id("preset-first_simulation").click()
+    expect(page.get_by_test_id("presets")).to_have_count(0)  # the preset opened, the first gallery closed
     page.get_by_test_id("open-presets").click()
     gallery = page.get_by_test_id("presets")
     cards = gallery.get_by_test_id(re.compile(r"^preset-"))
