@@ -117,6 +117,8 @@ artifacts = ["src/lumos/web/static/"]
 
 [tool.hatch.build.targets.sdist]
 include = ["src/lumos", "tests", "examples/presets", "community", "LICENSE", "README.md", "CHANGELOG.md"]
+# the built interface too: python -m build makes the wheel from the sdist
+artifacts = ["src/lumos/web/static/"]
 
 # --- Lint and format ---------------------------------------------------------
 
