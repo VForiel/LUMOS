@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Fixed
+
+- `deploy/public/update.sh` without argument returns to `main` after a release was deployed (a tag leaves
+  git on a detached HEAD).
+
 ## [1.0.0] - 2026-10-22
 
 ### Added
