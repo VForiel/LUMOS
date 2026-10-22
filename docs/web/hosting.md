@@ -61,6 +61,25 @@ The quotas bound what one visitor and all visitors together may compute ([Config
 
 The compose file also limits the CPU and memory of the container, so that the proxy stays responsive.
 
+### Behind an existing reverse proxy
+
+On a machine that already runs a reverse proxy for other sites, do not start the bundled Caddy: write
+`deploy/public/compose.override.yaml` (not versioned, taken into account by `update.sh`), for instance with a
+proxy that reaches its sites through a Docker network named `proxy`:
+
+```yaml
+services:
+  caddy:
+    profiles: ["disabled"]
+  lumos:
+    networks: [default, proxy]
+networks:
+  proxy:
+    external: true
+```
+
+and forward the host name to `lumos:8000` in the configuration of that proxy (WebSockets included).
+
 ### Disk
 
 Results do not pile up on a public instance: the archives of a visitor are kept in a directory of their

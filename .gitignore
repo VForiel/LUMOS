@@ -44,3 +44,6 @@ web/node_modules/
 src/lumos/web/static/
 test-results/
 /node_modules/
+
+# Machine-specific adaptations of the public deployment (deploy/public/update.sh)
+deploy/public/compose.override.yaml

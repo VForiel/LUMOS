@@ -16,4 +16,9 @@ fi
 LUMOS_VERSION="$(python3 tools/release_version.py)"
 export LUMOS_VERSION
 echo "building LUMOS $LUMOS_VERSION"
-docker compose -f deploy/public/compose.yaml up -d --build
+# compose.override.yaml (not versioned): adaptations to the machine, e.g. behind a reverse proxy it already runs
+set -- -f deploy/public/compose.yaml
+if [ -f deploy/public/compose.override.yaml ]; then
+    set -- "$@" -f deploy/public/compose.override.yaml
+fi
+docker compose "$@" up -d --build
