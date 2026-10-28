@@ -1,7 +1,7 @@
 // Top bar: brand, open context, language and theme. Controls without room in a narrow window go into the
 // "More" menu (P15.19): each is shown in the bar from a breakpoint, and in the menu below it.
 
-import { Languages, Monitor, Moon, MoreHorizontal, Sun } from "lucide-react";
+import { Heart, Languages, Monitor, Moon, MoreHorizontal, Sun } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { LANGUAGES, setLanguage, type Language } from "../i18n";
@@ -136,6 +136,9 @@ function MoreMenu({ items }: { items: MoreItem[] }) {
   );
 }
 
+/** Sponsor page of the project (GitHub Sponsors). */
+export const SPONSOR_URL = "https://github.com/sponsors/VForiel";
+
 const THEMES: { theme: Theme; icon: ReactNode }[] = [
   { theme: "light", icon: <Sun className="size-4" /> },
   { theme: "dark", icon: <Moon className="size-4" /> },
@@ -158,6 +161,7 @@ export function TopBar({ children, right, more = [] }: { children?: ReactNode; r
     ...more,
     { id: "theme", icon: next.icon, label: t("theme.switch", { theme: t(`theme.${next.theme}`) }), onClick: switchTheme, below: "xl" },
     { id: "language", icon: <Languages className="size-4" />, label: other === "en" ? "English" : "Français", onClick: () => setLanguage(other as Language), below: "xl" },
+    { id: "support", icon: <Heart className="size-4" />, label: t("toolbar.support"), onClick: () => window.open(SPONSOR_URL, "_blank", "noopener"), below: "xl" },
   ];
 
   return (
@@ -189,6 +193,17 @@ export function TopBar({ children, right, more = [] }: { children?: ReactNode; r
       <div className="flex min-w-0 flex-1 items-center gap-0.5">{children}</div>
       {right}
       <Collapse below="xl">
+      <a
+        href={SPONSOR_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="support"
+        title={t("toolbar.support")}
+        aria-label={t("toolbar.support")}
+        className="inline-flex h-8 items-center rounded-lg px-2 text-slate-600 transition-colors hover:bg-pink-50 hover:text-pink-600 dark:text-slate-300 dark:hover:bg-pink-950/40 dark:hover:text-pink-400"
+      >
+        <Heart className="size-4" />
+      </a>
       <ToolButton
         icon={THEMES.find((item) => item.theme === theme)!.icon}
         label={t("theme.switch", { theme: t(`theme.${next.theme}`) })}

@@ -21,7 +21,8 @@
     "presetsShort": "Préréglages",
     "study": "Étude : balayage ou Monte-Carlo",
     "studyShort": "Étude",
-    "more": "Plus"
+    "more": "Plus",
+    "support": "Soutenir LUMOS"
   },
   "theme": {
     "switch": "Passer au thème {{theme}}",

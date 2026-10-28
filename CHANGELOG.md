@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+
+- A "Support LUMOS" link (heart) in the top bar of the web interface and in the documentation header, to the
+  sponsor page of the project.
+
 ### Changed
 
 - Run archives and `.plt` figures come from [LRFutils](https://lrfutils.readthedocs.io) 0.2 (`LRFutils.archive`,

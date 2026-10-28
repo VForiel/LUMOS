@@ -21,7 +21,8 @@
     "presetsShort": "Presets",
     "study": "Study: sweep or Monte-Carlo run",
     "studyShort": "Study",
-    "more": "More"
+    "more": "More",
+    "support": "Support LUMOS"
   },
   "theme": {
     "switch": "Switch to the {{theme}} theme",

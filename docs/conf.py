@@ -132,4 +132,9 @@ html_theme_options = {
     # Theme options are not translated by gettext; Read the Docs exposes the project language.
     "announcement": _announcements.get(os.environ.get("READTHEDOCS_LANGUAGE", "en"), _announcements["en"]),
     "emojis_header_nav": True,
+    "external_links": [
+        {"url": "https://github.com/sponsors/VForiel", "name": "Sponsor LUMOS", "icon": "heart"},
+        {"url": "https://github.com/VForiel/LUMOS", "name": "GitHub"},
+        {"url": "https://pypi.org/project/lumos-maxima/", "name": "PyPI"},
+    ],
 }
