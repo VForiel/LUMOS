@@ -55,7 +55,7 @@ def test_a_figure_of_any_port(service, session, tmp_path):
     assert png.content.startswith(b"\x89PNG\r\n\x1a\n")
     plt = service.port_file(session, ctx, "laser.out", "plt")
     assert plt.filename.endswith(".plt")
-    from lumos._vendor import pltedit
+    from LRFutils import pltedit
 
     path = tmp_path / plt.filename
     path.write_bytes(plt.content)

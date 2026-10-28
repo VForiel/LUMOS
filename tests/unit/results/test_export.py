@@ -7,7 +7,7 @@ Independent references:
 
 - PNG files start with the signature ``\\x89PNG\\r\\n\\x1a\\n`` (ISO/IEC 15948, §5.2) and matplotlib's
   ``imread`` reads them back as an ``(height, width, 4)`` array;
-- ``pltedit.load`` (VFSciTools) is the reader of the ``.plt`` format;
+- ``LRFutils.pltedit.load`` is the reader of the ``.plt`` format;
 - ``.npz`` files are read with ``numpy.load(..., allow_pickle=False)``: no pickled object is needed.
 """
 
@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from astropy import units as u
+from LRFutils import pltedit
 
-from lumos._vendor import pltedit
 from lumos.results import load_data, save_data, save_figure
 
 

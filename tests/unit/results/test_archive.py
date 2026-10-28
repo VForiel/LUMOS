@@ -2,7 +2,7 @@
 
 Requirements:
 
-- REQ-RES-1: every ``ctx.run(...)`` can produce an archive through ``vfst.archive`` (VFSciTools), created
+- REQ-RES-1: every ``ctx.run(...)`` can produce an archive through ``LRFutils.archive``, created
   next to the executed script or notebook (configurable root);
 - REQ-RES-2: the archive holds ``context.lumos``, ``metadata.yml`` (UTC date and time, OS, Python version,
   versions of LUMOS and key dependencies, git commit and branch, detected hardware, backend and precision,
