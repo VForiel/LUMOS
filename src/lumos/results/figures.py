@@ -1,7 +1,7 @@
 """Export of figures and of the data behind them (step P7.3, REQ-RES-4, REQ-RES-5).
 
 A figure is saved as an image (``.png`` by default, or any matplotlib format) and as an editable ``.plt``
-file (:func:`pltedit.save`, VFSciTools), which reopens in the PltEdit editor or with ``pltedit.load``. The
+file (``LRFutils.pltedit.save``), which reopens in the PltEdit editor or with ``pltedit.load``. The
 data it shows is saved next to it in a ``.npz`` file (:func:`save_data`).
 
 ``.npz`` files hold plain arrays only (no pickled object): a quantity ``name`` is stored as the array of its
@@ -76,7 +76,7 @@ def save_figure(
     for fmt in wanted:
         target = stem.with_name(f"{stem.name}.{fmt}")
         if fmt == "plt":
-            from lumos._vendor import pltedit
+            from LRFutils import pltedit
 
             pltedit.save(figure, target)
         else:

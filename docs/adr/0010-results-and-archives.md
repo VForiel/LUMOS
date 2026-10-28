@@ -52,3 +52,9 @@ the two parts LUMOS uses are copied into `lumos._vendor` (MIT license, same auth
 (`vfst.archive.new`). They are kept as upstream except for their imports, excluded from ruff and pyright, and
 updated by copying them again. `vfscitools` is no longer a dependency; once it is on PyPI, LUMOS may depend on it
 again and drop the copies.
+
+## Amendment (2026-10-28): LRFutils replaces the vendored copies
+
+VFSciTools is merged into LRFutils, published on PyPI. LRFutils 0.2 ships the same code (`LRFutils.archive.new`,
+`LRFutils.pltedit.save`, `load`, `set_style`; same archive layout and `.plt` format), so `LRFutils>=0.2` is a core
+dependency and `lumos._vendor` is removed. `metadata.yml` records the version of `LRFutils` instead of `vfscitools`.

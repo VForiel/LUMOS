@@ -367,7 +367,7 @@ Les émulateurs supportent l'**injection de fautes** (déconnexion, délai, vale
 
 | ID | Prio | Exigence |
 |----|------|----------|
-| REQ-RES-1 | M | Chaque `ctx.run(...)` peut produire une **archive** via `vfst.archive` (VFSciTools), créée **à côté du script ou du notebook exécuté** (racine configurable). |
+| REQ-RES-1 | M | Chaque `ctx.run(...)` peut produire une **archive** via `LRFutils.archive`, créée **à côté du script ou du notebook exécuté** (racine configurable). |
 | REQ-RES-2 | M | Contenu de l'archive : `context.lumos`, `metadata.yml` (date et heure UTC, OS, version de Python, versions de LUMOS et des dépendances clés, git commit et branche, matériel détecté, backend et précision, graines, durées, mode, jumeau, horloge simulée, origine Python/web/MCP), `lumos.log`, `figures/`, `data/`. |
 | REQ-RES-3 | M | Figures **scientifiquement exploitables** : grandeurs et unités sur les axes, barres de couleur étiquetées, cartes de couleurs perceptuelles (cyclique pour la phase), style homogène, tailles adaptées aux publications. |
 | REQ-RES-4 | M | Export de chaque figure en `.png` et en `.plt` (`pltedit.save`). |
@@ -403,7 +403,7 @@ Les émulateurs supportent l'**injection de fautes** (déconnexion, délai, vale
 | ID | Prio | Exigence |
 |----|------|----------|
 | NF-1 | M | **Public large.** Les versions de Python supportées suivent la politique **SPEC 0** de l'écosystème scientifique : toutes les versions encore supportées à la fois par NumPy, SciPy, Astropy et JAX, testées en CI. En pratique, la borne basse est imposée par ces dépendances (vraisemblablement 3.12 en 2026, à confirmer en P0). Windows, Linux et macOS. |
-| NF-2 | M | Dépendances de base minimales : `numpy`, `scipy`, `astropy`, `sympy`, `matplotlib`, `pyyaml`, `platformdirs`, `array-api-compat`, `vfscitools`. Extras : `[jax]`, `[gpu]`, `[torch]`, `[catalogs]`, `[hardware]`, `[web]`, `[mcp]`, `[ai]`, `[validation]`, `[docs]`, `[dev]`, `[all]`. |
+| NF-2 | M | Dépendances de base minimales : `numpy`, `scipy`, `astropy`, `sympy`, `matplotlib`, `pyyaml`, `platformdirs`, `array-api-compat`, `LRFutils`. Extras : `[jax]`, `[gpu]`, `[torch]`, `[catalogs]`, `[hardware]`, `[web]`, `[mcp]`, `[ai]`, `[validation]`, `[docs]`, `[dev]`, `[all]`. |
 | NF-3 | M | Couverture ≥ 85 % sur `core`, `fields`, `propagation`, `service` ; voir §7 pour la stratégie. |
 | NF-4 | M | CI GitHub Actions : lint (ruff), typage (pyright ou mypy, strict sur le cœur), tests sur la matrice OS × Python, notebooks, doc EN et FR, contrôle de l'intégrité des tests (§7.3) ; GPU sur exécuteur dédié ou en déclenchement manuel. |
 | NF-5 | M | Versionnage sémantique, `CHANGELOG.md`, publication PyPI de `lumos-maxima` par *trusted publishing* sur Release GitHub. |
@@ -521,7 +521,7 @@ LUMOS/
 │   ├── hardware/       # Driver, SimulatedDriver, transports, discovery, lumoslabs/ (drivers + émulateurs), vendors/
 │   ├── catalogs/
 │   ├── io/             # .lumos (schéma, migrations), codegen
-│   ├── results/        # archive (vfst), figures (pltedit), style
+│   ├── results/        # archive (LRFutils.archive), figures (LRFutils.pltedit), style
 │   ├── plotting/
 │   ├── service/        # couche de service commune web/MCP
 │   ├── mcp/            # serveur MCP
@@ -554,7 +554,7 @@ LUMOS/
 | Matériel | transports `pyserial`, `pyvisa`, TCP ; `pylablib` et SDK constructeurs en plugins | Couvre l'essentiel |
 | Orbites (ultérieur) | `sgp4` / `skyfield` | Standard |
 | Catalogues | `astroquery`, `pyvo`, `requests` | Standard |
-| Archivage, figures | `vfscitools` (`vfst.archive`, `pltedit`) | Exigé |
+| Archivage, figures | `LRFutils` (`LRFutils.archive`, `LRFutils.pltedit`) | Exigé |
 | Docs | Sphinx, `sphinx-breeze-theme`, MyST, `myst-nb`, `sphinx-intl` | Exigé |
 | Tests | `pytest`, `hypothesis`, `pytest-benchmark`, Playwright | §7 |
 

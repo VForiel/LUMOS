@@ -1,6 +1,6 @@
 """Archives of runs (step P7.4, REQ-RES-1, REQ-RES-2, REQ-RES-5).
 
-An archive is a dated directory created with ``vfst.archive.new`` (VFSciTools), by default in an
+An archive is a dated directory created with ``LRFutils.archive.new``, by default in an
 ``archives`` directory **next to the executed script or notebook**, which makes every result traceable::
 
     archives/2026-10-17_1a2b3c4/0001-first-light/
@@ -49,7 +49,7 @@ DEPENDENCIES: tuple[str, ...] = (
     "sympy",
     "pyyaml",
     "array-api-compat",
-    "vfscitools",
+    "LRFutils",
     "jax",
     "jaxlib",
     "cupy-cuda12x",
@@ -259,12 +259,13 @@ def new_archive(
     metadata
         Extra entries of ``metadata.yml``.
     """
-    from lumos._vendor import vfst_archive
+    from LRFutils import archive as lrf_archive
+
     from lumos.io import save
 
     base = Path(root) if root is not None else default_archive_root()
     entries = {**_metadata(ctx), **dict(metadata or {})}
-    created = vfst_archive.new(name, root=base, metadata=_plain(entries))
+    created = lrf_archive.new(name, root=base, metadata=_plain(entries))
     archive = RunArchive(Path(created.path), dict(created.metadata))
     archive.update_metadata()  # rewrite with unicode allowed and plain types
     archive.figures.mkdir(exist_ok=True)

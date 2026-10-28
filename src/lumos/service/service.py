@@ -2071,7 +2071,7 @@ class Service:
                 buffer = io.BytesIO()
                 figure.savefig(buffer, format="png")
                 return PortFile(filename=name, media_type="image/png", content=buffer.getvalue())
-            from lumos._vendor import pltedit
+            from LRFutils import pltedit
 
             with tempfile.TemporaryDirectory() as folder:
                 path = Path(folder) / name

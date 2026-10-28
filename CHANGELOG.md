@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+
+- Run archives and `.plt` figures come from [LRFutils](https://lrfutils.readthedocs.io) 0.2 (`LRFutils.archive`,
+  `LRFutils.pltedit`), now a dependency; the copies vendored from VFSciTools in `lumos._vendor` are removed. The
+  archive layout, `metadata.yml` and the `.plt` format are unchanged (ADR-0010).
+
 ### Fixed
 
 - `deploy/public/update.sh` without argument returns to `main` after a release was deployed (a tag leaves

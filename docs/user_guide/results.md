@@ -50,7 +50,7 @@ quantities by `load_data`.
 ## Archives
 
 `ctx.run(outputs, archive="name")` creates an archive with
-[`vfst.archive`](https://github.com/VForiel/VFSciTools) (shipped with LUMOS) in an `archives/` directory **next to the
+[`LRFutils.archive`](https://lrfutils.readthedocs.io/en/latest/archive.html) (a dependency of LUMOS) in an `archives/` directory **next to the
 executed script or notebook** (set `lumos.config.archive_root` to change it):
 
 ```text

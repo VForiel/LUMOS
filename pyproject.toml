@@ -126,7 +126,7 @@ artifacts = ["src/lumos/web/static/"]
 [tool.ruff]
 line-length = 110
 target-version = "py312"
-extend-exclude = ["docs/_build", "src/lumos/_vendor"]  # vendored code kept as upstream
+extend-exclude = ["docs/_build"]
 force-exclude = true  # also when pre-commit passes the files explicitly
 
 [tool.ruff.lint]
@@ -169,7 +169,6 @@ convention = "numpy"
 
 [tool.pyright]
 include = ["src", "tests", "tools"]
-exclude = ["src/lumos/_vendor"]  # vendored code kept as upstream
 pythonVersion = "3.12"
 typeCheckingMode = "standard"
 # strict typing for the modules facing untrusted input or deciding access (P15.4); the readers of JSON

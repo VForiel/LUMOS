@@ -6,7 +6,7 @@ wrote: the context, the metadata, the journal, the data files and the list of fi
 Nothing is unpickled or imported while reading (NF-7): the context goes through the ``.lumos`` reader and its
 registry, ``.npz`` files are read with ``allow_pickle=False``, JSON data files are decoded by a fixed list of
 signal classes, and ``.plt`` figures (pickled matplotlib figures) are only listed: open them with
-``pltedit.load`` if you trust their origin.
+``LRFutils.pltedit.load`` if you trust their origin.
 """
 
 from __future__ import annotations

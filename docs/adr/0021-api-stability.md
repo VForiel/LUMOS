@@ -25,7 +25,7 @@ description, two subpackages without `__all__` and two absent from the API refer
    - the models of the service layer, the routes of the HTTP API, the MCP tools and their arguments, the
      commands of the `lumos` command line.
 
-   Names starting with `_`, `lumos._vendor`, the internals of `lumos.web` (other than `create_app` and its
+   Names starting with `_`, the internals of `lumos.web` (other than `create_app` and its
    configuration) and the web interface itself are not.
 2. **Semantic versioning**: a 1.x release adds and fixes, it does not remove or rename. A public name to be
    removed is deprecated first (`DeprecationWarning`, documented in the changelog) during at least one minor
