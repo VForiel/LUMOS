@@ -47,4 +47,5 @@ def test_the_public_deployment_passes_the_version_to_the_image():
     assert "LUMOS_VERSION: ${LUMOS_VERSION" in compose
     update = (ROOT / "deploy" / "public" / "update.sh").read_text(encoding="utf-8")
     assert "tools/release_version.py" in update
-    assert "docker compose -f deploy/public/compose.yaml up -d --build" in update
+    assert "-f deploy/public/compose.yaml" in update
+    assert 'docker compose "$@" up -d --build' in update
