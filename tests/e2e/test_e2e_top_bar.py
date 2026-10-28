@@ -53,3 +53,21 @@ def test_a_wide_window_has_everything_in_the_bar(page):
     expect(header.get_by_test_id("language")).to_be_visible()
     expect(header.get_by_test_id("more")).to_be_hidden()
     assert controls_inside(page, 1440) == []
+
+
+SPONSOR_URL = "https://github.com/sponsors/VForiel"
+
+
+def test_the_support_link_leads_to_the_sponsor_page(page):
+    page.context.route("https://github.com/**", lambda route: route.fulfill(body="sponsors"))
+    page.set_viewport_size({"width": 1440, "height": 900})
+    page.goto("/")
+    link = page.locator("header").get_by_test_id("support")
+    expect(link).to_be_visible()
+    expect(link).to_have_attribute("href", SPONSOR_URL)
+    page.set_viewport_size({"width": 640, "height": 700})
+    expect(link).to_be_hidden()
+    page.locator("header").get_by_test_id("more").click()
+    with page.expect_popup() as popup:
+        page.get_by_test_id("more-menu").get_by_test_id("more-support").click()
+    assert popup.value.url == SPONSOR_URL
