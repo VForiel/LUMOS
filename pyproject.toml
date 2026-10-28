@@ -37,6 +37,7 @@ dependencies = [
     "jsonschema>=4.23",
     "psutil>=5.9",
     "pydantic>=2.7",  # typed messages of the service layer (lumos.service)
+    "LRFutils>=0.2",  # run archives (LRFutils.archive) and editable .plt figures (LRFutils.pltedit), ADR-0010
 ]
 
 [project.optional-dependencies]
