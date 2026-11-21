@@ -68,7 +68,7 @@ flowchart LR
 
 ## Phase 0 — Fondations du dépôt
 
-- [x] **P0.1 Conventions** — `CLAUDE.md` : cycle de chaque étape, règles de test (cahier des charges §7), unités, structure, langue, *Conventional Commits*, interdits (fichiers à la racine, `print`, `pickle`, désactivation TLS). ADR-0001 « Stack et conventions ».
+- [x] **P0.1 Conventions** — `docs/contributing.md` : cycle de chaque étape, règles de test (cahier des charges §7), unités, structure, langue, *Conventional Commits*, interdits (fichiers à la racine, `print`, `pickle`, désactivation TLS). ADR-0001 « Stack et conventions ».
 - [x] **P0.2 Squelette** — `pyproject.toml` (nom `lumos-maxima`, import `lumos`, src layout, extras définis dans NF-2, version dynamique, bornes Python selon SPEC 0), `src/lumos/__init__.py`, `LICENSE` MIT, `CHANGELOG.md`, `.gitignore`, `README.md` (corriger `&amp;`).
 - [x] **P0.3 Qualité** — ruff, pyright ou mypy, pytest, pytest-cov, hypothesis, pre-commit.
 - [x] **P0.4 CI** — lint, typage, tests (matrice OS × versions Python), doc ; job d'**intégrité des tests** (alerte sur les commits qui modifient `tests/` et `src/` ensemble, ou un test sans `test(…)!`).

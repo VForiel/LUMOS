@@ -26,7 +26,7 @@ python -m venv .venv
 .venv/bin/python -m pytest
 ```
 
-See [CLAUDE.md](CLAUDE.md) for the development conventions, [docs/specs/](docs/specs/) for the requirements and
+See [docs/contributing.md](docs/contributing.md) for the development conventions, [docs/specs/](docs/specs/) for the requirements and
 the development plan (in French), and [docs/adr/](docs/adr/) for the architecture decisions.
 
 ## Support

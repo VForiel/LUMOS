@@ -411,7 +411,7 @@ Les émulateurs supportent l'**injection de fautes** (déconnexion, délai, vale
 | NF-7 | M | Sécurité : pas de `pickle` ni d'import arbitraire au chargement d'un `.lumos` (registre en liste blanche) ; TLS vérifié ; authentification et audit (REQ-WEB-9) ; outils MCP d'opération désactivés par défaut ; aucun secret dans les fichiers de contexte. |
 | NF-8 | M | Licence MIT. |
 | NF-9 | S | Temps d'import de `lumos` < 1 s (imports paresseux). |
-| NF-10 | M | Conduite de projet : `CLAUDE.md` (conventions pour les agents), **ADR** (`docs/adr/NNNN-titre.md`) pour chaque décision structurante, messages de commit au format *Conventional Commits* qui référencent l'étape du plan (`feat(P4.3): …`). |
+| NF-10 | M | Conduite de projet : `docs/contributing.md` (conventions de développement), **ADR** (`docs/adr/NNNN-titre.md`) pour chaque décision structurante, messages de commit au format *Conventional Commits* qui référencent l'étape du plan (`feat(P4.3): …`). |
 
 ---
 
@@ -533,7 +533,7 @@ LUMOS/
 ├── tests/  unit/ physics/ cross/ integration/ service/ mcp/ web/ hardware/ benchmarks/
 ├── docs/   (Sphinx Breeze, EN + locales/fr) + adr/ + specs/
 ├── .github/workflows/
-├── pyproject.toml  CHANGELOG.md  CLAUDE.md  LICENSE  README.md
+├── pyproject.toml  CHANGELOG.md  LICENSE  README.md
 ```
 
 ### 8.3 Choix technologiques
@@ -644,7 +644,7 @@ Règles :
 | D5 | Jumeau numérique | Obligatoire (REQ-EL-7) |
 | D6 | Web | Instance publique + usage local ; opération interdite par défaut sur l'instance publique, activable par configuration avec authentification par mot de passe ou clé SSH (REQ-WEB-9) |
 | D7 | Langues | Site web et documentation EN + FR ; docstrings, exemples et nomenclature EN uniquement |
-| D8 | Conduite de projet | `CLAUDE.md` + ADR + messages de commit (NF-10) |
+| D8 | Conduite de projet | `docs/contributing.md` + ADR + messages de commit (NF-10) |
 | D9 | Tests | Tests avant le code, modifications de tests encadrées (§7) |
 | D10 | Assistant | Serveur MCP adossé à une couche de service commune avec le web (§5.12) |
 | D11 | Hébergement | Usage **local uniquement** jusqu'à la v1.0 ; ensuite instance publique sur le VPS de l'auteur, avec migration vers une infrastructure plus grosse si le projet prend de l'ampleur. Le déploiement doit donc rester léger (Docker sur une seule machine, sans dépendance à un service cloud propriétaire) et les quotas de calcul configurables selon la machine. |
