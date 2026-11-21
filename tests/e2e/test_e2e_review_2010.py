@@ -1,6 +1,6 @@
 """Review of 20/10/2026 (step P15.17): narrow windows, the Outputs tab, the archives of the session.
 
-Requirements (todo.md, "Action côté IA", 20/10/2026):
+Requirements (review notes of 20/10/2026):
 
 - in a narrow window the two side columns (palette of blocks, inspector) are closed when the page loads, and
   opening one closes the other; the tabs of the bottom panel collapse into a menu (three lines) showing only
